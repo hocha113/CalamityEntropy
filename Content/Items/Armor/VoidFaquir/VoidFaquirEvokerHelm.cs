@@ -40,14 +40,11 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
             player.GetDamage(DamageClass.Summon) += 0.8f;
             player.GetArmorPenetration(DamageClass.Generic) += 20;
             player.maxMinions += 7;
-            player.Entropy().VFSet = true;
-            player.Entropy().VFHelmSummoner = true;
 
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.Entropy().summonerVF = true;
             player.GetDamage(DamageClass.Summon) += 0.25f;
 
         }

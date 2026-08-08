@@ -6,6 +6,7 @@ using CalamityEntropy.Content.Items.Accessories.Cards;
 using CalamityEntropy.Content.Items.Accessories.EvilCards;
 using CalamityEntropy.Content.Items.Accessories.Hungry;
 using CalamityEntropy.Content.Items.Accessories.SoulCards;
+using CalamityEntropy.Content.Items.Armor.VoidFaquir;
 using CalamityEntropy.Content.Items.Books.BookMarks;
 using CalamityEntropy.Content.Items.Donator;
 using CalamityEntropy.Content.Items.Donator.RocketLauncher;
@@ -735,29 +736,6 @@ namespace CalamityEntropy.Common
                     modifiers.ArmorPenetration += npc.defense * DevouringCard.ArmorPene;
                 }
             }
-            if (projectile.owner >= 0)
-            {
-                if (projectile.owner.ToPlayer().Entropy().VFSet)
-                {
-
-                    if (projectile.owner.ToPlayer().Entropy().VFHelmMelee)
-                    {
-                        projectile.owner.ToPlayer().Entropy().VoidCharge += 0.005f;
-                    }
-                    if (projectile.Calamity().stealthStrike)
-                    {
-                        projectile.owner.ToPlayer().Entropy().VoidCharge += 0.06f;
-                    }
-                    else
-                    {
-                        projectile.owner.ToPlayer().Entropy().VoidCharge += 0.008f;
-                    }
-                    if (projectile.owner.ToPlayer().Entropy().VoidCharge > 1)
-                    {
-                        projectile.owner.ToPlayer().Entropy().VoidCharge = 1;
-                    }
-                }
-            }
             critDamage = modifiers.CritDamage;
         }
         public int HungryTagged = 0;
@@ -786,19 +764,6 @@ namespace CalamityEntropy.Common
                 }
             }
             modifiers.FinalDamage += (npc.Entropy().VoidTouchLevel) * 0.05f * (1 - npc.Entropy().VoidTouchDR);
-            if (player.Entropy().VFSet)
-            {
-                player.Entropy().VoidCharge += 0.008f;
-                if (player.Entropy().VFHelmMelee)
-                {
-                    player.Entropy().VoidCharge += 0.005f;
-                }
-
-                if (player.Entropy().VoidCharge > 1)
-                {
-                    player.Entropy().VoidCharge = 1;
-                }
-            }
 
             critDamage = modifiers.CritDamage;
         }
@@ -1519,6 +1484,25 @@ namespace CalamityEntropy.Common
         public int noelctime = 0;
         public void onHurt(NPC npc, int damage, Player player, Entity source, NPC.HitInfo hit)
         {
+            if (player != null)
+            {
+                if (hit.DamageType.CountsAsClass(DamageClass.Melee))
+                {
+                    if (player.Entropy().VoidFaquirBonusMelee)
+                    {
+                        if (!(source is Projectile p && p.ModProjectile != null && p.ModProjectile is VoidFaquirBeam))
+                        {
+                            if (Main.myPlayer == player.whoAmI)
+                            {
+                                float addition = VoidFaquirDevourerHelm.GetChargeValue(damage);
+                                player.Entropy().VFMeleeCharge += addition;
+                                player.Entropy().MeleeChargeCountDownDelay = 180;
+                                Projectile.NewProjectile(player.GetSource_FromThis(), CEUtils.randomPoint(npc.getRect()), CEUtils.randomPointInCircle(14), ModContent.ProjectileType<VFChargeFXProj>(), 0, 0, player.whoAmI);
+                            }
+                        }
+                    }
+                }
+            }
             if (player != null && player.Entropy().hasAcc("Leyla"))
             {
                 var l = Leyla.ApplyBuffType();

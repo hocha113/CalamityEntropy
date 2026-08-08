@@ -58,7 +58,7 @@ using Terraria.ModLoader.IO;
 
 namespace CalamityEntropy.Common
 {
-    public class EModPlayer : ModPlayer
+    public partial class EModPlayer : ModPlayer
     {
         public float GetPressure()
         {
@@ -985,6 +985,7 @@ namespace CalamityEntropy.Common
         public int SunriseScene = 0;
         public override void ResetEffects()
         {
+            ResetVoidFaquir();
             BaitCharging = false;
             MaxBaitCharge = 1;
             oathBannerDye = 0;
@@ -2452,6 +2453,7 @@ namespace CalamityEntropy.Common
         public int lbaitType = -1;
         public override void PostUpdate()
         {
+            UpdateVF();
             if (BaitCharge < 0)
                 BaitCharge = 0;
             if (Player.HeldItem.IsAir)

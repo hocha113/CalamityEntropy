@@ -37,16 +37,11 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
         public override void UpdateArmorSet(Player player)
         {
             player.GetArmorPenetration(DamageClass.Generic) += 20;
-            player.Entropy().VFSet = true;
-
-
-            player.Entropy().VFHelmMagic = true;
 
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.Entropy().magiVF = true;
             player.GetDamage(DamageClass.Magic) += 0.3f;
             player.GetCritChance(DamageClass.Magic) += 25;
             player.statManaMax2 += 150;

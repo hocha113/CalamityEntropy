@@ -4469,14 +4469,14 @@ Items: {
 		Tooltip: 挥舞一把巨镰，将你的敌人撕的粉碎
 	}
 
-	FlowerHeadband: {
-		DisplayName: 花朵发箍
-		Tooltip: 使你化身为四季夏目
-	}
-
 	Silentpeak: {
 		DisplayName: 静岳之剑
 		Tooltip: 召唤铁皇的意志护你左右
+	}
+
+	FlowerHeadband: {
+		DisplayName: 花朵发箍
+		Tooltip: 使你化身为四季夏目
 	}
 
 	FeatheredHeadpiece: {
@@ -4775,6 +4775,13 @@ NihArmorConnet:
 	连接时额外增加2/s生命再生，并将生命值较低的一方的生命值抽取为另一名玩家提供治疗
 	受到致命伤害时，如果对方可承受此伤害，将由对方承担，这个效果有12秒冷却时间
 	连接时，双方都会获得虚无护盾和混沌细胞的能力
+	'''
+VoidFaquirMeleeBonus:
+	'''
+	所有攻击无视20点护甲
+	增加20%近战攻速在前方积蓄一个充能球
+	造成近战伤害将为充能球充能
+	当充能满时发射一道高伤害虚空破片束
 	'''
 LOCKED: ：[已锁定]
 BCU1: 需击败史莱姆王
@@ -5550,8 +5557,9 @@ Projectiles: {
 	FooveriaIceShard.DisplayName: 霜痕冰片
 	AzafureTwinSawHeld.DisplayName: 阿萨福勒双锯
 	AzafureSawSpark.DisplayName: 锯片火花
-	// VFChargeFXProj.DisplayName: V F Charge F X Proj
-	// VoidFaquirEnergyBallMelee.DisplayName: Void Faquir Energy Ball Melee
+	VFChargeFXProj.DisplayName: 虚空能量
+	VoidFaquirEnergyBallMelee.DisplayName: 虚空充能球
+	VoidFaquirBeam.DisplayName: 虚空破片束
 }
 
 LegendTooltip: - 传奇物品 -
@@ -6393,44 +6401,6 @@ Configs: {
 	}
 }
 
-vfb:
-	'''
-	套装奖励:
-	+20 护甲穿透
-	攻击命中目标会积攒虚空能量，
-	根据虚空能量数量提供部分移速和飞行速度加成
-	按下 套装奖励 键激发虚空能量
-	召唤一个虚空的幻影协助战斗并无限飞行，持续10秒
-	幻影的伤害类型取决于手中武器
-	'''
-helmvfc:
-	'''
-	-25% 魔力消耗
-	魔法弹幕击中敌人减少自身魔力病减益0.5s
-	'''
-helmvfd:
-	'''
-	+24% 攻击速度
-	+10% 伤害减免
-	击中敌人获取更多的虚空能量
-	'''
-helmvfs:
-	'''
-	远程射弹伤害随时间增加
-	增加远程弹幕弹速
-	'''
-helmvfl:
-	'''
-	+15% 移动速度
-	+135 最大潜行值
-	潜伏攻击获得更多虚空能量
-	'''
-helmvfe:
-	'''
-	+7 召唤栏
-	+80% 召唤伤害
-	召唤一只虚空共生体协助战斗
-	'''
 Reforge: 重铸
 ArmorPrefixHardName: 坚硬
 ArmorPrefixHardDescription: +10% 防御

@@ -127,10 +127,7 @@ namespace CalamityEntropy.Common
         public Vector2 playerPosL;
         public Vector2 playerMPosL;
         public bool daTarget = false;
-        public int maxDmgUps = 0;
-        public float dmgUp = 0.05f;
         public bool GWBow = false;
-        public int dmgupcount = 10;
         public bool ashesArrow = false;
         public bool buriedShoot = false;
         public int vddirection = 1;
@@ -188,10 +185,7 @@ namespace CalamityEntropy.Common
             p.IndexOfTwistedTwinShootedThisProj = IndexOfTwistedTwinShootedThisProj;
             p.flagTT = flagTT;
             p.daTarget = daTarget;
-            p.maxDmgUps = maxDmgUps;
-            p.dmgUp = dmgUp;
             p.GWBow = GWBow;
-            p.dmgupcount = dmgupcount;
             p.counter = counter;
             p.withGrav = withGrav;
             p.ToFriendly = ToFriendly;
@@ -377,14 +371,6 @@ namespace CalamityEntropy.Common
             }
             if (projectile.friendly)
             {
-                if (projectile.friendly && projectile.owner >= 0)
-                {
-                    if (projectile.owner.ToPlayer().Entropy().VFHelmRanged)
-                    {
-                        maxDmgUps = 2;
-                        dmgupcount = 16 * projectile.extraUpdates;
-                    }
-                }
                 if ((source is EntitySource_ItemUse && checkHoldOut && projectile.owner == Main.myPlayer && (projectile.ModProjectile is BaseIdleHoldoutProjectile || projectile.type == ModContent.ProjectileType<VoidEchoProj>() || projectile.type == ModContent.ProjectileType<HB>() || projectile.type == ModContent.ProjectileType<GhostdomWhisperHoldout>() || projectile.type == ModContent.ProjectileType<RailPulseBowProjectile>() || projectile.type == ModContent.ProjectileType<SamsaraCasketProj>() || projectile.type == ModContent.ProjectileType<OblivionHoldout>() || projectile.type == ModContent.ProjectileType<HadopelagicEchoIIProj>())))
                 {
                     checkHoldOut = false;
@@ -766,13 +752,6 @@ namespace CalamityEntropy.Common
             if (withGrav)
             {
                 projectile.velocity.Y += 0.3f / projectile.MaxUpdates;
-            }
-            dmgupcount--;
-            if (maxDmgUps > 0 && dmgupcount <= 0 && projectile.DamageType == DamageClass.Ranged)
-            {
-                dmgupcount = 24 * projectile.extraUpdates;
-                maxDmgUps--;
-                projectile.damage = (int)(Math.Ceiling(projectile.damage * dmgUp)) + (projectile.damage);
             }
             if (GWBow && projectile.arrow)
             {
@@ -1508,24 +1487,6 @@ namespace CalamityEntropy.Common
                     {
                         plr.HMRegenCd = 60;
                         projectile.owner.ToPlayer().Heal(projectile.owner.ToPlayer().statManaMax2 / 350 + 5);
-                    }
-                }
-                if (plr.VFHelmMagic && projectile.owner >= 0)
-                {
-                    var player = projectile.owner.ToPlayer();
-                    if (player.HasBuff(BuffID.ManaSickness))
-                    {
-                        for (int i = 0; i < player.buffType.Length; i++)
-                        {
-                            if (player.buffType[i] == BuffID.ManaSickness)
-                            {
-                                player.buffTime[i] -= 30;
-                                if (player.buffTime[i] < 0)
-                                {
-                                    player.buffTime[i] = 0;
-                                }
-                            }
-                        }
                     }
                 }
             }

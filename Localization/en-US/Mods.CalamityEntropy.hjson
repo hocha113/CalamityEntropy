@@ -4439,14 +4439,14 @@ Items: {
 			'''
 	}
 
-	FlowerHeadband: {
-		DisplayName: Flower Headband
-		Tooltip: ""
-	}
-
 	Silentpeak: {
 		DisplayName: Silentpeak
 		Tooltip: Call forth the will of the Iron Emperor, to shelter and defend you eternally
+	}
+
+	FlowerHeadband: {
+		DisplayName: Flower Headband
+		Tooltip: ""
 	}
 
 	FeatheredHeadpiece: {
@@ -4745,6 +4745,13 @@ NihArmorConnet:
 	When receiving fatal damage, if the other party can withstand the damage, 
 	it will be borne by the other party, and this effect has a cooldown time of 12 seconds
 	When connected, both parties will acquire the ability of nihility shield and chaotic cells
+	'''
+VoidFaquirMeleeBonus:
+	'''
+	All attacks ignore 20 armor
+	Increase melee speed by 20% and build a charge orb in front
+	Dealing melee damage charges the orb
+	When fully charged, fire a high-damage Void Shard Beam
 	'''
 LOCKED: " [LOCKED]:"
 BCU1: Requires defeating King Slime
@@ -5521,6 +5528,7 @@ Projectiles: {
 	AzafureSawSpark.DisplayName: Azafure Saw Spark
 	VFChargeFXProj.DisplayName: V F Charge F X Proj
 	VoidFaquirEnergyBallMelee.DisplayName: Void Faquir Energy Ball Melee
+	VoidFaquirBeam.DisplayName: Void Faquir Beam
 }
 
 LegendTooltip: - Legend -
@@ -6322,39 +6330,6 @@ Configs: {
 	}
 }
 
-vfb:
-	'''
-	Set Bonus: Gain a void charge bar
-	Damaging enemies will fill the void charge bar
-	Increases movement and flight speed based on the amount of void charge in the bar
-	Press the Armor Set Bonus key when void charge is full to consume void charge and summon a Void Wraith to assist in battle
-	The Void Wraith's damage type depends on the weapon in hand and grants indefinite flight for 10 seconds on spawn
-	Increases armor penetration by 20
-	'''
-helmvfc:
-	'''
-	25% reduced mana cost
-	Magic projectiles hits reduce [cbuff:ManaSickness] time by half a second
-	'''
-helmvfd:
-	'''
-	24% increased attack speed
-	10% increased damage reduction
-	Generates additional void charge when damaging targets
-	'''
-helmvfs: Projectile damage increases over time
-helmvfl:
-	'''
-	15% increased movement speed
-	+135 maximum stealth
-	Stealth strikes will generate additional void charge
-	'''
-helmvfe:
-	'''
-	Increases your max amount of minions by 7
-	80% increased summon damage
-	Summon a Void Symbiote to fight for you
-	'''
 Reforge: Reforge
 ArmorPrefixHardName: Dense
 ArmorPrefixHardDescription: 10% increased defense

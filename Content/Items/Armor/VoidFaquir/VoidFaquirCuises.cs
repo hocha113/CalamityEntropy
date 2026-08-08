@@ -26,7 +26,6 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
 
         public override void UpdateEquip(Player player)
         {
-            player.Entropy().VFLeg = true;
             player.GetDamage(DamageClass.Generic) += 0.1f;
             player.GetCritChance(DamageClass.Generic) += 10;
         }

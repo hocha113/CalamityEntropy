@@ -42,13 +42,10 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
             player.Calamity().wearingRogueArmor = true;
             player.GetArmorPenetration(DamageClass.Generic) += 20;
             player.Calamity().rogueStealthMax += 1.35f;
-            player.Entropy().VFSet = true;
-            player.Entropy().VFHelmRogue = true;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.Entropy().rogueVF = true;
             player.GetDamage(CEUtils.RogueDC) += 0.25f;
             player.GetCritChance(CEUtils.RogueDC) += 25;
         }

@@ -4150,14 +4150,14 @@ Items: {
 			''' */
 	}
 
-	FlowerHeadband: {
-		// DisplayName: Flower Headband
-		// Tooltip: ""
-	}
-
 	Silentpeak: {
 		// DisplayName: Silentpeak
 		// Tooltip: Call forth the will of the Iron Emperor, to shelter and defend you eternally
+	}
+
+	FlowerHeadband: {
+		// DisplayName: Flower Headband
+		// Tooltip: ""
 	}
 
 	FeatheredHeadpiece: {
@@ -4454,6 +4454,13 @@ NihArmorConnet:
 	При смертельной травме, если другая сторона может выдержать эту травму, она будет нести другую сторону, эффект имеет 12 секунд охлаждения
 	При соединении обе стороны приобретают способность нигилистических щитов и хаотических клеток.
 	'''
+/* VoidFaquirMeleeBonus:
+	'''
+	All attacks ignore 20 armor
+	Increase melee speed by 20% and build a charge orb in front
+	Dealing melee damage charges the orb
+	When fully charged, fire a high-damage Void Shard Beam
+	''' */
 LOCKED: ": [Заблокировано]"
 BCU1: Нужно победить Короля Слейма.
 BCU2: Нужно победить кровавого хозяина или гниющее гнездо воли.
@@ -5237,6 +5244,7 @@ Projectiles: {
 	// AzafureSawSpark.DisplayName: Azafure Saw Spark
 	// VFChargeFXProj.DisplayName: V F Charge F X Proj
 	// VoidFaquirEnergyBallMelee.DisplayName: Void Faquir Energy Ball Melee
+	// VoidFaquirBeam.DisplayName: Void Faquir Beam
 }
 
 LegendTooltip: - Легенда -
@@ -6087,39 +6095,6 @@ Configs: {
 	}
 }
 
-vfb:
-	'''
-	Бонус комплекта:
-	+20 к пробитию защиты
-	Попадание по цели увеличивает энергию Пустоты
-	Даёт бонусы к скорости передвижения и полёта в зависимости от количества энергии Пустоты
-	Нажмите клавишу бонуса брони, чтобы активировать энергию Пустоты: призовите Призрака Пустоты, чтобы он помогал в бою, и получите возможность летать бесконечно в течение 10 секунд.
-	Тип урона Призрака Пустоты зависит от оружия, находящегося в руках
-	'''
-helmvfc:
-	'''
-	-25% стоимости маны
-	Попадания магических снарядов по врагам уменьшают эффект Маназависимости на 0.5 секунды
-	'''
-helmvfd:
-	'''
-	+24% к скорости атаки
-	+10% к снижению получаемого урона
-	При попадании по целям накапливается больше энергии Пустоты.
-	'''
-helmvfs: Урон снарядов увеличивается со временем
-helmvfl:
-	'''
-	+15% к скорости передвижения
-	+135 к максимальной скрытности
-	Скрытые атаки накапливают больше энергии пустоты
-	'''
-helmvfe:
-	'''
-	+7 к максимальному количеству прислужников
-	+80% к урону призывателя
-	Призывает Пустотного симбиота, который сражается за вас
-	'''
 Reforge: Reforge
 ArmorPrefixHardName: Жёсткий
 ArmorPrefixHardDescription: +10% защиты

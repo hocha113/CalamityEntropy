@@ -342,8 +342,6 @@ namespace CalamityEntropy.Common
         {
             speed *= player.Entropy().WingSpeed;
             acceleration *= player.Entropy().WingSpeed;
-            speed *= 1 + player.Entropy().VoidCharge * 0.25f;
-            acceleration *= 1 + player.Entropy().VoidCharge * 0.25f;
 
         }
 
@@ -395,11 +393,6 @@ namespace CalamityEntropy.Common
         }
         public override void VerticalWingSpeeds(Item item, Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
         {
-            ascentWhenFalling *= 1 + player.Entropy().VoidCharge * 0.5f;
-            ascentWhenRising *= 1 + player.Entropy().VoidCharge * 0.5f;
-            maxAscentMultiplier *= 1 + player.Entropy().VoidCharge * 0.5f;
-            maxCanAscendMultiplier *= 1 + player.Entropy().VoidCharge * 0.5f;
-            constantAscend *= 1 + player.Entropy().VoidCharge * 0.5f;
             ascentWhenFalling *= player.Entropy().WingSpeed;
             ascentWhenRising *= player.Entropy().WingSpeed;
             maxAscentMultiplier *= player.Entropy().WingSpeed;
@@ -630,39 +623,6 @@ namespace CalamityEntropy.Common
                             tooltip.Text += (armorPrefix.AddDefense() > 0 ? "(+" : "(") + df.ToString() + ")";
                         }
                     }
-                }
-            }
-            if (item.type == ModContent.ItemType<VoidFaquirBodyArmor>() || item.type == ModContent.ItemType<VoidFaquirCuises>() || item.type == ModContent.ItemType<VoidFaquirCosmosHood>() || item.type == ModContent.ItemType<VoidFaquirDevourerHelm>() || item.type == ModContent.ItemType<VoidFaquirEvokerHelm>() || item.type == ModContent.ItemType<VoidFaquirLurkerMask>() || item.type == ModContent.ItemType<VoidFaquirShadowHelm>())
-            {
-                if (Main.LocalPlayer.Entropy().VFSet)
-                {
-                    TooltipLine t = new TooltipLine(CalamityEntropy.Instance, "Armor Bonus", Language.GetOrRegister("Mods.CalamityEntropy.vfb").Value);
-                    tooltips.Add(t);
-                }
-                if (Main.LocalPlayer.Entropy().VFHelmMagic)
-                {
-                    TooltipLine t = new TooltipLine(CalamityEntropy.Instance, "Armor Bonus", Language.GetOrRegister("Mods.CalamityEntropy.helmvfc").Value);
-                    tooltips.Add(t);
-                }
-                if (Main.LocalPlayer.Entropy().VFHelmMelee)
-                {
-                    TooltipLine t = new TooltipLine(CalamityEntropy.Instance, "Armor Bonus", Language.GetOrRegister("Mods.CalamityEntropy.helmvfd").Value);
-                    tooltips.Add(t);
-                }
-                if (Main.LocalPlayer.Entropy().VFHelmRanged)
-                {
-                    TooltipLine t = new TooltipLine(CalamityEntropy.Instance, "Armor Bonus", Language.GetOrRegister("Mods.CalamityEntropy.helmvfs").Value);
-                    tooltips.Add(t);
-                }
-                if (Main.LocalPlayer.Entropy().VFHelmRogue)
-                {
-                    TooltipLine t = new TooltipLine(CalamityEntropy.Instance, "Armor Bonus", Language.GetOrRegister("Mods.CalamityEntropy.helmvfl").Value);
-                    tooltips.Add(t);
-                }
-                if (Main.LocalPlayer.Entropy().VFHelmSummoner)
-                {
-                    TooltipLine t = new TooltipLine(CalamityEntropy.Instance, "Armor Bonus", Language.GetOrRegister("Mods.CalamityEntropy.helmvfe").Value);
-                    tooltips.Add(t);
                 }
             }
             if (armorPrefix != null)

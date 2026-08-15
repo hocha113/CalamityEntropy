@@ -178,7 +178,7 @@ namespace CalamityEntropy
                 wikithis.Call("AddWikiTexture", this, ModContent.Request<Texture2D>("CalamityEntropy/Assets/UI/icon_s"));
                 wikithis.Call(3, this, ModContent.Request<Texture2D>("CalamityEntropy/Assets/UI/icon_s"));
             }
-
+            
             efont1 = ModContent.Request<DynamicSpriteFont>("CalamityEntropy/Assets/Fonts/EFont", AssetRequestMode.ImmediateLoad).Value;
             efont2 = ModContent.Request<DynamicSpriteFont>("CalamityEntropy/Assets/Fonts/VCRFont", AssetRequestMode.ImmediateLoad).Value;
             efont3 = ModContent.Request<DynamicSpriteFont>("CalamityEntropy/Assets/Fonts/MaruMonica", AssetRequestMode.ImmediateLoad).Value;

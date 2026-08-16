@@ -168,11 +168,22 @@ namespace CalamityEntropy.Content.Projectiles
         public void applyEffects()
         {
             Player player = Projectile.owner.ToPlayer();
+            List<Item> applied = new List<Item>();
             foreach (ActiveAcc ac in accs)
             {
                 if (player.Entropy().accWispLantern)
                 {
-                    player.ApplyEquipFunctional(player.inventory[ac.index], !player.Entropy().visualWispLantern);
+                    bool f = true;
+                    foreach (Item i in applied)
+                    {
+                        if (!ItemLoader.CanAccessoryBeEquippedWith(player.inventory[ac.index], i))
+                            f = false;
+                    }
+                    if (f)
+                    {
+                        player.ApplyEquipFunctional(player.inventory[ac.index], !player.Entropy().visualWispLantern);
+                        applied.Add(player.inventory[ac.index]);
+                    }
                 }
                 if (player.Entropy().visualWispLantern)
                 {

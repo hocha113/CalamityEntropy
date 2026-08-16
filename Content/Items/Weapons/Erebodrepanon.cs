@@ -1,3 +1,4 @@
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
@@ -224,13 +225,16 @@ namespace CalamityEntropy.Content.Items.Weapons
             Main.spriteBatch.ExitShaderRegion();
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.GetOwner().gfxOffY, null, Color.White, rotation, origin, scale * 1.3f, ef, 0);
             Main.spriteBatch.UseAdditive();
-
-            float ssc = 3.3f;
-            Main.spriteBatch.Draw(s2, Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.GetOwner().gfxOffY, null, new Color(166, 126, 255) * tAlpha * 1, rotation + 0.6f * dir, s2.Size() * 0.5f, scale * ssc, ef, 0);
-            Main.spriteBatch.Draw(s3, Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.GetOwner().gfxOffY, null, new Color(166, 126, 255) * tAlpha * 0.8f, rotation + 0.6f * dir, s3.Size() * 0.5f, scale * ssc * 0.824f, ef, 0);
-
+            Effect shader = CommonEffects.colorLerp;
+            Main.spriteBatch.End();
+            shader.Parameters["color"].SetValue((new Color(200, 200, 255) * tAlpha * 0.75f).ToVector4());
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, shader, Main.GameViewMatrix.TransformationMatrix);
+            shader.CurrentTechnique.Passes[0].Apply();
+            float ssc = 3.4f;
+            Main.spriteBatch.Draw(s2, Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.GetOwner().gfxOffY, null, new Color(0, 0, 255) * tAlpha * 0.6f, rotation + 0.2f * dir, s2.Size() * 0.5f, scale * ssc, ef, 0);
+            Main.spriteBatch.Draw(s3, Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.GetOwner().gfxOffY, null, new Color(2, 2, 255) * tAlpha * 0.6f, rotation + 0.4f * dir, s3.Size() * 0.5f, scale * ssc * 0.98f, ef, 0);
             Vector2 spos = Projectile.Center + new Vector2(138, 104 * dir).RotatedBy(Projectile.rotation) * scale;
-            Main.spriteBatch.Draw(star, spos - Main.screenPosition, null, Color.LightBlue * tAlpha, 0, star.Size() * 0.5f, new Vector2(1, 0.4f) * scale * 3.2f, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(star, spos - Main.screenPosition, null, Color.Blue * tAlpha, 0, star.Size() * 0.5f, new Vector2(1, 0.4f) * scale * 3.2f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(star, spos - Main.screenPosition, null, Color.White * tAlpha, 0, star.Size() * 0.5f, new Vector2(1, 0.4f) * scale * 2.8f, SpriteEffects.None, 0);
             Main.spriteBatch.ExitShaderRegion();
             return false;

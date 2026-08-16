@@ -1,4 +1,5 @@
 using CalamityEntropy.Content.Items.Accessories;
+using CalamityEntropy.Content.Items.Donator.BreakStar;
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Items.Weapons.Fractal;
 using CalamityEntropy.Content.NPCs.Cruiser;
@@ -74,7 +75,8 @@ namespace CalamityEntropy
 		        P<AzafureEKatanaSlash>(),
                 P<RuneSongHeld>(),
                 P<AzafureImperialGuardMachineGunHeld>(),
-                P<VoidshadeHeld>()
+                P<VoidshadeHeld>(),
+                P<StarBreakerHeld>()
             };
             GodheadBlacklist = new()
             {

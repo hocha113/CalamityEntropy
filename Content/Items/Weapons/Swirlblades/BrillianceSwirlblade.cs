@@ -1,3 +1,4 @@
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
@@ -7,6 +8,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System.Collections.Generic;
 using System.Runtime.Intrinsics.Arm;
 using Terraria;
@@ -81,7 +83,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             if (BladeScale >= 0.2f)
             {
                 float particleRot = CEUtils.randomRot();
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center + particleRot.ToRotationVector2() * Radius, particleRot.ToRotationVector2().RotatedBy(-1.86f) * Main.rand.NextFloat(12, 18), false, Main.rand.Next(12, 16), Main.rand.NextFloat(0.6f, 1f) * 0.04f, (Main.rand.NextBool() ? Color.Aqua : Color.SkyBlue) * BladeScale, new Vector2(0.18f, 1f), false, false));
+                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center + particleRot.ToRotationVector2() * Radius * BladeScale * Projectile.scale, particleRot.ToRotationVector2().RotatedBy(-1.86f) * Main.rand.NextFloat(12, 18), false, Main.rand.Next(12, 16), Main.rand.NextFloat(0.6f, 1f) * 0.04f * BladeScale * Projectile.scale, (Main.rand.NextBool() ? Color.Aqua : Color.SkyBlue) * BladeScale, new Vector2(0.18f, 1f), false, false));
             }
             CEUtils.AddLight(Projectile.Center, new Color(50, 150, 255));
         }
@@ -123,12 +125,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 float scale = Radius / 78f * Projectile.scale * BladeScale;
                 float time = Main.GlobalTimeWrappedHourly;
                 Vector2 o = smear.Size() * 0.5f;
-                Main.spriteBatch.UseBlendState(BlendState.Additive, SamplerState.PointClamp);
 
-                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(120, 180, 255) * Projectile.Opacity * BladeScale, time * 42f, o, scale * 1f, SpriteEffects.None, 0);
-                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(40, 140, 200) * Projectile.Opacity * BladeScale, time * -42f, o, scale * 0.84f, SpriteEffects.None, 0);
-                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(40, 160, 255) * Projectile.Opacity * BladeScale, time * 36f, o, scale * 0.66f, SpriteEffects.None, 0);
-                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(40, 160, 255) * Projectile.Opacity * BladeScale, time * -36f, o, scale * 0.56f, SpriteEffects.None, 0);
+                ApplyShader(new Color(180, 230, 255));
+
+                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(0, 20, 255) * Projectile.Opacity * BladeScale, time * 50f, o, scale * 1f, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(0, 20, 200) * Projectile.Opacity * BladeScale, time * -42f, o, scale * 0.97f, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(0, 20, 255) * Projectile.Opacity * BladeScale, time * 36f, o, scale * 0.94f, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(0, 20, 255) * Projectile.Opacity * BladeScale, time * -28f, o, scale * 0.9f, SpriteEffects.None, 0);
             }
 
             Main.spriteBatch.ExitShaderRegion();

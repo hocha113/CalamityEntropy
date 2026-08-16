@@ -98,6 +98,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent.Liquid;
 using Terraria.Graphics;
 using Terraria.Graphics.Renderers;
 using Terraria.ID;
@@ -141,16 +142,6 @@ namespace CalamityEntropy
         public string EntropyWikiURL;
         public override void Load()
         {
-            CEUtils.BS_ColorInverse = new BlendState()
-            {
-                ColorSourceBlend = Blend.InverseDestinationColor,
-                ColorDestinationBlend = Blend.Zero,
-                ColorBlendFunction = BlendFunction.Add,
-
-                AlphaSourceBlend = Blend.One,
-                AlphaDestinationBlend = Blend.One,
-                AlphaBlendFunction = BlendFunction.Add,
-            };
             VanityDisplaySys.VanityItems = new();
             CEUtils.TexCache = new Dictionary<string, Texture2D>();
             theVoid_SCBIE = new CESpawnConditionBestiaryInfoElement(this.GetLocalizationKey("TheVoid"), 0, "CalamityEntropy/Assets/VoidBack");
@@ -246,7 +237,7 @@ namespace CalamityEntropy
             On_SoundPlayer.Play += playSnd;
             On_Player.ApplyEquipFunctional += apply_equip_func;
             On_Player.ApplyMeleeScale += apply_melee_scale;
-
+            
             EModSys.timer = 0;
             BossRushEvent.Bosses.Insert(34, new BossRushEvent.Boss(ModContent.NPCType<NihilityActeriophage>(), permittedNPCs: new int[] { ModContent.NPCType<ChaoticCell>() }));
             BossRushEvent.Bosses.Insert(42, new BossRushEvent.Boss(ModContent.NPCType<CruiserHead>(), permittedNPCs: new int[] { ModContent.NPCType<CruiserBody>(), ModContent.NPCType<CruiserTail>() }));
@@ -528,7 +519,6 @@ namespace CalamityEntropy
             CommonEffects.Unload();
             CELists.Unload();
             Apsychos.shader = null;
-            CEUtils.BS_ColorInverse = null;
             Typer.activeTypers = null;
             ScreenShaker.Unload();
             VanityDisplaySys.VanityItems = null;
@@ -722,7 +712,7 @@ namespace CalamityEntropy
             }
             foreach (Player player in Main.ActivePlayers)
             {
-                if (player.GetModPlayer<LostHeirloomPlayer>().vanityEquipped)
+                if (player.GetModPlayer<VanityModPlayer>().vanityEquipped == nameof(LostHeirloom))
                 {
                     CEUtils.DrawGlow(player.Center, Color.White * 0.2f, 5.2f);
                 }

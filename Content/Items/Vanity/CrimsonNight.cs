@@ -48,14 +48,14 @@ namespace CalamityEntropy.Content.Items.Vanity
 
         public override void UpdateVanity(Player player)
         {
-            player.GetModPlayer<CrimsonNightPlayer>().vanityEquipped = true;
+            player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             if (!hideVisual)
             {
-                player.GetModPlayer<CrimsonNightPlayer>().vanityEquipped = true;
+                player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             }
         }
 
@@ -66,28 +66,6 @@ namespace CalamityEntropy.Content.Items.Vanity
                 .AddIngredient(ItemID.Silk, 4)
                 .AddTile(TileID.WorkBenches)
                 .Register();
-        }
-
-    }
-
-    public class CrimsonNightPlayer : ModPlayer
-    {
-        public bool vanityEquipped = false;
-
-        public override void ResetEffects()
-        {
-            vanityEquipped = false;
-        }
-
-        public override void FrameEffects()
-        {
-            if (vanityEquipped)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "CrimsonNight", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "CrimsonNight", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "CrimsonNight", EquipType.Head);
-
-            }
         }
     }
 }

@@ -159,10 +159,6 @@ namespace CalamityEntropy.Content.Projectiles
                 legrd = trd;
                 tlegrd = trd;
             }
-            if (Projectile.owner.ToPlayer().Entropy().VFHelmSummoner)
-            {
-                Projectile.timeLeft = 3;
-            }
             Projectile.ai[0]++;
             if (CEUtils.getDistance(Projectile.Center, Projectile.owner.ToPlayer().Center) > 140)
             {

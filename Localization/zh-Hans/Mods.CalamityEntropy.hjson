@@ -23,8 +23,8 @@ Items: {
 				DisplayName: 沉默
 				Tooltip:
 					'''
-					[c/9387ff:丢出一个飞盘，击中敌人后一段时间会使用虚空锁链将自身拉向该敌人，并在与其接触时爆炸]
-					[c/9387ff:潜伏攻击会使飞盘被固定在击中的敌人身上并展开一个大范围漩涡，持续对范围内的目标造成伤害]
+					丢出一个飞盘，击中敌人后一段时间会使用[ceeffect/cruiser:虚空锁链]将自身拉向该敌人，并在与其接触时爆炸
+					潜伏攻击会使飞盘被固定在击中的敌人身上并展开一个大范围漩涡，持续对范围内的目标造成伤害
 					'''
 			}
 
@@ -79,7 +79,7 @@ Items: {
 				Tooltip:
 					'''
 					丢出一把会爆炸的标枪
-					潜伏攻击会插在目标身上并在一秒后产生更大的爆炸
+					潜伏攻击会插在目标身上并产生电弧冲击
 					'''
 			}
 
@@ -128,7 +128,11 @@ Items: {
 			}
 
 			TheDeadCut: {
-				Tooltip: 命中后恢复部分潜行值
+				Tooltip:
+					'''
+					丢出一把飞镰，命中后生成虚妄斩切
+					潜伏攻击会使飞镰命中后进行多次斩切
+					'''
 				DisplayName: 虚妄切裂者
 			}
 
@@ -282,8 +286,8 @@ Items: {
 				Tooltip:
 					'''
 					飞行一段时间后弹出4个较小的轮刃并展开大范围锯片
-					小轮刃也会弹出锯片，并在收回时发射一道追踪的虚空破裂束
-					潜伏攻击会使小锯片被弹的更远，并吸收小锯片的虚空破裂束，随即冲向最近的模目标
+					小轮刃也会弹出锯片，并在收回时发射一道追踪的[ceffect/dog:虚空破裂束]
+					潜伏攻击会使小锯片被弹的更远，并吸收小锯片的[ceffect/dog:虚空破裂束]，随即冲向最近的目标
 					'''
 			}
 
@@ -336,11 +340,11 @@ Items: {
 		DisplayName: 虚空圣契
 		Tooltip:
 			'''
-			[c/9387ff:召唤至多一个窥虚之眼，同时创造围绕自身的符文阵]
-			[c/9387ff:符文会自动向附近的敌怪发射追踪的窥虚冥弹，同时伤害触碰的敌怪]
-			[c/9387ff:长按使用武器会将符文聚集在面前，并向光标方向快速发射大量窥虚冥弹]
-			[c/9387ff:停止使用武器或持续使用超过6秒会还原符文并根据使用时间获得至多36秒的冷却，]
-			[c/9387ff:在冷却期间符文的攻速增加15%]
+			召唤至多一个[ceeffect/cruiser:窥虚之眼]，同时创造围绕自身的[ceeffect/cruiser:虚诞符文阵]
+			符文会自动向附近的敌怪发射追踪的[ceefect/cruiser:窥虚冥弹]，同时伤害触碰的敌怪
+			长按使用武器会将符文聚集在面前，并向光标方向快速发射大量[ceeffect/cruiser:窥虚冥弹]
+			停止使用武器或持续使用超过6秒会还原符文并根据使用时间获得至多36秒的[ceeffect/cruiser:深渊狂舞]冷却，
+			在冷却期间符文的攻速增加15%
 			'''
 	}
 
@@ -513,8 +517,8 @@ Items: {
 		DisplayName: 神权象征
 		Tooltip:
 			'''
-			召唤一圈神权炮
-			松开鼠标会同时发射虚空镭射
+			召唤一圈[ceeffect/cruiser:神权炮]
+			松开鼠标会同时发射[ceeffect/cruiser:虚空镭射]
 			“即便只是虚空的一部分，也拥有湮灭万物的力量”
 			'''
 	}
@@ -562,7 +566,7 @@ Items: {
 
 	WingsOfHush: {
 		DisplayName: 虚寂之翼
-		Tooltip: "[c/9387ff:射出强力的虚空镭射和4发虚空矢]"
+		Tooltip: 射出强力的[ceeffect/cruiser:虚空镭射]和4发[ceeffect/cruiser:虚空矢]
 	}
 
 	SoyMilk: {
@@ -687,29 +691,29 @@ Items: {
 		DisplayName: 命运之绳
 		Tooltip:
 			'''
-			用于制作[i:CalamityEntropy/OracleDeck][c/87CEFA:神谕卡组]
-			按住左Shift来查看卡组需求
+			用于组合[i:CalamityEntropy/OracleDeck][c/87CEFA:神谕卡组]
+			[c/87CEFA:按住左Shift来查看卡组需求]
 			'''
 		HoldShiftForDetails:
 			'''
 			[i:CalamityEntropy/AuraCard][c/87CEFA:卡片 -『灵光』]
-			由 金箱子/铁匣/秘银匣 获取
+			散落在隐蔽的小屋和淹没的板条箱中
 			[i:CalamityEntropy/BrillianceCard][c/87CEFA:卡片 -『辉煌』]
-			由 商人 出售
+			由一位古怪而神秘的商人出售
 			[i:CalamityEntropy/EntityCard][c/87CEFA:卡片 -『实体』]
-			由 巨像蛤 掉落
+			曾被献给沉沦的昔日之海的巨大贝类
 			[i:CalamityEntropy/InspirationCard][c/87CEFA:卡片 -『启迪』]
-			由 砂岩箱/绿洲匣/幻象匣 获取
+			被遗落在旱漠中腐烂
 			[i:CalamityEntropy/MetropolisCard][c/87CEFA:卡片 -『都市』]
-			由 恶魔骨灰(5)，混乱精华(3)合成
+			使用骷髅骨灰和混乱之精华融合而成
 			[i:CalamityEntropy/WisdomCard][c/87CEFA:卡片 -『智慧』]
-			由 骷髅王 掉落
+			持有于地牢的看守者
 			[i:CalamityEntropy/RadianceCard][c/87CEFA:卡片 -『光芒』]
-			由 凋星微尘(5)，日光精华(5)，光明之魂(3)合成
+			使用日光之精华，星芒之尘与光明之魂融合而成
 			[i:CalamityEntropy/TemperanceCard][c/87CEFA:卡片 -『克己』]
-			由 机械骷髅王 掉落
+			被装载入地牢看守者的机械仿造品中
 			[i:CalamityEntropy/EnduranceCard][c/87CEFA:卡片 -『坚忍』]
-			由 深渊宝藏箱/渊泉匣 获取
+			被藏匿于光明永远无法触及的海域中
 			'''
 	}
 
@@ -737,10 +741,10 @@ Items: {
 		DisplayName: 虚湮黯天
 		Tooltip:
 			'''
-			[c/9387ff:点击左键或按住右键丢出一些飞刀，击中后弹开并漂浮在周围]
-			[c/9387ff:长按左键蓄力，完全蓄力时松开会丢出一把强化的飞刀，造成3倍伤害]
-			[c/9387ff:强化飞刀命中会爆炸，如果存在漂浮飞刀会产生更大的爆炸并激活所有漂浮的飞刀，使其砸向目标]
-			[c/9387ff:同时最多存在15把漂浮飞刀]
+			点击左键或按住右键丢出一些[ceeffect/cruiser:黯天飞刀]，击中后弹开并漂浮在周围
+			长按左键蓄力，完全蓄力时松开会丢出一把强化飞刀，造成3倍伤害
+			强化飞刀命中会爆炸，如果存在漂浮的飞刀会产生更大的爆炸并激活所有漂浮飞刀，使其砸向目标
+			同时最多存在15把漂浮飞刀
 			'''
 	}
 
@@ -751,11 +755,7 @@ Items: {
 
 	DustyStar: {
 		DisplayName: 尘封之星
-		Tooltip:
-			'''
-			让你变成主创的形象
-			“记得给灾熵点个赞”
-			'''
+		Tooltip: 让你变成主创的形象
 	}
 
 	SoulCandle: {
@@ -1134,7 +1134,7 @@ Items: {
 
 	DreamCatcher: {
 		DisplayName: 捕梦网
-		Tooltip: 让你变成可爱的梦龙
+		Tooltip: 让你变成的梦龙
 	}
 
 	AquaticFlute: {
@@ -1298,29 +1298,29 @@ Items: {
 		DisplayName: 深渊之绳
 		Tooltip:
 			'''
-			用于制作[i:CalamityEntropy/TaintedDeck][c/FF6347:堕化卡组]
-			按住左Shift以查看卡组需求
+			用于组合[i:CalamityEntropy/TaintedDeck][c/FF6347:堕化卡组]
+			[c/FF6347:按住左Shift以查看卡组需求]
 			'''
 		HoldShiftForDetails:
 			'''
 			[i:CalamityEntropy/Perplexed][c/FF6347: 卡片 -『迷茫』]
-			由 双子魔眼 掉落
+			被塞入两台外貌相似且彼此相连的圣化机械中
 			[i:CalamityEntropy/Tarnish][c/FF6347: 卡片 -『晦暗』]
-			由 哥布林巫师 掉落
+			被哥布林拾走并用于施法
 			[i:CalamityEntropy/Confuse][c/FF6347: 卡片 -『迷惑』]
-			由 树妖 出售
+			持有于最后的树妖
 			[i:CalamityEntropy/Barren][c/FF6347: 卡片 -『荒芜』]
-			由 盗贼 出售
+			被一个强盗夺走了
 			[i:CalamityEntropy/Fool][c/FF6347: 卡片 -『愚者』]
-			由 幻妖灵巫 掉落
+			深渊中的奇怪法师有可能带着它
 			[i:CalamityEntropy/Sacrifice][c/FF6347: 卡片 -『献祭』]
-			由 混乱核心(6)和永恒锭(2)合成
+			由混乱之精华和永恒金属融合而成
 			[i:CalamityEntropy/GreedCard][c/FF6347: 卡片 -『贪婪』]
-			由 星辉瘟疫钓鱼 获取
+			在天堂遗骸所创造的星芒散溢之地的渔获
 			[i:CalamityEntropy/Frail][c/FF6347: 卡片 -『孱弱』]
-			由 史莱姆之神 掉落
+			被贫弱的生物聚合而成的个体吸收
 			[i:CalamityEntropy/Nothing][c/FF6347: 卡片 -『虚无』]
-			由 幻海妖龙 掉落
+			深渊中的捕食者吞下了它
 			'''
 	}
 
@@ -1335,7 +1335,7 @@ Items: {
 
 	Antler: {
 		DisplayName: 鹿角
-		Tooltip: ""
+		Tooltip: 使你化身为焗焦
 	}
 
 	ReincarnationBadge: {
@@ -2691,29 +2691,29 @@ Items: {
 		DisplayName: 诅咒之绳
 		Tooltip:
 			'''
-			用于制作[i:CalamityEntropy/SoulDeck][c/ADFF2F:灵魂卡组]
-			按住左Shift以查看卡组需求
+			用于组合[i:CalamityEntropy/SoulDeck][c/ADFF2F:灵魂卡组]
+			[c/ADFF2F:按住左Shift以查看卡组需求]
 			'''
 		HoldShiftForDetails:
 			'''
 			[i:CalamityEntropy/RequiemCard][c/ADFF2F: 卡片 -『魂歌』]
-			由 地牢幽魂 掉落
+			地牢中的纯粹魂魄可能携带
 			[i:CalamityEntropy/WisperCard][c/ADFF2F: 卡片 -『低语』]
-			由 菌生蟹 掉落
+			布满真菌的巨大尸傀可能携带
 			[i:CalamityEntropy/PurificationCard][c/ADFF2F: 卡片 -『净化』]
-			由 神圣宝箱怪 掉落
+			圣化的活宝箱可能装有
 			[i:CalamityEntropy/ObscureCard][c/ADFF2F: 卡片 -『幽冥』]
-			由 任意邪恶地形板条箱 获取
+			被旧神之血感染的生物可能携带
 			[i:CalamityEntropy/GrudgeCard][c/ADFF2F: 卡片 -『怨念』]
-			由 灵气(12)微光转化
+			将一些灵气投入地下的闪光之湖...
 			[i:CalamityEntropy/IndigoCard][c/ADFF2F: 卡片 -『靛蓝』]
-			由 天空箱/天空匣 获取
+			被藏入白云之上的神秘岛屿
 			[i:CalamityEntropy/MourningCard][c/ADFF2F: 卡片 -『悲恸』]
-			由 石巨人 掉落
+			被蜥蜴文明用于驱动一座神像
 			[i:CalamityEntropy/BitternessCard][c/ADFF2F: 卡片 -『幽怨』]
-			由 任意邪恶地下敌怪 掉落
+			被旧神之血感染的活宝箱可能装有
 			[i:CalamityEntropy/DevouringCard][c/ADFF2F: 卡片 -『噬魂』]
-			由 圣骑士 掉落
+			地牢中覆有重甲的亡魂可能携带
 			'''
 	}
 
@@ -3413,7 +3413,7 @@ Items: {
 
 	AzafurePowerSaw: {
 		DisplayName: 阿萨福勒动力锯
-		Tooltip: ""
+		Tooltip: 命中时持续切割目标
 	}
 
 	AzafureElectrocauteryWand: {
@@ -3535,7 +3535,11 @@ Items: {
 
 	StarBreaker: {
 		DisplayName: 星启破军
-		Tooltip: ""
+		Tooltip:
+			'''
+			左键快速突刺，每第四下突刺会变得更大且更强
+			右键上下挥舞，随后向前方冲刺，冲刺期间无敌
+			'''
 	}
 
 	Gungnir: {
@@ -3605,12 +3609,13 @@ Items: {
 			荒草疯狂生长，黑色的花朵在无穷无尽绽放。
 			千万死者的泣声一同鸣响。
 			”
+			使你化身为特莉波卡
 			'''
 	}
 
 	AzafureTacticalRadio: {
 		DisplayName: 阿萨福勒战术电台
-		Tooltip: 部署一台导弹发射井，锁定最近的目标并超其发射导弹
+		Tooltip: 部署一台导弹发射井，锁定最近的目标并朝其发射导弹
 	}
 
 	SentryRemover: {
@@ -3753,7 +3758,7 @@ Items: {
 
 	RedDragonHorn: {
 		DisplayName: 红龙角
-		Tooltip: ""
+		Tooltip: 使你化身为耶芙娜
 	}
 
 	ChaoticBodyArmor: {
@@ -3877,12 +3882,12 @@ Items: {
 
 	ExquisiteHairband: {
 		DisplayName: 精致发箍
-		Tooltip: ""
+		Tooltip: 使你化身为小叶子
 	}
 
 	LingsHairAccessory: {
 		DisplayName: 零的发饰
-		Tooltip: ""
+		Tooltip: 使你化身为霞露零
 	}
 
 	VoidCore: {
@@ -4104,7 +4109,6 @@ Items: {
 			+10% 伤害
 			+5% 伤害减免
 			当前: [A]个正在运行的游戏
-			人物首次进入一个世界时开启任意柚子社游戏时获得
 			'''
 	}
 
@@ -4558,11 +4562,11 @@ Items: {
 
 	FlowerWithFace: {
 		DisplayName: 长脸的花
-		Tooltip: 
-		'''
-		召唤Flowery跟随你
-		Flowery会使用Jarona攻击附近的敌人
-		'''
+		Tooltip:
+			'''
+			召唤Flowery跟随你
+			Flowery会使用Jarona攻击附近的敌人
+			'''
 	}
 
 	AntlionShell: {
@@ -4574,10 +4578,168 @@ Items: {
 			引导黄沙恶虫撕咬目标
 			'''
 	}
+
+	AzafureMicroBeacon: {
+		DisplayName: 阿萨福勒微型信标
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			呼叫突击无人机群扫射目标
+			'''
+	}
+
+	DeliciousAcorn: {
+		DisplayName: 美味橡果
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			召唤松鼠小队朝目标投掷石子
+			'''
+	}
+
+	MoltenAnchor: {
+		DisplayName: 熔融骨锚
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			召唤骨蟒，灼烧所有碰到的目标
+			'''
+	}
+
+	MoonlightCore: {
+		DisplayName: 月荧核
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			召唤幻影眼攻击目标
+			'''
+	}
+
+	MutantBulb: {
+		DisplayName: 变异球茎
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			召唤藤蔓刺穿目标
+			'''
+	}
+
+	MechanicalTransmitter: {
+		DisplayName: 机械发讯器
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			召唤一些探测器用激光攻击目标
+			'''
+	}
+
+	MagicHat: {
+		DisplayName: 魔术帽
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			召唤3只鸽子攻击目标
+			'''
+	}
+
+	KamishiroKou: {
+		DisplayName: 神代工的破损主人公护目镜
+		Tooltip:
+			'''
+			“如果被选召是一个彻头彻尾的谎言，为的只是把我们装进盒子里变为进化食粮……
+			捏着有着后门的神圣计划，在这数码缅北中，我们又该何去何从呢？”
+			'''
+	}
+
+	FrostboundCage: {
+		DisplayName: 寒霜锢笼
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			释放被囚禁的恶灵们，它们会使用追踪冰弹攻击目标
+			'''
+	}
+
+	BlueFlatTopMushroom: {
+		DisplayName: 蓝色平顶菇
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			召唤一只蓝狐
+			蓝狐会偷走蘑菇并释放一团孢子云
+			'''
+	}
+
+	SacredStone: {
+		DisplayName: 圣火流石
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			黏附后经过两秒的再次充能会从目标身上弹出，并释放圣火焚烧目标
+			'''
+	}
+
+	BottledFissure: {
+		DisplayName: 瓶装裂隙
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			黏附一段时间后炸开，释放[ceeffect/cruiser:噬虚弹]反复撕咬目标
+			'''
+	}
+
+	AzafureWarSatelliteAuthorizationKey: {
+		DisplayName: 阿萨福勒战争卫星密钥
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			召唤阿萨福勒战争卫星打击目标
+			'''
+	}
+
+	Fooveria: {
+		DisplayName: 霜痕
+		Tooltip:
+			'''
+			“杀戮与世界意志滋养的武器，前来助您净化这个世界。”
+			在击败克苏鲁之眼后，手持且未攻击时增加6点防御
+			随时期增强: [L] / 15
+			'''
+	}
+
+	AzafureTwinSaw: {
+		DisplayName: 阿萨福勒双锯
+		Tooltip: 上下挥舞，随后将两把锯子贴合并向前喷射火花
+	}
+
+	AstralSample: {
+		DisplayName: 星辉样本
+		Tooltip:
+			'''
+			使你化身为驾驶员降翎者
+			“
+			白金星舰在被改造为自动化机械前其实曾使用过生物的驾驶兼采样员
+			也许是因为首领们迫不及待地妄想掌控星辉病毒，
+			但是甚至可以侵蚀无机体的瘟疫又怎么会放过这些生灵。
+			”
+			'''
+	}
 }
 
-BaitCommonTooltip1: 手持时装填，只能在装填完成时使用
-BaitCommonTooltip2: 丢出一个命中敌人后会黏住的诱饵，并使仆从对其增加{0}点标记伤害
+BaitCommonTooltip1: 手持时充能，只能在充能完成时丢出
+BaitCommonTooltip2: 命中敌人后会黏住，并使仆从对其增加{0}点标记伤害
 SmolderingSetBonus:
 	'''
 	召唤一条灼烬之尾
@@ -5345,8 +5507,51 @@ Projectiles: {
 	Flowery.DisplayName: Flowery
 	AquaShardWaterBullet.DisplayName: 水弹
 	WaterBulletSpawner.DisplayName: 水弹标记
-	// AntlionShellProjectile.DisplayName: Antlion Shell Projectile
-	// DesertNuisanceFriendly.DisplayName: Desert Nuisance Friendly
+	AntlionShellProjectile.DisplayName: 干缩蚁狮
+	DesertNuisanceFriendly.DisplayName: 黄沙恶虫
+	AzafureAssaultDrone.DisplayName: 阿萨福勒突击无人机
+	AzafureMicroBeaconProjectile.DisplayName: 阿萨福勒微型信标
+	BeaconDroneShoot.DisplayName: 突击无人机子弹
+	DeliciousAcornProjectile.DisplayName: 美味橡果
+	SquirrerMinion.DisplayName: 松鼠
+	SquirrelStone.DisplayName: 石子
+	BoneSerpentFriendly.DisplayName: 骨蟒
+	MoltenAnchorProjectile.DisplayName: 熔融骨锚
+	MoonlightBeam.DisplayName: 月荧光束
+	MoonlightCoreProjectile.DisplayName: 月荧核
+	MoonlightLaser.DisplayName: 月荧死光
+	TrueEye.DisplayName: 幻影眼
+	MutantBulbProjectile.DisplayName: 变异球茎
+	MutantVine.DisplayName: 变异藤蔓
+	DetectorMinion.DisplayName: 探测器
+	DetectorMinionLaser.DisplayName: 探测器激光
+	MechanicalTransmitterProjectile.DisplayName: 机械发讯器
+	BaitHeldEffect.DisplayName: 手持诱饵
+	MagicHatProjectile.DisplayName: 魔术帽
+	PigeonMinion.DisplayName: 鸽子
+	FrostboundCageProjectile.DisplayName: 寒霜锢笼
+	FrostboundSpirit.DisplayName: 寒霜恶灵
+	FrostShoot.DisplayName: 寒霜弹
+	BlueFlatTopMushroomProjectile.DisplayName: 蓝平顶菇
+	BlueFox.DisplayName: 蓝狐
+	BlueSporeCloud.DisplayName: 孢子云
+	SacredShoot.DisplayName: 圣火
+	SacredStoneProjectile.DisplayName: 圣火流石
+	SacredStoneSummon.DisplayName: 圣火灵
+	BottledFissureProjectile.DisplayName: 瓶装裂隙
+	VoidEater.DisplayName: 噬虚弹
+	AzafureWarSatelliteAuthorizationKeyProjectile.DisplayName: 阿萨福勒战争卫星密钥
+	SateliteLaser.DisplayName: 卫星激光
+	WarSatellite.DisplayName: 阿萨福勒战争卫星
+	ArbitratorStealthImpact.DisplayName: 仲裁者电弧
+	ArbitratorStealthImpactSpawner.DisplayName: 仲裁者电弧生成器
+	TheDeadCutSlash.DisplayName: 虚妄斩切
+	FooveriaHeld.DisplayName: 霜痕
+	FooveriaIceShard.DisplayName: 霜痕冰片
+	AzafureTwinSawHeld.DisplayName: 阿萨福勒双锯
+	AzafureSawSpark.DisplayName: 锯片火花
+	// VFChargeFXProj.DisplayName: V F Charge F X Proj
+	// VoidFaquirEnergyBallMelee.DisplayName: Void Faquir Energy Ball Melee
 }
 
 LegendTooltip: - 传奇物品 -
@@ -6140,6 +6345,11 @@ Configs: {
 				[c/FF0000:警告：开启复古照明模式或关闭水波会导致某些特效、射弹或NPC无法正常绘制进而影响游戏体验]
 				'''
 		}
+
+		CalamityTextEffectCompatibilityFix: {
+			Label: 灾厄文字特效兼容性修复
+			Tooltip: 更改部分可能导致兼容性问题的灾厄特殊稀有度文字特效的绘制逻辑（如鼠标悬停在物品上导致黑屏），视效完全相同但是兼容性更好
+		}
 	}
 
 	ServerConfig: {
@@ -6537,6 +6747,7 @@ BloodBoilingDescr: 持续使用物品时增加攻速，但会对自身产生持�
 PrefixHeavyDesc: +10% 下落速度
 DamageReduceCD: 减伤冷却
 DeltaruneCH5ShadowCrystal: 获取Deltarune第五章的暗影水晶
+
 InfernumIntros: {
 	NihilityTwin:
 		'''
@@ -6791,7 +7002,7 @@ AzafureEnhances: {
 	AzafureTeslaGun: 增加电弧伤害
 	AzafureElectrocauteryWand: 增加充能速度
 	AzafureLightMachineGun: 增加普通攻击命中后回复的潜行值
-	AzafurePowerSaw: 增加链锯伤害并且不会过热
+	AzafurePowerSaw: 增加链锯伤害和持续时间
 	AzafureDrill: 增加镐力和挖掘范围
 	AzafureEKatana: 增加攻击距离
 	AzafureCogfly: 增加攻击频率
@@ -6815,6 +7026,9 @@ AzafureEnhances: {
 		增加锯片的尺寸和持续时间
 		增加导弹的数量
 		'''
+	AzafureMicroBeacon: 增加无人机的数量
+	AzafureWarSatelliteAuthorizationKey: 增加激光持续时间
+	AzafureTwinSaw: 增加火花射程
 }
 
 Menu: {

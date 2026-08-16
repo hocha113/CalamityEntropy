@@ -940,7 +940,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                 if (random.NextBool(5))
                     al = 0;
                 Vector2 ofs = new Vector2(random.NextFloat(0, 0.5f), random.NextFloat(0, 0.5f)) * noise.Size();
-                PrepareCharredShader(texture, noise, al, ofs, Color.Black * 0.76f);
+                PrepareCharredShader(texture, noise, al, ofs, Color.Black * 0.4f);
             }
             if (Main.zenithWorld)
             {

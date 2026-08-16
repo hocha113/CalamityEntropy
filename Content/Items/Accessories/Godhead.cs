@@ -31,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient(ModContent.ItemType<DivineGeode>(), 3).
-                AddIngredient(ModContent.ItemType<BloodstoneCore>(), 3).
+                AddIngredient(ModContent.ItemType<Bloodstone>(), 5).
                 AddIngredient(ItemID.Ectoplasm, 3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();

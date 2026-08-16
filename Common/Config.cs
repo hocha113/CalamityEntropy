@@ -40,6 +40,9 @@ namespace CalamityEntropy.Common
 
         [Header("Compatibility")]
         [DefaultValue(true)]
+        public bool CalamityTextEffectCompatibilityFix { get; set; }
+        
+        [DefaultValue(true)]
         public bool TileEffect { get; set; }
         [DefaultValue(true)]
         public bool EnablePixelEffect { get; set; }

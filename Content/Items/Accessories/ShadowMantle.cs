@@ -2,6 +2,7 @@
 using CalamityMod;
 using CalamityMod.Items;
 using CalamityMod.Particles;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
@@ -12,6 +13,10 @@ namespace CalamityEntropy.Content.Items.Accessories
 {
     public class ShadowMantle : ModItem
     {
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.HasAccessoryKeybind[Type] = true;
+        }
         public static float BaseDamage = 25;
         public static int CooldownTicks = 30 * 60;
         public override void SetDefaults()
@@ -25,8 +30,8 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            tooltips.Replace("[K]", CalamityKeybinds.SpectralVeilHotKey.DisplayName.Value);
-            tooltips.IntegrateHotkey(CalamityKeybinds.SpectralVeilHotKey);
+            var k = Main.LocalPlayer.Calamity().FindAccessory<ShadowMantle>().GetDynamicModHotkey();
+            tooltips.IntegrateHotkey(k);
         }
 
         public static string ID = "ShadowMantle";

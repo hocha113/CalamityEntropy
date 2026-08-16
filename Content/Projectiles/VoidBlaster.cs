@@ -160,7 +160,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.EntitySpriteDraw(t1, Projectile.Center - Main.screenPosition, null, clr, Projectile.rotation + dir * (-Rot * ((Rot > 1.2f ? 1 : 0) * 0.02f * ((float)(Math.Sin((float)Main.GameUpdateCount * 0.4f))) + 1f)), t1.Size() / 2f, Projectile.scale, ef);
             Main.EntitySpriteDraw(t3, Projectile.Center - Main.screenPosition, null, clr, new Vector2(LX - Projectile.Center.X, 12).ToRotation() - MathHelper.PiOver2, new Vector2(t3.Width / 2f, 0), Projectile.scale * 2, SpriteEffects.None);
 
-            Main.spriteBatch.UseBlendState(CEUtils.BS_ColorInverse);
+            Main.spriteBatch.UseBlendState(CEUtils.ColorInverse);
             if (lw > 0.001f)
             {
                 CEUtils.drawLine(Projectile.Center + new Vector2(0, -2000), Projectile.Center + new Vector2(0, 2000), Color.White, lw * 110);

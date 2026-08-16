@@ -2,18 +2,19 @@
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.NPCs.LuminarisMoth;
 using CalamityEntropy.Content.UI;
+using CalamityEntropy.Core.ChatTags;
 using CalamityMod;
 using CalamityMod.CalPlayer;
+using CalamityMod.ChatTags;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.LoreItems;
-using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Rarities;
 using CalamityMod.Schematics;
 using CalamityMod.UI;
 using CalamityMod.UI.ResourceSets;
@@ -189,6 +190,8 @@ namespace CalamityEntropy.Content.ILEditing
             var organic_m = typeof(CalamityUtils).GetMethod("Organic", BindingFlags.Static | BindingFlags.Public);
             EModHooks.Add(organic_m, organic_hook);
 
+            TextEffectFix.LoadHooks();
+
             StoreForbiddenArchivePositionHook.LoadHook();
 
             if (MaliciousCode.CALAMITY__OVERHAUL)
@@ -198,6 +201,7 @@ namespace CalamityEntropy.Content.ILEditing
 
             CalamityEntropy.Instance.Logger.Info("CalamityEntropy's Hook Loaded");
         }
+
         public static bool organic_hook(Func<NPC, bool> orig, NPC target)
         {
             if (target.type == ModContent.NPCType<SuperDummyNPC>())

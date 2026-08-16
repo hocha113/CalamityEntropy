@@ -137,8 +137,8 @@ namespace CalamityEntropy.Content.Items.Accessories
             effect.Parameters["FadeOutDistance"].SetValue(fadeOutDistance);
             effect.Parameters["FadeOutWidth"].SetValue(fadeOutWidth);
             effect.Parameters["enhanceLightAlpha"].SetValue(0.8f);
-            effect.CurrentTechnique.Passes[0].Apply();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+            effect.CurrentTechnique.Passes[0].Apply();
             Main.spriteBatch.Draw(CEUtils.getExtraTex("VoronoiShapes"), Projectile.Center - Main.screenPosition, null, new Color(220, 220, 255), Main.GlobalTimeWrappedHourly * 2, CEUtils.getExtraTex("VoronoiShapes").Size() / 2f, 0.2f * Projectile.scale, SpriteEffects.None, 0);
             CEUtils.DrawGlow(Projectile.Center, Color.White * 0.7f, 0.9f);
             Main.EntitySpriteDraw(Projectile.getDrawData(lightColor));

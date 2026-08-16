@@ -1,4 +1,6 @@
-﻿using CalamityMod;
+﻿using CalamityEntropy.Content.Items.Weapons.Thalassian;
+using CalamityEntropy.Content.Particles;
+using CalamityMod;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -236,8 +238,6 @@ namespace CalamityEntropy.Content.Projectiles
                     }
                     if (hitc == 1)
                     {
-                        Projectile.Resize(600, 600);
-                        Projectile.timeLeft = 2;
                         SoundEngine.PlaySound(in SoundID.NPCDeath56, Projectile.Center);
                         for (int i = 0; i < 4; i++)
                         {
@@ -253,13 +253,11 @@ namespace CalamityEntropy.Content.Projectiles
                         }
                         for (int j = 0; j < 46; j++)
                         {
-                            Projectile.localNPCImmunity[target.whoAmI] = 0;
                             AltSparkParticle spark = new AltSparkParticle(target.Center, CEUtils.randomPointInCircle(12), false, 60, Main.rand.NextFloat(1.4f, 2.4f), Color.Black);
                             GeneralParticleHandler.SpawnParticle(spark);
                         }
                         for (int j = 0; j < 46; j++)
                         {
-                            Projectile.localNPCImmunity[target.whoAmI] = 0;
                             AltSparkParticle spark = new AltSparkParticle(target.Center, CEUtils.randomPointInCircle(12), false, 60, Main.rand.NextFloat(1.4f, 2.4f), Color.OrangeRed);
                             GeneralParticleHandler.SpawnParticle(spark);
                         }
@@ -268,6 +266,11 @@ namespace CalamityEntropy.Content.Projectiles
                             EclipseMetaball.SpawnParticle(target.Center, CEUtils.randomPointInCircle(21), Main.rand.NextFloat(30f, 64f));
                         }
                         exp = false;
+                        if(Main.myPlayer == Projectile.owner)
+                        {
+                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ArbitratorStealthImpactSpawner>(), (int)(Projectile.damage * 0.2f), 0, Projectile.owner);
+                        }
+                        Projectile.Kill();
                     }
                     else
                     {
@@ -328,8 +331,100 @@ namespace CalamityEntropy.Content.Projectiles
 
             return false;
         }
-
-
     }
+    public class ArbitratorStealthImpactSpawner : ModProjectile
+    {
+        public override string Texture => CEUtils.WhiteTexPath;
+        public override void SetDefaults()
+        {
+            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.timeLeft = 28;
+            Projectile.width = Projectile.height = 32;
+        }
+        public override bool? CanDamage()
+        {
+            return false;
+        }
+        public override void AI()
+        {
+            if(Main.myPlayer == Projectile.owner && Projectile.timeLeft % 3 == 0)
+            {
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ArbitratorStealthImpact>(), Projectile.damage, 0, Projectile.owner);
+            }
+        }
+    }
+    public class ArbitratorStealthImpact : ModProjectile
+    {
+        public override string Texture => CEUtils.WhiteTexPath;
+        public override void SetDefaults()
+        {
+            Projectile.FriendlySetDefaults(CEUtils.RogueDC, false, -1);
+            Projectile.localNPCHitCooldown = -1;
+            Projectile.timeLeft = 12;
+            Projectile.width = Projectile.height = 32;
+        }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            return new Circle(Projectile.Center, 500 * Projectile.scale).Intersects(targetHitbox);
+        }
+        public List<List<Vector2>> arcs = new List<List<Vector2>>();
+        public override void AI()
+        {
+            if(Projectile.Entropy().FirstFrames)
+            {
+                if (!Main.dedServ)
+                {
+                    SoundEngine.PlaySound(in SoundID.NPCDeath56, Projectile.Center);
+                    CEUtils.PlaySound("ApoctosisShoot", Main.rand.NextFloat(3f, 3.4f), Projectile.Center, 60, 0.95f);
+                    for (int i = 0; i < 12; i++)
+                    {
+                        List<Vector2> points = new List<Vector2>();
+                        float rot = CEUtils.randomRot();
 
+                        GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center, rot.ToRotationVector2() * Main.rand.NextFloat(24, 28), false, 8, 0.06f * Main.rand.NextFloat(0.9f, 1f), Main.rand.NextBool() ? Color.OrangeRed : Color.DarkOrange, new Vector2(2.4f, 0.6f), true));
+
+                        Vector2 pos = Projectile.Center;
+                        points.Add(pos);
+                        for (float j = 0; j <= 1; j += 0.05f)
+                        {
+                            rot += Main.rand.NextFloat(-0.2f, 0.2f);
+                            pos += rot.ToRotationVector2() * 25;
+                            points.Add(pos);
+                        }
+                        arcs.Add(points);
+                    }
+                }
+            }
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Color color1 = Color.White;
+            Color color2 = Color.Orange;
+            float w = Projectile.timeLeft / 6f;
+            if (w > 1)
+                w = 1;
+            for(int i = 0; i < arcs.Count; i++)
+            {
+                List<Vector2> arc = arcs[i];
+                List<CEUtils.VertexPointSets> ve = new List<CEUtils.VertexPointSets>();
+                for(int j = 0; j < arc.Count; j++)
+                {
+                    float maxl = Utils.Remap(Projectile.timeLeft, 6f, 12f, 1f, 0.11f);
+                    float num = j / (arc.Count - 1f);
+                    float p =  (maxl - (j / (float)arc.Count)) / maxl;
+                    float pw = 1 - p;
+                    pw = 1 - pw * pw;
+                    if (num > maxl)
+                        break;
+                    ve.Add(new CEUtils.VertexPointSets(arc[j], Color.White, 36 * w * pw, 0));
+                }
+                ThalassianWaterBolt.DrawTrail(ve, color1, color2, CEUtils.getExtraTex("Streak1"), CEUtils.getExtraTex("Streak2"), false, 0.2f);
+            }
+            return false;
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.ArmorPenetration += 32;
+        }
+    }
 }

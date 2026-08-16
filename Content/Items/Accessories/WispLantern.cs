@@ -7,7 +7,6 @@ namespace CalamityEntropy.Content.Items.Accessories
 {
     public class WispLantern : ModItem
     {
-
         public override void SetDefaults()
         {
             Item.width = 40;
@@ -15,7 +14,6 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
-
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

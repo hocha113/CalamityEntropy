@@ -4,6 +4,7 @@ using CalamityMod;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -94,7 +95,7 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
                         float d = Utils.Remap(player.Distance(Projectile.Center), 0, 600, 6, 0);
 
                         Vector2 vel = (player.Center - Projectile.Center).normalize() * d;
-                        if (player.velocity.Y == 0)
+                        if (Math.Abs(player.velocity.Y) < 1.2f)
                             vel.Y = 0;
                         player.position += vel;
                         if (CEUtils.CheckSolidTile(player.getRect()))

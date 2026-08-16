@@ -1,3 +1,4 @@
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
@@ -12,6 +13,14 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 {
     public abstract class BaseSwirlblade : ModProjectile
     {
+        public static void ApplyShader(Color color)
+        {
+            Effect shader = CommonEffects.colorLerp;
+            Main.spriteBatch.End();
+            shader.Parameters["color"].SetValue(color.ToVector4());
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, shader, Main.GameViewMatrix.TransformationMatrix);
+            shader.CurrentTechnique.Passes[0].Apply();
+        }
         public override void SetDefaults()
         {
             Projectile.FriendlySetDefaults(CEUtils.RogueDC, true, -1);

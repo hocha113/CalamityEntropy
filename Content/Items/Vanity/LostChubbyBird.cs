@@ -49,14 +49,14 @@ namespace CalamityEntropy.Content.Items.Vanity
 
         public override void UpdateVanity(Player player)
         {
-            player.GetModPlayer<LostBirdPlayer>().vanityEquipped = true;
+            player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             if (!hideVisual)
             {
-                player.GetModPlayer<LostBirdPlayer>().vanityEquipped = true;
+                player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             }
         }
 
@@ -67,27 +67,6 @@ namespace CalamityEntropy.Content.Items.Vanity
                 .AddRecipeGroup(CERecipeGroups.gems)
                 .AddTile(TileID.WorkBenches)
                 .Register();
-        }
-    }
-
-    public class LostBirdPlayer : ModPlayer
-    {
-        public bool vanityEquipped = false;
-
-        public override void ResetEffects()
-        {
-            vanityEquipped = false;
-        }
-
-        public override void FrameEffects()
-        {
-            if (vanityEquipped)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "LostChubbyBird", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "LostChubbyBird", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "LostChubbyBird", EquipType.Head);
-
-            }
         }
     }
 }

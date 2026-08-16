@@ -129,9 +129,19 @@ namespace CalamityEntropy.Content.Projectiles
                 }
             }
             Projectile.ai[0] += meleeSpeed;
+            if (odr.Count > 0)
+            {
+                odr.Add(CEUtils.RotateTowardsAngle(odr[odr.Count - 1], Projectile.rotation, 0.5f, false));
+                ods.Add(scaleD);
+            }
             odr.Add(Projectile.rotation);
             ods.Add(scaleD);
-            if (odr.Count > 38)
+            if (odr.Count > 84)
+            {
+                odr.RemoveAt(0);
+                ods.RemoveAt(0);
+            }
+            if (odr.Count > 84)
             {
                 odr.RemoveAt(0);
                 ods.RemoveAt(0);
@@ -203,8 +213,8 @@ namespace CalamityEntropy.Content.Projectiles
 
             for (int i = 0; i < odr.Count; i++)
             {
-                Color b = new Color(255, 255, 255);
-                ve.Add(new ColoredVertex(Projectile.Center - Main.screenPosition + (new Vector2(640 * ods[i] * Projectile.scale, 0).RotatedBy(odr[i])),
+                Color b = new Color(255, 255, 255) * (i / (float)odr.Count);
+                ve.Add(new ColoredVertex(Projectile.Center - Main.screenPosition + (new Vector2(680 * ods[i] * Projectile.scale, 0).RotatedBy(odr[i])),
                       new Vector3(i / (float)odr.Count, 1, 1),
                       b));
                 ve.Add(new ColoredVertex(Projectile.Center - Main.screenPosition + (new Vector2(0 * ods[i] * Projectile.scale, 0).RotatedBy(odr[i])),

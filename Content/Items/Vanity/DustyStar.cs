@@ -60,17 +60,16 @@ namespace CalamityEntropy.Content.Items.Vanity
 
         public override void UpdateVanity(Player player)
         {
-            player.GetModPlayer<DustyStarPlayer>().vanityEquipped = true;
+            player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             if (!hideVisual)
             {
-                player.GetModPlayer<DustyStarPlayer>().vanityEquipped = true;
+                player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             }
         }
-
         public override void AddRecipes()
         {
             CreateRecipe().AddIngredient(ModContent.ItemType<AncientBoneDust>(), 1)
@@ -78,26 +77,5 @@ namespace CalamityEntropy.Content.Items.Vanity
                 .AddTile(TileID.WorkBenches).Register();
         }
 
-    }
-
-    public class DustyStarPlayer : ModPlayer
-    {
-        public bool vanityEquipped = false;
-
-        public override void ResetEffects()
-        {
-            vanityEquipped = false;
-        }
-
-        public override void FrameEffects()
-        {
-            if (vanityEquipped)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "DustyStar", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "DustyStar", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "DustyStar", EquipType.Head);
-
-            }
-        }
     }
 }

@@ -48,35 +48,14 @@ namespace CalamityEntropy.Content.Items.Vanity
 
         public override void UpdateVanity(Player player)
         {
-            player.GetModPlayer<AntlerPlayer>().vanityEquipped = true;
+            player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             if (!hideVisual)
             {
-                player.GetModPlayer<AntlerPlayer>().vanityEquipped = true;
-            }
-        }
-    }
-
-    public class AntlerPlayer : ModPlayer
-    {
-        public bool vanityEquipped = false;
-
-        public override void ResetEffects()
-        {
-            vanityEquipped = false;
-        }
-
-        public override void FrameEffects()
-        {
-            if (vanityEquipped)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "Antler", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "Antler", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "Antler", EquipType.Head);
-
+                player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             }
         }
     }

@@ -143,16 +143,17 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 float time = Main.GlobalTimeWrappedHourly;
                 Vector2 o = smear.Size() * 0.5f;
                 Main.spriteBatch.UseBlendState(BlendState.NonPremultiplied, SamplerState.PointClamp);
-
+                
                 Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(0, 0, 0) * Projectile.Opacity * BladeScale, time * -42f, o, scale * 1f, SpriteEffects.None, 0);
                 Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(0, 0, 0) * Projectile.Opacity * BladeScale, time * -36f, o, scale * 0.7f, SpriteEffects.None, 0);
                 Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(0, 0, 0) * Projectile.Opacity * BladeScale, time * 36f, o, scale * 1f, SpriteEffects.None, 0);
                 Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(0, 0, 0) * Projectile.Opacity * BladeScale, time * 42f, o, scale * 0.7f, SpriteEffects.None, 0);
 
-                Main.spriteBatch.UseBlendState(BlendState.Additive, SamplerState.PointClamp);
-                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(190, 246, 190) * Projectile.Opacity * BladeScale, time * 42f, o, scale * 0.9f, SpriteEffects.None, 0);
-                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(190, 246, 190) * Projectile.Opacity * BladeScale, time * -34f, o, scale * 0.9f, SpriteEffects.None, 0);
-                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(190, 246, 190) * Projectile.Opacity * BladeScale, time * 36f, o, scale * 0.64f, SpriteEffects.None, 0);
+                BaseSwirlblade.ApplyShader(new Color(180, 255, 180));
+                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(22, 255, 22) * Projectile.Opacity * BladeScale, time * 42f, o, scale * 0.97f, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(22, 255, 22) * Projectile.Opacity * BladeScale, time * -40f, o, scale * 0.96f, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(22, 255, 22) * Projectile.Opacity * BladeScale, time * 38f, o, scale * 0.95f, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(22, 255, 22) * Projectile.Opacity * BladeScale, time * -36f, o, scale * 0.94f, SpriteEffects.None, 0);
             }
 
             Main.spriteBatch.ExitShaderRegion();
@@ -165,7 +166,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             if(BladeScale >= 0.2f)
             {
                 float particleRot = CEUtils.randomRot();
-                GeneralParticleHandler.SpawnParticle(new AltLineParticle(Projectile.Center + particleRot.ToRotationVector2() * Radius, particleRot.ToRotationVector2().RotatedBy(-1.86f) * Main.rand.NextFloat(12, 18), false, Main.rand.Next(12, 16), Main.rand.NextFloat(0.6f, 1f) * 2.2f, (Main.rand.NextBool() ? Color.Black : Color.LightGreen) * BladeScale));
+                GeneralParticleHandler.SpawnParticle(new AltLineParticle(Projectile.Center + particleRot.ToRotationVector2() * Radius * BladeScale * Projectile.scale, particleRot.ToRotationVector2().RotatedBy(-1.86f) * Main.rand.NextFloat(12, 18), false, Main.rand.Next(12, 16), Main.rand.NextFloat(0.6f, 1f) * 2.2f * BladeScale * Projectile.scale, (Main.rand.NextBool() ? Color.Black : Color.LightGreen) * BladeScale));
             }
             NPC stickNpc = null;
             if(Stick >= 0)

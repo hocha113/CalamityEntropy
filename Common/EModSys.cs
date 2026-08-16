@@ -660,7 +660,7 @@ namespace CalamityEntropy.Common
                 {
                     var drawLHB = new LegacyGameInterfaceLayer("Lost Heirloom HB", () =>
                     {
-                        if (Main.LocalPlayer.dead || !Main.LocalPlayer.GetModPlayer<LostHeirloomPlayer>().vanityEquipped)
+                        if (Main.LocalPlayer.dead || !(Main.LocalPlayer.GetModPlayer<VanityModPlayer>().vanityEquipped == nameof(LostHeirloom)))
                         { return true; }
                         Texture2D t1 = CEUtils.getExtraTex("llBar1");
                         Texture2D t2 = CEUtils.getExtraTex("llBar2");
@@ -678,7 +678,7 @@ namespace CalamityEntropy.Common
                         typeof(FancyClassicPlayerResourcesDisplaySet).GetMethod("DrawManaBar", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic, new Type[] { typeof(SpriteBatch) }).Invoke(((FancyClassicPlayerResourcesDisplaySet)((Dictionary<string, IPlayerResourcesDisplaySet>)Main.ResourceSetsManager.GetType().GetField("_sets", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(Main.ResourceSetsManager))["New"]), new object[] { Main.spriteBatch });
                         return true;
                     }, InterfaceScaleType.UI);
-                    if (Main.LocalPlayer.GetModPlayer<LostHeirloomPlayer>().vanityEquipped)
+                    if (Main.LocalPlayer.GetModPlayer<VanityModPlayer>().vanityEquipped == nameof(LostHeirloom))
                     {
                         l.Active = false;
                     }
@@ -699,22 +699,6 @@ namespace CalamityEntropy.Common
                 layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("CalamityEntropy: Other Charge Bars", () =>
                 {
                     int baroffsety = 44;
-                    if (Main.LocalPlayer.Entropy().BaitCharging)
-                    {
-                        float baitCharge = Main.LocalPlayer.Entropy().BaitCharge;
-                        drawChargeBar(Main.ScreenSize.ToVector2() / 2 + new Vector2(0, baroffsety), float.Min(1, baitCharge), Color.Yellow);
-                        if (baitCharge > 1)
-                        {
-                            float bc = baitCharge - 1;
-                            drawChargeBarNoback(Main.ScreenSize.ToVector2() / 2 + new Vector2(0, baroffsety), float.Min(1, bc), Color.OrangeRed);
-                        }
-                        if (baitCharge > 2)
-                        {
-                            float bc = baitCharge - 2;
-                            drawChargeBarNoback(Main.ScreenSize.ToVector2() / 2 + new Vector2(0, baroffsety), float.Min(1, bc), Color.Aqua);
-                        }
-                        baroffsety += 20;
-                    }
                     if (Main.LocalPlayer.GetModPlayer<CapricornBookmarkRecordPlayer>().SandStormCharge > 0)
                     {
                         drawChargeBar(Main.ScreenSize.ToVector2() / 2 + new Vector2(0, baroffsety), Main.LocalPlayer.GetModPlayer<CapricornBookmarkRecordPlayer>().SandStormCharge, new Color(246, 201, 122));

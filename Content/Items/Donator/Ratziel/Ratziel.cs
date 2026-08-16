@@ -215,7 +215,7 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
                 .Where(npc => npc.active
                            && !npc.friendly
                            && !npc.dontTakeDamage
-                           && npc.life > 0
+                           && npc.lifeMax > 5
                            && npc.Distance(center) < Ratziel.TargetDist(Ratziel.Level()))
                 .Select(npc => new
                 {

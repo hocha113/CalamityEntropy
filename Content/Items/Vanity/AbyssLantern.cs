@@ -46,14 +46,14 @@ namespace CalamityEntropy.Content.Items.Vanity
 
         public override void UpdateVanity(Player player)
         {
-            player.GetModPlayer<AbyssLanternPlayer>().vanityEquipped = true;
+            player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             if (!hideVisual)
             {
-                player.GetModPlayer<AbyssLanternPlayer>().vanityEquipped = true;
+                player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             }
         }
 
@@ -65,26 +65,5 @@ namespace CalamityEntropy.Content.Items.Vanity
                 .Register();
         }
 
-    }
-
-    public class AbyssLanternPlayer : ModPlayer
-    {
-        public bool vanityEquipped = false;
-
-        public override void ResetEffects()
-        {
-            vanityEquipped = false;
-        }
-
-        public override void FrameEffects()
-        {
-            if (vanityEquipped)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "AbyssLantern", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "AbyssLantern", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "AbyssLantern", EquipType.Head);
-
-            }
-        }
     }
 }

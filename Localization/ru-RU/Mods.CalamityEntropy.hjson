@@ -4244,7 +4244,11 @@ Items: {
 
 	FlowerWithFace: {
 		// DisplayName: Flower With Face
-		// Tooltip: ""
+		/* Tooltip:
+			'''
+			Summon Flowery to follow you
+			Flowery will use Jarona at enemies nearby
+			''' */
 	}
 
 	AntlionShell: {
@@ -4255,6 +4259,156 @@ Items: {
 			{$BaitCommonTooltip2}
 			Guide the Desert Nuisance to bite the target
 			''' */
+	}
+
+	AzafureMicroBeacon: {
+		// DisplayName: Azafure Micro Beacon
+		/* Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			Call in a strike drone swarm to strafe the target
+			''' */
+	}
+
+	DeliciousAcorn: {
+		// DisplayName: Delicious Acorn
+		/* Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			Summon the Squirrel Squad to throw stones at the target
+			''' */
+	}
+
+	MoltenAnchor: {
+		// DisplayName: Molten Anchor
+		/* Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			Summon a bone serpant to burn all encountered targets
+			''' */
+	}
+
+	MoonlightCore: {
+		// DisplayName: Moonlight Core
+		/* Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			Summon phantom eyes to attack target
+			''' */
+	}
+
+	MutantBulb: {
+		// DisplayName: Mutant Bulb
+		/* Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			Summon vines to tear target apart
+			''' */
+	}
+
+	MechanicalTransmitter: {
+		// DisplayName: Mechanical Transmitter
+		/* Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			Summon some detector that fire lasers to the target
+			''' */
+	}
+
+	MagicHat: {
+		// DisplayName: Magic Hat
+		/* Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			Summon three pigeons to attack the target
+			''' */
+	}
+
+	KamishiroKou: {
+		// DisplayName: Kamishiro Kou's Broken Goggles
+		/* Tooltip:
+			'''
+			"If being chosen is a complete lie, meant only to stuff us into boxes and turn us into evolution items...
+			Clutching the Digivice with its backdoor, in this digital Myanmar of a trap, where are we to go?"
+			''' */
+	}
+
+	FrostboundCage: {
+		// DisplayName: Frostbound Cage
+		/* Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			Release the imprisoned spirits, and they will attack their targets using tracking ice bullets
+			''' */
+	}
+
+	BlueFlatTopMushroom: {
+		// DisplayName: Blue Flat-Top Mushroom
+		/* Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			Summon a blue fox
+			The fox will steal the mushroom and release a spore cloud
+			''' */
+	}
+
+	SacredStone: {
+		// DisplayName: Sacred Stone
+		/* Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			After sticking, it will recharge for two seconds and then bounce off the target,
+			then releasing holy flames to burn the target
+			''' */
+	}
+
+	BottledFissure: {
+		// DisplayName: Bottled Fissure
+		/* Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			Summon [ceeffect/cruiser:Void-devour bullet] chasing the target
+			''' */
+	}
+
+	AzafureWarSatelliteAuthorizationKey: {
+		// DisplayName: Azafure War Satellite Authorization Key
+		/* Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			Call Azafure War satellite to strike target
+			''' */
+	}
+
+	Fooveria: {
+		// DisplayName: Fooveria
+		/* Tooltip:
+			'''
+			"Weapons nurtured by the will of the world and the slaughter, come to assist you in purifying this world."
+			Increase power with progress: [L] / 15
+			''' */
+	}
+
+	AzafureTwinSaw: {
+		// DisplayName: Azafure Twin Saw
+		// Tooltip: Waving up and down, then bringing the two saws together and spraying sparks forward
+	}
+
+	AstralSample: {
+		// DisplayName: Astral Sample
+		// Tooltip: ""
 	}
 }
 
@@ -5040,6 +5194,49 @@ Projectiles: {
 	// WaterBulletSpawner.DisplayName: Water Bullet Spawner
 	// AntlionShellProjectile.DisplayName: Antlion Shell Projectile
 	// DesertNuisanceFriendly.DisplayName: Desert Nuisance Friendly
+	// AzafureAssaultDrone.DisplayName: Azafure Assault Drone
+	// AzafureMicroBeaconProjectile.DisplayName: Azafure Micro Beacon Projectile
+	// BeaconDroneShoot.DisplayName: Beacon Drone Shoot
+	// DeliciousAcornProjectile.DisplayName: Delicious Acorn Projectile
+	// SquirrerMinion.DisplayName: Squirrer Minion
+	// SquirrelStone.DisplayName: Squirrel Stone
+	// BoneSerpentFriendly.DisplayName: Bone Serpent Friendly
+	// MoltenAnchorProjectile.DisplayName: Molten Anchor Projectile
+	// MoonlightBeam.DisplayName: Moonlight Beam
+	// MoonlightCoreProjectile.DisplayName: Moonlight Core Projectile
+	// MoonlightLaser.DisplayName: Moonlight Laser
+	// TrueEye.DisplayName: Phantom Eye
+	// MutantBulbProjectile.DisplayName: Mutant Bulb Projectile
+	// MutantVine.DisplayName: Mutant Vine
+	// DetectorMinion.DisplayName: Detector Minion
+	// DetectorMinionLaser.DisplayName: Detector Minion Laser
+	// MechanicalTransmitterProjectile.DisplayName: Mechanical Transmitter Projectile
+	// BaitHeldEffect.DisplayName: Bait Held Effect
+	// MagicHatProjectile.DisplayName: Magic Hat Projectile
+	// PigeonMinion.DisplayName: Pigeon Minion
+	// FrostboundCageProjectile.DisplayName: Frostbound Cage Projectile
+	// FrostboundSpirit.DisplayName: Frostbound Spirit
+	// FrostShoot.DisplayName: Frost Shoot
+	// BlueFlatTopMushroomProjectile.DisplayName: Blue Flat Top Mushroom Projectile
+	// BlueFox.DisplayName: Blue Fox
+	// BlueSporeCloud.DisplayName: Blue Spore Cloud
+	// SacredShoot.DisplayName: Sacred Shoot
+	// SacredStoneProjectile.DisplayName: Sacred Stone Projectile
+	// SacredStoneSummon.DisplayName: Sacred Stone Summon
+	// BottledFissureProjectile.DisplayName: Bottled Fissure Projectile
+	// VoidEater.DisplayName: Void Eater
+	// AzafureWarSatelliteAuthorizationKeyProjectile.DisplayName: Azafure War Satellite Authorization Key Projectile
+	// SateliteLaser.DisplayName: Satelite Laser
+	// WarSatellite.DisplayName: War Satellite
+	// ArbitratorStealthImpact.DisplayName: Arbitrator Stealth Impact
+	// ArbitratorStealthImpactSpawner.DisplayName: Arbitrator Stealth Impact Spawner
+	// TheDeadCutSlash.DisplayName: The Dead Cut Slash
+	// FooveriaHeld.DisplayName: Fooveria Held
+	// FooveriaIceShard.DisplayName: Fooveria Ice Shard
+	// AzafureTwinSawHeld.DisplayName: Azafure Twin Saw Held
+	// AzafureSawSpark.DisplayName: Azafure Saw Spark
+	// VFChargeFXProj.DisplayName: V F Charge F X Proj
+	// VoidFaquirEnergyBallMelee.DisplayName: Void Faquir Energy Ball Melee
 }
 
 LegendTooltip: - Легенда -
@@ -5842,6 +6039,11 @@ Configs: {
 				[c/FF0000: Предупреждение: Включение режима ретро - освещения или выключение волн может привести к тому, что некоторые спецэффекты, снаряды или NPC не будут должным образом нарисованы, что повлияет на игровой опыт]
 				'''
 		}
+
+		CalamityTextEffectCompatibilityFix: {
+			// Label: Calamity Text Effect Compatibility Fix
+			// Tooltip: ""
+		}
 	}
 
 	ServerConfig: {
@@ -6224,6 +6426,7 @@ BloodBoiling: Кипящая кровь
 BloodBoilingDescr: Постоянное использование предметов увеличивает скорость атаки, но наносит постепенный урон.
 PrefixHeavyDesc: +10% к скорости падения
 DamageReduceCD: Охлаждение от повреждений
+// DeltaruneCH5ShadowCrystal: Get shadow crystal in Deltarune chapter5
 
 InfernumIntros: {
 	NihilityTwin:
@@ -6503,6 +6706,9 @@ AzafureEnhances: {
 		Increase the range and time of the saw
 		Increase missile amount
 		''' */
+	// AzafureMicroBeacon: Increase the amount of drones
+	// AzafureWarSatelliteAuthorizationKey: Increase the laser duration
+	// AzafureTwinSaw: Increase spark range
 }
 
 Menu: {

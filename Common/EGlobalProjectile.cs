@@ -4,6 +4,7 @@ using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Donator;
 using CalamityEntropy.Content.Items.Weapons;
+using CalamityEntropy.Content.Items.Weapons.Bait;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.Cruiser;
@@ -500,6 +501,16 @@ namespace CalamityEntropy.Common
         public bool SetMaxUpdates = true;
         public override bool PreAI(Projectile projectile)
         {
+            if (FirstFrames && projectile.ModProjectile != null && projectile.ModProjectile is BaitProj)
+            {
+                foreach(Projectile p in Main.ActiveProjectiles)
+                {
+                    if (p.ModProjectile != null && p.ModProjectile is BaitHeldEffect bh)
+                    {
+                        bh.throwAnm = 1;
+                    }
+                }
+            }
             if (SetMaxUpdates)
             {
                 if (ashesArrow)
@@ -930,6 +941,10 @@ namespace CalamityEntropy.Common
         }
         public override void PostAI(Projectile projectile)
         {
+            if (ashesArrow)
+            {
+                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(projectile.Center - projectile.velocity, projectile.velocity * 0.05f, false, 11, 0.034f, Color.Orange, new Vector2(0.3f, 1f), false, false));
+            }
             if (projectile.friendly && projectile.DamageType == DamageClass.Ranged && projectile.GetOwner().HeldItem.useAmmo == AmmoID.Bullet)
             {
                 if (projectile.GetOwner().Entropy().hasAcc(SmartScope.ID) && projectile.numHits < 1)
@@ -1004,11 +1019,18 @@ namespace CalamityEntropy.Common
 
             if (ashesArrow)
             {
-                Texture2D arTex = CEUtils.getExtraTex("SpearArrowGlow2");
                 Main.spriteBatch.UseAdditive();
-                Main.spriteBatch.Draw(arTex, projectile.Center - Main.screenPosition + projectile.velocity.normalize() * 4, null, Color.OrangeRed * projectile.Opacity, projectile.velocity.ToRotation(), arTex.Size() * 0.5f, new Vector2(0.16f, 0.12f), SpriteEffects.None, 0);
-                Main.spriteBatch.Draw(arTex, projectile.Center - Main.screenPosition + projectile.velocity.normalize() * 4, null, Color.White * projectile.Opacity, projectile.velocity.ToRotation(), arTex.Size() * 0.5f, new Vector2(0.08f, 0.06f), SpriteEffects.None, 0);
-                Main.spriteBatch.ExitShaderRegion();
+                float sine = MathHelper.Lerp(Math.Abs((float)Math.Sin(Main.GlobalTimeWrappedHourly * 50f / MathHelper.Pi)), 0.8f, 0.7f);
+                Texture2D bTexture = CEUtils.getExtraTex("ArchSmear");
+                for (int i = 0; i < 10; i++)
+                {
+                    float bScale2 = 0.75f;
+                    float fxFade = 1f;
+                    Vector2 scale = new Vector2((1 - i * 0.13f) * sine * 0.85f, ((1 + i * 0.012f) + fxFade * 0.2f) * 1.6f) * (bScale2 + i * 0.08f) * fxFade * 0.3f;
+                    Vector2 aimVel = projectile.velocity;
+                    Main.EntitySpriteDraw(bTexture, projectile.Center - projectile.velocity.normalize() * 24 - Main.screenPosition + aimVel.SafeNormalize(Vector2.UnitX) * -4, null, Color.Lerp(Color.Firebrick, Color.Orange, i * 0.15f) with { A = 255 } * fxFade * 0.9f, aimVel.ToRotation() + MathHelper.PiOver2, bTexture.Size() * 0.5f, scale, i % 2 == 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+                }
+                Main.spriteBatch.ExitShaderRegion(); ;
             }
             if (rpBow)
             {
@@ -1288,7 +1310,7 @@ namespace CalamityEntropy.Common
             OnKillActions?.Invoke(projectile);
             if (ashesArrow)
             {
-                float scale = 36 / 40f;
+                float scale = 1.6f;
                 EParticle.spawnNew(new ShineParticle(), projectile.Center, Vector2.Zero, Color.Red * 0.8f, scale * 0.8f, 1, true, BlendState.Additive, 0, 10);
                 EParticle.spawnNew(new ShineParticle(), projectile.Center, Vector2.Zero, Color.White * 0.8f, scale * 0.5f, 1, true, BlendState.Additive, 0, 10);
                 GeneralParticleHandler.SpawnParticle(new CustomPulse(projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24));

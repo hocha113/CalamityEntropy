@@ -28,6 +28,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.ObjectData;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace CalamityEntropy
 {
@@ -87,6 +88,18 @@ namespace CalamityEntropy
     }
     public static class CEUtils
     {
+        public static Vector2 CalculateSourceVel(Vector2 shootPos, Vector2 target, int frame, float gravity)
+        {
+            Vector2 displacement = target - shootPos;
+            Vector2 velocity = new Vector2();
+            velocity.X = displacement.X / frame;
+            velocity.Y = (displacement.Y - 0.5f * gravity * frame * frame) / frame;
+            return velocity;
+        }
+        public static Color Mult(this Color c1, Color c2)
+        {
+            return new Color((byte)(((c1.R / 255f) * (c2.R / 255f)) * 255), (byte)(((c1.G / 255f) * (c2.G / 255f)) * 255), (byte)(((c1.B / 255f) * (c2.B / 255f)) * 255), (byte)(((c1.A / 255f) * (c2.A / 255f)) * 255));
+        }
         public static Color GetLight(Vector2 pos) => Lighting.GetColor((pos / 16).ToPoint());
         public static string ItemTexPath<T>() where T : ModItem
         {
@@ -1175,7 +1188,7 @@ namespace CalamityEntropy
             {
                 tx = texOverride;
             }
-            return new Terraria.DataStructures.DrawData(tx, (overridePos == default ? projectile.Center : overridePos) - Main.screenPosition, Main.projFrames[projectile.type] <= 1 ? null : new Rectangle(0, (tx.Height / Main.projFrames[projectile.type]) * projectile.frame, tx.Width, (tx.Height / Main.projFrames[projectile.type]) - 2), color * projectile.Opacity, projectile.rotation, new Vector2(tx.Width, Main.projFrames[projectile.type] > 1 ? (tx.Height / Main.projFrames[projectile.type]) - 2 : tx.Height) / 2, projectile.scale, projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);
+            return new Terraria.DataStructures.DrawData(tx, (overridePos == default ? projectile.Center : overridePos) - Main.screenPosition, Main.projFrames[projectile.type] <= 1 ? null : new Rectangle(0, (tx.Height / Main.projFrames[projectile.type]) * projectile.frame, tx.Width, (tx.Height / Main.projFrames[projectile.type]) - 2), color * projectile.Opacity, projectile.rotation, new Vector2(tx.Width, Main.projFrames[projectile.type] > 1 ? (tx.Height / Main.projFrames[projectile.type]) - 2 : tx.Height) / 2, projectile.scale, projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
         }
         public static void showItemTooltip(Item item)
         {
@@ -1191,7 +1204,7 @@ namespace CalamityEntropy
         }
         public static void SyncProj(int proj)
         {
-            if (Main.netMode != NetmodeID.SinglePlayer)
+            if (Main.netMode != NetmodeID.SinglePlayer && (!proj.ToProj().friendly || Main.myPlayer == proj.ToProj().owner))
             {
                 NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, proj);
             }
@@ -1274,6 +1287,13 @@ namespace CalamityEntropy
                 drawLine(Main.spriteBatch, ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value, points[i - 1], points[i], color, width, wa, true);
             }
         }
+        public static void DrawLinesBetter(List<Vector2> points, Color color, float width, int wa = 2)
+        {
+            for (int i = 1; i < points.Count; i++)
+            {
+                drawLineBetter(points[i - 1], points[i], color, width, wa, true);
+            }
+        }
         public static SoundStyle GetSound(string name, float pitch = 1, int maxIns = 4, float volume = 1)
         {
             SoundStyle s = new SoundStyle("CalamityEntropy/Assets/Sounds/" + name);
@@ -1322,6 +1342,11 @@ namespace CalamityEntropy
         {
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, blend, s == null ? Main.DefaultSamplerState : s, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+        }
+        public static void UseBlendState(this SpriteBatch sb, BlendState blend, SamplerState s, Effect shader)
+        {
+            sb.End();
+            sb.Begin(SpriteSortMode.Immediate, blend, s == null ? Main.DefaultSamplerState : s, DepthStencilState.None, RasterizerState.CullNone, shader, Main.GameViewMatrix.TransformationMatrix);
         }
         public static void UseAdditiveClamp(this SpriteBatch sb)
         {
@@ -1389,6 +1414,10 @@ namespace CalamityEntropy
         public static bool isAir(int i, int j, bool plat = false)
         {
             return isAir(new Vector2(i * 16, j * 16), plat);
+        }
+        public static bool HasTile(Vector2 dp, bool containsPlatform)
+        {
+            return !isAir(dp, containsPlatform);
         }
         public static bool isAir(Vector2 dp, bool platBlock = false)
         {
@@ -1696,6 +1725,11 @@ namespace CalamityEntropy
         public static void drawLine(Vector2 start, Vector2 end, Color color, float width, int wa = 0, bool worldpos = true)
         {
             Main.spriteBatch.Draw(getExtraTex("white"), start - (worldpos ? Main.screenPosition : Vector2.Zero), null, color, (end - start).ToRotation(), new Vector2(0, 0.5f), new Vector2(getDistance(start, end) + wa, width), SpriteEffects.None, 0);
+        }
+        public static void drawLineBetter(Vector2 start, Vector2 end, Color color, float width, int wa = 0, bool worldpos = true)
+        {
+            var tex = getExtraTex("BasicTrailThin");
+            Main.spriteBatch.Draw(tex, start - (worldpos ? Main.screenPosition : Vector2.Zero), null, color, (end - start).ToRotation(), new Vector2(0, tex.Height / 2), new Vector2((getDistance(start, end) + wa) / 200f, width / 40f), SpriteEffects.None, 0);
         }
         public static void drawTextureToPoint(SpriteBatch sb, Texture2D texture, Color color, Vector2 lu, Vector2 ru, Vector2 ld, Vector2 rd)
         {
@@ -2167,7 +2201,25 @@ namespace CalamityEntropy
         #endregion
         public static string InvisAsset => "CalamityEntropy/Assets/InvisibleProj";
 
-        public static BlendState BS_ColorInverse;
+        public static readonly BlendState ColorInverse = new BlendState()
+        {
+            ColorSourceBlend = Blend.InverseDestinationColor,
+            ColorDestinationBlend = Blend.Zero,
+            ColorBlendFunction = BlendFunction.Add,
+            AlphaSourceBlend = Blend.One,
+            AlphaDestinationBlend = Blend.One,
+            AlphaBlendFunction = BlendFunction.Add,
+        };
+
+        public static readonly BlendState SubtractiveBlending = new BlendState
+        {
+            ColorBlendFunction = BlendFunction.ReverseSubtract,
+            ColorDestinationBlend = Blend.One,
+            ColorSourceBlend = Blend.SourceAlpha,
+            AlphaBlendFunction = BlendFunction.ReverseSubtract,
+            AlphaDestinationBlend = Blend.One,
+            AlphaSourceBlend = Blend.SourceAlpha
+        };
 
         /// <summary>
         /// 新的追踪方法，这个会指定一个NPC, 且可以自定义输入额外更新，以及强制速度不受距离影响

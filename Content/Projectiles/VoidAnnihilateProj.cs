@@ -71,6 +71,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void SetDefaults()
         {
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 48;
             Projectile.height = 48;
             Projectile.hostile = false;
@@ -339,6 +340,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override string Texture => "CalamityEntropy/Content/Projectiles/VoidAnnihilateProj";
         public override void SetDefaults()
         {
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 48;
             Projectile.height = 48;
             Projectile.hostile = false;

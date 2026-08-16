@@ -2,6 +2,7 @@ using CalamityEntropy.Content.Projectiles;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace CalamityEntropy.Content.Items.Vanity
 {
@@ -31,8 +32,13 @@ namespace CalamityEntropy.Content.Items.Vanity
         {
             vanityEquippedLast = vanityEquipped;
             TheocracyMark = false;
-            vanityEquipped = "";
             SpecialFlag = 0;
+            
+            
+            if (!Main.gameMenu)
+            {
+                vanityEquipped = "";
+            }
         }
 
         public override void FrameEffects()
@@ -42,13 +48,37 @@ namespace CalamityEntropy.Content.Items.Vanity
                 Player.legs = EquipLoader.GetEquipSlot(Mod, "TheocracyMark", EquipType.Legs);
                 Player.body = EquipLoader.GetEquipSlot(Mod, "TheocracyMark", EquipType.Body);
             }
+            // if (vanityEquipped != "")
+            // {
+            //
+            //     Player.legs = EquipLoader.GetEquipSlot(Mod, vanityEquipped, EquipType.Legs);
+            //     Player.body = EquipLoader.GetEquipSlot(Mod, vanityEquipped, EquipType.Body);
+            //     Player.head = EquipLoader.GetEquipSlot(Mod, vanityEquipped, EquipType.Head);
+            //
+            // }
+        }
+        
+        public override void SaveData(TagCompound tag)
+        {
+            if (vanityEquipped != "") tag["vanityEquipped"] = vanityEquipped;
+        }
+        // 2. 在角色选择界面时，游戏会最先触发 LoadData 读取存档 为了在角色选择界面看见时装所以这个是必要的
+        public override void LoadData(TagCompound tag)
+        {
+            
+            if (tag.ContainsKey("vanityEquipped"))
+            {
+                vanityEquipped = tag.GetString("vanityEquipped");
+            }
+        }
+        
+        public override void UpdateVisibleVanityAccessories()
+        {
             if (vanityEquipped != "")
             {
-
                 Player.legs = EquipLoader.GetEquipSlot(Mod, vanityEquipped, EquipType.Legs);
                 Player.body = EquipLoader.GetEquipSlot(Mod, vanityEquipped, EquipType.Body);
                 Player.head = EquipLoader.GetEquipSlot(Mod, vanityEquipped, EquipType.Head);
-
             }
         }
         public override void DrawEffects(PlayerDrawSet drawInfo, ref float r, ref float g, ref float b, ref float a, ref bool fullBright)

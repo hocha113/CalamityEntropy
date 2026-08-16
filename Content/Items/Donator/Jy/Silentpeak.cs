@@ -73,13 +73,13 @@ namespace CalamityEntropy.Content.Items.Donator.Jy
             3 => 16,
             4 => 22,
             5 => 42,
-            6 => 55,
-            7 => 85,
+            6 => 56,
+            7 => 88,
             8 => 115,
             9 => 150,
             10 => 210,
-            11 => 400,
-            _ => 400
+            11 => 500,
+            _ => 500
         };
         public static int Level()
         {

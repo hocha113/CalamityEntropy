@@ -152,7 +152,7 @@ namespace CalamityEntropy.Content.Skies
 
                 graphicsDevice.SetRenderTarget(Main.screenTarget);
                 graphicsDevice.Clear(Color.Transparent);
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
                 var fscreen = EffectLoader.fscreenCr;
                 fscreen.CurrentTechnique = fscreen.Techniques["Technique1"];
                 fscreen.CurrentTechnique.Passes[0].Apply();
@@ -169,13 +169,7 @@ namespace CalamityEntropy.Content.Skies
                 Main.spriteBatch.End();
             }
 
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-
-            /*if (SubworldSystem.IsActive<VOIDSubworld>())
-            {
-                CEUtils.DrawGlow(Main.screenPosition, Color.White * 0.4f, 40);
-                opacity = 1;
-            }*/
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
         }
         public class LightningParticle

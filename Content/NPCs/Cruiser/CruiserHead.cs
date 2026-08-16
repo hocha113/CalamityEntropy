@@ -6,6 +6,7 @@ using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Lores;
 using CalamityEntropy.Content.Items.Pets;
 using CalamityEntropy.Content.Items.Weapons;
+using CalamityEntropy.Content.Items.Weapons.Bait;
 using CalamityEntropy.Content.Items.Weapons.Whips;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
@@ -210,6 +211,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
 
             var normalOnly = npcLoot.DefineNormalOnlyDropSet();
             {
+                normalOnly.Add(ModContent.ItemType<BottledFissure>(), new Fraction(3, 5));
                 normalOnly.Add(ModContent.ItemType<VoidRelics>(), new Fraction(3, 5));
                 normalOnly.Add(ModContent.ItemType<VoidElytra>(), new Fraction(3, 5));
                 normalOnly.Add(ModContent.ItemType<VoidEcho>(), new Fraction(3, 5));
@@ -518,6 +520,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             bool canShoot = Main.netMode != NetmodeID.MultiplayerClient;
             if (DeathAnm)
             {
+                WarningAlpha = 0;
                 if (camLerp < 1)
                 {
                     camLerp += 0.025f;

@@ -3,6 +3,7 @@ using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using System.Collections.Generic;
 using Terraria;
@@ -12,7 +13,10 @@ namespace CalamityEntropy.Content.Items.Accessories
 {
     public class ReincarnationBadge : ModItem
     {
-
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.HasAccessoryKeybind[Type] = true;
+        }
         public override void SetDefaults()
         {
             Item.width = 98;
@@ -24,7 +28,8 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            list.IntegrateHotkey(CalamityKeybinds.AscendantInsigniaHotKey);
+            var k = Main.LocalPlayer.Calamity().FindAccessory<ReincarnationBadge>().GetDynamicModHotkey();
+            list.IntegrateHotkey(k);
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

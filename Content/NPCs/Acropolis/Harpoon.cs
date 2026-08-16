@@ -79,7 +79,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                     {
                         sVel = NPC.velocity;
                     }
-                    NPC.rotation = (NPC.Center - am.harpoon.seg1end).ToRotation();
+                    NPC.rotation = (NPC.Center - (((AcropolisMachine)owner.ModNPC).HarpoonPos - ((AcropolisMachine)owner.ModNPC).harpoon.Seg2Rot.ToRotationVector2() * 72 * NPC.scale)).ToRotation();
                     if (!Stuck && Back-- < 0)
                     {
                         NPC.noTileCollide = true;
@@ -155,7 +155,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             Texture2D harpoonOutline = CEUtils.RequestTex("CalamityEntropy/Content/NPCs/Acropolis/HarpoonOutline");
             if (OnLauncher)
                 return false;
-            CEUtils.drawChain(NPC.Center, ((AcropolisMachine)owner.ModNPC).HarpoonPos - ((AcropolisMachine)owner.ModNPC).harpoon.Seg2Rot.ToRotationVector2() * 60 * NPC.scale, 18, "CalamityEntropy/Content/NPCs/Acropolis/HarpoonChain");
+            CEUtils.drawChain(NPC.Center, ((AcropolisMachine)owner.ModNPC).HarpoonPos - ((AcropolisMachine)owner.ModNPC).harpoon.Seg2Rot.ToRotationVector2() * 72 * NPC.scale, 18, "CalamityEntropy/Content/NPCs/Acropolis/HarpoonChain");
             Texture2D harpoon3 = NPC.getTexture(); for (float r = 0; r <= 360; r += 60)
             {
                 Main.EntitySpriteDraw(harpoonOutline, MathHelper.ToRadians(r).ToRotationVector2() * 2 + NPC.Center - Main.screenPosition, null, Color.OrangeRed, NPC.rotation, new Vector2(70, harpoon3.Height / 2f), NPC.scale, ((AcropolisMachine)owner.ModNPC).dir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);

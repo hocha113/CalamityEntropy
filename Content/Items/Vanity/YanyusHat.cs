@@ -14,9 +14,9 @@ namespace CalamityEntropy.Content.Items.Vanity
         {
             if (Main.netMode != NetmodeID.Server)
             {
-                EquipLoader.AddEquipTexture(Mod, "CalamityEntropy/Content/Items/Vanity/yyhead", EquipType.Head, this);
-                EquipLoader.AddEquipTexture(Mod, "CalamityEntropy/Content/Items/Vanity/yybody", EquipType.Body, this);
-                EquipLoader.AddEquipTexture(Mod, "CalamityEntropy/Content/Items/Vanity/yylegs", EquipType.Legs, this);
+                EquipLoader.AddEquipTexture(Mod, $"CalamityEntropy/Content/Items/Vanity/{Name}_Head", EquipType.Head, this);
+                EquipLoader.AddEquipTexture(Mod, $"CalamityEntropy/Content/Items/Vanity/{Name}_Body", EquipType.Body, this);
+                EquipLoader.AddEquipTexture(Mod, $"CalamityEntropy/Content/Items/Vanity/{Name}_Legs", EquipType.Legs, this);
             }
         }
 
@@ -49,14 +49,14 @@ namespace CalamityEntropy.Content.Items.Vanity
 
         public override void UpdateVanity(Player player)
         {
-            player.GetModPlayer<YanyusHatPlayer>().vanityEquipped = true;
+            player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             if (!hideVisual)
             {
-                player.GetModPlayer<YanyusHatPlayer>().vanityEquipped = true;
+                player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             }
         }
 
@@ -67,27 +67,6 @@ namespace CalamityEntropy.Content.Items.Vanity
                 .AddIngredient(ItemID.Leather, 2)
                 .AddTile(TileID.WorkBenches)
                 .Register();
-        }
-    }
-
-    public class YanyusHatPlayer : ModPlayer
-    {
-        public bool vanityEquipped = false;
-
-        public override void ResetEffects()
-        {
-            vanityEquipped = false;
-        }
-
-        public override void FrameEffects()
-        {
-            if (vanityEquipped)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "YanyusHat", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "YanyusHat", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "YanyusHat", EquipType.Head);
-
-            }
         }
     }
 }

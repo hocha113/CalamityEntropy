@@ -31,16 +31,16 @@ namespace CalamityEntropy.Content.Items.Vanity.Luminar
 
         public override void UpdateVanity(Player player)
         {
-            player.GetModPlayer<LuminarMulsePlayer>().vanityEquipped = true;
+            player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             if (!hideVisual)
             {
-                player.GetModPlayer<LuminarMulsePlayer>().vanityEquipped = true;
+                player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             }
-        }
+        }                   
 
         public override void AddRecipes()
         {
@@ -50,27 +50,6 @@ namespace CalamityEntropy.Content.Items.Vanity.Luminar
                 .AddIngredient(ModContent.ItemType<LuminarTrousers>())
                 .AddTile(TileID.WorkBenches)
                 .Register();
-        }
-
-    }
-
-    public class LuminarMulsePlayer : ModPlayer
-    {
-        public bool vanityEquipped = false;
-
-        public override void ResetEffects()
-        {
-            vanityEquipped = false;
-        }
-
-        public override void FrameEffects()
-        {
-            if (vanityEquipped)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "LuminarTrousers", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "LuminarDress", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "LuminarRing", EquipType.Head);
-            }
         }
     }
 }

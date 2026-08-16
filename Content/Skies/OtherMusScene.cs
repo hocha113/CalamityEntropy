@@ -31,7 +31,7 @@ namespace CalamityEntropy.Content.Skies
         public override SceneEffectPriority Priority => SceneEffectPriority.Environment;
         public override bool IsSceneEffectActive(Player player)
         {
-            return player.GetModPlayer<LostHeirloomPlayer>().vanityEquipped;
+            return player.GetModPlayer<VanityModPlayer>().vanityEquipped == nameof(LostHeirloom);
         }
         public override int Music => (Main.dayTime && Main.LocalPlayer.ZoneForest && !Main.LocalPlayer.ZoneJungle && !Main.LocalPlayer.ZoneSnow) ? MusicLoader.GetMusicSlot(Mod, "Assets/Sounds/Music/LMus1") : (!Main.dayTime && Main.LocalPlayer.townNPCs > 2 ? MusicLoader.GetMusicSlot(Mod, "Assets/Sounds/Music/LMus2") : -1);
     }

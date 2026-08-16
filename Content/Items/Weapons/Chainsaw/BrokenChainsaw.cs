@@ -16,8 +16,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
             Item.width = 42;
             Item.height = 42;
             Item.noUseGraphic = true;
-            Item.useTime = 16;
-            Item.useAnimation = 0;
+            Item.useTime = Item.useAnimation = 36;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 6;
             Item.value = 36;

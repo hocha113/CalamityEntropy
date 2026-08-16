@@ -52,17 +52,16 @@ namespace CalamityEntropy.Content.Items.Vanity
 
         public override void UpdateVanity(Player player)
         {
-            player.GetModPlayer<MosHatPlayer>().vanityEquipped = true;
+            player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             if (!hideVisual)
             {
-                player.GetModPlayer<MosHatPlayer>().vanityEquipped = true;
+                player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             }
         }
-
         public override void AddRecipes()
         {
             CreateRecipe()
@@ -70,27 +69,6 @@ namespace CalamityEntropy.Content.Items.Vanity
                 .AddIngredient(ItemID.Topaz, 2)
                 .AddTile(TileID.WorkBenches)
                 .Register();
-        }
-    }
-
-    public class MosHatPlayer : ModPlayer
-    {
-        public bool vanityEquipped = false;
-
-        public override void ResetEffects()
-        {
-            vanityEquipped = false;
-        }
-
-        public override void FrameEffects()
-        {
-            if (vanityEquipped)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "MosHat", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "MosHat", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "MosHat", EquipType.Head);
-
-            }
         }
     }
 }

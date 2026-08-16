@@ -52,14 +52,14 @@ namespace CalamityEntropy.Content.Items.Vanity
 
         public override void UpdateVanity(Player player)
         {
-            player.GetModPlayer<GalaxyGrapeSodaPlayer>().vanityEquipped = true;
+            player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             if (!hideVisual)
             {
-                player.GetModPlayer<GalaxyGrapeSodaPlayer>().vanityEquipped = true;
+                player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             }
         }
 
@@ -71,27 +71,6 @@ namespace CalamityEntropy.Content.Items.Vanity
                 .AddIngredient(ItemID.FallenStar, 5)
                 .AddIngredient(ModContent.ItemType<BlightedGel>(), 20)
                 .AddTile(TileID.WorkBenches).Register();
-        }
-    }
-
-    public class GalaxyGrapeSodaPlayer : ModPlayer
-    {
-        public bool vanityEquipped = false;
-
-        public override void ResetEffects()
-        {
-            vanityEquipped = false;
-        }
-
-        public override void FrameEffects()
-        {
-            if (vanityEquipped)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "GalaxyGrapeSoda", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "GalaxyGrapeSoda", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "GalaxyGrapeSoda", EquipType.Head);
-
-            }
         }
     }
 }

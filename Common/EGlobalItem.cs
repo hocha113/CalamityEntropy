@@ -18,6 +18,7 @@ using CalamityEntropy.Content.Items.Pets.Glue;
 using CalamityEntropy.Content.Items.PrefixItem;
 using CalamityEntropy.Content.Items.Vanity;
 using CalamityEntropy.Content.Items.Weapons;
+using CalamityEntropy.Content.Items.Weapons.Bait;
 using CalamityEntropy.Content.Items.Weapons.CrystalBalls;
 using CalamityEntropy.Content.Items.Weapons.DustCarverBow;
 using CalamityEntropy.Content.Items.Weapons.Torch;
@@ -41,6 +42,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -277,6 +279,15 @@ namespace CalamityEntropy.Common
             if (player.Entropy().hasAcc("VastLV2"))
             {
                 healValue = (int)((CalCI ? 0.25f : 0.75f) * healValue);
+            }
+        }
+        public override void PostDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            if(item.ModItem != null && item.ModItem is IBaitItem && Main.LocalPlayer.HeldItem.type == item.type)
+            {
+                scale = 1;
+                float charge = float.Clamp(Main.LocalPlayer.Entropy().BaitCharge, 0, 1);
+                CEUtils.DrawChargeBar(scale, position + new Vector2(0, 16 * scale), ((float)charge / 1f), Color.Yellow);
             }
         }
 
@@ -1084,7 +1095,6 @@ namespace CalamityEntropy.Common
                     var font = FontAssets.MouseText.Value;
                     Texture2D glow = CEUtils.getExtraTex("Glow");
                     Main.spriteBatch.UseBlendState_UI(BlendState.Additive);
-                    Main.spriteBatch.UseBlendState_UI(BlendState.Additive);
                     Vector2 origin = font.MeasureString(line.Text) * new Vector2(1, 0.6f) * 0.5f;
                     Main.spriteBatch.Draw(glow, new Vector2(line.X, line.Y) + origin, null, Color.AliceBlue * 0.6f, 0, glow.Size() * 0.5f, origin * 0.02f * new Vector2(1, 0.6f), SpriteEffects.None, 0);
                     Main.spriteBatch.UseBlendState_UI(BlendState.AlphaBlend);
@@ -1737,11 +1747,6 @@ namespace CalamityEntropy.Common
             {
                 itemLoot.Add(ModContent.ItemType<BookmarkCosmic>(), 2);
             }
-            if (item.Is<CrabulonBag>())
-            {
-                itemLoot.Add(ModContent.ItemType<WisperCard>(), 2);
-                itemLoot.Add(ModContent.ItemType<BookmarkSpore>(), 2);
-            }
             if (item.Is<PlaguebringerGoliathBag>())
             {
                 itemLoot.Add(ModContent.ItemType<PlagueInternalCombustionEngine>(), 4);
@@ -1798,7 +1803,10 @@ namespace CalamityEntropy.Common
             }
             if (item.Is<CrabulonBag>())
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkCancer>(), new Fraction(1, 2));
+                itemLoot.Add(ModContent.ItemType<WisperCard>(), 2);
+                itemLoot.Add(ModContent.ItemType<BookMarkCancer>(), new Fraction(2, 5));
+                itemLoot.Add(ModContent.ItemType<BookmarkSpore>(), new Fraction(2, 5));
+                itemLoot.Add(ModContent.ItemType<BlueFlatTopMushroom>(), new Fraction(2, 5));
             }
             if (item.Is<AquaticScourgeBag>())
             {
@@ -1832,10 +1840,12 @@ namespace CalamityEntropy.Common
             if (item.Is<CryogenBag>())
             {
                 itemLoot.Add(ModContent.ItemType<BookMarkIce>(), new Fraction(1, 2));
+                itemLoot.Add(ModContent.ItemType<FrostboundCage>(), new Fraction(2, 5));
             }
             if (item.Is<DesertScourgeBag>())
             {
                 itemLoot.Add(ModContent.ItemType<BookMarkLeo>(), new Fraction(1, 2));
+                itemLoot.Add(ModContent.ItemType<AntlionShell>(), new Fraction(1, 3));
             }
             if (item.type == ItemID.FairyQueenBossBag)
             {
@@ -1843,7 +1853,8 @@ namespace CalamityEntropy.Common
             }
             if (item.type == ItemID.MoonLordBossBag)
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkLunar>(), new Fraction(1, 1));
+                itemLoot.Add(ModContent.ItemType<BookMarkLunar>(), new Fraction(3, 5));
+                itemLoot.Add(ModContent.ItemType<MoonlightCore>(), new Fraction(2, 5));
             }
             if (item.type == ItemID.SkeletronPrimeBossBag)
             {
@@ -1871,7 +1882,8 @@ namespace CalamityEntropy.Common
             }
             if (item.Is<ProvidenceBag>())
             {
-                itemLoot.Add(ModContent.ItemType<BookMarkProfaned>(), new Fraction(1, 1));
+                itemLoot.Add(ModContent.ItemType<BookMarkProfaned>(), new Fraction(3, 5));
+                itemLoot.Add(ModContent.ItemType<SacredStone>(), new Fraction(3, 5));
             }
             if (item.type == ItemID.EyeOfCthulhuBossBag)
             {
@@ -1885,6 +1897,7 @@ namespace CalamityEntropy.Common
             if (item.type == ItemID.PlanteraBossBag)
             {
                 itemLoot.Add(ModContent.ItemType<BookMarkSilva>(), new Fraction(1, 2));
+                itemLoot.Add(ModContent.ItemType<MutantBulb>(), new Fraction(1, 2));
                 itemLoot.Add(ModContent.ItemType<LashingBramblerod>(), new Fraction(4, 5));
             }
             if (item.Is<SlimeGodBag>())

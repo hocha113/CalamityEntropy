@@ -25,8 +25,8 @@ Items: {
 				DisplayName: Silence
 				Tooltip:
 					'''
-					[c/9387ff:Throw a void-chained frisbee that pulls itself back to enemies on hit after a short delay before exploding on impact]
-					[c/9387ff:Stealth strikes cause the frisbee to stick to the hit enemy once chained, creating a void vortex that rapidly damages in a large area]
+					Throw a [ceeffect/cruiser:void-chained frisbee] that pulls itself back to enemies on hit after a short delay before exploding on impact]
+					Stealth strikes cause the frisbee to stick to the hit enemy once chained, creating a [ceeffect/cruiser:void vortex] that rapidly damages in a large area]
 					'''
 			}
 
@@ -305,10 +305,10 @@ Items: {
 				DisplayName: Exergy Swirlblade
 				Tooltip:
 					'''
-					Flies for a while or hits an enemy, then deploys a multi-hit sawblade that shrinks over time
-					If deployed by enemy contact, the ringblade sticks to that enemy
-					As the sawblade shrinks, it fires smaller homing sawblades that stop tracking after one hit
-					Stealth attack increases deployment range and duration, and fires a larger persistent homing sawblade at the end
+					Throw a sawblade that on hit or after some time stops in place, releasing 3 more smaller blades as it spins
+					The sawblades deals damage in a large area when spinning and will return after some time
+					Smaller blades home towards the closest enemy
+					Stealth strikes fly out faster, send out 5 smaller blades and release one large relentless blade on return
 					'''
 			}
 
@@ -316,10 +316,11 @@ Items: {
 				DisplayName: Apeirokyklos
 				Tooltip:
 					'''
-					Deploys a multi-hit sawblade when flies for a while or hits an enemy 
-					Each hit of the sawblade summons an Abyss Spike from below to pierce the target
-					Stealth attack deals high-damage impact and knocks back on hit,
-					then charges and fires many spikes to pierce targets
+					Throw a sawblade that on hit or after some time stops in place and starts spinning
+					The sawblade deals damage in a large area when spinning and will return after some time
+					On hit the sawblade summons beams of light from below to pierce enemies
+					Stealth strikes fly out faster and bounce off of hit enemies before barraging them with beams of light
+					Attacks inflict [cebuff:CalamityEntropy/LifeOppress] on hit
 					'''
 			}
 		}
@@ -349,13 +350,13 @@ Items: {
 		DisplayName: Void Relics
 		Tooltip:
 			'''
-			[c/9387ff:Summon a Voidgaze Eye and an array of runes around yourself]
-			[c/9387ff:Runes automatically fire homing voisen bolts at nearby enemies and also damage enemies they touch, inflicting ][cebuff:CalamityEntropy/VoidTouch]
-			[c/9387ff:Left Click while the eye and runes are summoned to gather runes in front of you and rapidly fire voisen bolts toward the cursor]
-			[c/9387ff:Releasing Left Click or holding for over 6 seconds reverts runes to their passive state]
-			[c/9387ff:Runes can be gathered for concentrated fire on up to a 36 second cooldown time based on how long it was held for]
-			[c/9387ff:During cooldown, runes gain 15% increased attack speed]
-			[c/9387ff:There can only be one set of void relics at a time]
+			Summon a [ceeffect/cruiser:Voidgaze Eye] and an array of [ceeffect/cruiser:Voidborn Runes] around yourself
+			Runes automatically fire homing [ceeffect/cruiser:voisen bolts] at nearby enemies and also damage enemies they touch, inflicting [cebuff:CalamityEntropy/VoidTouch]
+			Left Click while the eye and runes are summoned to gather runes in front of you and rapidly fire [ceeffect/cruiser:voisen bolts] toward the cursor
+			Releasing Left Click or holding for over 6 seconds reverts runes to their passive state
+			Runes can be gathered for concentrated fire on up to a 36 second cooldown time based on how long it was held for
+			During cooldown, runes gain 15% increased attack speed
+			There can only be one set of void relics at a time
 			'''
 	}
 
@@ -540,7 +541,7 @@ Items: {
 		DisplayName: Symbol of Theocracy
 		Tooltip:
 			'''
-			Summons a circle of up to 6 divine cannons that fire lasers upon release
+			Summons a circle of up to 6 [ceeffect/cruiser:divine cannons] that fire lasers upon release
 			Inflicts [cebuff:CalamityEntropy/VoidTouch]
 			'Void is an ever potent element, only a few drops are needed for complete annihilation'
 			'''
@@ -588,7 +589,7 @@ Items: {
 
 	WingsOfHush: {
 		DisplayName: Wings of Hush
-		Tooltip: "[c/9387ff:Fires a piercing void laser alongside four smaller voidbeams that all inflict ][cebuff:CalamityEntropy/VoidTouch]"
+		Tooltip: Fires a piercing void laser alongside four smaller [ceeffect/cruiser:voidbeams] that all inflict [cebuff:CalamityEntropy/VoidTouch]
 	}
 
 	SoyMilk: {
@@ -719,20 +720,29 @@ Items: {
 		DisplayName: Thread of Fate
 		Tooltip:
 			'''
-			Intertwines the mystic cards of the Oracle Deck
-			Hold SHIFT to read the thread...
+			Intertwines the mystic cards of the [i:CalamityEntropy/OracleDeck][c/87CEFA:Oracle Deck]
+			[c/87CEFA:Hold SHIFT to read the thread...]
 			'''
 		HoldShiftForDetails:
 			'''
-			[i:CalamityEntropy/AuraCard]Aura Card: Scattered across hidden cabins and submerged crates...
-			[i:CalamityEntropy/BrillianceCard]Brilliance: Sold by an eccentric, mysterious merchant...
-			[i:CalamityEntropy/EntityCard]Entity: Offered to a pearly psychic of the sunken sea...
-			[i:CalamityEntropy/InspirationCard]Inspiration: Left to rot in the sifting sands...
-			[i:CalamityEntropy/MetropolisCard]Metropolics: Scribed from many common books...
-			[i:CalamityEntropy/WisdomCard]Wisdom: Held by the dungeon's accursed warden...
-			[i:CalamityEntropy/RadianceCard]Radiance: Requires the magic of a hallowed orb...
-			[i:CalamityEntropy/TemperanceCard]Temperance: Used as a spiritual anchor for a mechanical monstrosity...
-			[i:CalamityEntropy/EnduranceCard]Endurance: Tested in the part of the sea the light shall never touch...
+			[i:CalamityEntropy/AuraCard]Aura Card
+			Scattered across hidden cabins and submerged crates...
+			[i:CalamityEntropy/BrillianceCard]Brilliance
+			Sold by an eccentric, mysterious merchant...
+			[i:CalamityEntropy/EntityCard]Entity
+			Offered to a pearly psychic of the sunken sea...
+			[i:CalamityEntropy/InspirationCard]Inspiration
+			Left to rot in the sifting sands...
+			[i:CalamityEntropy/MetropolisCard]Metropolics
+			Scribed from many common books...
+			[i:CalamityEntropy/WisdomCard]Wisdom
+			Held by the dungeon's accursed warden...
+			[i:CalamityEntropy/RadianceCard]Radiance
+			Requires the magic of a hallowed orb...
+			[i:CalamityEntropy/TemperanceCard]Temperance
+			Used as a spiritual anchor for a mechanical monstrosity...
+			[i:CalamityEntropy/EnduranceCard]Endurance
+			Tested in the part of the sea the light shall never touch...
 			'''
 	}
 
@@ -760,12 +770,12 @@ Items: {
 		DisplayName: Nihil Orbit
 		Tooltip:
 			'''
-			[c/9387ff:Click LMB or hold RMB to throw some knives]
-			[c/9387ff:After hitting a target, they will bounce off and float around]
-			[c/9387ff:Long press the left button to build up momentum]
-			[c/9387ff:When fully charged,]
-			[c/9387ff:releasing it will throw an enhanced knife that causing triple damage]
-			[c/9387ff:Enhancing knives will cause all floating knives to hit the target]
+			Click LMB or hold RMB to throw some [ceeffect/cruiser:Orbit knives]
+			After hitting a target, they will bounce off and float around
+			Long press the left button to build up momentum
+			When fully charged,
+			releasing it will throw an enhanced knife that causing triple damage
+			Enhancing knives will cause all floating knives to hit the target
 			'''
 	}
 
@@ -776,11 +786,7 @@ Items: {
 
 	DustyStar: {
 		DisplayName: Dusty Star
-		Tooltip:
-			'''
-			Grants the appearance of the head developer
-			Don't forget to leave a like!
-			'''
+		Tooltip: Grants the appearance of the head developer
 	}
 
 	SoulCandle: {
@@ -1265,19 +1271,31 @@ Items: {
 		DisplayName: Thread of Abyss
 		Tooltip:
 			'''
-			Binds together the lost Tainted Deck
-			The following materials are required:
-			Perplexed: Found from a mechanical monstrosity that comes in twos...
-			Tarnish: Used by the sorcerers of a goblin tribe...
-			Confuse: Held by the last of the Dryad kind...
-			Desolation: Stolen from a vault by a familiar thief...
-			Fool: Held by eldritch scholars in the Abyss...
-			Sacrifice: Crafted with cores of chaos and perennial bars...
-			Greed: Lost to the waters of the Astral Infection...
-			Weakness: Burdens the gelatinous balance of crimulan and ebonian rule...
-			Nothing: Swallowed by the apex predator of the Abyss...
+			Binds together the lost [i:CalamityEntropy/TaintedDeck][c/FF6347:Tainted Deck]
+			[c/FF6347:Hold SHIFT to read the thread...]
 			'''
-		HoldShiftForDetails: ""
+		HoldShiftForDetails:
+			'''
+			The following materials are required:
+			[i:CalamityEntropy/Perplexed][c/FF6347: Perplexed]
+			Found from a mechanical monstrosity that comes in twos...
+			[i:CalamityEntropy/Tarnish][c/FF6347: Tarnish]
+			Used by the sorcerers of a goblin tribe...
+			[i:CalamityEntropy/Confuse][c/FF6347: Confuse]
+			Held by the last of the Dryad kind...
+			[i:CalamityEntropy/Barren][c/FF6347: Desolation]
+			Stolen from a vault by a familiar thief...
+			[i:CalamityEntropy/Fool][c/FF6347: Fool]
+			 Held by eldritch scholars in the Abyss...
+			[i:CalamityEntropy/Sacrifice][c/FF6347: Sacrifice]
+			Crafted with cores of chaos and perennial bars...
+			[i:CalamityEntropy/GreedCard][c/FF6347: Greed]
+			Lost to the waters of the Astral Infection...
+			[i:CalamityEntropy/Frail][c/FF6347: Weakness]
+			Burdens the gelatinous balance of crimulan and ebonian rule...
+			[i:CalamityEntropy/Nothing][c/FF6347: Nothing]
+			Swallowed by the apex predator of the Abyss...
+			'''
 	}
 
 	VoidCandle: {
@@ -2435,7 +2453,7 @@ Items: {
 	}
 
 	ProphecyMasterpiece: {
-		DisplayName: All That Will Be
+		DisplayName: Prophecy Masterpiece
 		Tooltip: Channel a crystal ball into a beam of soul energy, inflicting [cebuff:CalamityEntropy/SoulDisorder]
 	}
 
@@ -2578,19 +2596,31 @@ Items: {
 		DisplayName: Cursed Thread
 		Tooltip:
 			'''
-			Used to intertwine the Soul Deck
-			The following materials are required:
-			Requiem: Notes from spirits released after the death of Plantera...
-			Whisper: Echoes of snips and snaps in the pinnacle of symbiosis...
-			Purification: Found in living chests infused with hallowed energy...
-			Obscure: Sunken in the fluids of dead gods...
-			Grudge: Extracted from a dozen spirits' ectoplasm using a transmutative liquid...
-			Indigo: Hidden in lakes upheld by the clouds...
-			Mourning: A moral code of the protector of a lost jungle civilization...
-			Woe: Fuels the beasts of a land ever so blighted...
-			Soulrend: Found eating at the hallowed plating of a dungeon defender...
+			Used to intertwine the [i:CalamityEntropy/SoulDeck][c/ADFF2F:Soul Deck]
+			[c/ADFF2F:Hold SHIFT to read the thread...]
 			'''
-		HoldShiftForDetails: ""
+		HoldShiftForDetails:
+			'''
+			The following materials are required:
+			[i:CalamityEntropy/RequiemCard][c/ADFF2F: Requiem]
+			Notes from spirits released after the death of Plantera...
+			[i:CalamityEntropy/WisperCard][c/ADFF2F: Whisper]
+			Echoes of snips and snaps in the pinnacle of symbiosis...
+			[i:CalamityEntropy/PurificationCard][c/ADFF2F: Purification]
+			Found in living chests infused with hallowed energy...
+			[i:CalamityEntropy/ObscureCard][c/ADFF2F: Obscure]
+			Sunken in the fluids of dead gods...
+			[i:CalamityEntropy/GrudgeCard][c/ADFF2F: Grudge]
+			Extracted from a dozen spirits' ectoplasm using a transmutative liquid...
+			[i:CalamityEntropy/IndigoCard][c/ADFF2F: Indigo]
+			Hidden in lakes upheld by the clouds...
+			[i:CalamityEntropy/MourningCard][c/ADFF2F: Mourning]
+			A moral code of the protector of a lost jungle civilization...
+			[i:CalamityEntropy/BitternessCard][c/ADFF2F: Woe]
+			Fuels the beasts of a land ever so blighted...
+			[i:CalamityEntropy/DevouringCard][c/ADFF2F: Soulrend]
+			Found eating at the hallowed plating of a dungeon defender...
+			'''
 	}
 
 	SoulDeck: {
@@ -3011,7 +3041,7 @@ Items: {
 	}
 
 	BLUE: {
-		DisplayName: B L U E
+		DisplayName: BLUE
 		Tooltip: ""
 	}
 
@@ -3431,7 +3461,12 @@ Items: {
 
 	StarBreaker: {
 		DisplayName: Starbreaker
-		Tooltip: Rapidly stabs enemies with a spear that inflicts [cbuff:CalamityMod/MarkedforDeath]
+		Tooltip:
+			'''
+			Rapidly stabs enemies with a spear that inflicts [cbuff:CalamityMod/MarkedforDeath]
+			Hold RMB for swinging up and down, then followed by a sprint forward, 
+			during which you are invulnerable
+			'''
 	}
 
 	Gungnir: {
@@ -4031,8 +4066,6 @@ Items: {
 			10% increased damage
 			5% increased damage reduction
 			Current: [A]
-			'Am I really willing to buy a game on steam to find out if this works?'
-			'...Absolutely not'
 			'''
 	}
 
@@ -4500,11 +4533,11 @@ Items: {
 
 	FlowerWithFace: {
 		DisplayName: Flower With Face
-		Tooltip: 
-		'''
-		Summon Flowery to follow you
-		Flowery will use Jarona at enemies nearby
-		'''
+		Tooltip:
+			'''
+			Summon Flowery to follow you
+			Flowery will use Jarona at nearby enemies
+			'''
 	}
 
 	AntlionShell: {
@@ -4513,16 +4546,178 @@ Items: {
 			'''
 			{$BaitCommonTooltip1}
 			{$BaitCommonTooltip2}
-			Guide the Desert Nuisance to bite the target
+			{$CommonItemTooltip.Whips}
+			Guides a Desert Nuisance to chomp the target
 			'''
+	}
+
+	AzafureMicroBeacon: {
+		DisplayName: Azafure Micro Beacon
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			{$CommonItemTooltip.Whips}
+			Calls in a strike drone swarm to strafe the target
+			'''
+	}
+
+	DeliciousAcorn: {
+		DisplayName: Delicious Acorn
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			{$CommonItemTooltip.Whips}
+			Summons the Squirrel Squad to throw stones at the target
+			'''
+	}
+
+	MoltenAnchor: {
+		DisplayName: Molten Anchor
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			{$CommonItemTooltip.Whips}
+			Summons a bone serpent that charges through the target
+			'''
+	}
+
+	MoonlightCore: {
+		DisplayName: Moonlight Core
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			{$CommonItemTooltip.Whips}
+			Summons true Eyes of Cthulhu to attack the target
+			'''
+	}
+
+	MutantBulb: {
+		DisplayName: Mutant Bulb
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			{$CommonItemTooltip.Whips}
+			Summons fast, piercing vines to tear the target apart
+			'''
+	}
+
+	MechanicalTransmitter: {
+		DisplayName: Mechanical Transmitter
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			{$CommonItemTooltip.Whips}
+			Summons a small group of probes to fire lasers at the target
+			'''
+	}
+
+	MagicHat: {
+		DisplayName: Magic Hat
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			{$CommonItemTooltip.Whips}
+			Summons three pigeons to repeatedly attack the target
+			'''
+	}
+
+	KamishiroKou: {
+		DisplayName: Kamishiro Kou's Broken Goggles
+		Tooltip:
+			'''
+			"If being chosen is a complete lie, meant only to stuff us into boxes and turn us into evolution items...
+			Clutching the Digivice with its backdoor, in this digital Myanmar of a trap, where are we to go?"
+			'''
+	}
+
+	FrostboundCage: {
+		DisplayName: Frostbound Cage
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			{$CommonItemTooltip.Whips}
+			After some time releases a swarm of imprisoned spirits that fire homing ice bolts at nearby enemies
+			'''
+	}
+
+	BlueFlatTopMushroom: {
+		DisplayName: Blue Flat-Top Mushroom
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			{$CommonItemTooltip.Whips}
+			Summons a blue fox that will steal the mushroom and release a damaging spore cloud
+			'''
+	}
+
+	SacredStone: {
+		DisplayName: Sacred Stone
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			{$CommonItemTooltip.Whips}
+			The stone charges for some time before seperating
+			When seperated, the stone unleashes beams of purifying flame at the target
+			'''
+	}
+
+	BottledFissure: {
+		DisplayName: Bottled Fissure
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			{$CommonItemTooltip.Whips}
+			Summons [ceeffect/cruiser:Void-devour bullets] that relentlessly chase the target
+			'''
+	}
+
+	AzafureWarSatelliteAuthorizationKey: {
+		DisplayName: Azafure War Satellite Authorization Key
+		Tooltip:
+			'''
+			{$BaitCommonTooltip1}
+			{$BaitCommonTooltip2}
+			{$CommonItemTooltip.Whips}
+			Calls down the Azafure war satellite to pierce the target with a beam of energy
+			'''
+	}
+
+	Fooveria: {
+		DisplayName: Fooveria
+		Tooltip:
+			'''
+			"Weapons nurtured by the will of the world and the slaughter, come to assist you in purifying this world."
+			Increase power with progress: [L] / 15
+			'''
+	}
+
+	AzafureTwinSaw: {
+		DisplayName: Azafure Twin Saw
+		Tooltip: Swings up and down before bringing the two saws together, spraying sparks forward
+	}
+
+	AstralSample: {
+		DisplayName: Astral Sample
+		Tooltip: ""
 	}
 }
 
-BaitCommonTooltip1: Charge when held. Usable when fully charged
+BaitCommonTooltip1: Charges while held and can only be thrown at maximum charge
 BaitCommonTooltip2:
 	'''
-	Throw a bait that will stick to the enemy after hitting it,
-	and cause minion deal {0} more damage to it
+	Throw a bait that will stick to enemies on hit
+	Minions deal an additional {0} damage to stuck enemies
 	'''
 SmolderingSetBonus:
 	'''
@@ -5296,6 +5491,49 @@ Projectiles: {
 	WaterBulletSpawner.DisplayName: Water Bullet Spawner
 	AntlionShellProjectile.DisplayName: Antlion Shell Projectile
 	DesertNuisanceFriendly.DisplayName: Desert Nuisance Friendly
+	AzafureAssaultDrone.DisplayName: Azafure Assault Drone
+	AzafureMicroBeaconProjectile.DisplayName: Azafure Micro Beacon Projectile
+	BeaconDroneShoot.DisplayName: Beacon Drone Shoot
+	DeliciousAcornProjectile.DisplayName: Delicious Acorn Projectile
+	SquirrerMinion.DisplayName: Squirrer Minion
+	SquirrelStone.DisplayName: Squirrel Stone
+	BoneSerpentFriendly.DisplayName: Bone Serpent Friendly
+	MoltenAnchorProjectile.DisplayName: Molten Anchor Projectile
+	MoonlightBeam.DisplayName: Moonlight Beam
+	MoonlightCoreProjectile.DisplayName: Moonlight Core Projectile
+	MoonlightLaser.DisplayName: Moonlight Laser
+	TrueEye.DisplayName: Phantom Eye
+	MutantBulbProjectile.DisplayName: Mutant Bulb Projectile
+	MutantVine.DisplayName: Mutant Vine
+	DetectorMinion.DisplayName: Detector Minion
+	DetectorMinionLaser.DisplayName: Detector Minion Laser
+	MechanicalTransmitterProjectile.DisplayName: Mechanical Transmitter Projectile
+	BaitHeldEffect.DisplayName: Bait Held Effect
+	MagicHatProjectile.DisplayName: Magic Hat Projectile
+	PigeonMinion.DisplayName: Pigeon Minion
+	FrostboundCageProjectile.DisplayName: Frostbound Cage Projectile
+	FrostboundSpirit.DisplayName: Frostbound Spirit
+	FrostShoot.DisplayName: Frost Shoot
+	BlueFlatTopMushroomProjectile.DisplayName: Blue Flat Top Mushroom Projectile
+	BlueFox.DisplayName: Blue Fox
+	BlueSporeCloud.DisplayName: Blue Spore Cloud
+	SacredShoot.DisplayName: Sacred Shoot
+	SacredStoneProjectile.DisplayName: Sacred Stone Projectile
+	SacredStoneSummon.DisplayName: Sacred Stone Summon
+	BottledFissureProjectile.DisplayName: Bottled Fissure Projectile
+	VoidEater.DisplayName: Void Eater
+	AzafureWarSatelliteAuthorizationKeyProjectile.DisplayName: Azafure War Satellite Authorization Key Projectile
+	SateliteLaser.DisplayName: Satelite Laser
+	WarSatellite.DisplayName: War Satellite
+	ArbitratorStealthImpact.DisplayName: Arbitrator Stealth Impact
+	ArbitratorStealthImpactSpawner.DisplayName: Arbitrator Stealth Impact Spawner
+	TheDeadCutSlash.DisplayName: The Dead Cut Slash
+	FooveriaHeld.DisplayName: Fooveria Held
+	FooveriaIceShard.DisplayName: Fooveria Ice Shard
+	AzafureTwinSawHeld.DisplayName: Azafure Twin Saw Held
+	AzafureSawSpark.DisplayName: Azafure Saw Spark
+	VFChargeFXProj.DisplayName: V F Charge F X Proj
+	VoidFaquirEnergyBallMelee.DisplayName: Void Faquir Energy Ball Melee
 }
 
 LegendTooltip: - Legend -
@@ -5914,18 +6152,60 @@ WyrmChatBloodMoon2: Maybe you should go bed.
 WyrmChatRain1: It's raining, it's really refreshing. I have never felt it before.
 WyrmChatRain2: Rainwater falling on the body feels quite comfortable. This is not comparable to the water pressure in the abyss.
 WyrmChatRain3: The air is very fresh, isn't it?
-loreCruiser: Entropy, in definition, is the concept of everything eventually returning to nothing. To hunt one down who has embraced this concept, you must prove you believe it too. Shattering that bottle must have been enough to attract its attention. Is only hunting down those with similar energies a survival instinct? Or is it something selfish, more like a goal or sport to it? Regardless, entities like these are best left alone from my experience. If you lost, the world may have returned to the eternal silence from whence it came.
-loreLuminaris: An expected development, the only organism that evolved alongside the astral infection. Many have been blighted by it, but with fast generational cycles comes evolution. Nowadays, it is viewed as an embodiment of beauty, its lithe form dancing along constellations. New legends have been born off the glittering wings of the starborn moth. However, various offerings have rendered it unpredictable to those who bring offerings, and is known to attack those that bring what it considers "offensive." Did power get to its head? Or did it just get used to what was handed to it? Whether natural or intentional, we shall never know now, just be aware of exactly where you let your power strike, for the innocent take no part in our pursuit.
+loreCruiser:
+	'''
+	Entropy, in definition, is the concept of everything eventually returning to nothing. 
+	To hunt one down who has embraced this concept, you must prove you believe it too. 
+	Shattering that bottle must have been enough to attract its attention. 
+	Is only hunting down those with similar energies a survival instinct? 
+	Or is it something selfish, more like a goal or sport to it? 
+	Regardless, entities like these are best left alone from my experience. 
+	If you lost, the world may have returned to the eternal silence from whence it came.
+	'''
+loreLuminaris:
+	'''
+	An expected development, the only organism that evolved alongside the astral infection.
+	Many have been blighted by it, but with fast generational cycles comes evolution.
+	Nowadays, it is viewed as an embodiment of beauty, its lithe form dancing along constellations.
+	New legends have been born off the glittering wings of the starborn moth.
+	However, various offerings have rendered it unpredictable to those who interact with it, and is known to attack those that bring what it considers "offensive".
+	Did power get to its head? Or did it just get used to what was handed to it? Whether natural or intentional, we shall never know now,
+	just be aware of exactly where you let your power strike, for the innocent take no part in our pursuit.
+	'''
 UseToggle: Use this item to turn on or off special effects:
 loreCruiserEffect: Increase the max life by 20 and increase the max mana by 50
-loreNihTwin: Imagine a world where the foundation of order lies not in resisting the dissolution of things, but the amplification of such processes. A realm of simultaneously nothing and everything, matter and energy lying in states of neverending change, things both within and far from the bounds of mortal comprehension. When you ended the Wall of Flesh that imprisoned the essences of light and dark, those contained energies tore the rift between our reality and theirs wider still. The abhorrent creature you have slain is but a droplet from the river between these worlds. What happens from here is neither my business to know nor my responsibility, that lies on you. The gears of fate continue their slow, inexorable turn regardless.
+loreNihTwin:
+	'''
+	Imagine a world where the foundation of order lies not in resisting the dissolution of things, but the amplification of such processes.
+	A realm of simultaneously nothing and everything, matter and energy lying in states of neverending change,
+	things both within and far from the bounds of mortal comprehension.
+	When you ended the Wall of Flesh that imprisoned the essences of light and dark,
+	those contained energies tore the rift between our reality and theirs wider still.
+	The abhorrent creature you have slain is but a droplet from the river between these worlds.
+	What happens from here is neither my business nor my responsibility, that lies on you.
+	The gears of fate continue their slow, inexorable turn regardless.
+	'''
 NihTwinLoreEffect:
 	'''
 	Increase resistance to [cebuff:CalamityEntropy/VoidTouch] by {1}%
 	Grants {2}HP/s life regeneration
 	{3}% increased maximum flight time
 	'''
-loreProphet: No army, kingdom, or soverign can endure for long without practitioners of temporal magicks-- those who pluck the feathers of tomorrow from the golden goose of prediction, weaving the future via present calculus. These powers can be practiced carefully and prove invaluable... or be pushed beyond the limits set by those before us. Those who gaze into realms we were never meant to comprehend, looking not just through time, but through space. We found one willing locked in the Dungeon. It took some convincing, but eventually Draedon and I gave him the last push to truly see past our tiny land. What can be described then was something willing to repel even my curiosity. The man warped, changed, took on the spiritual energy around it, the runes in every forbidden book in the Dungeon. It bled all the same, its spirit sealing itself in a tome, almost aware of what it had become. I am surprised to see you decided to call it forth again, however I believe leaving the void's fate in your hands was the right decision. Thank you, for letting him finally rest.
+loreProphet:
+	'''
+	No army, kingdom, or soverign can endure for long without practitioners of temporal magicks,
+	those who pluck the feathers of tomorrow from the golden goose of prediction, weaving the future via present calculus.
+	These powers can be practiced carefully and proven invaluable... or be pushed beyond the limits set by those before us.
+	Those who gaze into realms we were never meant to comprehend, looking not just through time, but through space.
+	We found one that was almost willing locked in the Dungeon.
+	It took some convincing, but eventually Draedon and I gave him the last push to truly see past our tiny land.
+	What can be described then was something willing to repel even my curiosity.
+	The man warped, changed, took on the spiritual energy around it, the runes in every forbidden book in the Dungeon.
+	It bled all the same, its spirit sealing itself in a tome, almost aware of what it had become.
+	I am surprised to see you decided to call it forth again,
+	however I believe leaving the void's fate in your hands was the right decision.
+	Thank you, for letting him finally rest.
+	'''
 
 Keybinds: {
 	ThrowPoop.DisplayName: Throw Poop
@@ -5933,8 +6213,8 @@ Keybinds: {
 	VetrasylsEyeBlock.DisplayName: Vetrasyls Eye Block
 	RuneDash.DisplayName: Rune Wings Dash
 	CommandMinions.DisplayName: Command Minions
-	NihilityAndChaoticArmorConnectKey.DisplayName: Nihility And Chaotic Armor Connect Key
-	AcropolisMechTransformation.DisplayName: Mods.CalamityEntropy.Keybinds.AcropolisMechTransformation.DisplayName
+	NihilityAndChaoticArmorConnectKey.DisplayName: Nihility & Chaotic Armor Connect Key
+	AcropolisMechTransformation.DisplayName: Acropolis Mecha Transformation
 }
 
 ProphetLoreEffect:
@@ -6048,6 +6328,11 @@ Configs: {
 		EnableRetroLighting: {
 			Label: Allow Retro Lighting and allow zero wave quality
 			Tooltip: If you still want use retro light mode, set this to true. Ensure the Enable Pixel Effect option closed to show UI correct
+		}
+
+		CalamityTextEffectCompatibilityFix: {
+			Label: Calamity Text Effect Compatibility Fix
+			Tooltip: ""
 		}
 	}
 
@@ -6430,6 +6715,7 @@ BloodBoilingDescr: Continuously using items increases attack speed, but it will 
 PrefixHeavyDesc: +10% increased fall speed
 DamageReduceCD: Damage Reduction Cooldown
 DeltaruneCH5ShadowCrystal: Get shadow crystal in Deltarune chapter5
+
 InfernumIntros: {
 	NihilityTwin:
 		'''
@@ -6728,7 +7014,7 @@ AzafureEnhances: {
 	AzafureTeslaGun: Increased arc damage
 	AzafureElectrocauteryWand: Increased charging speed
 	AzafureLightMachineGun: Increased stealth generation on hit
-	AzafurePowerSaw: Increased damage and no longer overheats
+	AzafurePowerSaw: Increased damage and duration
 	AzafureDrill: Increased pick power and pick range
 	AzafureEKatana: Increased attack range
 	AzafureCogfly: Increased minion attacking speed
@@ -6752,6 +7038,9 @@ AzafureEnhances: {
 		Increase the range and time of the saw
 		Increase missile amount
 		'''
+	AzafureMicroBeacon: Increase the amount of drones
+	AzafureWarSatelliteAuthorizationKey: Increase the laser duration
+	AzafureTwinSaw: Increase spark range
 }
 
 Menu: {
@@ -6778,7 +7067,7 @@ MinionAccDescCrownFangs: When equipped with [ITEM]: Increases your max number of
 NonZenithWorld: Not in zenith world
 ZenithWorld: In zenith world
 RatizelShield: Ratizel Shield
-PrefixEnchantedDesc: Mods.CalamityEntropy.PrefixEnchantedDesc
+PrefixEnchantedDesc: +4% Enhanced mana
 NoAmmo: Out of ammo!
 VoidDeath0: "{0} vanished into thin air"
 VoidDeath1: "{0} has been decomposed into atoms"

@@ -202,6 +202,7 @@ namespace CalamityEntropy.Content.Items.Pets.Glue
             {
                 Frame = 0;
                 anm = AnimationStyle.Fly;
+                NoTransformTime = 100;
                 if (Counter >= 1 || !JaronaTarget.ToNPC().active)
                 {
                     JaronaTarget = -1;
@@ -301,7 +302,7 @@ namespace CalamityEntropy.Content.Items.Pets.Glue
                         Counter = 0;
                         Frame++;
                     }
-                    if (CEUtils.getDistance(Projectile.Center, player.Center) < 300 && JaronaC <= 0)
+                    if (NoTransformTime <= 0 && CEUtils.getDistance(Projectile.Center, player.Center) < 300 && JaronaC <= 0)
                     {
                         if (!CEUtils.CheckSolidTile(Projectile.getRect()))
                         {
@@ -418,7 +419,9 @@ namespace CalamityEntropy.Content.Items.Pets.Glue
                         oldStats.RemoveAt(0);
                 }
             }
+            NoTransformTime--;
         }
+        public int NoTransformTime = 0;
         public override void OnKill(int timeLeft)
         {
             CEUtils.ExplotionParticleLOL(Projectile.Center);
@@ -438,14 +441,14 @@ namespace CalamityEntropy.Content.Items.Pets.Glue
             Rectangle rect = GetFrame(tex);
             SpriteEffects ef = SprEf;
             float ta = float.Min(1, Projectile.velocity.Length() * 0.03f);
+            Main.spriteBatch.End();
+            wt.Parameters["strength"].SetValue(1);
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, wt, Main.GameViewMatrix.TransformationMatrix);
+            wt.CurrentTechnique.Passes[0].Apply();
             for (int i = 0; i < oldStats.Count; i++)
             {
                 Color clr = Main.hslToRgb((Main.GameUpdateCount * 0.03f + i * 0.018f) % MathHelper.PiOver2, 1f, 0.5f) * 1f * ta * (i / (oldStats.Count + 1f));
                 Rectangle df = oldStats[i].Frame;
-                Main.spriteBatch.End();
-                wt.Parameters["strength"].SetValue(1);
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, wt, Main.GameViewMatrix.TransformationMatrix);
-                wt.CurrentTechnique.Passes[0].Apply();
                 Main.spriteBatch.Draw(oldStats[i].Texture, oldStats[i].Center + oldStats[i].offset - Main.screenPosition, oldStats[i].Frame, clr, 0, oldStats[i].Frame.Size() * 0.5f, Projectile.scale * 2, oldStats[i].spriteEffects, 0);
             }
             Main.spriteBatch.ExitShaderRegion();

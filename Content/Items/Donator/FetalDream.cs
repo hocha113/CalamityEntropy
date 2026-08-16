@@ -25,7 +25,7 @@ namespace CalamityEntropy.Content.Items.Donator
                 .AddIngredient(ItemID.StoneBlock)
                 .AddIngredient(ItemID.BlackLens, 5)
                 .AddIngredient<BloodOrb>(9)
-                .AddIngredient<BloodstoneCore>(6)
+                .AddIngredient<Bloodstone>(10)
                 .AddCondition(Condition.BloodMoon)
                 .AddCondition(Condition.NearWater)
                 .DisableDecraft()

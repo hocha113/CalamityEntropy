@@ -13,6 +13,7 @@ using CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo;
 using CalamityEntropy.Content.Items.Pets;
 using CalamityEntropy.Content.Items.Vanity;
 using CalamityEntropy.Content.Items.Weapons;
+using CalamityEntropy.Content.Items.Weapons.Bait;
 using CalamityEntropy.Content.Items.Weapons.Whips;
 using CalamityEntropy.Content.NPCs;
 using CalamityEntropy.Content.NPCs.FriendFinderNPC;
@@ -29,6 +30,8 @@ using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.NPCs.CeaselessVoid;
 using CalamityMod.NPCs.Crabulon;
+using CalamityMod.NPCs.Cryogen;
+using CalamityMod.NPCs.DesertScourge;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.NPCs.HiveMind;
 using CalamityMod.NPCs.NormalNPCs;
@@ -847,10 +850,18 @@ namespace CalamityEntropy.Common
             {
                 npcLoot.Add(ModContent.ItemType<OsseousRemains>(), 3, 6, 8);
             }
+            if (npc.type == NPCID.MoonLordCore)
+            {
+                npcLoot.AddNormalOnly(ModContent.ItemType<MoonlightCore>(), 3, 1, 1);
+            }
             if (npc.type == ModContent.NPCType<Yharon>())
             {
                 npcLoot.AddIf(() => (!NPC.downedMoonlord), ModContent.ItemType<FlowingLight>(), 1);
                 npcLoot.AddNormalOnly(ModContent.ItemType<BookMarkAuric>(), 4, 1, 1);
+            }
+            if (npc.type == ModContent.NPCType<DesertScourgeHead>())
+            {
+                npcLoot.AddNormalOnly(ModContent.ItemType<AntlionShell>(), 3, 1, 1);
             }
             if (npc.type == NPCID.WallofFlesh)
             {
@@ -899,6 +910,7 @@ namespace CalamityEntropy.Common
             if (npc.type == ModContent.NPCType<Providence>())
             {
                 npcLoot.Add(ModContent.ItemType<HellBohea>(), 2);
+                npcLoot.Add(ModContent.ItemType<SacredStone>(), 3);
             }
             if (npc.type == NPCID.Paladin)
             {
@@ -907,8 +919,8 @@ namespace CalamityEntropy.Common
             if (npc.type == ModContent.NPCType<Crabulon>())
             {
                 npcLoot.AddNormalOnly(ModContent.ItemType<WisperCard>(), 2);
-
                 npcLoot.AddNormalOnly(ModContent.ItemType<BookmarkSpore>(), 3);
+                npcLoot.AddNormalOnly(ModContent.ItemType<BookMarkCancer>(), 3);
             }
             if (npc.type == NPCID.Golem)
             {
@@ -925,6 +937,7 @@ namespace CalamityEntropy.Common
             if (npc.type == NPCID.Plantera)
             {
                 npcLoot.AddNormalOnly(ModContent.ItemType<LashingBramblerod>(), new Fraction(3, 5));
+                npcLoot.AddNormalOnly(ModContent.ItemType<MutantBulb>(), new Fraction(2, 5));
             }
             if (npc.type == NPCID.WyvernHead)
             {
@@ -941,6 +954,10 @@ namespace CalamityEntropy.Common
             if (npc.type == ModContent.NPCType<PerforatorHive>())
             {
                 npcLoot.Add(ModContent.ItemType<SinewLash>(), 3);
+            }
+            if (npc.type == ModContent.NPCType<Cryogen>())
+            {
+                npcLoot.Add(ModContent.ItemType<FrostboundCage>(), 3);
             }
             if (npc.type == NPCID.QueenSlimeBoss)
             {

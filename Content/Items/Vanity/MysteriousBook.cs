@@ -46,17 +46,16 @@ namespace CalamityEntropy.Content.Items.Vanity
             Item.rare = ItemRarityID.Green;
             Item.vanity = true;
         }
-
         public override void UpdateVanity(Player player)
         {
-            player.GetModPlayer<MysteriousBookPlayer>().vanityEquipped = true;
+            player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             if (!hideVisual)
             {
-                player.GetModPlayer<MysteriousBookPlayer>().vanityEquipped = true;
+                player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             }
         }
 
@@ -67,27 +66,6 @@ namespace CalamityEntropy.Content.Items.Vanity
                 .AddIngredient(ItemID.Cloud, 5)
                 .AddTile(TileID.WorkBenches)
                 .Register();
-        }
-    }
-
-    public class MysteriousBookPlayer : ModPlayer
-    {
-        public bool vanityEquipped = false;
-
-        public override void ResetEffects()
-        {
-            vanityEquipped = false;
-        }
-
-        public override void FrameEffects()
-        {
-            if (vanityEquipped)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "MysteriousBook", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "MysteriousBook", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "MysteriousBook", EquipType.Head);
-
-            }
         }
     }
 }

@@ -543,8 +543,6 @@ namespace CalamityEntropy
             switch (key.ToLower())
             {
                 //基础数值
-                case "voidcharge":
-                    return modPlayer.VoidCharge;
                 case "brilliancecard":
                     return modPlayer.brillianceCard;
                 case "shadowpact":
@@ -648,8 +646,6 @@ namespace CalamityEntropy
                     return modPlayer.Godhead;
                 case "awarraith":
                     return modPlayer.AWraith;
-                case "voidinspire":
-                    return modPlayer.VoidInspire;
                 case "mariviniumset":
                     return modPlayer.MariviniumSet;
                 case "mariviniumshieldcount":
@@ -676,16 +672,6 @@ namespace CalamityEntropy
             //根据 key 设置不同的数据
             switch (key.ToLower())
             {
-                //基础数值
-                case "voidcharge":
-                    if (args[2] is float floatVal)
-                        modPlayer.VoidCharge = floatVal;
-                    else if (args[2] is double doubleVal)
-                        modPlayer.VoidCharge = (float)doubleVal;
-                    else
-                        throw new ArgumentException("VoidCharge requires float or double value");
-                    break;
-
                 case "brilliancecard":
                     if (args[2] is int intVal)
                         modPlayer.brillianceCard = intVal;
@@ -787,13 +773,6 @@ namespace CalamityEntropy
                         modPlayer.WeaponBoost = intVal4;
                     else
                         throw new ArgumentException("WeaponBoost requires int value");
-                    break;
-
-                case "voidinspire":
-                    if (args[2] is int intVal5)
-                        modPlayer.VoidInspire = intVal5;
-                    else
-                        throw new ArgumentException("VoidInspire requires int value");
                     break;
 
                 case "extrastealth":

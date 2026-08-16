@@ -97,7 +97,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             if (BladeScale >= 0.2f)
             {
                 float particleRot = CEUtils.randomRot();
-                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center + particleRot.ToRotationVector2() * Radius, particleRot.ToRotationVector2().RotatedBy(-1.86f) * Main.rand.NextFloat(12, 18), false, Main.rand.Next(12, 16), Main.rand.NextFloat(0.6f, 1f) * 0.06f, (Main.rand.NextBool() ? Color.MediumPurple : new Color(80, 80, 255)) * BladeScale, new Vector2(0.22f, 1f), false, false));
+                GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center + particleRot.ToRotationVector2() * Radius * BladeScale * Projectile.scale, particleRot.ToRotationVector2().RotatedBy(-1.86f) * Main.rand.NextFloat(12, 18), false, Main.rand.Next(12, 16), Main.rand.NextFloat(0.6f, 1f) * 0.06f * BladeScale * Projectile.scale, (Main.rand.NextBool() ? Color.MediumPurple : new Color(80, 80, 255)) * BladeScale, new Vector2(0.22f, 1f), false, false));
             }
             CEUtils.AddLight(Projectile.Center, new Color(255, 100, 255));
 
@@ -183,14 +183,14 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                     Main.spriteBatch.End();
                     Effect effect = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Vortex", AssetRequestMode.ImmediateLoad).Value;
                     effect.Parameters["Center"].SetValue(new Vector2(0.5f, 0.5f));
-                    effect.Parameters["Strength"].SetValue(22);
+                    effect.Parameters["Strength"].SetValue(19);
                     effect.Parameters["AspectRatio"].SetValue(1);
                     effect.Parameters["TexOffset"].SetValue(new Vector2(Main.GlobalTimeWrappedHourly * 0.1f, -Main.GlobalTimeWrappedHourly * 0.07f));
-                    float fadeOutDistance = 0.06f;
+                    float fadeOutDistance = 0.05f;
                     float fadeOutWidth = 0.3f;
                     effect.Parameters["FadeOutDistance"].SetValue(fadeOutDistance);
                     effect.Parameters["FadeOutWidth"].SetValue(fadeOutWidth);
-                    effect.Parameters["enhanceLightAlpha"].SetValue(0.8f);
+                    effect.Parameters["enhanceLightAlpha"].SetValue(1f);
                     Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, effect, Main.GameViewMatrix.TransformationMatrix);
                     effect.CurrentTechnique.Passes[0].Apply();
                     Main.spriteBatch.Draw(CEUtils.getExtraTex("VoronoiShapes"), pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEUtils.getExtraTex("VoronoiShapes").Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
@@ -349,14 +349,14 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                     Main.spriteBatch.End();
                     Effect effect = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Vortex", AssetRequestMode.ImmediateLoad).Value;
                     effect.Parameters["Center"].SetValue(new Vector2(0.5f, 0.5f));
-                    effect.Parameters["Strength"].SetValue(22);
+                    effect.Parameters["Strength"].SetValue(19);
                     effect.Parameters["AspectRatio"].SetValue(1);
                     effect.Parameters["TexOffset"].SetValue(new Vector2(Main.GlobalTimeWrappedHourly * 0.1f, -Main.GlobalTimeWrappedHourly * 0.07f));
-                    float fadeOutDistance = 0.06f;
+                    float fadeOutDistance = 0.05f;
                     float fadeOutWidth = 0.3f;
                     effect.Parameters["FadeOutDistance"].SetValue(fadeOutDistance);
                     effect.Parameters["FadeOutWidth"].SetValue(fadeOutWidth);
-                    effect.Parameters["enhanceLightAlpha"].SetValue(0.8f);
+                    effect.Parameters["enhanceLightAlpha"].SetValue(1f);
                     Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                     effect.CurrentTechnique.Passes[0].Apply();
                     Main.spriteBatch.Draw(CEUtils.getExtraTex("VoronoiShapes"), pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEUtils.getExtraTex("VoronoiShapes").Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
@@ -467,8 +467,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 float Radius = 180;
                 for (float i = 1; i >= 0.2f; i -= 0.2f)
                 {
-                    GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 160), new Color(170, 160, 255), i) * i, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f * i * (Radius / 180f), scale * 0.07f * i * (Radius / 180f), 12 + (int)(i * 8)));
-                    GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 180), new Color(170, 160, 255), i) * i, "CalamityMod/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f * i * (Radius / 180f), scale * 0.0625f * i * (Radius / 180f), 12 + (int)(i * 8)));
+                    GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 160), new Color(170, 160, 255), i) * i, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f * i * (Radius / 180f), scale * 0.07f * i * (Radius / 180f), 9 + (int)(i * 8)));
+                    GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(new Color(100, 0, 180), new Color(170, 100, 255), i) * i, "CalamityMod/Particles/FlameExplosion", Vector2.One, CEUtils.randomRot(), 0.0046f * i * (Radius / 180f), scale * 0.05f * i * (Radius / 180f), 9 + (int)(i * 8)));
                 }
                 CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromThis(), Projectile.GetOwner(), Projectile.Center, Projectile.damage, scale * 54 * (Radius / 180f), Projectile.DamageType);
             }

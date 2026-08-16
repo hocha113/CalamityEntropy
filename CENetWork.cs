@@ -254,10 +254,6 @@ namespace CalamityEntropy
                     packet.Send(-1, wai);
                 }
             }
-            else if (messageType == CEMessageType.SendDashNPCDoUpdate)
-            {
-                DashHitbyNPCSys.HandlerDashNPCDoUpdateNet(reader, whoAmI);
-            }
             else if (messageType == CEMessageType.DestroyChest)
             {
                 if (Main.dedServ)

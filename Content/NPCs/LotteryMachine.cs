@@ -443,7 +443,7 @@ namespace CalamityEntropy.Content.NPCs
 
                 p5 = new RewardPool();
                 p5.Add(new RewardPoolItem(ModContent.ItemType<Necroplasm>(), 40));
-                p5.Add(new RewardPoolItem(ModContent.ItemType<BloodstoneCore>(), 4));
+                p5.Add(new RewardPoolItem(ModContent.ItemType<Bloodstone>(), 5));
                 p5.Add(new RewardPoolItem(ModContent.ItemType<ArkoftheElements>(), 1));
                 p5.Add(new RewardPoolItem(ModContent.ItemType<ClockworkBow>(), 1));
                 p5.Add(new RewardPoolItem(ModContent.ItemType<SanctifiedSpark>(), 1));

@@ -49,17 +49,16 @@ namespace CalamityEntropy.Content.Items.Vanity
 
         public override void UpdateVanity(Player player)
         {
-            player.GetModPlayer<PineappleDogPlayer>().vanityEquipped = true;
+            player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             if (!hideVisual)
             {
-                player.GetModPlayer<PineappleDogPlayer>().vanityEquipped = true;
+                player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             }
         }
-
         public override void AddRecipes()
         {
             CreateRecipe()
@@ -70,24 +69,4 @@ namespace CalamityEntropy.Content.Items.Vanity
         }
     }
 
-    public class PineappleDogPlayer : ModPlayer
-    {
-        public bool vanityEquipped = false;
-
-        public override void ResetEffects()
-        {
-            vanityEquipped = false;
-        }
-
-        public override void FrameEffects()
-        {
-            if (vanityEquipped)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "PineappleDog", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "PineappleDog", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "PineappleDog", EquipType.Head);
-
-            }
-        }
-    }
 }

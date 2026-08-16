@@ -47,48 +47,34 @@ namespace CalamityEntropy.Content.Items.Vanity
             Item.vanity = true;
         }
 
+
         public override void UpdateVanity(Player player)
         {
-            player.GetModPlayer<LostHeirloomPlayer>().vanityEquipped = true;
+            player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             if (!hideVisual)
             {
-                player.GetModPlayer<LostHeirloomPlayer>().vanityEquipped = true;
+                player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             }
         }
 
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(315).AddIngredient(313).AddIngredient(316).AddIngredient(318).AddIngredient(314).AddIngredient(2358).AddIngredient(317)
+                .AddIngredient(ItemID.Blinkroot).
+                AddIngredient(ItemID.Daybloom).
+                AddIngredient(ItemID.Deathweed).
+                AddIngredient(ItemID.Fireblossom).
+                AddIngredient(ItemID.Moonglow).
+                AddIngredient(ItemID.Shiverthorn).
+                AddIngredient(ItemID.Waterleaf)
                 .AddIngredient(ItemID.ManaCrystal)
                 .AddIngredient(ItemID.FallenStar)
                 .AddTile(TileID.WorkBenches)
                 .Register();
-        }
-    }
-
-    public class LostHeirloomPlayer : ModPlayer
-    {
-        public bool vanityEquipped = false;
-
-        public override void ResetEffects()
-        {
-            vanityEquipped = false;
-        }
-
-        public override void FrameEffects()
-        {
-            if (vanityEquipped)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "LostHeirloom", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "LostHeirloom", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "LostHeirloom", EquipType.Head);
-
-            }
         }
     }
 }

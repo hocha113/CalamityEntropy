@@ -21,11 +21,16 @@ namespace CalamityEntropy.Content.Projectiles
         public iWyrmSeg follow;
         public int spacing = 48;
         public float rotC = 0.14f;
+        public bool AlwaysFollow = true;
         public void update()
         {
+            if (follow == null)
+                return;
             this.rot = (follow.Center - this.Center).ToRotation();
-            this.rot = CEUtils.RotateTowardsAngle(this.rot, follow.rot, rotC, false);
-            this.Center = follow.Center - this.rot.ToRotationVector2() * spacing;
+            if(rotC > 0)
+                this.rot = CEUtils.RotateTowardsAngle(this.rot, follow.rot, rotC, false);
+            if(AlwaysFollow || CEUtils.getDistance(Center, follow.Center) > spacing)
+                this.Center = follow.Center - this.rot.ToRotationVector2() * spacing;
 
         }
     }

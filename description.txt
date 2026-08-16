@@ -14,6 +14,8 @@ Auric Boulder
 
 We will continue to add more new content in the future
 
+Used some textures from the original calamity mod(Greyscale textures, Noises, etc)
+
 [h2]-Credits-[/h2]
 Polaris: Leader, Code, Concept
 ChaLost: Sprite, Concept

@@ -792,9 +792,16 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                     }
                     if (AIChangeDelay == 480)
                     {
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        if (CEUtils.CheckSolidTile(NPC.Center.getRectCentered(250, 250)))
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(0, -80), (target.Center - (NPC.Center + new Vector2(0, -80))).normalize() * 0.7f, ModContent.ProjectileType<FableEye>(), NPC.damage / 5, 4);
+                            AIChangeDelay = 30;
+                        }
+                        else
+                        {
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(0, -80), (target.Center - (NPC.Center + new Vector2(0, -80))).normalize() * 0.7f, ModContent.ProjectileType<FableEye>(), NPC.damage / 5, 4);
+                            }
                         }
                     }
                 }

@@ -9,6 +9,7 @@ using CalamityMod.Items;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
+using Microsoft.Build.Tasks.Deployment.ManifestUtilities;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Runtime.Intrinsics.Arm;
@@ -198,7 +199,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 ThalassianWaterBolt.DrawTrail(vp, new Color(255, 255, 255), new Color(90, 90, 255));
             }
             Main.EntitySpriteDraw(Projectile.getDrawData(lightColor, overridePos: Projectile.Center));
-            Main.spriteBatch.UseBlendState(BlendState.Additive, SamplerState.PointClamp);
             if (BladeScale > 0)
             {
                 Texture2D smear = CEUtils.getExtraTex("CircularSmear");
@@ -206,21 +206,34 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 float scale = Radius / 78f * Projectile.scale * BladeScale;
                 float time = Main.GlobalTimeWrappedHourly;
                 Vector2 o = smear.Size() * 0.5f;
+                void Draw()
+                {
+                    Main.spriteBatch.Draw(co, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(40, 40, 255) * Projectile.Opacity * BladeScale, time * 18f, co.Size() * 0.5f, scale * 0.25f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(co, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(40, 40, 255) * Projectile.Opacity * BladeScale, time * -18f, co.Size() * 0.5f, scale * 0.25f, SpriteEffects.None, 0);
 
-                Main.spriteBatch.Draw(co, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(80, 80, 255) * Projectile.Opacity * BladeScale, time * 18f, co.Size() * 0.5f, scale * 0.3f, SpriteEffects.None, 0);
-                Main.spriteBatch.Draw(co, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(80, 80, 255) * Projectile.Opacity * BladeScale, time * -18f, co.Size() * 0.5f, scale * 0.28f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(140, 140, 255) * Projectile.Opacity * BladeScale, time * 42f, o, scale * 1f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(90, 90, 255) * Projectile.Opacity * BladeScale, time * -42f, o, scale * 0.98f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(90, 90, 255) * Projectile.Opacity * BladeScale, time * 36f, o, scale * 0.97f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(90, 90, 255) * Projectile.Opacity * BladeScale, time * -36f, o, scale * 0.96f, SpriteEffects.None, 0);
+                }
+                void Draw2()
+                {
+                    Main.spriteBatch.Draw(co, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(255, 255, 255) * Projectile.Opacity * BladeScale, time * 18f, co.Size() * 0.5f, scale * 0.25f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(co, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(255, 255, 255) * Projectile.Opacity * BladeScale, time * -18f, co.Size() * 0.5f, scale * 0.25f, SpriteEffects.None, 0);
 
-                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(160, 160, 255) * Projectile.Opacity * BladeScale, time * 42f, o, scale * 1f, SpriteEffects.None, 0);
-                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(140, 140, 255) * Projectile.Opacity * BladeScale, time * -42f, o, scale * 0.84f, SpriteEffects.None, 0);
-                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(120, 120, 255) * Projectile.Opacity * BladeScale, time * 36f, o, scale * 0.66f, SpriteEffects.None, 0);
-                Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(100, 100, 255) * Projectile.Opacity * BladeScale, time * -36f, o, scale * 0.56f, SpriteEffects.None, 0);
-
-                Texture2D bf = CEUtils.getExtraTex("BrightFlash");
-                Main.spriteBatch.Draw(bf, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(160, 160, 255) * Projectile.Opacity * BladeScale, 0, bf.Size() * 0.5f, scale * 0.6f, SpriteEffects.None, 0);
-
+                    Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(255, 255, 255) * Projectile.Opacity * BladeScale, time * 42f, o, scale * 0.975f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(255, 255, 255) * Projectile.Opacity * BladeScale, time * -42f, o, scale * 0.96f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(255, 255, 255) * Projectile.Opacity * BladeScale, time * 36f, o, scale * 0.85f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(255, 255, 255) * Projectile.Opacity * BladeScale, time * -36f, o, scale * 0.8f, SpriteEffects.None, 0);
+                }
+                Main.spriteBatch.UseBlendState(CEUtils.SubtractiveBlending);
+                Draw2();
+                ApplyShader(new Color(240, 240, 255));
+                Draw();
             }
             if (chargeBloom > 0)
             {
+                Main.spriteBatch.UseAdditiveClamp();
                 Texture2D b = CEUtils.getExtraTex("BloomRing");
                 Main.spriteBatch.Draw(b, Projectile.Center - Main.screenPosition, null, Color.LightBlue, 0, b.Size() * 0.5f, Projectile.scale * 3 * chargeBloom * chargeBloom * chargeBloom, SpriteEffects.None, 0);
                 Main.spriteBatch.Draw(b, Projectile.Center - Main.screenPosition, null, Color.LightBlue, 0, b.Size() * 0.5f, Projectile.scale * 3 * chargeBloom * chargeBloom, SpriteEffects.None, 0);

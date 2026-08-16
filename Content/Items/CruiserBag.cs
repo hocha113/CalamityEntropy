@@ -1,6 +1,7 @@
 ﻿using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Pets;
 using CalamityEntropy.Content.Items.Weapons;
+using CalamityEntropy.Content.Items.Weapons.Bait;
 using CalamityEntropy.Content.Items.Weapons.Whips;
 using CalamityEntropy.Content.NPCs.Cruiser;
 using CalamityEntropy.Content.Rarities;
@@ -55,6 +56,7 @@ namespace CalamityEntropy.Content.Items
         {
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<CruiserHead>()));
 
+            itemLoot.Add(ModContent.ItemType<BottledFissure>(), new Fraction(3, 5));
             itemLoot.Add(ModContent.ItemType<VoidRelics>(), new Fraction(3, 5));
             itemLoot.Add(ModContent.ItemType<VoidElytra>(), new Fraction(4, 5));
             itemLoot.Add(ModContent.ItemType<VoidEcho>(), new Fraction(3, 5));

@@ -151,8 +151,9 @@ namespace CalamityEntropy.Content.Items.Books
             {
                 for (int i = 0; i < 2; ++i)
                 {
-                    //CustomPulse叠圆形光斑+BloomRing,CalamityPorts Configure签名跟Calamity原构造对齐
-                    PRTLoader.NewParticle<PRT_CustomPulse>(dustPos, Vector2.Zero, Color.Black, 0.4f * speedMultiplier * scale).Configure("CalamityEntropy/Assets/Particles/BloomCircle", Vector2.One, 0, 0.4f * speedMultiplier * scale, 0.05f * speedMultiplier * scale, 12, PRTDrawModeEnum.AlphaBlend);
+                    //CustomPulse叠黑色实心圆+BloomRing,CalamityPorts Configure签名跟Calamity原构造对齐
+                    //黑圆走 AlphaBlend 必须用带真实 alpha 的 BasicCircle(原灾厄也是这张);BloomCircle 是黑底不透明强度图,AlphaBlend 下会画成黑方块
+                    PRTLoader.NewParticle<PRT_CustomPulse>(dustPos, Vector2.Zero, Color.Black, 0.4f * speedMultiplier * scale).Configure("CalamityEntropy/Assets/Particles/BasicCircle", Vector2.One, 0, 0.4f * speedMultiplier * scale, 0.05f * speedMultiplier * scale, 12, PRTDrawModeEnum.AlphaBlend);
                     PRTLoader.NewParticle<PRT_CustomPulse>(dustPos, Vector2.Zero, color, 0.15f * (1 + i * 0.2f) * speedMultiplier * scale).Configure("CalamityEntropy/Assets/Particles/BloomRing", Vector2.One, 0, 0.15f * (1 + i * 0.2f) * speedMultiplier * scale, 0.025f * (1 + i * 0.2f) * speedMultiplier * scale, 12);
                 }
             }
@@ -257,7 +258,8 @@ namespace CalamityEntropy.Content.Items.Books
             float scale = 2;
             for (int i = 0; i < 2; ++i)
             {
-                PRTLoader.NewParticle<PRT_CustomPulse>(dustPos, Vector2.Zero, Color.Black, 0.4f * scale).Configure("CalamityEntropy/Assets/Particles/BloomCircle", Vector2.One, 0, 0.4f * scale, 0.05f * scale, 16, PRTDrawModeEnum.AlphaBlend);
+                //同上,AlphaBlend 黑圆用 BasicCircle
+                PRTLoader.NewParticle<PRT_CustomPulse>(dustPos, Vector2.Zero, Color.Black, 0.4f * scale).Configure("CalamityEntropy/Assets/Particles/BasicCircle", Vector2.One, 0, 0.4f * scale, 0.05f * scale, 16, PRTDrawModeEnum.AlphaBlend);
                 PRTLoader.NewParticle<PRT_CustomPulse>(dustPos, Vector2.Zero, color, 0.15f * (1 + i * 0.2f) * scale).Configure("CalamityEntropy/Assets/Particles/BloomRing", Vector2.One, 0, 0.15f * (1 + i * 0.2f) * scale, 0.025f * (1 + i * 0.2f) * scale, 16);
             }
         }

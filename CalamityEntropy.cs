@@ -609,7 +609,9 @@ namespace CalamityEntropy
         public float AzShieldBarAlpha = 0;
         private void drawIr(On_Main.orig_DrawInfernoRings orig, Main self)
         {
-            orig(self);
+            //orig 只能在方法末尾调一次。InnoVault 的 PRT 粒子层挂在同一个 DrawInfernoRings 钩子里(比本钩子先注册,
+            //因而在 orig 链内),这里原先开头也调了一次 orig,导致全部 PRT 粒子每帧被画两遍,加法粒子亮度直接翻倍。
+            //旧 EParticle 时代粒子是在本钩子内、DrawMech 之后手动画一遍,所以保留末尾那次 orig 即可维持原先的层序。
 
             // I'm assuming these are not needed, as they're handled in EffectLoader.EnsureRenderTargets and other methods.
             // Why is screen2 not here?

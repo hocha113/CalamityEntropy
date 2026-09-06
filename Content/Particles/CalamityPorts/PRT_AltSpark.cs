@@ -5,7 +5,8 @@ using Terraria;
 
 namespace CalamityEntropy.Content.Particles.CalamityPorts
 {
-        //灾厄AltSpark的移植。原灾厄贴图走 AlphaBlend,自制 StarProj 是白底光晕,必须走 Additive
+    //灾厄AltSpark的移植,跟原版一样走 AlphaBlend:自制 StarProj 现在按原图的预乘编码(RGB≈A)生成,
+    //AlphaBlend 下不会再发白;早先白底直通道 alpha 那版才需要改 Additive 兜底
     public class PRT_AltSpark : BasePRT
     {
         public Color InitialColor;
@@ -27,8 +28,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         {
             AffectedByGravity = affectedByGravity;
             InitialColor = Color;
-            // 自制 StarProj 是白底+alpha 光晕,AlphaBlend 会画成发灰的大方块;Additive 才是溅射火花
-            PRTDrawMode = PRTDrawModeEnum.AdditiveBlend;
+            PRTDrawMode = PRTDrawModeEnum.AlphaBlend;   //灾厄 AltSparkParticle.UseAdditiveBlend => false
             if (lifetime > 0)
                 Lifetime = lifetime;
             return this;

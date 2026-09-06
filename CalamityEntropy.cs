@@ -154,8 +154,6 @@ namespace CalamityEntropy
 
             AbyssalWraith.loadHead();
             CruiserHead.loadHead();
-            RiftWraith.loadHead();
-            EntropyFiend.loadHead();
 
             EntropySkies.setUpSkies();
 
@@ -275,6 +273,9 @@ namespace CalamityEntropy
         private void update_npc_collision(On_Player.orig_Update_NPCCollision orig, Player self)
         {
             self.Entropy().ApplyScale();
+            // 原版接触伤害在 PreUpdateMovement 之前结算。盾冲/暗影冲刺必须在这里先启动并给接触无敌,否则贴身或跨步都会对撞扣血
+            SCDashMP.PrepareForNpcCollision(self);
+            CEShieldDashPlayer.PrepareForNpcCollision(self);
             orig(self);
             self.Entropy().ResetScale();
         }
@@ -1658,58 +1659,6 @@ namespace CalamityEntropy
                                 ["customPortrait"] = portrait
                             });
                         }
-                        {
-                            //虚空教皇(void-invasion.md §4.0,M9):月后 21.5 档,召唤物 = 维度圣座请柬
-                            string entryName = "VoidPope";
-                            List<int> collection = new List<int>()
-                            {
-                                ModContent.ItemType<Content.Items.VoidInvasion.VoidPopeBag>(),
-                                ModContent.ItemType<Content.Items.VoidInvasion.VoidPopeRelic>(),
-                                ModContent.ItemType<Content.Items.VoidInvasion.PopeMedal>(),
-                                ModContent.ItemType<Content.Items.VoidInvasion.VoidPopeLore>(),
-                                ModContent.ItemType<Content.Items.Weapons.VoidInvasion.FallenVoidCodex>(),
-                                ModContent.ItemType<Content.Items.Weapons.VoidInvasion.VoidGodScythe>(),
-                                ModContent.ItemType<Content.Items.Weapons.VoidInvasion.PrisonKnife>(),
-                                ModContent.ItemType<Content.Items.Weapons.VoidInvasion.OmniscientTetrahedron>(),
-                                ModContent.ItemType<Content.Items.Weapons.VoidInvasion.CurseRoar>()
-                            };
-                            Func<bool> popeDowned = () => EDownedBosses.downedVoidPope;
-                            AddBoss(bossChecklist, Instance, entryName, 21.5f, popeDowned, ModContent.NPCType<VoidPope>(), new Dictionary<string, object>()
-                            {
-                                ["displayName"] = Language.GetText("Mods.CalamityEntropy.NPCs.VoidPope.BossChecklistIntegration.EntryName"),
-                                ["spawnInfo"] = Language.GetText("Mods.CalamityEntropy.NPCs.VoidPope.BossChecklistIntegration.SpawnInfo"),
-                                ["despawnMessage"] = Language.GetText("Mods.CalamityEntropy.NPCs.VoidPope.BossChecklistIntegration.DespawnMessage"),
-                                ["spawnItems"] = ModContent.ItemType<Content.Items.VoidInvasion.PopeSummonItem>(),
-                                ["collectibles"] = collection
-                            });
-                        }
-                        {
-                            //虚空入侵事件条目(§8 M9):LogEvent 与 LogBoss 同签名(镜像 AddBoss 六参 Call)
-                            string entryName = "VoidInvasion";
-                            List<int> eventNPCs = new List<int>()
-                            {
-                                ModContent.NPCType<VoidCultistAssassin>(),
-                                ModContent.NPCType<VoidCultistWarlock>(),
-                                ModContent.NPCType<VoidCandleWisp>(),
-                                ModContent.NPCType<VoidTemplar>(),
-                                ModContent.NPCType<VoidCrawlerHead>(),
-                                ModContent.NPCType<VoidGolem>(),
-                                ModContent.NPCType<VoidPredatorHead>(),
-                                ModContent.NPCType<VoidmawShark>(),
-                                ModContent.NPCType<ChaosChimera>(),
-                                ModContent.NPCType<VoidCardinal>(),
-                                ModContent.NPCType<RiftWraith>(),
-                                ModContent.NPCType<EntropyFiend>()
-                            };
-                            Func<bool> invasionDowned = () => EDownedBosses.downedVoidInvasion;
-                            bossChecklist.Call("LogEvent", Instance, entryName, 21.2f, invasionDowned, eventNPCs, new Dictionary<string, object>()
-                            {
-                                ["displayName"] = Language.GetText("Mods.CalamityEntropy.VoidInvasion.BossChecklistIntegration.EntryName"),
-                                ["spawnInfo"] = Language.GetText("Mods.CalamityEntropy.VoidInvasion.BossChecklistIntegration.SpawnInfo"),
-                                ["despawnMessage"] = Language.GetText("Mods.CalamityEntropy.VoidInvasion.BossChecklistIntegration.DespawnMessage"),
-                                ["spawnItems"] = ModContent.ItemType<Content.Items.VoidInvasion.VoidDimensionLocator>()
-                            });
-                        }
                     }
 
                 }
@@ -1764,11 +1713,6 @@ namespace CalamityEntropy
             EntropyBossbar.bossbarColor[ModContent.NPCType<Luminaris>()] = new Color(150, 100, 215);
             EntropyBossbar.bossbarColor[ModContent.NPCType<AcropolisMachine>()] = new Color(255, 93, 13);
             EntropyBossbar.bossbarColor[ModContent.NPCType<Apsychos>()] = new Color(255, 160, 20);
-            //虚空入侵双小 Boss(void-invasion.md §3):NPC.boss=false,经 bigBarMiniBoss 登记进大血条
-            EntropyBossbar.bossbarColor[ModContent.NPCType<RiftWraith>()] = new Color(150, 110, 255);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<EntropyFiend>()] = new Color(130, 60, 255);
-            EntropyBossbar.bigBarMiniBoss.Add(ModContent.NPCType<RiftWraith>());
-            EntropyBossbar.bigBarMiniBoss.Add(ModContent.NPCType<EntropyFiend>());
 
             try
             {

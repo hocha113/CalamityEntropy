@@ -1,6 +1,19 @@
 # 如果要从更高级别的目录继承 .editorconfig 设置，请删除以下行
 root = true
 
+# 统一按 UTF-8 保存。系统 ANSI 代码页是 GBK，VS 2022 打开无 BOM 的纯 ASCII 文件会回退为 GBK，
+# 写入中文再保存就会以 GBK 落盘变成乱码；声明 charset 后 VS 保存时强制 UTF-8。
+[*]
+charset = utf-8-bom
+
+# HLSL 着色器：fxc.exe 不接受 BOM（error X3000: Illegal character in shader file），必须存为无 BOM 的 UTF-8
+[*.{fx,fxh,hlsl}]
+charset = utf-8
+
+# JSON / glTF：严格的 JSON 解析器不接受 BOM
+[*.{json,gltf}]
+charset = utf-8
+
 # c# 文件
 [*.cs]
 

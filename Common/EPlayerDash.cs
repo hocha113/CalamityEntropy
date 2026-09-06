@@ -138,7 +138,7 @@ public class EPlayerDash : ModPlayer
 
     private bool CanUseDash()
     {
-        // 暗影披风排他:装备期间禁用符文冲刺(2026-08-31 平衡案)
+        // 暗影披风占用中禁用符文冲刺;冷却期间旗标为假,符文冲刺可正常触发
         return DashAccessoryEquipped
                && !Player.setSolar && !Player.mount.Active
                && !Player.Entropy().shadeDashExclusive

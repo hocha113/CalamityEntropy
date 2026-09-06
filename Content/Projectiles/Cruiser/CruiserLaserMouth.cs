@@ -57,10 +57,23 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
                     Projectile.timeLeft = (int)Projectile.ai[1];
                 }
             }
-            CEUtils.SetShake(Projectile.Center, 9, 1800);
+            if (Projectile.ai[0] >= 0 && ownern == null)
+            {
+                ownern = ((int)Projectile.ai[0]).ToNPC();
+            }
+            // 虚无双子的激光不再整段推镜:每帧叠加一枚朝向玩家的定向震动,会把视角持续顶离 Boss 并来回晃,影响走位。
+            // 改为只在光束点燃瞬间给一次短促无向震动,光束具备碰撞(width>=0.7)前就衰减完
+            if (ownern?.ModNPC is NihilityActeriophage)
+            {
+                if (aicounter == 0)
+                    ScreenShaker.AddShakeWithRangeFade(new ScreenShaker.NoDirQuickShake(5f), Projectile.Center, 1800);
+            }
+            else
+            {
+                CEUtils.SetShake(Projectile.Center, 9, 1800);
+            }
             if (Projectile.ai[0] >= 0)
             {
-                if (ownern == null) { ownern = ((int)(Projectile.ai[0])).ToNPC(); }
                 if (ownern != null && ownern.active)
                 {
                     Projectile.Center = ownern.Center + (ownern.ModNPC is NihilityActeriophage ? ownern.rotation.ToRotationVector2() * 30 : Vector2.Zero);

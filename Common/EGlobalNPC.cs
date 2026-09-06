@@ -60,10 +60,6 @@ namespace CalamityEntropy.Common
         public int VoidTouchTime = 0;
         public float VoidTouchLevel = 0;
         public float VoidTouchDR = 0;
-        /// <summary>虚狂(void-invasion.md §2.2):>0 时 +20% 移速与伤害,红紫染色;术士狂暴咒术置 600,同名只刷新</summary>
-        public int voidRageTime = 0;
-        /// <summary>治疗光灵同目标锁(§2.2):>0 时不吃 HealWisp 回血,命中后置 480(8s)</summary>
-        public int voidHealCd = 0;
         public int vtnoparticle = 0;
         public float damageMul = 1;
         public int AnimaTrapped = 0;
@@ -273,24 +269,6 @@ namespace CalamityEntropy.Common
         public float MissileDamageAddition = 0;
         public override void PostAI(NPC npc)
         {
-            if (voidHealCd > 0)
-                voidHealCd--;
-            if (voidRageTime > 0)
-            {
-                voidRageTime--;
-                //虚狂移速:走地怪每 tick 微乘。教徒家族步行 AI 的平衡态 v=0.86v+0.4,
-                //叠 1.025 后稳态约 +20%(§2.2);绝对上限防其它 AI 曲线下的复利跑飞
-                if (!npc.noGravity && Math.Abs(npc.velocity.X) < 10f)
-                    npc.velocity.X *= 1.025f;
-                //红纹外溢:体表偶发上升红火星(纯客户端,与染色脉动同一套读法)
-                if (!Main.dedServ && Main.rand.NextBool(6))
-                {
-                    Vector2 pos = npc.position + new Vector2(Main.rand.NextFloat() * npc.width, Main.rand.NextFloat() * npc.height);
-                    var ember = PRTLoader.NewParticle<PRT_GlowSparkCal>(pos, new Vector2(Main.rand.NextFloat(-0.5f, 0.5f), -Main.rand.NextFloat(1.5f, 3f)),
-                        new Color(255, 70, 110), Main.rand.NextFloat(0.22f, 0.38f));
-                    ember.Configure(false, 16, new Vector2(0.5f, 1.5f), quickShrink: true);
-                }
-            }
             Lifetime++;
             if (Lifetime > 3 * 60 * 60 && npc.ModNPC != null && npc.ModNPC is FriendFindNPC)
             {
@@ -675,13 +653,6 @@ namespace CalamityEntropy.Common
             {
                 modifiers.FinalDamage *= 2f - drMult;
             }
-            //红衣主教减伤光环(void-invasion.md §2.3):主教在场时事件家族(不含主教自身)受击 ×0.75。
-            //在场缓存由 VoidInvasion 每 tick 双端刷新;多主教不存在(场上限 1),无叠加问题
-            if (Content.Events.VoidInvasion.CardinalAlive && npc.ModNPC is not VoidCardinal
-                && (npc.ModNPC is IVoidInvasionNPC || npc.ModNPC is VoidCultist))
-            {
-                modifiers.FinalDamage *= 0.75f;
-            }
         }
 
         public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
@@ -812,23 +783,6 @@ namespace CalamityEntropy.Common
             if (npc.Entropy().daTarget)
             {
                 drawColor = Color.Black;
-            }
-            if (voidRageTime > 0)
-            {
-                //虚狂红纹流动(§2.2):强度随时间脉动、相位按个体错开,替代平涂;
-                //末 60t 随剩余时长退潮(狂暴将尽的可读信号)
-                float wane = Math.Min(1f, voidRageTime / 60f);
-                float flow = (0.3f + 0.14f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 7.3f + npc.whoAmI * 1.7f)) * wane;
-                drawColor = Color.Lerp(drawColor, new Color(255, 50, 120), flow);
-            }
-        }
-
-        /// <summary>虚狂伤害端(§2.2):+20%。接触伤害在被击玩家本机结算,读实例字段即可。</summary>
-        public override void ModifyHitPlayer(NPC npc, Player target, ref Player.HurtModifiers modifiers)
-        {
-            if (voidRageTime > 0)
-            {
-                modifiers.FinalDamage *= 1.2f;
             }
         }
         // 灾厄 NPC 掉落注入已整体拆除，并已按 bookmark-rehang.md 重挂（见方法末尾重挂段；无映射条目的物品另有表外增补裁定）

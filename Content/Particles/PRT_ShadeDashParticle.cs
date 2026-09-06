@@ -45,13 +45,15 @@ namespace CalamityEntropy.Content.Particles
 
         public override void AI()
         {
-            if (Time == 0)
+            //PRTLoader先Time++再进AI,首帧Time已是1,Time==0永远不成立;
+            //用odpl为空判首帧。漏了这步Rotation停在Configure的0,速度被拍成(len,0),不论冲刺朝向全往右飞
+            bool firstTick = odpl.Count == 0;
+            if (firstTick)
             {
                 Rotation = Velocity.ToRotation();
-                if (odpl.Count == 0)
-                    Lifetime += 8;
+                Lifetime += 8;
             }
-            int ac = (odpl.Count == 0 && Time == 0) ? 8 : 1;
+            int ac = firstTick ? 8 : 1;
             for (int i = 0; i < ac; i++)
             {
                 Position += Velocity;

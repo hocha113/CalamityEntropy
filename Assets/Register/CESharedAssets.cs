@@ -186,37 +186,7 @@ namespace CalamityEntropy.Assets.Register
         public static Effect fableeyelaser;
 
         //以下为 CompileFX.ps1 产出的 .fxc 着色器,tML 的 FxcReader 认这个后缀,与 .xnb 一样走 Assets.Request
-        //虚空入侵:传送门、火柱、烈焰、裂隙、棱晶、熵爆
-        [VaultLoaden("CalamityEntropy/Assets/Effects/VInvPortal", AssetMode.EffectValue, "PortalPass")]
-        public static Effect VInvPortal;
-        [VaultLoaden("CalamityEntropy/Assets/Effects/VInvPillar", AssetMode.EffectValue, "PillarPass")]
-        public static Effect VInvPillar;
-        [VaultLoaden("CalamityEntropy/Assets/Effects/VInvFlame", AssetMode.EffectValue, "FlamePass")]
-        public static Effect VInvFlame;
-        [VaultLoaden("CalamityEntropy/Assets/Effects/RiftCrack", AssetMode.EffectValue, "RiftCrackPass")]
-        public static Effect RiftCrack;
-        [VaultLoaden("CalamityEntropy/Assets/Effects/FiendCrystal", AssetMode.EffectValue, "FiendCrystalPass")]
-        public static Effect FiendCrystal;
-        [VaultLoaden("CalamityEntropy/Assets/Effects/FiendBurst", AssetMode.EffectValue, "FiendBurstPass")]
-        public static Effect FiendBurst;
-
-        //虚空教皇:光束、锁链、镰斩、领域环、引力井
-        [VaultLoaden("CalamityEntropy/Assets/Effects/PopeBeam", AssetMode.EffectValue, "BeamPass")]
-        public static Effect PopeBeam;
-        [VaultLoaden("CalamityEntropy/Assets/Effects/PopeChainLink", AssetMode.EffectValue, "ChainPass")]
-        public static Effect PopeChainLink;
-        [VaultLoaden("CalamityEntropy/Assets/Effects/PopeSlashArc", AssetMode.EffectValue, "SlashPass")]
-        public static Effect PopeSlashArc;
-        [VaultLoaden("CalamityEntropy/Assets/Effects/PopeDomainRing", AssetMode.EffectValue, "RingPass")]
-        public static Effect PopeDomainRing;
-        [VaultLoaden("CalamityEntropy/Assets/Effects/PopeGravityWell", AssetMode.EffectValue, "WellPass")]
-        public static Effect PopeGravityWell;
-
-        //领域全屏滤镜:交给 ScreenShaderData 的 Asset 形态构造器,由 EntropySkies 在 PostSetupContent 注册
-        [VaultLoaden("CalamityEntropy/Assets/Effects/PopeDomainFilter", AssetMode.Effects, "PopeDomainPass")]
-        public static Asset<Effect> PopeDomainFilter;
-
-        //巡游者天幕扭曲滤镜:同上走 PostSetupContent 注册,取代旧 CrSky 的 RenderTarget 扭曲流程
+        //巡游者天幕扭曲滤镜:交给 ScreenShaderData 的 Asset 形态构造器,由 EntropySkies 在 PostSetupContent 注册,取代旧 CrSky 的 RenderTarget 扭曲流程
         [VaultLoaden("CalamityEntropy/Assets/Effects/CruiserSkyFilter", AssetMode.Effects, "CruiserSkyPass")]
         public static Asset<Effect> CruiserSkyFilter;
     }

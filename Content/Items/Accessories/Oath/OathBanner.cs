@@ -25,7 +25,6 @@ namespace CalamityEntropy.Content.Items.Accessories.Oath
             Item.width = 62;
             Item.height = 56;
             Item.accessory = true;
-            Item.defense = 10;
             Item.value = Item.buyPrice(gold: 20);
             Item.rare = ItemRarityID.Pink;
         }

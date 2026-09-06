@@ -9,6 +9,9 @@ namespace CalamityEntropy.Content.Items.Accessories
     /// </summary>
     public abstract class CEBaseWings : ModItem
     {
+        // 翅膀文案在分册 Mods.CalamityEntropy.Items.Accessories.Wings.hjson,不走主表 Items.*
+        public override string LocalizationCategory => "Items.Accessories.Wings";
+
         /// <summary>下落时的额外上升加速度。</summary>
         public virtual float BonusAscentWhileFalling => 0.5f;
 

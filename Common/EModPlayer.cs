@@ -131,7 +131,7 @@ namespace CalamityEntropy.Common
         public bool VFHelmMelee;
         /// <summary>魔力病持续时间减半(虚灵宙法盔/圣洁月光共用;2026-08-31 平衡案)。</summary>
         public bool halfManaSick;
-        /// <summary>暗影披风冲刺排他:装备期间禁用其他冲刺来源(2026-08-31 平衡案)。</summary>
+        /// <summary>暗影披风冲刺占用:冷却就绪或冲刺进行中为真,冷却期间为假。</summary>
         public bool shadeDashExclusive;
         /// <summary>上神之佑团队免伤光环持有者标记(2026-08-31 平衡案)。</summary>
         public bool odinAura;
@@ -150,7 +150,6 @@ namespace CalamityEntropy.Common
         public bool mariviniumBody = false;
         public int vfcd = 0;
         public float voidcharge = 0;
-        public bool ArchmagesMirror = false;
         public float damageReduce = 1;
         public float moveSpeed = 0;
         public float ManaCost = 1;
@@ -400,7 +399,12 @@ namespace CalamityEntropy.Common
         public float AttackVoidTouch = 0;
         public float DebuffImmuneChance = 0;
         public float shootSpeed = 1;
+        /// <summary>强化魔力的百分比部分(按常规魔力上限乘算)。</summary>
         public float enhancedMana = 0;
+        /// <summary>强化魔力的固定点数部分(大魔导师手镜等直接加点)。</summary>
+        public int enhancedManaFlat = 0;
+        /// <summary>任一来源提供了强化魔力,资源条金色段与悬停文本据此显示。</summary>
+        public bool HasEnhancedMana => enhancedMana > 0 || enhancedManaFlat > 0;
         public bool sacrMask = false;
         public int voidshadeBoostTime = 0;
         public float mawOfVoidCharge = 0;
@@ -413,12 +417,6 @@ namespace CalamityEntropy.Common
         public int summonCrit = 0;
         public float meleeDamageReduce = 0;
         public int hitTimeCount = 10000000;
-        /// <summary>教皇纪念章(void-invasion.md §5.3):入侵击杀进度 ×1.1 + 虚空触减益时长减半</summary>
-        public bool popeMedal = false;
-        /// <summary>教皇传颂之物效果(§5.3):受到虚空入侵敌人的伤害 -5%</summary>
-        public bool voidPopeLoreGuard = false;
-        /// <summary>纪念章虚空触追踪:上一帧的 VoidTouch 剩余时长(减半判定用)</summary>
-        private int voidTouchPrevTime = 0;
 
         public bool isUsingItem()
         {
@@ -427,37 +425,10 @@ namespace CalamityEntropy.Common
         public override void ModifyHitByNPC(NPC npc, ref Player.HurtModifiers modifiers)
         {
             modifiers.SourceDamage *= (1 - meleeDamageReduce);
-            //教皇传颂之物(§5.3):虚空入侵家族 NPC 接触伤害 -5%
-            if (voidPopeLoreGuard && VoidInvasionGNPC.IsVoidFamily(npc))
-            {
-                modifiers.FinalDamage *= 1f - Content.Items.VoidInvasion.VoidPopeLore.voidDamageReduction;
-            }
-        }
-        public override void ModifyHitByProjectile(Projectile proj, ref Player.HurtModifiers modifiers)
-        {
-            //教皇传颂之物(§5.3):虚空入侵家族弹幕伤害 -5%(按弹幕命名空间归族)
-            if (voidPopeLoreGuard && VoidInvasionGNPC.IsVoidFamilyProjectile(proj))
-            {
-                modifiers.FinalDamage *= 1f - Content.Items.VoidInvasion.VoidPopeLore.voidDamageReduction;
-            }
         }
         public override void PostUpdateBuffs()
         {
-            //教皇纪念章(§5.3):虚空触减益时长减半。
-            //无"施加时刻"原生钩子,以帧间时长跳变侦测新施加:自然衰减为每帧 -1,
-            //时长上跳即视为新施加,压回"已有剩余"与"新时长一半"的较大者。
-            int vtType = ModContent.BuffType<Content.Buffs.VoidTouch>();
-            int idx = Player.FindBuffIndex(vtType);
-            int cur = idx >= 0 ? Player.buffTime[idx] : 0;
-            if (popeMedal && idx >= 0 && cur > voidTouchPrevTime + 1)
-            {
-                int halved = System.Math.Max(voidTouchPrevTime - 1, cur / 2);
-                Player.buffTime[idx] = halved;
-                cur = halved;
-            }
-            voidTouchPrevTime = cur;
-
-            // 魔力病持续时间减半(同上,帧间跳变侦测新施加;虚灵宙法盔/圣洁月光)
+            // 魔力病持续时间减半(帧间跳变侦测新施加;虚灵宙法盔/圣洁月光)
             int msIdx = Player.FindBuffIndex(BuffID.ManaSickness);
             int msCur = msIdx >= 0 ? Player.buffTime[msIdx] : 0;
             if (halfManaSick && msIdx >= 0 && msCur > manaSickPrev + 1)
@@ -1157,8 +1128,6 @@ namespace CalamityEntropy.Common
             equipAccs = new List<EquipInfo>();
             vetrasylsEye = false;
             maliciousCode = false;
-            popeMedal = false;
-            voidPopeLoreGuard = false;
             AzafureChargeShieldItem = null;
             AzafureDriverShieldItem = null;
             visualMagiShield = false;
@@ -1236,7 +1205,7 @@ namespace CalamityEntropy.Common
             SCrown = false;
             GreedCard = false;
             enhancedMana = 0;
-            ArchmagesMirror = false;
+            enhancedManaFlat = 0;
             damageReduce = 1;
             moveSpeed = 0;
             DebuffImmuneChance = 0;
@@ -1961,7 +1930,7 @@ namespace CalamityEntropy.Common
             }
 
             manaNorm = Player.statManaMax2;
-            Player.statManaMax2 += (int)(Player.statManaMax2 * enhancedMana);
+            Player.statManaMax2 += (int)(Player.statManaMax2 * enhancedMana) + enhancedManaFlat;
             if (Player.statMana > manaNorm)
             {
                 Player.GetDamage(DamageClass.Magic) += (Player.statMana - manaNorm) * 0.0015f;
@@ -2599,10 +2568,6 @@ namespace CalamityEntropy.Common
         public int lbaitType = -1;
         public override void PostUpdate()
         {
-            //虚空教皇 P3 领域环绕(void-invasion.md §4.3,M8):移动结算后判触边,
-            //只在本机客户端处理自己的玩家(方法内部有 whoAmI == Main.myPlayer 门,旁观端靠原生位置同步)
-            Content.NPCs.VoidInvasion.VoidPope.HandleDomainWrap(Player);
-
             if (BaitCharge < 0)
                 BaitCharge = 0;
             if (Player.HeldItem.IsAir)
@@ -3019,7 +2984,8 @@ namespace CalamityEntropy.Common
             }
             if (avTrail != null)
             {
-                avTrail.AddPoint(Player.Center + Player.velocity * 2);
+                // 用暗影冲刺自己的朝向采样,避免 PostUpdate 时 velocity 已被冲掉、拖尾只往右长
+                avTrail.AddPoint(Player.Center + Player.GetModPlayer<SCDashMP>().TrailSampleOffset);
             }
 
             float mhrot = (Player.legs == EquipLoader.GetEquipSlot(Mod, "MariviniumLeggings", EquipType.Legs) ? 0f : 0.64f) + (float)Math.Cos(Main.GameUpdateCount * 0.04f) * 0.16f;

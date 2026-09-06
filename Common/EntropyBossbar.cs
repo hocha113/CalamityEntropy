@@ -10,6 +10,7 @@ using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.UI.BigProgressBar;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Common
@@ -43,7 +44,7 @@ namespace CalamityEntropy.Common
         internal static Asset<Texture2D> DfTex;
         [VaultLoaden("CalamityEntropy/Assets/Bossbar/atk")]
         internal static Asset<Texture2D> AtkTex;
-        public override string DisplayName => "Calamity Entropy";
+        public override string DisplayName => Language.GetTextValue("Mods.CalamityEntropy.ModNameOverride");
         public Color barColor = Color.White;
         public Color buttomColor = Color.Yellow;
         public float comboProg = 1;
@@ -51,31 +52,15 @@ namespace CalamityEntropy.Common
         public float lastProg = 1;
         public float comboTarget = 1;
         public static Dictionary<int, Color> bossbarColor;
-        /// <summary>
-        /// 事件小 Boss 大血条登记(void-invasion.md §3):NPC.boss=false 避开原版 Boss 播报/音乐优先级,
-        /// 但仍要大血条观感。注册处在 CalamityEntropy 的 Bossbar Colors 区。
-        /// </summary>
-        public static HashSet<int> bigBarMiniBoss;
         public float whiteLerp = 0;
         public int comboTimeCount = 0;
-        //———事件小 Boss 相位提示:按追踪 NPC 重置的一次性演出状态———
-        private int barFxNpc = -1;
-        private bool barPrevUnlocked = false;
-        private float fiendUnlockFlash = 0;
         public override void Load()
         {
             bossbarColor = new Dictionary<int, Color>();
-            bigBarMiniBoss = new HashSet<int>();
         }
         public override void Unload()
         {
             bossbarColor = null;
-            bigBarMiniBoss = null;
-        }
-        /// <summary>大血条准入:原版 Boss 判定或事件小 Boss 登记表。</summary>
-        private static bool ShowsBigBar(NPC npc)
-        {
-            return npc.IsABoss() || (npc.active && bigBarMiniBoss != null && bigBarMiniBoss.Contains(npc.type));
         }
         public static Color getNpcBarColor(NPC npc)
         {
@@ -100,7 +85,7 @@ namespace CalamityEntropy.Common
         {
             bool flag = false;
             NPC npc = null;
-            if (info.npcIndexToAimAt >= 0 && info.npcIndexToAimAt.ToNPC().active && ShowsBigBar(info.npcIndexToAimAt.ToNPC()))
+            if (info.npcIndexToAimAt >= 0 && info.npcIndexToAimAt.ToNPC().active && info.npcIndexToAimAt.ToNPC().IsABoss())
             {
                 flag = true;
                 npc = info.npcIndexToAimAt.ToNPC();
@@ -109,7 +94,7 @@ namespace CalamityEntropy.Common
             {
                 foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (ShowsBigBar(n))
+                    if (n.IsABoss())
                     {
                         if (n.realLife < 0 && CEUtils.getDistance(n.Center, Main.LocalPlayer.Center) < 9000)
                         {
@@ -275,56 +260,6 @@ namespace CalamityEntropy.Common
 
             spriteBatch.Draw(bar3, center, null, buttomColor, 0, bar1.Size() / 2, 1, SpriteEffects.None, 0);
             spriteBatch.Draw(bar1, center, null, Color.White, 0, bar1.Size() / 2, 1, SpriteEffects.None, 0);
-
-            //虚空教皇铁索缚身窗口(void-invasion.md §4.3 P3-6,M8):DR 归零的输出窗,血条旁金光脉动提示
-            if (npc.ModNPC is Content.NPCs.VoidInvasion.VoidPope boundPope && boundPope.boundTimer > 0)
-            {
-                float bindPulse = 0.3f + 0.22f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 11f);
-                Main.spriteBatch.UseBlendState_UI(BlendState.Additive, SamplerState.LinearWrap);
-                spriteBatch.Draw(barWhite, center, new Rectangle(0, 0, 18 + (int)(500 * prog) + 2, bar1.Height),
-                    new Color(255, 214, 120) * bindPulse, 0, bar1.Size() * 0.5f, 1, SpriteEffects.None, 0);
-                Main.spriteBatch.UseBlendState_UI(BlendState.AlphaBlend);
-            }
-
-            //虚熵魔物(§3.2):<50% 熵爆解锁的一瞬血条闪紫;熵爆蓄力期随进度脉动升温(缚身金光同款管线)
-            if (npc.ModNPC is Content.NPCs.VoidInvasion.EntropyFiend fiend)
-            {
-                if (barFxNpc != npc.whoAmI)
-                {
-                    barFxNpc = npc.whoAmI;
-                    barPrevUnlocked = fiend.entropyUnlocked;
-                    fiendUnlockFlash = 0;
-                }
-                if (fiend.entropyUnlocked && !barPrevUnlocked)
-                {
-                    barPrevUnlocked = true;
-                    fiendUnlockFlash = 1f;
-                }
-                if (fiendUnlockFlash > 0)
-                {
-                    fiendUnlockFlash -= 0.02f;
-                }
-                float burstPulse = fiend.BurstCharge;
-                float overlayA = Math.Max(
-                    fiendUnlockFlash * (0.5f + 0.2f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 24f)),
-                    burstPulse * burstPulse * (0.28f + 0.18f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 13f)));
-                if (overlayA > 0.01f)
-                {
-                    Main.spriteBatch.UseBlendState_UI(BlendState.Additive, SamplerState.LinearWrap);
-                    spriteBatch.Draw(barWhite, center, new Rectangle(0, 0, 18 + (int)(500 * prog) + 2, bar1.Height),
-                        new Color(200, 120, 255) * overlayA, 0, bar1.Size() * 0.5f, 1, SpriteEffects.None, 0);
-                    Main.spriteBatch.UseBlendState_UI(BlendState.AlphaBlend);
-                }
-            }
-            //裂隙恶灵(§3.1):传送门位移期间血条蓝紫流光,提示"它在换位"
-            else if (npc.ModNPC is Content.NPCs.VoidInvasion.RiftWraith rift && rift.portalTime > 0)
-            {
-                float sheen = 0.26f + 0.16f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 9f);
-                Main.spriteBatch.UseBlendState_UI(BlendState.Additive, SamplerState.LinearWrap);
-                spriteBatch.Draw(barWhite, center, new Rectangle(0, 0, 18 + (int)(500 * prog) + 2, bar1.Height),
-                    new Color(130, 150, 255) * sheen, 0, bar1.Size() * 0.5f, 1, SpriteEffects.None, 0);
-                Main.spriteBatch.UseBlendState_UI(BlendState.AlphaBlend);
-            }
 
             if (npc.GetBossHeadTextureIndex() >= 0)
             {

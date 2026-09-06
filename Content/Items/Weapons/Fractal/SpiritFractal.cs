@@ -97,7 +97,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public float alpha = 0;
         public bool init = true;
         public bool shoot = true;
-        public float spawnProjCounter = 0;
         public override void AI()
         {
             Player owner = Projectile.GetOwner();
@@ -155,6 +154,18 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 scale = 1.8f;
                 Projectile.rotation = Projectile.velocity.ToRotation() + (RotF * -0.5f + RotF * CEUtils.GetRepeatedCosFromZeroToOne(progress, 3)) * Projectile.ai[0] * (Projectile.velocity.X > 0 ? -1 : 1);
                 Projectile.Center = Projectile.GetOwner().MountedCenter;
+                // 普通挥舞放两枚追踪的聚魂剑影;投掷段原先炸出的灾厄贴图灵魂(GhastlySoulLarge)已随脱钩删除,不再补
+                if (progress > 0.2f && shoot)
+                {
+                    shoot = false;
+                    if (Main.myPlayer == Projectile.owner)
+                    {
+                        for (int i = 0; i < 2; i++)
+                        {
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, CEUtils.normalize(Projectile.velocity) * 28 + CEUtils.randomPointInCircle(8), ModContent.ProjectileType<FractalGhostBlade>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        }
+                    }
+                }
                 if (Projectile.velocity.X > 0)
                 {
                     owner.direction = 1;
@@ -203,7 +214,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 MovementVector = Vector2.Zero
             });
         }
-        public bool spawnProj = true;
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = Projectile.GetTexture();

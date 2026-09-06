@@ -49,9 +49,7 @@ namespace CalamityEntropy.Content.Items
 
         public override bool? UseItem(Player player)
         {
-            // 仪式弹幕由所有者端生成并自动同步,亡魂本体在弹幕内由服务器端生成。
-            // 祭印路径 = VoidRitualCircle 来源约定(§1.6)里的 ai[0]=0 档:它不经过教徒吟唱阵,
-            // 而是走下方 AbyssalSigilRitual 独立链路(定时蓄能,无教徒也能完成召唤),M4 改阵不影响本链。
+            // 仪式弹幕由所有者端生成并自动同步,亡魂本体在弹幕内由服务器端生成
             if (player.whoAmI == Main.myPlayer)
             {
                 Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.Center + new Vector2(0, -110),

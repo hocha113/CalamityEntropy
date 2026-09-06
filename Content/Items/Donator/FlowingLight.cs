@@ -12,6 +12,8 @@ namespace CalamityEntropy.Content.Items.Donator
     [AutoloadEquip(EquipType.Wings)]
     public class FlowingLight : ModItem, IDonatorItem
     {
+        public override string LocalizationCategory => "Items.Accessories.Wings";
+
         // 原灾厄 BaseWings 的五项飞行参数，改由本类 VerticalWingSpeeds 直接承接
         public float BonusAscentWhileFalling => 1f;
         public float BonusAscentWhileRising => 0.17f;

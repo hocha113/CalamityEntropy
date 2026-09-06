@@ -20,10 +20,6 @@ namespace CalamityEntropy.Content.Skies
             SkyManager.Instance["CalamityEntropy:Snowgrave"] = new SnowgraveSky();
             Terraria.Graphics.Effects.Filters.Scene["CalamityEntropy:SunriseSky"] = new Filter(new TransScreenShaderData("FilterMiniTower").UseColor(Color.White).UseOpacity(0f), EffectPriority.VeryHigh);
             SkyManager.Instance["CalamityEntropy:SunriseSky"] = new SunriseSky();
-            //虚空入侵事件氛围天空(演出三迭):滤镜是惰性占位(ManageSpecialBiomeVisuals 要求 Filters.Scene 键存在,tML Player.cs 对缺键无空值保护),
-            //实际染色走 VoidInvasionSunTint.ModifySunLightColor,天幕渐变/微粒/裂隙在 VoidInvasionSky 自绘
-            Terraria.Graphics.Effects.Filters.Scene["CalamityEntropy:VoidInvasion"] = new Filter(new TransScreenShaderData("FilterMiniTower").UseColor(Color.Transparent).UseOpacity(0f), EffectPriority.VeryHigh);
-            SkyManager.Instance["CalamityEntropy:VoidInvasion"] = new VoidInvasionSky();
         }
 
         /// <summary>
@@ -32,9 +28,6 @@ namespace CalamityEntropy.Content.Skies
         /// </summary>
         public static void setUpShaderFilters()
         {
-            //教皇 P3 领域滤镜(C 队,演出二迭):纯 Filters.Scene 键,无天空件
-            Terraria.Graphics.Effects.Filters.Scene["CalamityEntropy:PopeDomain"] = new Filter(
-                new PopeDomainShaderData(CEEffectAssets.PopeDomainFilter, "PopeDomainPass"), EffectPriority.VeryHigh);
             //巡游者天幕扭曲滤镜:与 CrSky 同键成对(ManageSpecialBiomeVisuals 对缺键无空值保护);
             //强度由 CrScreenShaderData 每帧喂,噪声 VoidBack 绑 s1
             Terraria.Graphics.Effects.Filters.Scene["CalamityEntropy:Cruiser"] = new Filter(

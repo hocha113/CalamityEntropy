@@ -1,4 +1,4 @@
-ModNameOverride: 灾厄熵
+ModNameOverride: 虚空召唤
 
 Items: {
 	VoidBlade: {
@@ -310,7 +310,6 @@ Items: {
 		DisplayName: 神谕卡组
 		Tooltip:
 			'''
-			+5 防御力
 			+[ST]% 伤害，+[CR]% 暴击率，5%伤害减免
 			+10% 移动速度，+[ATS]% 近战攻速，-10% 魔力消耗
 			+[MN] 召唤栏，+100% 光照
@@ -700,8 +699,8 @@ Items: {
 		DisplayName: 大魔导师手镜
 		Tooltip:
 			'''
-			给予你25%的额外魔力
-			每1点额外魔力提供0.15%魔法伤害加成
+			增加[MANA]点强化魔力
+			每1点强化魔力提供0.15%魔法伤害加成
 			'''
 	}
 
@@ -2201,7 +2200,8 @@ Items: {
 		DisplayName: 聚魂分形
 		Tooltip:
 			'''
-			发射大量的聚魂剑影，并在每4此挥舞后投掷出武器本身，造成多次伤害并释放追踪灵魂
+			挥舞时发射追踪敌人的聚魂剑影
+			每4次挥舞后投掷出武器本身，造成多段伤害
 			[c/dfe7cb:剑上聚集着众多亡魂]
 			'''
 	}
@@ -2469,7 +2469,7 @@ Items: {
 
 	IllusionaryDew: {
 		DisplayName: 幻光星露
-		Tooltip: 在星辉地使用以召唤幻光星蛾
+		Tooltip: 在夜晚使用以召唤幻光星蛾
 	}
 
 	LuminarisTrophy: {
@@ -2926,6 +2926,7 @@ Items: {
 			使用枪械类武器时子弹必定命中
 			对衍生弹幕一样有效
 			每帧最多对一个弹幕生效
+			装备期间所有弹幕造成的伤害降低25%
 			'''
 	}
 
@@ -2933,8 +2934,9 @@ Items: {
 		DisplayName: 暗影披风
 		Tooltip:
 			'''
-			使你能够使用暗影冲刺，冲刺期间免疫伤害
-			暗影冲刺有5秒冷却，且无法与其他冲刺共存
+			进行一次无敌冲刺，冷却5秒
+			冷却就绪时替代其他冲刺
+			冷却期间不影响其他冲刺饰品
 			装备在时装栏时仅提供视觉效果
 			一件虚空缔造的斗篷，能让使用者暂时的浸润到虚空中并穿过一切
 			'''
@@ -3731,7 +3733,6 @@ Items: {
 			'''
 			增加1个召唤栏
 			召唤一只饿鬼，饿鬼会咬住敌人并持续造成伤害
-			同时，所有对这名敌人的伤害将乘算提升[A]%
 			'''
 	}
 
@@ -4215,13 +4216,8 @@ Items: {
 		DisplayName: 誓约战旗
 		Tooltip:
 			'''
-			减少[DR]%所受伤害
-			增加[REG]/s自然生命再生
-			减少[MSD]%移动速度
-			为周围625格内同一队伍的其他玩家提供以下增益：
-			增加[DMG]%伤害
-			增加[CRIT]%暴击率
-			增加[MSA]%移动速度
+			略微降低你的移速且敌人更容易瞄准你
+			为你和附近的所有队友提供[DR]防御力，[REG]hp/s自然生命再生和[DMG]%的伤害加成
 			'''
 	}
 
@@ -4473,133 +4469,6 @@ Items: {
 			'''
 	}
 
-	VoidDimensionLocator: {
-		DisplayName: 虚空维度定位仪
-		Tooltip:
-			'''
-			在地表使用，锁定此地坐标，撕开通往虚空的裂隙
-			裂隙几秒后洞开，虚空教团将倾巢而出
-			使用后消耗
-			'''
-	}
-
-	PopeSummonItem: {
-		DisplayName: 维度圣座请柬
-		Tooltip:
-			'''
-			在地表使用，召唤虚空教皇
-			需要先赢下一场虚空入侵
-			不会被消耗
-			“落款是一枚熔金的圣印，邀你赴一场维度尽头的弥撒”
-			'''
-	}
-
-	VoidPopeBag: {
-		DisplayName: 宝藏袋（虚空教皇）
-		Tooltip: ""
-	}
-
-	VoidPopeRelic: {
-		DisplayName: 虚空教皇圣物
-		Tooltip: ""
-	}
-
-	PopeMedal: {
-		DisplayName: 教皇纪念章
-		Tooltip:
-			'''
-			虚空入侵期间，佩戴者击杀敌人提供的事件进度提高10%
-			受到虚空之触减益时，持续时间减半
-			“教团至高权威的信物，如今别在讨伐者的胸口”
-			'''
-	}
-
-	VoidPopeLore: {
-		DisplayName: 虚空教皇
-		Tooltip: ""
-		Lore:
-			'''
-			虚空的信众从不缺少牧者。
-			他曾是凡人中最虔诚的一个，在裂隙第一次张开时便跪伏于地，把自己的名字献给了彼端的低语。
-			如今他端坐于维度圣座之上，以铁索为经文，以魔镰收割祭品，以六手托举一整个教团的狂热。
-			教团称颂他为教皇。而虚空只当他是一扇开得比较久的门。
-			'''
-	}
-
-	FallenVoidCodex: {
-		DisplayName: 堕虚邪典
-		Tooltip:
-			'''
-			连射追踪的魔焰弹
-			施放期间，每3秒自动甩出一条小型铁索，抽打最近的敌人
-			命中的敌人沾上虚空之触
-			“从教皇的讲坛上坠落的邪典，书页仍在自行翻动”
-			'''
-	}
-
-	VoidGodScythe: {
-		DisplayName: 虚神魔镰
-		Tooltip:
-			'''
-			挥出三段连斩
-			命中敌人积攒势头，攒满后下一次攻击化为大招
-			大招：向指针方向短距冲斩，并挥出两记全周旋斩
-			“镰刃过处，神性同尘”
-			'''
-	}
-
-	PrisonKnife: {
-		DisplayName: 镇狱飞刀
-		Tooltip:
-			'''
-			掷出炼狱飞刀，穿透2个敌人后飞回手中
-			手持蓄势，充满后下一次攻击化为大招
-			大招：一次掷出6把飞刀呈扇形展开，命中处引发小型虚空爆
-			'''
-	}
-
-	OmniscientTetrahedron: {
-		DisplayName: 全知金四面体
-		Tooltip:
-			'''
-			召唤一只全知之眼环绕你飞行
-			全知之眼会朝附近的敌人螺旋喷吐魔焰弹
-			“它看见的比它说出的多”
-			'''
-	}
-
-	CurseRoar: {
-		DisplayName: 咒怨咆哮
-		Tooltip:
-			'''
-			三连点射虚空弹
-			手持蓄势，充满后下一次攻击化为大招
-			大招：朝前方喷出一记锥形咆哮，短程高伤并大幅击退敌人
-			被咆哮命中的敌人沾上重度虚空之触
-			'''
-	}
-
-	VoidPredatorStaff: {
-		DisplayName: 虚空掠食者召唤杖
-		Tooltip:
-			'''
-			召唤一条迷你虚空掠食者环绕你游弋
-			它会撕开小型传送门，从门中俯冲穿过敌人
-			“驯服它没有诀窍，喂饱就行”
-			'''
-	}
-
-	SupremeVoidFist: {
-		DisplayName: 超绝虚空铁拳
-		Tooltip:
-			'''
-			朝指针方向快速连打直拳
-			每第4拳变为重拳，打出一枚飞行铁拳并引发小型震波
-			命中敌人积攒势头，攒满后下一次攻击化为大招
-			大招：朝指针方向发起短距冲撞，冲撞期间免疫接触伤害
-			'''
-	}
-
 	EntropyStarterBag: {
 		DisplayName: 熵之馈赠
 		Tooltip:
@@ -4607,41 +4476,6 @@ Items: {
 			右键打开
 			里面装着来自贡献者们的礼物
 			'''
-	}
-
-	BigShotsWing: {
-		// DisplayName: Big Shots Wing
-		// Tooltip: ""
-	}
-
-	IceShardWing: {
-		// DisplayName: Ice Shard Wing
-		// Tooltip: ""
-	}
-
-	PhantomLightWing: {
-		// DisplayName: Phantom Light Wing
-		// Tooltip: ""
-	}
-
-	RuneWing: {
-		// DisplayName: Rune Wing
-		// Tooltip: ""
-	}
-
-	TheRevelation: {
-		// DisplayName: The Revelation
-		// Tooltip: ""
-	}
-
-	VoidElytra: {
-		// DisplayName: Void Elytra
-		// Tooltip: ""
-	}
-
-	FlowingLight: {
-		// DisplayName: Flowing Light
-		// Tooltip: ""
 	}
 
 	TlipocasScythe: {
@@ -5235,6 +5069,8 @@ Projectiles: {
 	UhrwerkHammerCallout.DisplayName: Uhrwerk Hammer Callout
 	AquaticPet.DisplayName: 海灾酱
 	VoidRitualCircle.DisplayName: 虚空邪教徒召唤法阵
+	VPVoidLightBall.DisplayName: 虚光球
+	VPRot.DisplayName: 虚空教主
 	VoidshadeHeld.DisplayName: 虚影薄锋
 	VoidImpact.DisplayName: 虚影剑气
 	BlackFire.DisplayName: 暗影火焰
@@ -5837,43 +5673,6 @@ Projectiles: {
 	AbyssalSigilRitual.DisplayName: 虚空祭印
 	PartySparkle.DisplayName: 派对星光
 	TyrantPhantomBlade.DisplayName: 暴君幻影剑
-	HealWisp.DisplayName: 治疗光灵
-	VoidFireball.DisplayName: 虚空火球
-	VoidGroundFlame.DisplayName: 虚空残焰
-	VoidFlameBreath.DisplayName: 虚空喷焰
-	VoidPortal.DisplayName: 虚空传送门
-	GolemShockwave.DisplayName: 魔像冲击波
-	GolemLightPillar.DisplayName: 魔像光柱
-	ChimeraClawSlash.DisplayName: 嵌合体爪击
-	ChimeraGroundSpike.DisplayName: 混沌地刺
-	VoidLightningBolt.DisplayName: 虚空闪电
-	VoidCrystal.DisplayName: 虚空水晶
-	VoidCrystalCage.DisplayName: 水晶牢笼
-	PopeChain.DisplayName: 死怨铁索
-	DeathBomb.DisplayName: 死亡爆弹
-	DeathBombLaser.DisplayName: 死亡爆弹激光
-	PopeScytheSlash.DisplayName: 魔镰虚影
-	MagicEyeBolt.DisplayName: 魔焰弹
-	DimensionDisc.DisplayName: 维度魔盘
-	DiscBeam.DisplayName: 魔盘贯穿激光
-	OmniscientEye.DisplayName: 全知之眼
-	MaliceClawProj.DisplayName: 恶念之爪
-	ReflectLaser.DisplayName: 反射激光
-	CodexEyeBolt.DisplayName: 魔焰弹
-	CodexVoidChain.DisplayName: 小型死怨铁索
-	VoidGodScytheHeld.DisplayName: 虚神魔镰
-	VoidScytheSpinSlash.DisplayName: 魔镰旋斩
-	PurgatoryKnifeProj.DisplayName: 炼狱飞刀
-	OmniscientEyeMinion.DisplayName: 全知之眼
-	MinionEyeBolt.DisplayName: 魔焰弹
-	CurseRoarHeld.DisplayName: 咒怨咆哮
-	CurseVoidBullet.DisplayName: 虚空弹
-	CurseRoarWave.DisplayName: 咒怨音波
-	VoidPredatorMinion.DisplayName: 迷你掠食者
-	SupremeVoidFistHeldProj.DisplayName: 超绝虚空铁拳
-	VoidFistJab.DisplayName: 虚空直拳
-	VoidFistPunchProj.DisplayName: 重拳铁拳
-	VoidFistDash.DisplayName: 铁拳冲撞
 	// GaleWindBlade.DisplayName: Gale Wind Blade
 	// AquariusWaterBolt.DisplayName: Aquarius Water Bolt
 	// SunkenAquashard.DisplayName: Sunken Aquashard
@@ -5881,8 +5680,6 @@ Projectiles: {
 	// AbyssBladeSplitProjectile.DisplayName: Abyss Blade Split Projectile
 	// AquashardSplit.DisplayName: Aquashard Split
 	// PlaguenadeBee.DisplayName: Plaguenade Bee
-	// GhastlySoulLarge.DisplayName: Ghastly Soul Large
-	// FallenVoidCodexHeld.DisplayName: Fallen Void Codex Held
 	GodheadAura.DisplayName: 神性光环
 	PlagueEnergy.DisplayName: 瘟疫能量
 	AshAncientLight.DisplayName: 远古光明妖
@@ -5902,16 +5699,6 @@ Buffs: {
 	VoidStorm: {
 		DisplayName: 虚空强袭
 		Description: 来自虚空最深处的凝视
-	}
-
-	OmniscientEyeBuff: {
-		DisplayName: 全知之眼
-		Description: 全知之眼正在为你警戒四方
-	}
-
-	VoidPredatorBuff: {
-		DisplayName: 迷你掠食者
-		Description: 一条迷你掠食者正围着你游弋
 	}
 
 	VoidTouch: {
@@ -6569,35 +6356,8 @@ NPCs: {
 	}
 
 	VoidCultistAssassin.DisplayName: 虚空邪教徒
-	VoidCultistWarlock.DisplayName: 虚空术士
-	VoidCandleWisp.DisplayName: 虚空烛灵
-	VoidTemplar.DisplayName: 虚空护教骑士
-	VoidGolem.DisplayName: 虚空魔像
-	VoidCrawlerHead.DisplayName: 虚空爬行者
-	VoidCrawlerBody.DisplayName: 虚空爬行者
-	VoidCrawlerTail.DisplayName: 虚空爬行者
-	VoidPredatorHead.DisplayName: 虚空掠食者
-	VoidPredatorBody.DisplayName: 虚空掠食者
-	VoidPredatorTail.DisplayName: 虚空掠食者
-	VoidmawShark.DisplayName: 噬虚鲨
-	ChaosChimera.DisplayName: 混沌嵌合体
-	VoidCardinal.DisplayName: 红衣主教
-	RiftWraith.DisplayName: 裂隙恶灵
-	EntropyFiend.DisplayName: 虚熵魔物
-
-	VoidPope: {
-		DisplayName: 虚空教皇
-
-		BossChecklistIntegration: {
-			EntryName: 虚空教皇
-			SpawnInfo: 击退虚空入侵后，在地表使用[i:CalamityEntropy/PopeSummonItem]召唤
-			DespawnMessage: ""
-		}
-	}
-
-	VoidPopeHand.DisplayName: 虚空教皇
-	VoidWormlet.DisplayName: 虚空蠕虫
-	LightningOrb.DisplayName: 闪电球
+	VoidPope.DisplayName: 虚空教主
+	VoidPopeHand.DisplayName: 虚空教主
 
 	PrimordialWyrmNPC: {
 		TownNPCMood: {
@@ -6651,7 +6411,7 @@ NPCs: {
 
 		BossChecklistIntegration: {
 			EntryName: 幻光星蛾
-			SpawnInfo: 在星辉地使用[i:CalamityEntropy/IllusionaryDew]召唤
+			SpawnInfo: 在夜晚使用[i:CalamityEntropy/IllusionaryDew]召唤
 			DespawnMessage: ""
 		}
 	}
@@ -6808,18 +6568,6 @@ ApsychosBestiary:
 	在岩浆深处游荡的生物，身上的甲壳由地壳岩石构成。
 	它或许曾被当作血肉之墙的替代品，但显然失败了。
 	'''
-VoidPopeBestiary: 虚空教团的至高领袖，维度圣座的主人。三重形态之下，没有人记得他原本的面目。
-VoidCultistWarlockBestiary: 教团中的辅祭者，医治伤者，煽动狂怒。先杀术士，是每个幸存者用血换来的常识。
-VoidCandleWispBestiary: 教团烛台上的一簇活火。烛芯燃尽之前，它会一直投下火雨。
-VoidTemplarBestiary: 教团的持刃护卫，杀人先于布道。它的瞬移没有声音，冲刺却有。
-VoidGolemBestiary: 以裂隙边缘的岩壳塑成的巨仆，每一步都让大地发颤。读懂它的抬手，就读懂了活路。
-VoidCrawlerBestiary: 贴地爬行的多节猎手，装饰性的骨臂只为爬得更像活物。被激怒后，它烧得比谁都旺。
-VoidPredatorBestiary: 穿梭于传送门之间的掠食蠕虫，从不走同一扇门两次。
-VoidmawSharkBestiary: 在裂隙间泅泳的鲨形凶兽。三次冲刺，一次喘息，节拍从不出错。
-ChaosChimeraBestiary: 数种失败造物缝合成的饕餮，吞下的教众都成了它的血肉。放任它进食，是战场上最贵的错误。
-VoidCardinalBestiary: 红衣加身的战场指挥官，庇护所有信众。拔掉这面旗帜，阵线自会崩塌。
-RiftWraithBestiary: 自裂隙渗出的恶灵，是深渊亡魂在现世的浅淡回声。仪式每完成一次，它就多降临一次。
-EntropyFiendBestiary: 守在裂隙最深处的结晶魔物，教皇的先锋。它在场时，连教团都屏息。
 WorldGen.VoidOreSpawn: 天空中散发出虚空能量
 
 Tiles: {
@@ -7172,20 +6920,6 @@ EBookTooltip:
 	'''
 SetHomeCommandError: 错误: 无效参数
 HomeCommandError: 未找到
-
-VoidInvasion: {
-	Title: 虚空入侵
-	Begin: 虚空维度的裂隙正在撕开，教团的低语淹没了大地……
-	Victory: 裂隙合拢了，虚空教团被击退！
-	ProgressPercent: "{0}%"
-
-	BossChecklistIntegration: {
-		EntryName: 虚空入侵
-		SpawnInfo: 在地表使用[i:CalamityEntropy/VoidDimensionLocator]开启入侵，击杀教团敌人推进进度，讨伐99%时降临的虚熵魔物即可取胜
-		DespawnMessage: ""
-	}
-}
-
 EntropyModeName: 熵变
 EntropyModeDescShort:
 	'''
@@ -7238,7 +6972,6 @@ PrefixVigorousDescr: +22.5% 武器大招充能速度
 WikiURL: ""
 GameTips.VoidOreTip: 虚渺矿会在击败巡游者后在太空生成
 LuminarisLoreDesc: +{1}%最大飞行时间
-VoidPopeLoreDesc: 受到虚空入侵敌人的伤害降低{1}%
 LoreApsychosDesc: 使你免疫着火了和狱火减益
 SlotInfo2: 存放原矿
 LightModeTip: 警告：颜色以外的照明模式会导致灾熵的部分射弹和敌怪不显示，最好使用颜色照明

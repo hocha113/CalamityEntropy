@@ -1,10 +1,10 @@
 sampler2D Texture : register(s0);
 
-// ---------- ÓÃ»§¿Éµ÷²ÎÊı ----------
+// ---------- ç”¨æˆ·å¯è°ƒå‚æ•° ----------
 float radius    = 0.5f;
 float rotation  = 0.0f;
 float tileCount = 1.0f;
-float innerWall = 0.0f;    // 0=Íâ±Ú£¨Í¹Ãæ£©£¬1=ÄÚ±Ú£¨°¼Ãæ/»·ÈÆ£©
+float innerWall = 0.0f;    // 0=å¤–å£ï¼ˆå‡¸é¢ï¼‰ï¼Œ1=å†…å£ï¼ˆå‡¹é¢/ç¯ç»•ï¼‰
 
 float4 PSFunction(float4 baseColor : COLOR0, float2 coords : TEXCOORD0) : COLOR0
 {
@@ -13,16 +13,16 @@ float4 PSFunction(float4 baseColor : COLOR0, float2 coords : TEXCOORD0) : COLOR0
     float y = centered.y;
 
     float ratio = x / radius;
-    ratio = clamp(ratio, -1.0f, 1.0f);   // ·ÀÖ¹ asin ¶¨ÒåÓòÒç³ö
+    ratio = clamp(ratio, -1.0f, 1.0f);   // é˜²æ­¢ asin å®šä¹‰åŸŸæº¢å‡º
     float theta = asin(ratio);
-    theta += rotation;                  // µş¼ÓĞı×ª
+    theta += rotation;                  // å åŠ æ—‹è½¬
 
-    float direction = 1.0f - 2.0f * innerWall;   // Íâ±Ú:+1, ÄÚ±Ú:-1
+    float direction = 1.0f - 2.0f * innerWall;   // å¤–å£:+1, å†…å£:-1
 
     const float PI = 3.14159265f;
     float u = frac(theta * direction * tileCount / (2.0f * PI) + 0.5f);
 
-    float v = y + 0.5f;   // Ó³Éä»Ø [0,1]
+    float v = y + 0.5f;   // æ˜ å°„å› [0,1]
 
     return tex2D(Texture, float2(u, v)) * baseColor;
 }
@@ -31,7 +31,7 @@ technique CylinderWarp
 {
     pass P0
     {
-        // ½öÖ¸¶¨ÏñËØ×ÅÉ«Æ÷£¬ÎŞĞè¶¥µã×ÅÉ«Æ÷
+        // ä»…æŒ‡å®šåƒç´ ç€è‰²å™¨ï¼Œæ— éœ€é¡¶ç‚¹ç€è‰²å™¨
         PixelShader = compile ps_2_0 PSFunction();
         ZEnable     = false;
         ZWriteEnable = false;

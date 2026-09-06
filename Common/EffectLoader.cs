@@ -6,7 +6,6 @@ using CalamityEntropy.Content.Items.Pets;
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.NPCs.AbyssalWraith;
 using CalamityEntropy.Content.NPCs.Cruiser;
-using CalamityEntropy.Content.NPCs.VoidInvasion;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.AbyssalWraithProjs;
@@ -91,15 +90,6 @@ namespace CalamityEntropy.Common
         [VaultLoaden("CalamityEntropy/Assets/Effects/cblood", AssetMode.EffectValue, "cabyss")]
         public static Effect cblood;
         internal static float twistStrength = 0f;
-        //———虚熵魔物熵爆全屏演出:EntropyFiend 客户端逐帧写入,DrawFiendBurstEffect 消费后自衰———
-        /// <summary>熵爆蓄力紫涨强度 0~1</summary>
-        internal static float FiendBurstProgress = 0f;
-        /// <summary>静默拍/冲击帧去饱和 0~1</summary>
-        internal static float FiendBurstDesat = 0f;
-        /// <summary>冲击帧对比度抬升</summary>
-        internal static float FiendBurstContrast = 0f;
-        /// <summary>爆心世界坐标</summary>
-        internal static Vector2 FiendBurstCenter = Vector2.Zero;
         public const string AssetPath = "CalamityEntropy/Assets/";
         public const string AssetPath2 = "Assets/";
         public const int MaxScreenSlot = 4;
@@ -179,9 +169,6 @@ namespace CalamityEntropy.Common
 
                 //绘制区域波动
                 DrawFragEffects(graphicsDevice);
-
-                //虚熵魔物熵爆全屏演出(紫涨/静默去饱和/冲击帧;在最终白闪之前,闪盖在去饱和之上)
-                DrawFiendBurstEffect(graphicsDevice);
 
                 //应用最终着色器
                 ApplyFinalShader(graphicsDevice);
@@ -394,29 +381,6 @@ namespace CalamityEntropy.Common
                         for (int i = 0; i <= 30; i++)
                         {
                             aw.DrawPortal(aw.portalTarget + new Vector2(0, 220 - i * 2.2f), new Color(50, 35, 240) * aw.portalAlpha, 270 * s, 0.3f, i * 3f);
-                            s = s + (sj - s) * 0.05f;
-                        }
-                    }
-                }
-                //裂隙恶灵传送门:同款双漩涡,颜色乘蓝紫染色与本体区分(void-invasion.md §3.1)
-                if (n.ModNPC is RiftWraith rw)
-                {
-                    if (rw.portalAlpha > 0)
-                    {
-                        Color portalColor = new Color(40, 26, 240) * rw.portalAlpha;
-                        float s = 0;
-                        float sj = 1;
-                        for (int i = 0; i <= 30; i++)
-                        {
-                            rw.DrawPortal(rw.portalPos + new Vector2(0, 220 - i * 2.2f), portalColor, 270 * s, 0.3f, i * 3f);
-                            s = s + (sj - s) * 0.05f;
-                        }
-
-                        s = 0;
-                        sj = 1;
-                        for (int i = 0; i <= 30; i++)
-                        {
-                            rw.DrawPortal(rw.portalTarget + new Vector2(0, 220 - i * 2.2f), portalColor, 270 * s, 0.3f, i * 3f);
                             s = s + (sj - s) * 0.05f;
                         }
                     }
@@ -1376,7 +1340,6 @@ namespace CalamityEntropy.Common
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
             int abyssalWraithType = ModContent.NPCType<AbyssalWraith>();
-            int riftWraithType = ModContent.NPCType<RiftWraith>();
             int cruiserHeadType = ModContent.NPCType<CruiserHead>();
             foreach (NPC npc in Main.ActiveNPCs)
             {
@@ -1384,13 +1347,6 @@ namespace CalamityEntropy.Common
                 {
                     NPCLoader.PreDraw(npc, Main.spriteBatch, Main.screenPosition, Color.White);
                     aw.Draw();
-                    NPCLoader.PostDraw(npc, Main.spriteBatch, Main.screenPosition, Color.White);
-                }
-                //裂隙恶灵与底本同一条自绘管线(aweffect 着色器需要 Immediate 批次)
-                if (npc.type == riftWraithType && npc.ModNPC is RiftWraith rw)
-                {
-                    NPCLoader.PreDraw(npc, Main.spriteBatch, Main.screenPosition, Color.White);
-                    rw.Draw();
                     NPCLoader.PostDraw(npc, Main.spriteBatch, Main.screenPosition, Color.White);
                 }
                 if (npc.type == cruiserHeadType && npc.ModNPC is CruiserHead ch && ch.phase == 2)
@@ -1420,49 +1376,6 @@ namespace CalamityEntropy.Common
             }
 
             Main.spriteBatch.End();
-        }
-
-        /// <summary>
-        /// 熵爆全屏管线(B 队):FiendBurst.fxc 做紫涨/去饱和/冲击帧。
-        /// 参数由 EntropyFiend 每帧写入,此处消费后自衰——魔物中途消失也能自然退场;
-        /// Config.EnablePixelEffect = false 时整条 CE_EffectHandler 不跑,自动退化为纯粒子方案。
-        /// </summary>
-        private static void DrawFiendBurstEffect(GraphicsDevice graphicsDevice)
-        {
-            float strength = Math.Max(FiendBurstProgress, Math.Max(FiendBurstDesat, FiendBurstContrast));
-            if (strength <= 0.01f)
-            {
-                FiendBurstProgress = 0f;
-                FiendBurstDesat = 0f;
-                FiendBurstContrast = 0f;
-                return;
-            }
-            Effect fx = CEEffectAssets.FiendBurst;
-
-            graphicsDevice.SetRenderTarget(Screen0);
-            graphicsDevice.Clear(Color.Transparent);
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-            Main.spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-            Main.spriteBatch.End();
-
-            graphicsDevice.SetRenderTarget(Main.screenTarget);
-            graphicsDevice.Clear(Color.Transparent);
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-            fx.CurrentTechnique = fx.Techniques["Technique1"];
-            fx.Parameters["progress"].SetValue(FiendBurstProgress);
-            fx.Parameters["desat"].SetValue(FiendBurstDesat);
-            fx.Parameters["contrast"].SetValue(FiendBurstContrast);
-            fx.Parameters["center"].SetValue((FiendBurstCenter - Main.screenPosition) / Main.ScreenSize.ToVector2());
-            fx.Parameters["aspect"].SetValue(Main.screenWidth / (float)Main.screenHeight);
-            fx.Parameters["tintColor"].SetValue(new Vector4(0.42f, 0.16f, 0.75f, 0.85f));
-            fx.CurrentTechnique.Passes[0].Apply();
-            Main.spriteBatch.Draw(Screen0, Vector2.Zero, Color.White);
-            Main.spriteBatch.End();
-
-            //消费后自衰:蓄力期由 AI 每帧续写保持常量,冲击帧一次写入后 ~10 帧退场
-            FiendBurstProgress *= 0.86f;
-            FiendBurstDesat *= 0.86f;
-            FiendBurstContrast *= 0.82f;
         }
 
         private static void HandleCutScreenEffect(GraphicsDevice graphicsDevice)

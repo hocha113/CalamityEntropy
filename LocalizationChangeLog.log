@@ -852,3 +852,136 @@
 [Mods.CalamityEntropy.Items.ExergySwirlblade.Tooltip] - changed
 [Mods.CalamityEntropy.Items.Apeirokyklos.DisplayName] - changed
 [Mods.CalamityEntropy.Items.Apeirokyklos.Tooltip] - changed
+[Mods.CalamityEntropy.Items.ShadeCloak.Tooltip] - changed // 冷却就绪才替代其他冲刺,冷却期间不排他
+[Mods.CalamityEntropy.ModNameOverride] - changed // 配置与模组列表显示名：灾厄熵 → 虚空召唤 / Call of Void
+[Mods.CalamityEntropy.Items.FlowingLight.DisplayName] - removed // 翅膀改走 Items.Accessories.Wings 分册,主表空桩删除
+[Mods.CalamityEntropy.Items.PhantomLightWing.DisplayName] - removed
+[Mods.CalamityEntropy.Items.RuneWing.DisplayName] - removed
+[Mods.CalamityEntropy.Items.BigShotsWing.DisplayName] - removed
+[Mods.CalamityEntropy.Items.IceShardWing.DisplayName] - removed
+[Mods.CalamityEntropy.Items.TheRevelation.DisplayName] - removed
+[Mods.CalamityEntropy.Items.VoidElytra.DisplayName] - removed
+[Mods.CalamityEntropy.Items.SpiritFractal.Tooltip] - changed // 恢复挥舞放聚魂剑影,投掷段不再放灾厄贴图灵魂;描述去掉"释放追踪灵魂"
+[Mods.CalamityEntropy.Projectiles.GhastlySoulLarge.DisplayName] - removed // 灾厄同名移植弹已删除
+[Mods.CalamityEntropy.Items.HungryLantern.Tooltip] - changed // 删去末行乘算增伤(代码里早已不存在该效果)
+[Mods.CalamityEntropy.Items.SmartScope.Tooltip] - changed // 补写装备期间弹幕伤害-25%
+[Mods.CalamityEntropy.Items.OathBanner.Tooltip] - changed // 重写为两行:降移速+拉仇恨;自己与附近队友[DR]防御/[REG]hp/s再生/[DMG]%伤害。占位符只剩 [DR] [REG] [DMG],[MSD] [CRIT] [MSA] 不再使用;物品本体+10防御已移除
+[Mods.CalamityEntropy.Items.ArchmagesHandmirror.Tooltip] - changed // 25%强化魔力→[MANA]点强化魔力(新占位符,当前75);第二行"额外魔力"统一改称"强化魔力"
+[Mods.CalamityEntropy.Items.OracleDeck.Tooltip] - changed // 删去首行"+5 防御力"(原版防御行已自动显示)
+[Mods.CalamityEntropy.Items.IllusionaryDew.Tooltip] - changed // 召唤条件改为夜晚任意地点,不再限发光蘑菇群系
+[Mods.CalamityEntropy.NPCs.Luminaris.BossChecklistIntegration.SpawnInfo] - changed // 同上,"星辉地"→"夜晚"
+
+// ===== 2026-09-06 虚空入侵(Void Invasion)实装内容整体撤出代码库,日后重做;仅保留原型壳(虚空教主/邪教徒/召唤法阵)。以下键全部删除,除末尾四行 =====
+[Mods.CalamityEntropy.VoidInvasion.Title] - removed
+[Mods.CalamityEntropy.VoidInvasion.Begin] - removed
+[Mods.CalamityEntropy.VoidInvasion.Victory] - removed
+[Mods.CalamityEntropy.VoidInvasion.ProgressPercent] - removed
+[Mods.CalamityEntropy.VoidInvasion.BossChecklistIntegration.EntryName] - removed
+[Mods.CalamityEntropy.VoidInvasion.BossChecklistIntegration.SpawnInfo] - removed
+[Mods.CalamityEntropy.VoidInvasion.BossChecklistIntegration.DespawnMessage] - removed
+[Mods.CalamityEntropy.VoidPopeLoreDesc] - removed
+[Mods.CalamityEntropy.Items.VoidDimensionLocator.DisplayName] - removed
+[Mods.CalamityEntropy.Items.VoidDimensionLocator.Tooltip] - removed
+[Mods.CalamityEntropy.Items.PopeSummonItem.DisplayName] - removed
+[Mods.CalamityEntropy.Items.PopeSummonItem.Tooltip] - removed
+[Mods.CalamityEntropy.Items.VoidPopeBag.DisplayName] - removed
+[Mods.CalamityEntropy.Items.VoidPopeBag.Tooltip] - removed
+[Mods.CalamityEntropy.Items.VoidPopeRelic.DisplayName] - removed
+[Mods.CalamityEntropy.Items.VoidPopeRelic.Tooltip] - removed
+[Mods.CalamityEntropy.Items.PopeMedal.DisplayName] - removed
+[Mods.CalamityEntropy.Items.PopeMedal.Tooltip] - removed
+[Mods.CalamityEntropy.Items.VoidPopeLore.DisplayName] - removed
+[Mods.CalamityEntropy.Items.VoidPopeLore.Tooltip] - removed
+[Mods.CalamityEntropy.Items.VoidPopeLore.Lore] - removed
+[Mods.CalamityEntropy.Items.FallenVoidCodex.DisplayName] - removed
+[Mods.CalamityEntropy.Items.FallenVoidCodex.Tooltip] - removed
+[Mods.CalamityEntropy.Items.VoidGodScythe.DisplayName] - removed
+[Mods.CalamityEntropy.Items.VoidGodScythe.Tooltip] - removed
+[Mods.CalamityEntropy.Items.PrisonKnife.DisplayName] - removed
+[Mods.CalamityEntropy.Items.PrisonKnife.Tooltip] - removed
+[Mods.CalamityEntropy.Items.OmniscientTetrahedron.DisplayName] - removed
+[Mods.CalamityEntropy.Items.OmniscientTetrahedron.Tooltip] - removed
+[Mods.CalamityEntropy.Items.CurseRoar.DisplayName] - removed
+[Mods.CalamityEntropy.Items.CurseRoar.Tooltip] - removed
+[Mods.CalamityEntropy.Items.VoidPredatorStaff.DisplayName] - removed
+[Mods.CalamityEntropy.Items.VoidPredatorStaff.Tooltip] - removed
+[Mods.CalamityEntropy.Items.SupremeVoidFist.DisplayName] - removed
+[Mods.CalamityEntropy.Items.SupremeVoidFist.Tooltip] - removed
+[Mods.CalamityEntropy.Buffs.OmniscientEyeBuff.DisplayName] - removed
+[Mods.CalamityEntropy.Buffs.OmniscientEyeBuff.Description] - removed
+[Mods.CalamityEntropy.Buffs.VoidPredatorBuff.DisplayName] - removed
+[Mods.CalamityEntropy.Buffs.VoidPredatorBuff.Description] - removed
+[Mods.CalamityEntropy.NPCs.VoidCultistWarlock.DisplayName] - removed
+[Mods.CalamityEntropy.NPCs.VoidCandleWisp.DisplayName] - removed
+[Mods.CalamityEntropy.NPCs.VoidTemplar.DisplayName] - removed
+[Mods.CalamityEntropy.NPCs.VoidGolem.DisplayName] - removed
+[Mods.CalamityEntropy.NPCs.VoidCrawlerHead.DisplayName] - removed
+[Mods.CalamityEntropy.NPCs.VoidCrawlerBody.DisplayName] - removed
+[Mods.CalamityEntropy.NPCs.VoidCrawlerTail.DisplayName] - removed
+[Mods.CalamityEntropy.NPCs.VoidPredatorHead.DisplayName] - removed
+[Mods.CalamityEntropy.NPCs.VoidPredatorBody.DisplayName] - removed
+[Mods.CalamityEntropy.NPCs.VoidPredatorTail.DisplayName] - removed
+[Mods.CalamityEntropy.NPCs.VoidmawShark.DisplayName] - removed
+[Mods.CalamityEntropy.NPCs.ChaosChimera.DisplayName] - removed
+[Mods.CalamityEntropy.NPCs.VoidCardinal.DisplayName] - removed
+[Mods.CalamityEntropy.NPCs.RiftWraith.DisplayName] - removed
+[Mods.CalamityEntropy.NPCs.EntropyFiend.DisplayName] - removed
+[Mods.CalamityEntropy.NPCs.VoidWormlet.DisplayName] - removed
+[Mods.CalamityEntropy.NPCs.LightningOrb.DisplayName] - removed
+[Mods.CalamityEntropy.NPCs.VoidPope.BossChecklistIntegration.EntryName] - removed
+[Mods.CalamityEntropy.NPCs.VoidPope.BossChecklistIntegration.SpawnInfo] - removed
+[Mods.CalamityEntropy.NPCs.VoidPope.BossChecklistIntegration.DespawnMessage] - removed
+[Mods.CalamityEntropy.Projectiles.HealWisp.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.VoidFireball.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.VoidGroundFlame.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.VoidFlameBreath.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.VoidPortal.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.GolemShockwave.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.GolemLightPillar.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.ChimeraClawSlash.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.ChimeraGroundSpike.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.VoidLightningBolt.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.VoidCrystal.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.VoidCrystalCage.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.PopeChain.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.DeathBomb.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.DeathBombLaser.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.PopeScytheSlash.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.MagicEyeBolt.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.DimensionDisc.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.DiscBeam.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.OmniscientEye.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.MaliceClawProj.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.ReflectLaser.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.CodexEyeBolt.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.CodexVoidChain.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.VoidGodScytheHeld.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.VoidScytheSpinSlash.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.PurgatoryKnifeProj.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.OmniscientEyeMinion.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.MinionEyeBolt.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.CurseRoarHeld.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.CurseVoidBullet.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.CurseRoarWave.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.VoidPredatorMinion.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.SupremeVoidFistHeldProj.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.VoidFistJab.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.VoidFistPunchProj.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.VoidFistDash.DisplayName] - removed
+[Mods.CalamityEntropy.VoidPopeBestiary] - removed
+[Mods.CalamityEntropy.VoidCultistWarlockBestiary] - removed
+[Mods.CalamityEntropy.VoidCandleWispBestiary] - removed
+[Mods.CalamityEntropy.VoidTemplarBestiary] - removed
+[Mods.CalamityEntropy.VoidGolemBestiary] - removed
+[Mods.CalamityEntropy.VoidCrawlerBestiary] - removed
+[Mods.CalamityEntropy.VoidPredatorBestiary] - removed
+[Mods.CalamityEntropy.VoidmawSharkBestiary] - removed
+[Mods.CalamityEntropy.ChaosChimeraBestiary] - removed
+[Mods.CalamityEntropy.VoidCardinalBestiary] - removed
+[Mods.CalamityEntropy.RiftWraithBestiary] - removed
+[Mods.CalamityEntropy.EntropyFiendBestiary] - removed
+[Mods.CalamityEntropy.NPCs.VoidPope.DisplayName] - changed // 回到原型命名:虚空教皇 → 虚空教主(ru 同步回 Патриарх 谱系)
+[Mods.CalamityEntropy.NPCs.VoidPopeHand.DisplayName] - changed // 随本体回退
+[Mods.CalamityEntropy.Projectiles.VPVoidLightBall.DisplayName] - added // 教皇原型弹幕随原型代码一并恢复(3.33 块中曾标记 removed)
+[Mods.CalamityEntropy.Projectiles.VPRot.DisplayName] - added // 同上
+[Mods.CalamityEntropy.TitleTexts.Kicking6esAssOff] - added // 与 DieWithASmile(The End Of A Calamity Menu Theme)冲突遮罩被反制后显示的全屏提示,{0}=本模组显示名

@@ -1,4 +1,4 @@
-ModNameOverride: Calamity Entropy
+ModNameOverride: Call of Void
 
 Items: {
 	VoidBlade: {
@@ -326,18 +326,11 @@ Items: {
 		DisplayName: Oracle Deck
 		Tooltip:
 			'''
-			[CR]% increased critical strike chance
-			15% increased movement speed
-			+[HP] max life
-			[ST]% increased damage
-			-30% mana cost
-			Reduces damage taken by 5%
-			Increases armor penetration by [AP]
-			Increases your max number of minions by [MN]
-			[ATS]% increased attack speed
-			Light sources you emit are much brighter
-			Nearby players are healed by 20HP over 5 seconds
-			You will take at most half of your maximum health in damage
+			+[ST]% damage, +[CR]% critical strike chance, 5% damage reduction
+			+10% movement speed, +[ATS]% melee attack speed, -10% mana cost
+			+[MN] max minion, +100% light
+			Every 10 seconds, you and nearby teammates recover 20 life
+			A single hit cannot deal more than 66.7% of your max life; this protection has a 5 second cooldown
 			'''
 	}
 
@@ -687,8 +680,8 @@ Items: {
 		DisplayName: Archmage's Handmirror
 		Tooltip:
 			'''
-			25% increased max mana
-			Every point of mana gained increases magic damage by 0.15%
+			+[MANA] enhanced mana
+			Every point of enhanced mana increases magic damage by 0.15%
 			'''
 	}
 
@@ -2093,8 +2086,8 @@ Items: {
 		DisplayName: Spirit Fractal
 		Tooltip:
 			'''
-			Swings the sword three times, releasing homing swords
-			Throws the sword on the fourth swing, summoning a ring of homing spirits
+			Each swing releases homing ghost blades
+			Every fourth swing is followed by throwing the sword itself, hitting multiple times
 			Inflicts [cebuff:CalamityEntropy/SoulDisorder]
 			'[c/dfe7cb:Spirits of those you've slain empower each swing...]'
 			'''
@@ -2364,7 +2357,7 @@ Items: {
 
 	IllusionaryDew: {
 		DisplayName: Illusionary Dew
-		Tooltip: Summons Luminaris in the astral infection
+		Tooltip: Use at night to summon Luminaris
 	}
 
 	LuminarisTrophy: {
@@ -2815,6 +2808,7 @@ Items: {
 			Press the Middle Mouse Button to lock onto a target
 			Bullets automatically aim towards the targeted enemies
 			You can only target one enemy at a time
+			All projectile damage is reduced by 25% while equipped
 			'''
 	}
 
@@ -2822,8 +2816,10 @@ Items: {
 		DisplayName: Shade Cloak
 		Tooltip:
 			'''
-			When dashing, increases dash distance and makes you invunerable to damage
-			This effect has a 3 second cooldown
+			Perform an invulnerable dash with a 5 second cooldown
+			While the dash is ready, it replaces other dashes
+			Other dash accessories work normally during the cooldown
+			When worn in a vanity slot, only visual effects are provided
 			'''
 	}
 
@@ -3650,7 +3646,6 @@ Items: {
 			'''
 			Increase your max number of minions by 1
 			Summons your own personal Hungry that attaches to enemies and deals continuous damage
-			When the Hungry is attached to an enemy, that enemy takes an additional [A]% damage from all sources
 			'''
 	}
 
@@ -4159,13 +4154,8 @@ Items: {
 		DisplayName: Oath Banner
 		Tooltip:
 			'''
-			[DR]% increased damage reduction
-			Grants +[REG]HP/s life regeneration
-			[MSD]% reduced movement speed
-			Teammates within 625 tiles gain the following:
-			[DMG]% increased damage
-			[CRIT]% increased critical strike chance
-			[MSA]% increased movement speed
+			Slightly reduces your movement speed and makes enemies more likely to target you
+			Grants you and all nearby teammates +[DR] defense, [REG] HP/s life regeneration and [DMG]% increased damage
 			'''
 	}
 
@@ -4409,133 +4399,6 @@ Items: {
 			'''
 	}
 
-	VoidDimensionLocator: {
-		DisplayName: Void Dimension Locator
-		Tooltip:
-			'''
-			Use on the surface to lock onto local coordinates and tear open a rift into the void
-			The rift bursts open after a few seconds, unleashing the Void Cult
-			Consumed on use
-			'''
-	}
-
-	PopeSummonItem: {
-		DisplayName: Invitation to the Dimensional Throne
-		Tooltip:
-			'''
-			Use on the surface to summon the Void Pope
-			Requires having repelled a Void Invasion first
-			Not consumed on use
-			"The seal is molten gold, inviting you to a mass at the end of dimensions"
-			'''
-	}
-
-	VoidPopeBag: {
-		DisplayName: Treasure Bag (Void Pope)
-		Tooltip: ""
-	}
-
-	VoidPopeRelic: {
-		DisplayName: Void Pope Relic
-		Tooltip: ""
-	}
-
-	PopeMedal: {
-		DisplayName: Pope's Medal
-		Tooltip:
-			'''
-			During the Void Invasion, your kills grant 10% more event progress
-			Void Touch debuffs inflicted on you last half as long
-			"A token of the cult's highest authority, now pinned on its conqueror's chest"
-			'''
-	}
-
-	VoidPopeLore: {
-		DisplayName: Void Pope
-		Tooltip: ""
-		Lore:
-			'''
-			The faithful of the void have never lacked a shepherd.
-			He was once the most devout of mortals; when the rift first opened he fell to his knees and offered his name to the whispers beyond.
-			Now he sits upon the Dimensional Throne, chains for scripture, a scythe for the harvest, six hands bearing the fervor of an entire cult.
-			The cult hails him as Pope. The void merely considers him a door that has stayed open rather long.
-			'''
-	}
-
-	FallenVoidCodex: {
-		DisplayName: Fallen Void Codex
-		Tooltip:
-			'''
-			Rapidly fires homing magic flame bolts
-			While casting, lashes the nearest enemy with a small death chain every 3 seconds
-			Struck enemies are afflicted with Void Touch
-			"A codex fallen from the Pope's pulpit; its pages still turn by themselves"
-			'''
-	}
-
-	VoidGodScythe: {
-		DisplayName: Void God Scythe
-		Tooltip:
-			'''
-			Swings in a three-hit combo
-			Hitting enemies builds momentum; once full, your next attack becomes an ultimate
-			Ultimate: dash toward the cursor and unleash two full-circle spin slashes
-			"Where the blade passes, divinity turns to dust"
-			'''
-	}
-
-	PrisonKnife: {
-		DisplayName: Prison Knife
-		Tooltip:
-			'''
-			Throws a purgatory knife that pierces 2 enemies before returning
-			Charges while held; once full, your next attack becomes an ultimate
-			Ultimate: hurls a fan of 6 knives that detonate in small void bursts on hit
-			'''
-	}
-
-	OmniscientTetrahedron: {
-		DisplayName: Omniscient Tetrahedron
-		Tooltip:
-			'''
-			Summons an omniscient eye to orbit you
-			The eye spits magic flame bolts in spirals at nearby enemies
-			"It sees more than it tells"
-			'''
-	}
-
-	CurseRoar: {
-		DisplayName: Curse Roar
-		Tooltip:
-			'''
-			Fires void rounds in three-shot bursts
-			Charges while held; once full, your next attack becomes an ultimate
-			Ultimate: unleashes a cone-shaped roar with high damage and heavy knockback at short range
-			Enemies caught in the roar are severely afflicted with Void Touch
-			'''
-	}
-
-	VoidPredatorStaff: {
-		DisplayName: Void Predator Staff
-		Tooltip:
-			'''
-			Summons a miniature Void Predator to swim around you
-			It tears open small portals and dives through enemies
-			"There is no trick to taming it. Just keep it fed"
-			'''
-	}
-
-	SupremeVoidFist: {
-		DisplayName: Supreme Void Fist
-		Tooltip:
-			'''
-			Throws rapid jabs toward the cursor
-			Every 4th punch becomes a haymaker, launching a flying fist that bursts into a small shockwave
-			Hitting enemies builds momentum; once full, your next attack becomes an ultimate
-			Ultimate: ram a short distance toward the cursor, ignoring contact damage while charging
-			'''
-	}
-
 	EntropyStarterBag: {
 		DisplayName: Gift of Entropy
 		Tooltip:
@@ -4543,41 +4406,6 @@ Items: {
 			Right Click to open
 			Holds gifts from the contributors
 			'''
-	}
-
-	BigShotsWing: {
-		DisplayName: Big Shots Wing
-		Tooltip: ""
-	}
-
-	IceShardWing: {
-		DisplayName: Ice Shard Wing
-		Tooltip: ""
-	}
-
-	PhantomLightWing: {
-		DisplayName: Phantom Light Wing
-		Tooltip: ""
-	}
-
-	RuneWing: {
-		DisplayName: Rune Wing
-		Tooltip: ""
-	}
-
-	TheRevelation: {
-		DisplayName: The Revelation
-		Tooltip: ""
-	}
-
-	VoidElytra: {
-		DisplayName: Void Elytra
-		Tooltip: ""
-	}
-
-	FlowingLight: {
-		DisplayName: Flowing Light
-		Tooltip: ""
 	}
 
 	TlipocasScythe: {
@@ -5189,6 +5017,8 @@ Projectiles: {
 	UhrwerkHammerCallout.DisplayName: Uhrwerk Hammer Callout
 	AquaticPet.DisplayName: Aquatic Pet
 	VoidRitualCircle.DisplayName: Void Ritual Circle
+	VPVoidLightBall.DisplayName: Void Light Ball
+	VPRot.DisplayName: Void Pope Hand
 	VoidshadeHeld.DisplayName: Voidshade
 	VoidImpact.DisplayName: Void Impact
 	BlackFire.DisplayName: Black Fire
@@ -5791,43 +5621,6 @@ Projectiles: {
 	AbyssalSigilRitual.DisplayName: Abyssal Sigil
 	PartySparkle.DisplayName: Party Sparkle
 	TyrantPhantomBlade.DisplayName: Tyrant Phantom Blade
-	HealWisp.DisplayName: Healing Wisp
-	VoidFireball.DisplayName: Void Fireball
-	VoidGroundFlame.DisplayName: Void Lingering Flame
-	VoidFlameBreath.DisplayName: Void Flame Breath
-	VoidPortal.DisplayName: Void Portal
-	GolemShockwave.DisplayName: Golem Shockwave
-	GolemLightPillar.DisplayName: Golem Light Pillar
-	ChimeraClawSlash.DisplayName: Chimera Claw Slash
-	ChimeraGroundSpike.DisplayName: Chaos Ground Spike
-	VoidLightningBolt.DisplayName: Void Lightning
-	VoidCrystal.DisplayName: Void Crystal
-	VoidCrystalCage.DisplayName: Crystal Cage
-	PopeChain.DisplayName: Grudge Chain
-	DeathBomb.DisplayName: Death Bomb
-	DeathBombLaser.DisplayName: Death Bomb Ray
-	PopeScytheSlash.DisplayName: Scythe Phantom
-	MagicEyeBolt.DisplayName: Magic Flame Bolt
-	DimensionDisc.DisplayName: Dimension Disc
-	DiscBeam.DisplayName: Dimension Disc Beam
-	OmniscientEye.DisplayName: Omniscient Eye
-	MaliceClawProj.DisplayName: Malice Claw
-	ReflectLaser.DisplayName: Reflected Void Laser
-	CodexEyeBolt.DisplayName: Magic Flame Bolt
-	CodexVoidChain.DisplayName: Lesser Death Chain
-	VoidGodScytheHeld.DisplayName: Void God Scythe
-	VoidScytheSpinSlash.DisplayName: Scythe Spin Slash
-	PurgatoryKnifeProj.DisplayName: Purgatory Knife
-	OmniscientEyeMinion.DisplayName: Omniscient Eye
-	MinionEyeBolt.DisplayName: Magic Flame Bolt
-	CurseRoarHeld.DisplayName: Curse Roar
-	CurseVoidBullet.DisplayName: Void Round
-	CurseRoarWave.DisplayName: Cursing Roar
-	VoidPredatorMinion.DisplayName: Mini Void Predator
-	SupremeVoidFistHeldProj.DisplayName: Supreme Void Fist
-	VoidFistJab.DisplayName: Void Jab
-	VoidFistPunchProj.DisplayName: Void Haymaker
-	VoidFistDash.DisplayName: Fist Ram
 	GaleWindBlade.DisplayName: Gale Wind Blade
 	AquariusWaterBolt.DisplayName: Aquarius Water Bolt
 	SunkenAquashard.DisplayName: Sunken Aquashard
@@ -5835,8 +5628,6 @@ Projectiles: {
 	AbyssBladeSplitProjectile.DisplayName: Abyss Blade Split Projectile
 	AquashardSplit.DisplayName: Aquashard Split
 	PlaguenadeBee.DisplayName: Plaguenade Bee
-	GhastlySoulLarge.DisplayName: Ghastly Soul Large
-	FallenVoidCodexHeld.DisplayName: Fallen Void Codex Held
 	GodheadAura.DisplayName: Godhead Aura
 	PlagueEnergy.DisplayName: Plague Energy
 	AshAncientLight.DisplayName: Ash Ancient Light
@@ -5856,16 +5647,6 @@ Buffs: {
 	VoidStorm: {
 		DisplayName: Void Storm
 		Description: The gaze from the deepest part of the void
-	}
-
-	OmniscientEyeBuff: {
-		DisplayName: Omniscient Eye
-		Description: The omniscient eye is keeping watch for you
-	}
-
-	VoidPredatorBuff: {
-		DisplayName: Mini Predator
-		Description: A miniature predator is swimming around you
 	}
 
 	VoidTouch: {
@@ -6529,35 +6310,8 @@ NPCs: {
 	}
 
 	VoidCultistAssassin.DisplayName: Void Cultist Assassin
-	VoidCultistWarlock.DisplayName: Void Cultist Warlock
-	VoidCandleWisp.DisplayName: Void Candle Wisp
-	VoidTemplar.DisplayName: Void Templar
-	VoidGolem.DisplayName: Void Golem
-	VoidCrawlerHead.DisplayName: Void Crawler
-	VoidCrawlerBody.DisplayName: Void Crawler
-	VoidCrawlerTail.DisplayName: Void Crawler
-	VoidPredatorHead.DisplayName: Void Predator
-	VoidPredatorBody.DisplayName: Void Predator
-	VoidPredatorTail.DisplayName: Void Predator
-	VoidmawShark.DisplayName: Voidmaw Shark
-	ChaosChimera.DisplayName: Chaos Chimera
-	VoidCardinal.DisplayName: Void Cardinal
-	RiftWraith.DisplayName: Rift Wraith
-	EntropyFiend.DisplayName: Entropy Fiend
-
-	VoidPope: {
-		DisplayName: Void Pope
-
-		BossChecklistIntegration: {
-			EntryName: Void Pope
-			SpawnInfo: After repelling the Void Invasion, use [i:CalamityEntropy/PopeSummonItem] on the surface
-			DespawnMessage: ""
-		}
-	}
-
+	VoidPope.DisplayName: Void Pope
 	VoidPopeHand.DisplayName: Void Pope Hand
-	VoidWormlet.DisplayName: Void Wormlet
-	LightningOrb.DisplayName: Lightning Orb
 
 	PrimordialWyrmNPC: {
 		TownNPCMood: {
@@ -6611,7 +6365,7 @@ NPCs: {
 
 		BossChecklistIntegration: {
 			EntryName: Luminaris
-			SpawnInfo: Use [i:CalamityEntropy/IllusionaryDew] in Astral Infection to summon.
+			SpawnInfo: Use [i:CalamityEntropy/IllusionaryDew] at night to summon.
 			DespawnMessage: ""
 		}
 	}
@@ -6727,18 +6481,6 @@ ApsychosBestiary:
 	The creature wandering in the depths of lava has a carapace made of crustal rocks.
 	It may have been regarded as another way for sealing primoridial forces, but it has clearly failed.
 	'''
-VoidPopeBestiary: Supreme leader of the Void Cult and master of the Dimensional Throne. Beneath his three forms, no one remembers his original face.
-VoidCultistWarlockBestiary: The cult's acolyte, mending the wounded and inciting frenzy. Kill the warlock first: a lesson every survivor paid for in blood.
-VoidCandleWispBestiary: A living flame from the cult's candelabra. Until the wick burns out, it will keep raining fire.
-VoidTemplarBestiary: The cult's blade-bearing guardian, killing before preaching. Its teleport makes no sound; its dash does.
-VoidGolemBestiary: A giant servant shaped from rock crusts at the rift's edge; every step shakes the earth. Read its windup and you have read your way out.
-VoidCrawlerBestiary: A many-segmented hunter crawling low; its bony legs are decoration, there to make it crawl more like something alive. Enrage it, and it burns hotter than anything.
-VoidPredatorBestiary: A predatory worm weaving between portals, never using the same door twice.
-VoidmawSharkBestiary: A shark-shaped terror swimming through the rifts. Three dashes, one breath, and the rhythm never slips.
-ChaosChimeraBestiary: A glutton stitched from failed creations; the cultists it swallows become its flesh. Letting it feed is the costliest mistake on the battlefield.
-VoidCardinalBestiary: A crimson-robed field commander sheltering all believers. Tear down this banner and the line collapses on its own.
-RiftWraithBestiary: A wraith seeping from the rift, a faint echo of the Abyssal Wraith in this world. Each completed ritual brings one more descent.
-EntropyFiendBestiary: The crystalline fiend guarding the deepest rift, the Pope's vanguard. While it stands, even the cult holds its breath.
 WorldGen.VoidOreSpawn: Void energy is emanating from the sky
 
 Tiles: {
@@ -7082,20 +6824,6 @@ EBookTooltip:
 	'''
 SetHomeCommandError: Error: invalid parameters
 HomeCommandError: Cannot find home
-
-VoidInvasion: {
-	Title: Void Invasion
-	Begin: A rift into the void dimension is being torn open, and the cult's whispers flood the land...
-	Victory: The rift has closed, and the Void Cult has been driven back!
-	ProgressPercent: "{0}%"
-
-	BossChecklistIntegration: {
-		EntryName: Void Invasion
-		SpawnInfo: Use [i:CalamityEntropy/VoidDimensionLocator] on the surface to start the invasion, slay cult enemies to build progress, then defeat the Entropy Fiend at 99% to win
-		DespawnMessage: ""
-	}
-}
-
 EntropyModeName: Entropy
 EntropyModeDescShort: "[c/aa12e1:More challenging than Master Mode]"
 EntropyModeDesc: "[c/aa12e1:More challenging than Master Mode, Less Health, Less Damage]"
@@ -7140,7 +6868,6 @@ PrefixVigorousDescr: 22.5% increased weapon ultimate charge rate
 WikiURL: https://terrariamods.wiki.gg/wiki/Calamity_Entropy/
 GameTips.VoidOreTip: Void ore will spawn high in the sky after defeated Cruiser
 LuminarisLoreDesc: Gain {1}% increased maximum flight time
-VoidPopeLoreDesc: Damage taken from Void Invasion enemies reduced by {1}%
 LoreApsychosDesc: Immunity to [cebuff:OnFire] and [cebuff:OnFire3]
 SlotInfo2: InsertItem
 LightModeTip: Warning: Other lighting modes will cause some projectiles and NPCs of Calamity Entropy to become invisible. Best to use color mode.

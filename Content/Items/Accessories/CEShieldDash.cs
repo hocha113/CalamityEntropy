@@ -81,9 +81,47 @@ namespace CalamityEntropy.Content.Items.Accessories
         /// <summary>自管双击窗：&gt;0 右向待第二下，&lt;0 左向待第二下。对齐原版 dashTime 的 15 帧。</summary>
         private int dashTapWindow;
 
+        /// <summary>冲刺结束后仍挡接触伤害的剩余帧,避免刚减速还叠在怪里就对撞。</summary>
+        private int passThroughGuard;
+
+        /// <summary>上一帧采样点,给扫过判定用。</summary>
+        private Vector2 slamFrom;
+
+        public bool IsDashing => dashing;
+
+        /// <summary>冲刺中或刚结束的穿敌保护窗。</summary>
+        public bool BlocksContact => dashing || passThroughGuard > 0;
+
         public override void ResetEffects()
         {
             ActiveDash = null;
+        }
+
+        public override bool CanBeHitByNPC(NPC npc, ref int cooldownSlot)
+        {
+            // 接触伤害看这个钩,只写 immune 挡不住 specialHitSetter / 部分 Hurt 路径
+            if (BlocksContact)
+                return false;
+            return base.CanBeHitByNPC(npc, ref cooldownSlot);
+        }
+
+        /// <summary>接触伤害结算前启动、给无敌、做扫过撞箱。放 PreUpdateMovement 会晚于 Update_NPCCollision。</summary>
+        public static void PrepareForNpcCollision(Player player)
+        {
+            player.GetModPlayer<CEShieldDashPlayer>().PrepareForNpcCollision();
+        }
+
+        private void PrepareForNpcCollision()
+        {
+            if (Player.whoAmI != Main.myPlayer)
+                return;
+
+            if (!dashing)
+                TryStartDash();
+            if (dashing || passThroughGuard > 0)
+                ApplyPassThroughImmune();
+            if (dashing && usedDash != null)
+                TrySlamHits();
         }
 
         public override void PreUpdateMovement()
@@ -102,6 +140,8 @@ namespace CalamityEntropy.Content.Items.Accessories
 
             if (slamCooldown > 0)
                 slamCooldown--;
+            if (passThroughGuard > 0)
+                passThroughGuard--;
 
             if (ActiveDash == null)
             {
@@ -123,14 +163,29 @@ namespace CalamityEntropy.Content.Items.Accessories
             }
 
             if (dashing && usedDash != null)
-            {
                 UpdateActiveDash();
-                return;
-            }
+        }
 
-            // 暗影披风排他:装备期间不允许盾冲刺(2026-08-31 平衡案)
-            if (slamCooldown == 0 && !Player.mount.Active && !Player.CCed && !Player.Entropy().shadeDashExclusive && TryGetHorizontalDashDirection(out int direction))
-                StartDash(direction);
+        private void TryStartDash()
+        {
+            if (ActiveDash == null || slamCooldown != 0 || Player.mount.Active || Player.CCed)
+                return;
+            if (Player.Entropy().shadeDashExclusive)
+                return;
+            if (!TryGetHorizontalDashDirection(out int direction))
+                return;
+            StartDash(direction);
+        }
+
+        private void ApplyPassThroughImmune()
+        {
+            Player.immune = true;
+            Player.immuneNoBlink = true;
+            if (Player.immuneTime < 8)
+                Player.immuneTime = 8;
+            var mp = Player.Entropy();
+            if (mp.immune < 8)
+                mp.immune = 8;
         }
 
         private void StartDash(int direction)
@@ -148,23 +203,37 @@ namespace CalamityEntropy.Content.Items.Accessories
 
             Player.timeSinceLastDashStarted = 0;
             Player.Entropy().LastUsedDashID = usedDash.DashID;
+            passThroughGuard = 36;
+            slamFrom = Player.Center;
+            ApplyPassThroughImmune();
             usedDash.OnDashEffects(Player);
         }
 
-        private void UpdateActiveDash()
+        public override void PostUpdate()
         {
-            // 每帧对外镜像"冲刺中"（供读取原版字段的系统用）；自身逻辑不读它，原版帧尾会归零
-            Player.dashDelay = -1;
+            if (dashing && usedDash != null)
+                TrySlamHits();
+            slamFrom = Player.Center;
+        }
 
-            // 冲撞判定（对齐灾厄 ModDashMovement 的碰撞盒与免疫处理）
-            Rectangle hitArea = new((int)(Player.position.X + Player.velocity.X * 0.5 - 4f), (int)(Player.position.Y + Player.velocity.Y * 0.5 - 4), Player.width + 8, Player.height + 8);
+        /// <summary>
+        /// 从上一采样点扫到本帧落点。不读 CanHit:穿敌时隔墙/跨步都不该漏。
+        /// </summary>
+        private void TrySlamHits()
+        {
+            Vector2 slamTo = Player.Center + new Vector2(Player.velocity.X, 0f);
+            int lineWidth = Player.height + 24;
             foreach (NPC n in Main.ActiveNPCs)
             {
                 if (Player.dontHurtCritters && NPCID.Sets.CountsAsCritter[n.type])
                     continue;
                 if (n.dontTakeDamage || n.friendly || npcHitGap.ContainsKey(n.whoAmI))
                     continue;
-                if (!hitArea.Intersects(n.getRect()) || (!n.noTileCollide && !Player.CanHit(n)))
+
+                Rectangle npcRect = n.getRect();
+                npcRect.Inflate(12, 8);
+                bool swept = CEUtils.LineThroughRect(slamFrom, slamTo, npcRect, lineWidth);
+                if (!swept && !Player.getRect().Intersects(n.getRect()))
                     continue;
 
                 CEDashHitContext hitContext = default;
@@ -175,8 +244,15 @@ namespace CalamityEntropy.Content.Items.Accessories
                 int dashDamage = (int)Player.GetTotalDamage(hitContext.damageClass).ApplyTo(hitContext.BaseDamage);
                 Player.ApplyDamageToNPC(n, dashDamage, hitContext.BaseKnockback, hitContext.HitDirection, false, hitContext.damageClass);
                 npcHitGap[n.whoAmI] = 12;
-                Player.GiveImmuneTimeForCollisionAttack(hitContext.PlayerImmunityFrames);
+                if (passThroughGuard < 16)
+                    passThroughGuard = 16;
             }
+        }
+
+        private void UpdateActiveDash()
+        {
+            // 每帧对外镜像"冲刺中"（供读取原版字段的系统用）；自身逻辑不读它，原版帧尾会归零
+            Player.dashDelay = -1;
             usedDash.dashTime++;
 
             float dashSpeed = 12f;

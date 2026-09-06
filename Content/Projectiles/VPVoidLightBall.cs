@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Assets.Register;
-using CalamityEntropy.Content.NPCs.AbyssalWraith;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -11,10 +10,10 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityEntropy.Content.Projectiles.AbyssalWraithProjs
+namespace CalamityEntropy.Content.Projectiles
 {
 
-    public class VoidLightBall : ModProjectile
+    public class VPVoidLightBall : ModProjectile
     {
         public override void SetStaticDefaults()
         {
@@ -34,23 +33,32 @@ namespace CalamityEntropy.Content.Projectiles.AbyssalWraithProjs
             Projectile.tileCollide = false;
             Projectile.light = 1f;
             Projectile.scale = 1f;
-            Projectile.timeLeft = 110;
+            Projectile.timeLeft = 170;
 
         }
         public List<Vector2> odp = new List<Vector2>();
+        public int counter1 = 60;
         public override void AI()
         {
+            if (((int)(Projectile.ai[2])).ToNPC().active == false)
+            {
+                Projectile.Kill();
+                return;
+            }
+            counter1--;
+            if (counter == 0)
+            {
+                Projectile.velocity = ((int)(Projectile.ai[2])).ToNPC().velocity * 2;
+            }
+            if (counter1 > 0)
+            {
+                Projectile.Center = ((int)(Projectile.ai[2])).ToNPC().Center + ((int)(Projectile.ai[2])).ToNPC().rotation.ToRotationVector2() * 90;
+                return;
+            }
             odp.Add(Projectile.Center);
             if (odp.Count > 36)
             {
                 odp.RemoveAt(0);
-            }
-            if (((int)Projectile.ai[2]).ToNPC().active && ((int)Projectile.ai[2]).ToNPC().ModNPC is AbyssalWraith aw)
-            {
-                if (aw.deathAnm)
-                {
-                    Projectile.Kill();
-                }
             }
             if (Projectile.ai[0] == 0)
             {

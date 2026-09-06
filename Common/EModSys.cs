@@ -82,11 +82,16 @@ namespace CalamityEntropy.Common
 
         public override void OnLocalizationsLoaded()
         {
-            string n = Language.GetTextValue($"Mods.CalamityEntropy.ModNameOverride");
-            var ff = typeof(Mod).GetProperty("DisplayName", BindingFlags.Public |
-        BindingFlags.Instance |
-        BindingFlags.NonPublic);
-            ff?.SetValue(Mod, n);
+            // tML 没有模组显示名的本地化入口:Mod.DisplayName 的 setter 是 internal,只在读 build.txt 时写一次。
+            // 这里在每次语言(重)加载后按当前语言改写,模组配置列表、配置页标题、加载进度条都读这个属性
+            const string key = "Mods.CalamityEntropy.ModNameOverride";
+            if (!Language.Exists(key))
+                return;
+            string n = Language.GetTextValue(key);
+            var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic;
+            typeof(Mod).GetProperty("DisplayName", flags)?.SetValue(Mod, n);
+            // DisplayNameClean 带惰性缓存,不清掉的话配置列表排序与日志里仍是旧名
+            typeof(Mod).GetField("displayNameClean", flags)?.SetValue(Mod, null);
         }
         public static Color GetColorForNPCBossbarFromTexture(Color[] data)
         {

@@ -49,8 +49,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-                // 群系迁移:原灾厄星辉瘟疫图鉴背景改原版发光蘑菇+夜晚(biome-map)
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.SurfaceMushroom,
+                // 召唤条件仅剩夜晚,图鉴不再挂发光蘑菇群系标签(biome-map)
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Times.NightTime,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityEntropy.LuminarisBestiary")
             });

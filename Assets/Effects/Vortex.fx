@@ -3,39 +3,39 @@ sampler TextureSampler : register(s0);
 float2 Center;
 float Strength;
 float AspectRatio;
-float FadeOutDistance; // ½¥Òþ¿ªÊ¼µÄ°ë¾¶¾àÀë(0-1)
-float FadeOutWidth;    // ½¥Òþ¿í¶È
+float FadeOutDistance; // æ¸éšå¼€å§‹çš„åŠå¾„è·ç¦»(0-1)
+float FadeOutWidth;    // æ¸éšå®½åº¦
 float2 TexOffset;
 float enhanceLightAlpha;
 
 float4 PixelShaderFunction(float4 baseColor : COLOR0, float2 texCoord : TEXCOORD0) : COLOR0
 {
-    // µ÷Õû×ø±êÒÔ¿¼ÂÇ¿í¸ß±È
+    // è°ƒæ•´åæ ‡ä»¥è€ƒè™‘å®½é«˜æ¯”
     float2 adjustedTexCoord = texCoord - Center;
     adjustedTexCoord.y /= AspectRatio;
     
-    // ¼ÆËãµ±Ç°µãµ½ÖÐÐÄµÄ¾àÀë
+    // è®¡ç®—å½“å‰ç‚¹åˆ°ä¸­å¿ƒçš„è·ç¦»
     float distance = length(adjustedTexCoord);
     
-    // ¼ÆËãÍ¸Ã÷¶È (0=ÍêÈ«Í¸Ã÷, 1=²»Í¸Ã÷)
+    // è®¡ç®—é€æ˜Žåº¦ (0=å®Œå…¨é€æ˜Ž, 1=ä¸é€æ˜Ž)
     float alpha = 1.0;
     if (distance > FadeOutDistance)
     {
         alpha = 1.0 - smoothstep(FadeOutDistance, FadeOutDistance + FadeOutWidth, distance);
     }
     
-    // ¼ÆËãäöÎÐÅ¤Çú
+    // è®¡ç®—æ¼©æ¶¡æ‰­æ›²
     float angle = atan2(adjustedTexCoord.y, adjustedTexCoord.x);
     angle += Strength * distance;
     
     adjustedTexCoord.x = cos(angle) * distance;
     adjustedTexCoord.y = sin(angle) * distance;
     
-    // »Ö¸´¿í¸ß±Èµ÷Õû
+    // æ¢å¤å®½é«˜æ¯”è°ƒæ•´
     adjustedTexCoord.y *= AspectRatio;
     adjustedTexCoord += Center;
     
-    // ²ÉÑùÎÆÀí²¢Ó¦ÓÃÍ¸Ã÷¶È
+    // é‡‡æ ·çº¹ç†å¹¶åº”ç”¨é€æ˜Žåº¦
     float4 color = tex2D(TextureSampler, adjustedTexCoord + TexOffset);
     if(color.r > enhanceLightAlpha)
     {

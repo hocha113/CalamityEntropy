@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -7,6 +8,7 @@ namespace CalamityEntropy.Content.Items.Accessories
 {
     public class ArchmagesHandmirror : ModItem
     {
+        public static int EnhancedManaFlat = 75;
         public override void SetStaticDefaults()
         {
             ItemID.Sets.AnimatesAsSoul[Type] = true;
@@ -23,7 +25,13 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void UpdateEquip(Player player)
         {
-            player.statManaMax2 += 75;
+            // 走强化魔力的固定点数通道,而非普通魔力上限:这 75 点要算进金色段并吃 0.15%/点的魔法伤害
+            player.Entropy().enhancedManaFlat += EnhancedManaFlat;
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            tooltips.Replace("[MANA]", EnhancedManaFlat);
         }
     }
 }

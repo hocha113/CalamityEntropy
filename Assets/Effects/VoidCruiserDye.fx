@@ -17,7 +17,7 @@ float2 uLegacyArmorSheetSize;
 
 float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0) : COLOR0
 {
-    // Ô¤¼ÆËã³£Á¿
+    // é¢„è®¡ç®—å¸¸é‡
     static const float THRESHOLD = 0.3f;
     static const float2 OFFSET_SCALE = float2(2.0f, 2.0f) / uImageSize0;
     static const float4 GLOW_COLOR = float4(0.9f, 0.86f, 0.0f, 0.0f);
@@ -25,11 +25,11 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
 
     float4 colory = tex2D(uImage0, coords);
     
-    // ÌáÇ°¼ÆËã²ÉÑù×ø±ê£¬¼õÉÙÖØ¸´¼ÆËã
+    // æå‰è®¡ç®—é‡‡æ ·åæ ‡ï¼Œå‡å°‘é‡å¤è®¡ç®—
     float2 offset1 = OFFSET_SCALE;
     float2 offset2 = OFFSET_SCALE * 2.0f;
     
-    // µÚÒ»´Î²ÉÑù£º4¸ö·½Ïò
+    // ç¬¬ä¸€æ¬¡é‡‡æ ·ï¼š4ä¸ªæ–¹å‘
     float a1 = tex2D(uImage0, coords + float2(0.0f, offset1.y)).a;
     float a2 = tex2D(uImage0, coords + float2(-offset1.x, 0.0f)).a;
     float a3 = tex2D(uImage0, coords + float2(offset1.x, 0.0f)).a;
@@ -37,7 +37,7 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     
     float ga = 0.0f;
     
-    // Ê¹ÓÃÏòÁ¿±È½ÏºÍanyº¯Êı¼õÉÙ·ÖÖ§
+    // ä½¿ç”¨å‘é‡æ¯”è¾ƒå’Œanyå‡½æ•°å‡å°‘åˆ†æ”¯
     float4 alphaTest1 = float4(a1, a2, a3, a4);
     bool anyBelowThreshold1 = any(alphaTest1 < THRESHOLD);
     
@@ -47,7 +47,7 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     }
     else
     {
-        // µÚ¶ş´Î²ÉÑù£º¸üÔ¶µÄ4¸ö·½Ïò
+        // ç¬¬äºŒæ¬¡é‡‡æ ·ï¼šæ›´è¿œçš„4ä¸ªæ–¹å‘
         float b1 = tex2D(uImage0, coords + float2(0.0f, offset2.y)).a;
         float b2 = tex2D(uImage0, coords + float2(-offset2.x, 0.0f)).a;
         float b3 = tex2D(uImage0, coords + float2(offset2.x, 0.0f)).a;
@@ -59,7 +59,7 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
         ga = anyBelowThreshold2 ? 0.7f : 0.5f;
     }
     float gao = ga;
-    // ºÏ²¢¼ÆËã
+    // åˆå¹¶è®¡ç®—
     float timeFactor = 0.64f + 0.36f * sin(uTime * 5.0f + (coords.y * uImageSize0.y - uSourceRect[1]) * 0.2f);
     ga *= timeFactor;
     

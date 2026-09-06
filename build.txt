@@ -1,4 +1,4 @@
-displayName = Call Of Void
+displayName = Call of Void
 author = Serrat Antler, HoCha113
 version = 4.0
 modReferences = InnoVault

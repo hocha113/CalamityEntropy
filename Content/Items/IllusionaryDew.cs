@@ -31,8 +31,8 @@ namespace CalamityEntropy.Content.Items
 
         public override bool CanUseItem(Player player)
         {
-            // 星辉群系判定改为夜间发光蘑菇群系（与星辉鳞尘的产地闭环）
-            return !NPC.AnyNPCs(ModContent.NPCType<Luminaris>()) && player.ZoneGlowshroom && !Main.dayTime;
+            // 仅限夜晚,不再要求发光蘑菇群系(星辉鳞尘仍在夜间蘑菇地刷,但开打地点放开)
+            return !NPC.AnyNPCs(ModContent.NPCType<Luminaris>()) && !Main.dayTime;
         }
 
         public override bool? UseItem(Player player)

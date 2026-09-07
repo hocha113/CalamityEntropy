@@ -25,6 +25,10 @@ namespace CalamityEntropy.Common
         public static MethodBase method2;
         public static MethodBase method3;
         public static bool blocked = false;
+        public override bool IsLoadingEnabled(Mod mod)
+        {
+            return false;
+        }
         public override void PostSetupContent()
         {
             ExplosionFrame = 0;

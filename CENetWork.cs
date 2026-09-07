@@ -4,6 +4,7 @@ using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Armor.AzafureT3;
 using CalamityEntropy.Content.NPCs;
 using CalamityEntropy.Content.UI.Poops;
+using CalamityEntropy.Core.Dash;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
@@ -27,7 +28,8 @@ namespace CalamityEntropy
         SpawnItem,
         PickUpPoop,
         SyncEntropyMode,
-        RuneDashSync,
+        /// <summary>饰品冲刺起手广播(原 RuneDashSync 槽位,编号不变):whoAmI(byte)、效果 ID、方向、强化器 ID。</summary>
+        SyncDashStart,
         SendDashNPCDoUpdate,
         DestroyChest,
         SyncPlayerLife,
@@ -230,29 +232,27 @@ namespace CalamityEntropy
                     }
                 }
             }
-            else if (messageType == CEMessageType.RuneDashSync)
+            else if (messageType == CEMessageType.SyncDashStart)
             {
-                int wai = reader.ReadInt32();
-                Player player = wai.ToPlayer();
-                float dir = reader.ReadSingle();
-                bool e = reader.ReadBoolean();
-                if (e)
-                {
-                    player.Entropy().RuneDash = 0;
-                }
-                else
-                {
-                    player.Entropy().RuneDash = RuneWing.MAXDASHTIME;
-                    player.Entropy().RuneDashDir = dir;
-                }
+                // 先读完所有字段再做判断,提前返回会把后续字节留在流里
+                int wai = reader.ReadByte();
+                string effectId = reader.ReadString();
+                Vector2 direction = reader.ReadVector2();
+                string enhancerId = reader.ReadString();
                 if (Main.dedServ)
                 {
+                    // 服务器不模拟冲刺,只把起手转发给其它客户端
                     ModPacket packet = Instance.GetPacket();
-                    packet.Write((byte)(CEMessageType.RuneDashSync));
-                    packet.Write(wai);
-                    packet.Write(dir);
-                    packet.Write(e);
-                    packet.Send(-1, wai);
+                    packet.Write((byte)CEMessageType.SyncDashStart);
+                    packet.Write((byte)wai);
+                    packet.Write(effectId);
+                    packet.WriteVector2(direction);
+                    packet.Write(enhancerId);
+                    packet.Send(-1, whoAmI);
+                }
+                else if (wai >= 0 && wai < Main.maxPlayers && Main.player[wai].active)
+                {
+                    Main.player[wai].GetModPlayer<CEDashPlayer>().BeginRemote(effectId, direction, enhancerId);
                 }
             }
             else if (messageType == CEMessageType.DestroyChest)

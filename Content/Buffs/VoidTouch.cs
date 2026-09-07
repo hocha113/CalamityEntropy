@@ -47,7 +47,6 @@ namespace CalamityEntropy.Content.Buffs
                 var p = PRTLoader.NewParticle<PRT_Void>(player.Center, new Vector2((float)((r.NextDouble() - 0.5) * 6), (float)((r.NextDouble() - 0.5) * 6)), Color.White, 1f);
                 p.Opacity = 0.5f;
             }
-            player.GetModPlayer<EPlayerDash>().velt = false;
         }
     }
 }

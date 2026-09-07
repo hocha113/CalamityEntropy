@@ -1760,9 +1760,10 @@ Items: {
 		DisplayName: Azafure Charge Shield
 		Tooltip:
 			'''
-			Costs energy to dash
+			Double tap a direction or press the dash key to spend 1 energy on a long dash of 16 tiles
+			The dash passes through enemies, dealing 50 damage and granting 12 frames of invincibility on impact
+			Dashing again takes 0.5 seconds after the dash ends
 			Energy will build over time
-			This dash can ram through enemies without taking damage
 			'''
 	}
 
@@ -2816,9 +2817,9 @@ Items: {
 		DisplayName: Shade Cloak
 		Tooltip:
 			'''
-			Perform an invulnerable dash with a 5 second cooldown
-			While the dash is ready, it replaces other dashes
-			Other dash accessories work normally during the cooldown
+			While wearing another dash accessory, every 5 seconds one regular dash becomes a Shade Dash
+			A Shade Dash makes you invulnerable, passes through enemy projectiles, and gains 20% speed and acceleration
+			Provides no dash on its own
 			When worn in a vanity slot, only visual effects are provided
 			'''
 	}
@@ -3336,9 +3337,10 @@ Items: {
 			Gain a barrier with [S] health
 			The barrier will regenerate 20 seconds after being hit, taking 5 seconds to completely regenerate
 			Getting hit resets the timer
-			You gain an energy meter that builds over time
-			For a small fraction of energy, you can perform a dash 
-			This dash can ram through enemies without taking damage
+			Double tap a direction or press the dash key to spend 1 energy on a long dash of 20 tiles
+			The dash passes through enemies, dealing 80 damage and granting 12 frames of invincibility on impact
+			Dashing again takes 0.5 seconds after the dash ends
+			Energy will build over time
 			'''
 	}
 
@@ -3513,8 +3515,10 @@ Items: {
 			'''
 			Gain a barrier with [S] health
 			The barrier will regenerate 20 seconds after being hit, taking 5 seconds to completely regenerate
-			Grants a dash that can ram through enemies without taking damage
-			[C]% increased critical strike chance
+			Double tap a direction or press the dash key to perform a long dash of 25 tiles
+			The dash passes through enemies, dealing 200 damage and granting 12 frames of invincibility on impact
+			The first enemy struck in each dash also takes a Void Slash dealing 750 damage
+			Dashing again takes 0.5 seconds after the dash ends
 			'''
 	}
 
@@ -5275,6 +5279,7 @@ Projectiles: {
 	TeslaLightning.DisplayName: Tesla Lightning
 	ApcHoldout.DisplayName: Apc Holdout
 	ShadowMantleSlash.DisplayName: Shadow Mantle Slash
+	VoidCoreSlash.DisplayName: Void Slash
 	BoobyMine.DisplayName: Booby Mine
 	BrimstoneGigaBlastFriendly.DisplayName: Brimstone Giga Blast Friendly
 	BrimstoneShootSmall.DisplayName: Brimstone Shoot Small

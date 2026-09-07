@@ -985,3 +985,10 @@
 [Mods.CalamityEntropy.Projectiles.VPVoidLightBall.DisplayName] - added // 教皇原型弹幕随原型代码一并恢复(3.33 块中曾标记 removed)
 [Mods.CalamityEntropy.Projectiles.VPRot.DisplayName] - added // 同上
 [Mods.CalamityEntropy.TitleTexts.Kicking6esAssOff] - added // 与 DieWithASmile(The End Of A Calamity Menu Theme)冲突遮罩被反制后显示的全屏提示,{0}=本模组显示名
+[Mods.CalamityEntropy.Items.AzafureChargeShield.Tooltip] - changed // 冲刺框架重做:20 帧长冲刺 16 格、50 伤害、12 帧无敌、冷却 0.5 秒
+[Mods.CalamityEntropy.Items.AzafureDriverCore.Tooltip] - changed // 冲刺框架重做:20 格、80 伤害
+[Mods.CalamityEntropy.Items.VoidCore.Tooltip] - changed // 冲刺框架重做:25 格、200 伤害,首次撞中附带 750 伤害虚空斩;旧 en/ru 的 [C]% 暴击行无代码支撑,一并删除
+[Mods.CalamityEntropy.Items.ShadeCloak.Tooltip] - changed // 暗影披风不再自带冲刺,改为每 5 秒把一次常规冲刺强化为暗影冲刺(无敌、+20% 速度)
+[Mods.CalamityEntropy.Items.Accessories.Wings.RuneWing.Tooltip] - changed // 灵魂冲刺改为按键触发 30 帧、40 格、30 秒冷却;占位符 [DT] 退役,新增 [CD]=冷却秒数
+[Mods.CalamityEntropy.Items.Accessories.Wings.VoidElytra.Tooltip] - changed // 四向冲刺迁入统一冲刺框架,补写飞行时间不足时改扣血的实际行为
+[Mods.CalamityEntropy.Projectiles.VoidCoreSlash.DisplayName] - added // 虚空核心冲刺的虚空斩弹幕

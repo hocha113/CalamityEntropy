@@ -25,6 +25,7 @@ namespace CalamityEntropy.Content.Items.Books
             Item.rare = ModContent.RarityType<AzafureOrange>();
         }
         public override int HeldProjectileType => ModContent.ProjectileType<AzafureCylinderHeld>();
+        public override int SlotCount => 2;
         [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/Azafure")]
         internal static Asset<Texture2D> BookMarkSlotTex;
         public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;

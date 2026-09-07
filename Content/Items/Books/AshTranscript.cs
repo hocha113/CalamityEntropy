@@ -30,6 +30,7 @@ namespace CalamityEntropy.Content.Items.Books
         internal static Asset<Texture2D> BookMarkSlotTex;
         public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<AshTranscriptHeld>();
+        public override int SlotCount => 4;
 
         // 2026-08-31 平衡案:改为拜月邪教徒50%直接掉落,原配方删除
     }

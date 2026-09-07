@@ -19,8 +19,8 @@ namespace CalamityEntropy.Content.Items
 
         public override void SetDefaults()
         {
-            Item.width = 52;
-            Item.height = 34;
+            Item.width = 26;
+            Item.height = 18;
             Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 3);
             Item.rare = ModContent.RarityType<AzafureOrange>();

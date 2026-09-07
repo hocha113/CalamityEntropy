@@ -1,12 +1,10 @@
 ﻿using CalamityEntropy.Content.Items.Armor.Azafure;
-using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
-using InnoVault.PRT;
+using CalamityEntropy.Core.Dash;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,10 +12,12 @@ namespace CalamityEntropy.Content.Items.Accessories
 {
     public class AzafureDriverCore : ModItem, IAzafureEnhancable
     {
-        public const int ShieldSlamDamage = 240;
-        public const float ShieldSlamKnockback = 8f;
-        public const int ShieldSlamIFrames = 16;
-        public static int DashDelay = 20;
+        public const int DashDamage = 80;
+        public const float DashKnockback = 6f;
+        public const int DashImmuneFrames = 12;
+        public const int DashDuration = 20;
+        public const float DashDistance = 20 * 16f;
+        public const int DashCooldown = 30;
         public float charge = 0;
         public float maxCharge = 5f;
         public static int RechargeTime = 20 * 60;
@@ -38,14 +38,9 @@ namespace CalamityEntropy.Content.Items.Accessories
             {
                 charge += 1f / 300f;
             }
-
-            if (charge >= (player.AzafureEnhance() ? 0.8f : 1) || player.Entropy().AzDash > 0)
-            {
-                player.GetModPlayer<CEShieldDashPlayer>().ActiveDash = AzafureDriverDash.Instance;
-                player.dashType = 0;
-            }
             player.Entropy().DriverShieldVisual = !hideVisual;
             player.Entropy().AzafureDriverShieldItem = Item;
+            player.GetModPlayer<CEDashPlayer>().Offer(CEDashRegistry.Get<AzafureDriverDash>());
         }
         public override void UpdateVanity(Player player)
         {
@@ -71,127 +66,31 @@ namespace CalamityEntropy.Content.Items.Accessories
                 .Register();
         }
     }
-    public class AzafureDriverDash : CEShieldDashEffect
+
+    public class AzafureDriverDash : AzafureDashBase
     {
-        public static readonly AzafureDriverDash Instance = new();
+        public override string ID => "AzafureDriverDash";
+        public override int Priority => 11;
+        public override float Distance => AzafureDriverCore.DashDistance;
+        public override int Duration => AzafureDriverCore.DashDuration;
+        public override int Cooldown => AzafureDriverCore.DashCooldown;
+        protected override int HitDamage => AzafureDriverCore.DashDamage;
+        protected override float HitKnockback => AzafureDriverCore.DashKnockback;
+        protected override int HitImmuneFrames => AzafureDriverCore.DashImmuneFrames;
 
-        public int Time;
-
-        public bool PostHit;
-
-        public static string ID => "AzafureDriverDash";
-        public override string DashID => ID;
-
-        public override float CalculateDashSpeed(Player player)
+        protected override bool TryGetCharge(Player player, out float charge)
         {
-            return 24f;
+            charge = 0f;
+            if (player.Entropy().AzafureDriverShieldItem?.ModItem is not AzafureDriverCore core)
+                return false;
+            charge = core.charge;
+            return true;
         }
 
-        public override void OnDashEffects(Player player)
+        protected override void ConsumeCharge(Player player, float cost)
         {
-            Time = 0;
-            PostHit = false;
-            player.Entropy().AzDash = 3;
-            (player.Entropy().AzafureDriverShieldItem.ModItem as AzafureDriverCore).charge -= player.AzafureEnhance() ? 0.5f : 1;
-        }
-
-        public override void MidDashEffects(Player player, ref float dashSpeed, ref float dashSpeedDecelerationFactor, ref float runSpeedDecelerationFactor)
-        {
-            Time += 2;
-            player.Entropy().AzDash = 3;
-            if (Time > 32)
-            {
-                player.velocity.X *= 0.94f;
-            }
-            else
-            {
-                int sparkLifetime = Main.rand.Next(22, 32);
-                float sparkScale = Main.rand.NextFloat(1f, 1.4f);
-
-                Color sparkColor = Color.Lerp(Color.OrangeRed, Color.Firebrick, Main.rand.NextFloat(0, 1));
-                {
-                    //冲刺拖尾,LineCal/AltSpark是CalamityPorts,Configure(false,life)对齐Calamity原签名
-                    PRTLoader.NewParticle<PRT_LineCal>(player.Center + new Vector2(0, -8 * Math.Sign(player.velocity.X)), -player.velocity.RotatedBy(-0.12f) * 0.4f, sparkColor, sparkScale).Configure(false, (int)(sparkLifetime));
-                    PRTLoader.NewParticle<PRT_LineCal>(player.Center + new Vector2(0, 8 * Math.Sign(player.velocity.X)), -player.velocity.RotatedBy(0.12f) * 0.4f, sparkColor, sparkScale).Configure(false, (int)(sparkLifetime));
-                }
-                {
-                    sparkLifetime = 12;
-                    sparkColor = Color.LightGoldenrodYellow;
-                    PRTLoader.NewParticle<PRT_LineCal>(player.Center + new Vector2(0, -16 * Math.Sign(player.velocity.X)), -player.velocity.RotatedBy(0.06f) * 0.6f, sparkColor, sparkScale).Configure(false, (int)(sparkLifetime));
-                    PRTLoader.NewParticle<PRT_LineCal>(player.Center + new Vector2(0, 16 * Math.Sign(player.velocity.X)), -player.velocity.RotatedBy(-0.06f) * 0.6f, sparkColor, sparkScale).Configure(false, (int)(sparkLifetime));
-                }
-                {
-                    sparkLifetime = 12;
-                    sparkColor = Color.LightGoldenrodYellow;
-                    PRTLoader.NewParticle<PRT_LineCal>(player.Center + new Vector2(0, -16 * Math.Sign(player.velocity.X)), -player.velocity.RotatedBy(0.4f) * 0.4f, sparkColor, sparkScale).Configure(false, (int)(sparkLifetime));
-                    PRTLoader.NewParticle<PRT_LineCal>(player.Center + new Vector2(0, 16 * Math.Sign(player.velocity.X)), -player.velocity.RotatedBy(-0.4f) * 0.4f, sparkColor, sparkScale).Configure(false, (int)(sparkLifetime));
-                }
-            }
-            float num = MathHelper.Lerp(0f, 1f, Utils.GetLerpValue(2f, 2.5f, Time, clamped: true));
-            for (int i = 0; i < 3; i++)
-            {
-                float f = player.velocity.ToRotation() + (float)Time / 5f;
-                float num2 = (15f + (float)Math.Cos((float)Time / 3f) * 12f) * num;
-                Dust dust = Dust.NewDustPerfect(player.Center - player.velocity * 2f + f.ToRotationVector2().RotatedBy((float)i / 5f * (MathF.PI * 2f)) * num2, Main.rand.NextBool(5) ? DustID.Torch : DustID.FlameBurst);
-                dust.alpha = 220;
-                dust.noGravity = true;
-                dust.velocity = player.velocity * 0.8f;
-                dust.scale = Main.rand.NextFloat(1.7f, 2f);
-                dust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
-                Dust dust2 = Dust.NewDustPerfect(player.Center + new Vector2(Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-15f, 15f)) + player.velocity * 1.5f, Main.rand.NextBool(6) ? DustID.SparksMech : DustID.MinecartSpark, -player.velocity.RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, default(Color), Main.rand.NextFloat(1.7f, 1.9f));
-                dust2.alpha = 170;
-                dust2.noGravity = true;
-                dust2.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
-            }
-
-            dashSpeed = 18f;
-        }
-
-        public override void OnHitEffects(Player player, NPC npc, ref CEDashHitContext hitContext)
-        {
-            if (player.Entropy().AzChargeShieldSteamTime <= 0)
-            {
-                player.Entropy().AzChargeShieldSteamTime = 32;
-            }
-            if (!PostHit)
-            {
-                // 脱离灾厄:原灾厄 GeneralScreenShakePower=6,改用自有屏震
-                ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Vector2.Zero, 6));
-                PostHit = true;
-            }
-            NPC target = npc;
-            for (int i = 0; i < 16; i++)
-            {
-                Vector2 top = target.Center + player.velocity.RotatedBy(MathHelper.PiOver2).normalize() * Main.rand.NextFloat(-12, 12);
-                Vector2 sparkVelocity2 = -player.velocity.RotateRandom(0.4f) * 0.44f * Main.rand.NextFloat(0.3f, 1f);
-                int sparkLifetime2 = Main.rand.Next(24, 28);
-                float sparkScale2 = Main.rand.NextFloat(0.6f, 1.4f);
-                var sparkColor2 = Color.Lerp(Color.Goldenrod, Color.Yellow, Main.rand.NextFloat(0, 1));
-
-                PRTLoader.NewParticle<PRT_LineCal>(top, sparkVelocity2, sparkColor2, sparkScale2).Configure(false, (int)(sparkLifetime2));
-            }
-
-            for (int i = 0; i < 16; i++)
-            {
-                Vector2 top = target.Center;
-                Vector2 sparkVelocity2 = -player.velocity.RotateRandom(0.6f) * 0.6f * Main.rand.NextFloat(0.4f, 1f);
-                int sparkLifetime2 = Main.rand.Next(24, 28);
-                float sparkScale2 = Main.rand.NextFloat(1f, 1.8f);
-                Color sparkColor2 = Color.Lerp(Color.Red, Color.Firebrick, Main.rand.NextFloat(0, 1));
-                PRTLoader.NewParticle<PRT_AltSpark>(top, sparkVelocity2, sparkColor2, sparkScale2).Configure(false, (int)(sparkLifetime2));
-            }
-            int hitDirection = player.direction;
-            if (player.velocity.X != 0f)
-            {
-                hitDirection = Math.Sign(player.velocity.X);
-            }
-            CEUtils.PlaySound("ExoHit" + Main.rand.Next(1, 5), Main.rand.NextFloat(0.8f, 1.2f), target.Center);
-            hitContext.HitDirection = hitDirection;
-            hitContext.PlayerImmunityFrames = 12;
-            int num = AzafureDriverCore.ShieldSlamDamage;
-            hitContext.damageClass = DamageClass.Melee;
-            hitContext.BaseDamage = num.ApplyAccArmorDamageBonus(player);
-            hitContext.BaseKnockback = 6f;
+            if (player.Entropy().AzafureDriverShieldItem?.ModItem is AzafureDriverCore core)
+                core.charge = Math.Max(0f, core.charge - cost);
         }
     }
 }

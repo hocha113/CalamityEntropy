@@ -14,6 +14,7 @@ namespace CalamityEntropy.Content.Items.Books
             Item.mana = 5;
         }
         public override int HeldProjectileType => ModContent.ProjectileType<AncientScripturesHeld>();
+        public override int SlotCount => 1;
 
         public override void AddRecipes()
         {

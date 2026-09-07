@@ -1,39 +1,78 @@
-﻿[h1]This mod is an addon for CalamityMod[/h1]
+﻿Mod Content
 
--Fully Multiplay Support-
+Mod Wiki: https://callofvoid.wiki/
+This mod is a progression expansion mod, featuring cross-mod crossover content when played with Calamity Mod.
 
-[h2]-What we added-[/h2]
-5 new boss
-weapons
-Accessories
-new bossbar style
-Armor Prefixes
-some new pet
-Auric toilet that can sit
-Auric Boulder
+Fully supports multiplayer play!
 
-We will continue to add more new content in the future
+- This mod adds -
 
-Used some textures from the original calamity mod(Greyscale textures, Noises, etc)
+5 new bosses
 
-[h2]-Credits-[/h2]
-Polaris: Leader, Code, Concept
-ChaLost: Sprite, Concept
-Serrat Antler: Sprite, Concept
-Ahirith: Sprite, Concept (Pets)
-JesterRomut: Sprite, Music (Title Theme), Code
-Special thanks to Hadrian (FRANCIUMKILLA) for making Cruiser & Prophet's theme
-Thank Soba Noodles for the Acropolis theme
-Thanks to 鸡腿, Gel, OXYGEN, 黑森林大蛇, 小史龙, 迷途, OwenDraw, Fiveling,and myku for providing some textures (even though some of them have not been implemented yet).
-Thank you to all the donors for their support.
-Thanks to hocha113 for providing some code assistance.
+Unique weapons (including new weapon series for Melee and Mage, as well as unique whips)
 
-Bug Reports: https://github.com/WarmurCle/CalamityEntropy/issues
+A large number of new accessories
 
-Discord Server: https://discord.com/invite/Mnmzd34Fda
+A new Boss health bar style
 
-ChineseWiki：https://calentropy.miraheze.org
+A new armor reforging mechanic (optional / can be toggled)
 
-EnglishWiki：https://terrariamods.wiki.gg/wiki/Calamity_Entropy
+New pets
 
-Try [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3161388997] Calamity Overhaul Mod [/url] too,We will have some interesting crossover content in the future.
+Vanity sets of the developers and their friends
+
+Void Toilet
+
+More new content will continue to be added in the future!
+
+Credits
+
+Serrat Antler: Lead Creator, Sprites, Concept Design
+
+Hocha113: Lead Programmer, Concept Design
+
+WuTi: Sprites, Concept Design
+
+Polaris: Code, Concept Design
+
+ChaLost: Sprites, Concept Design
+
+Ahirith: Sprites, Concept Design (Pets)
+
+Jester Romut: Code, Sprites, Music (Title Theme)
+
+Badbf: Music (Nihility Twin)
+
+MiTu: Sprites
+
+YangQi: Sprites
+
+AnJiao: Sprites
+
+Special Thanks
+
+Special thanks to Hadrian (FRANCIUMKILLA) for composing the theme songs for Cruiser and Prophet.
+
+Special thanks to Soba Noodles for composing the theme song for Acropolis Machines.
+
+Thanks to JiTui, Gel, OXYGEN, BlackForestSerpent, XiaoShiLong, OwenDraw, Fiveling, and myku for providing some textures (even though some have not been implemented yet).
+
+Thank you to all donors for their support!
+
+Feedback and Discussion
+
+Bug Reports: https://github.com/hocha113/CalamityEntropy/issues
+
+Please provide logs or screenshots when reporting bugs.
+
+Other
+
+Also try Calamity Overhaul Mod: https://steamcommunity.com/sharedfiles/filedetails/?id=3161388997 ! We will have lots of interesting crossover content in the future!
+
+Can be played together with most other mods without major issues.
+
+Official Call of Void Discord Server: https://discord.com/invite/Mnmzd34Fda
+
+Official Call of Void QQ Discussion Group: 1016738628 (you can reach the developers and join discussions here)
+
+Creator's Bilibili channel (where you can watch showcase videos of this mod): https://space.bilibili.com/26871345

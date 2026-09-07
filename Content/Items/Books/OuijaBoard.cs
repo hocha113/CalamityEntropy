@@ -20,6 +20,7 @@ namespace CalamityEntropy.Content.Items.Books
             Item.mana = 5;
         }
         public override int HeldProjectileType => ModContent.ProjectileType<OuijaBoardHeld>();
+        public override int SlotCount => 1;
         [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/OB")]
         internal static Asset<Texture2D> BookMarkSlotTex;
         public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;

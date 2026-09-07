@@ -48,23 +48,10 @@ namespace CalamityEntropy.Content.Items.Books
         }
         public virtual int HeldProjectileType => -1;
         /// <summary>
-        /// 书签栏位随进度统一解锁:骷髅王前1栏,花前2栏,月前3栏,巡游者前4栏(2026-08-31 平衡案)。
-        /// 个别特殊书(无限之书等)可覆写。
+        /// 书签栏位数,每本书各自覆写为固定值(正式书籍 1~5,按获取阶段分档)。
+        /// 2026-08-31 平衡案曾改为随世界进度统一解锁(骷髅王/世花/月总各+1),2026-09-07 回退为逐本固定值并按测试组定稿表重排。
         /// </summary>
-        public virtual int SlotCount
-        {
-            get
-            {
-                int slots = 1;
-                if (NPC.downedBoss3)
-                    slots++;
-                if (NPC.downedPlantBoss)
-                    slots++;
-                if (NPC.downedMoonlord)
-                    slots++;
-                return slots;
-            }
-        }
+        public virtual int SlotCount => 6;
         //默认书签底座贴图,加载期就位;各书籍子类各自持有同名字段覆写
         [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/BookMark1")]
         internal static Asset<Texture2D> BookMarkTex;

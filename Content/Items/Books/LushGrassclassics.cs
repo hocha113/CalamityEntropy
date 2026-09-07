@@ -22,6 +22,7 @@ namespace CalamityEntropy.Content.Items.Books
             Item.mana = 8;
         }
         public override int HeldProjectileType => ModContent.ProjectileType<LushGrassclassicsHeld>();
+        public override int SlotCount => 1;
 
         public override void AddRecipes()
         {

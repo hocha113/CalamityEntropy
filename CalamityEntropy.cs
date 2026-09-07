@@ -36,6 +36,7 @@ using CalamityEntropy.Content.Skies;
 using CalamityEntropy.Content.UI;
 using CalamityEntropy.Content.UI.EntropyBookUI;
 using CalamityEntropy.Content.UI.Poops;
+using CalamityEntropy.Core.Dash;
 using CalamityEntropy.Utilities;
 using InnoVault;
 using InnoVault.Actors;
@@ -273,9 +274,8 @@ namespace CalamityEntropy
         private void update_npc_collision(On_Player.orig_Update_NPCCollision orig, Player self)
         {
             self.Entropy().ApplyScale();
-            // 原版接触伤害在 PreUpdateMovement 之前结算。盾冲/暗影冲刺必须在这里先启动并给接触无敌,否则贴身或跨步都会对撞扣血
-            SCDashMP.PrepareForNpcCollision(self);
-            CEShieldDashPlayer.PrepareForNpcCollision(self);
+            // 原版冲刺起手帧只在 DashMovement 之后、接触伤害之前可见:暗影披风对原版冲刺的强化在这里接入
+            self.GetModPlayer<CEDashPlayer>().PostMovementVanillaCheck();
             orig(self);
             self.Entropy().ResetScale();
         }

@@ -35,6 +35,7 @@ namespace CalamityEntropy.Content.Items.Books
         internal static Asset<Texture2D> BookMarkSlotTex;
         public override Texture2D BookMarkTexture => BookMarkSlotTex.Value;
         public override int HeldProjectileType => ModContent.ProjectileType<ControlTerminalHeld>();
+        public override int SlotCount => 5;
 
         public override void AddRecipes()
         {

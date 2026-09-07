@@ -1,5 +1,5 @@
 ﻿[h1] 模组内容 [/h1]
-
+[h2] [url=https://callofvoid.wiki/]模组Wiki[/url] [/h2]
 本模组为流程拓展模组，开启灾厄游玩时有交叉联动内容
 
 完全支持多人模式游玩
@@ -46,6 +46,8 @@ Badbf-海啸: 音乐（虚无双子）
 
 氧气：贴图
 
+暗角：贴图
+
 [h2] 鸣谢名单 [/h2]
 
 感谢Hadrian（FRANCIUMKILLA）制作的巡游者和先知的主题曲
@@ -73,9 +75,3 @@ Badbf-海啸: 音乐（虚无双子）
 虚空召唤官方QQ讨论群：1016738628, 在这里你可以联系到开发者们并参与讨论
 
 主创的B站账号，在这里你可以看到本模组的介绍视频：https://space.bilibili.com/26871345
-
-中文Wiki：https://calentropy.miraheze.org
-
-英文Wiki：https://terrariamods.wiki.gg/wiki/Calamity_Entropy
-
-wiki仍在更新优化中，如有提供文本/维护/排版优化想法欢迎！

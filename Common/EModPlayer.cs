@@ -2,6 +2,7 @@ using CalamityEntropy.Common.LoreReworks;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Core.Cooldowns;
+using CalamityEntropy.Core.Dash;
 using CalamityEntropy.Content.Cooldowns;
 using CalamityEntropy.Content.ILEditing;
 using CalamityEntropy.Content.Items.Accessories;
@@ -131,8 +132,6 @@ namespace CalamityEntropy.Common
         public bool VFHelmMelee;
         /// <summary>魔力病持续时间减半(虚灵宙法盔/圣洁月光共用;2026-08-31 平衡案)。</summary>
         public bool halfManaSick;
-        /// <summary>暗影披风冲刺占用:冷却就绪或冲刺进行中为真,冷却期间为假。</summary>
-        public bool shadeDashExclusive;
         /// <summary>上神之佑团队免伤光环持有者标记(2026-08-31 平衡案)。</summary>
         public bool odinAura;
         /// <summary>莱拉蜂蜜光环持有者标记(2026-08-31 平衡案)。</summary>
@@ -187,8 +186,6 @@ namespace CalamityEntropy.Common
         public IEnumerable<KeyValuePair<string, Vector2>> homes = new Dictionary<string, Vector2>();
         public int AzChargeShieldSteamTime = 0;
         public Item foreseeOrbItem = null;
-        public int RuneDash = 0;
-        public float RuneDashDir = 0;
         public int CruiserAntiGravTime = 0;
         public int gravAddTime = 0;
         public bool plagueEngine = false;
@@ -409,7 +406,6 @@ namespace CalamityEntropy.Common
         public int voidshadeBoostTime = 0;
         public float mawOfVoidCharge = 0;
         public bool mawOfVoidUsing = false;
-        public int AzDash = 0;
         public bool revelation = false;
         public float revelationCharge = 0;
         public bool revelationUsing = false;
@@ -863,7 +859,7 @@ namespace CalamityEntropy.Common
 
         //冷却:统一走自研冷却框架(Player.AddCooldown/HasCooldown/TryGetCooldown/EntropyCooldowns())
 
-        /// <summary>本次冲刺的ID(自研,替代灾厄 LastUsedDashID)。空串=无。由 EPlayerDash/各冲刺饰品写入。</summary>
+        /// <summary>最近一次冲刺的效果 ID(CEDashEffect.ID),空串=无。由 Core/Dash 的 CEDashPlayer 在起手时写入。</summary>
         public string LastUsedDashID = "";
 
         /// <summary>鼠标世界坐标相对 MountedCenter 的偏移(网络同步的最小载荷)。</summary>
@@ -1110,7 +1106,6 @@ namespace CalamityEntropy.Common
             obscureCard = false;
             DebuffTime = 1;
             CooldownTimeMult = 1;
-            DashCD = 1;
             HitCooldown = 0;
             voidResistance = 0;
             plagueEngine = false;
@@ -1198,7 +1193,6 @@ namespace CalamityEntropy.Common
             VFHelmRogue = false;
             VFHelmMelee = false;
             halfManaSick = false;
-            shadeDashExclusive = false;
             odinAura = false;
             leylaAura = false;
             thiefWatch = false;
@@ -1452,10 +1446,6 @@ namespace CalamityEntropy.Common
                     packet.Send();
                 }
             }
-            if (RuneDash > 0)
-            {
-                Player.gravity = 0;
-            }
             if (hasAcc("FlowingLightWing") && !Player.controlJump && Player.controlDown)
                 Player.maxFallSpeed *= 2f;
             if (gravAddTime > 0)
@@ -1509,10 +1499,6 @@ namespace CalamityEntropy.Common
                     Player.maxFallSpeed = 1000;
                 }
             }
-            if (RuneDash > 0)
-            {
-                Player.maxFallSpeed = 1000;
-            }
             if (rBadgeActive)
             {
                 Player.maxFallSpeed = 99;
@@ -1552,7 +1538,7 @@ namespace CalamityEntropy.Common
             {
                 rbDotDist += (-rbDotDist) * 0.06f;
             }
-            if (NoPlatformCollide > 0 || rBadgeActive || RuneDash > 0 || CruiserAntiGravTime > 0 || Player.mount.Type == ModContent.MountType<ReplicaPenMount>())
+            if (NoPlatformCollide > 0 || rBadgeActive || Player.GetModPlayer<CEDashPlayer>().IgnoresPlatforms || CruiserAntiGravTime > 0 || Player.mount.Type == ModContent.MountType<ReplicaPenMount>())
             {
                 resetTileSets = true;
                 tileSolid = (bool[])Main.tileSolid.Clone();
@@ -2465,7 +2451,6 @@ namespace CalamityEntropy.Common
                 }
             }
         }
-        public float DashCD = 1;
         public int OracleDeckHealCd = 0;
         public int effectCount = 0;
         public int shielddamagecd = 0;
@@ -2478,17 +2463,13 @@ namespace CalamityEntropy.Common
         public Item VoidCoreItem = null;
 
         public bool VSoundsPlayed = false;
-        public bool DashFlag = false;
         public bool maliciousCode = false;
-        public PRT_ProminenceTrail runeDashTrail = null;   //RuneDash冲刺轨迹,AddPoint+Lifetime续命
         public int UICJ = 0;
         public int ilVortexType = -1;
         //脱离灾厄:潜行退役惰性字段(WeaponsNoCostRogueStealth/RogueStealthRegen/LastStealth/LastStealthStrikeAble/ResetStealth/shadowStealth/GaleWristbladeCharge)已裁删
         public int BrambleBarAdd = 0;
         public float BrambleBarCharge = 0;
         public int BBarNoDecrease = 0;
-        public bool dashing = false;
-        public PRT_DashBeam avTrail = null;   //ShadeCloak dash,PostUpdate里AddPoint驱动
         public bool NDFlag = false;
         public bool ResetRot = false;
         public int TDeckTime = 0;
@@ -2974,19 +2955,6 @@ namespace CalamityEntropy.Common
                 ResetRot = false;
                 Player.fullRotation = 0;
             }
-            if (Player.dashDelay < 0)
-            {
-                dashing = true;
-            }
-            else
-            {
-                dashing = false;
-            }
-            if (avTrail != null)
-            {
-                // 用暗影冲刺自己的朝向采样,避免 PostUpdate 时 velocity 已被冲掉、拖尾只往右长
-                avTrail.AddPoint(Player.Center + Player.GetModPlayer<SCDashMP>().TrailSampleOffset);
-            }
 
             float mhrot = (Player.legs == EquipLoader.GetEquipSlot(Mod, "MariviniumLeggings", EquipType.Legs) ? 0f : 0.64f) + (float)Math.Cos(Main.GameUpdateCount * 0.04f) * 0.16f;
             float v = Player.velocity.Length();
@@ -3089,93 +3057,6 @@ namespace CalamityEntropy.Common
             }
             if (HealingCd > 0) HealingCd--;
 
-            if (Main.myPlayer == Player.whoAmI && hasAcc("RuneWing"))
-            {
-                if (RuneDash > 0)
-                {
-                    int rd = RuneDash - 1;
-                    immune = 12;
-                    if (runeDashTrail == null || !runeDashTrail.active)
-                    {
-                        runeDashTrail = PRTLoader.NewParticle<PRT_ProminenceTrail>(Player.Center, Vector2.Zero, Color.White, 5f)
-                            .Configure(1, true, PRTDrawModeEnum.AlphaBlend, 0);
-                        runeDashTrail.color1 = Color.DeepSkyBlue;
-                        runeDashTrail.color2 = Color.White;
-                        runeDashTrail.maxLength = 120;
-                    }
-                    for (int i = 0; i < 3; i++)
-                    {
-                        PRTLoader.NewParticle<PRT_RuneParticle>(Player.Center + CEUtils.randomVec(26), CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(-0.6f, 0.6f), Color.White, 1).Configure(1, true, PRTDrawModeEnum.AlphaBlend, 0);
-
-                    }
-                    RuneDash--;
-                    Player.velocity = RuneDashDir.ToRotationVector2() * RuneWing.DashVelo;
-                    for (int f = 0; f < 10; f++)
-                    {
-                        runeDashTrail?.AddPoint(Player.Center + Player.velocity * f * 0.1f);
-                    }
-
-                    runeDashTrail.Lifetime = runeDashTrail.Time + 13;
-
-                    if (CEKeybinds.RuneDashHotKey.JustReleased)
-                    {
-                        RuneDash = 0;
-                        if (Main.netMode == NetmodeID.MultiplayerClient)
-                        {
-                            ModPacket packet = Mod.GetPacket();
-                            packet.Write((byte)CEMessageType.RuneDashSync);
-                            packet.Write(Player.whoAmI);
-                            packet.Write(RuneDashDir);
-                            packet.Write(true);
-                        }
-                    }
-                    if (RuneDash <= 0)
-                    {
-                        Player.velocity *= 0.1f;
-                        runeDashTrail = null;
-                        Player.AddCooldown(RuneDashCD.ID, int.Max(400, (int)(((RuneWing.MAXDASHTIME - rd) / (float)RuneWing.MAXDASHTIME) * RuneWing.MaxCooldownTick)));
-                    }
-                }
-                else
-                {
-                    if (CEKeybinds.RuneDashHotKey.JustPressed && !Player.HasCooldown(RuneDashCD.ID))
-                    {
-                        CEUtils.PlaySound("RuneDash", 1, Player.Center);
-                        RuneDash = RuneWing.MAXDASHTIME;
-                        RuneDashDir = (Main.MouseWorld - Player.Center).ToRotation();
-                        if (Main.netMode == NetmodeID.MultiplayerClient)
-                        {
-                            ModPacket packet = Mod.GetPacket();
-                            packet.Write(Player.whoAmI);
-                            packet.Write(RuneDashDir);
-                            packet.Write(false);
-                        }
-                    }
-                }
-            }
-            AzDash--;
-
-            if (Main.LocalPlayer.dashDelay < 0)
-            {
-                DashFlag = true;
-            }
-            if (DashFlag && Main.LocalPlayer.dashDelay > 0)
-            {
-                if (Main.LocalPlayer.Entropy().LastUsedDashID == AzafureShieldDash.ID)
-                {
-                    Main.LocalPlayer.dashDelay = AzafureChargeShield.DashDelay;
-                }
-                if (Main.LocalPlayer.Entropy().LastUsedDashID == AzafureDriverDash.ID)
-                {
-                    Main.LocalPlayer.dashDelay = AzafureDriverCore.DashDelay;
-                }
-                if (Main.LocalPlayer.Entropy().LastUsedDashID == VoidCoreDash.ID)
-                {
-                    Main.LocalPlayer.dashDelay = VoidCore.DashDelay;
-                }
-                Main.LocalPlayer.dashDelay = (int)(Main.LocalPlayer.dashDelay * DashCD);
-                DashFlag = false;
-            }
             if (AzChargeShieldSteamTime > 0)
             {
                 AzChargeShieldSteamTime--;

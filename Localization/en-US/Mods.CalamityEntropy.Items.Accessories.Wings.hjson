@@ -25,9 +25,8 @@ RuneWing: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.FlightAndSlowfall}
-		Press [KEY] to advance towards the mouse direction, during which immune damage occurs
-		Cooling is determined by the sprint distance, 
-		releasing the button in advance can end the sprint in advance, with a maximum sprint time of [DT] seconds
+		Press [KEY] to perform a Soul Dash of 40 tiles toward the cursor, with a [CD] second cooldown
+		You are invulnerable for the whole Soul Dash and pass through enemy projectiles and platforms
 		'''
 }
 
@@ -74,7 +73,8 @@ VoidElytra: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.FlightAndSlowfall}
-		Allow you to dash in four directions
+		Double tap any direction to dash, spending a little flight time each dash
+		With too little flight time you can still dash, paying with life through Void Touch instead
 		[c/356498:Dedicate life to the void and achieve breakthroughs in the limits]
 		'''
 }

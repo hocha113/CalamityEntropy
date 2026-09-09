@@ -1,6 +1,6 @@
-displayName = Call of Void
+﻿displayName = Call of Void
 author = Serrat Antler, HoCha113
-version = 4.0
+version = 4.1
 modReferences = InnoVault
 weakReferences = AlchemistNPCLite
 homepage = discord.gg/eAXVkq66

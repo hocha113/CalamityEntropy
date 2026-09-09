@@ -631,8 +631,6 @@ namespace CalamityEntropy
                 //特殊状态
                 case "godhead":
                     return modPlayer.Godhead;
-                case "awarraith":
-                    return modPlayer.AWraith;
                 case "mariviniumset":
                     return modPlayer.MariviniumSet;
                 case "mariviniumshieldcount":

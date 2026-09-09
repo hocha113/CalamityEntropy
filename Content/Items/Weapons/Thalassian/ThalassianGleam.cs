@@ -225,8 +225,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Thalassian
             // 原 14(Exo/SCal 单杀)、13(Yharon)、10(Providence) 档并入相邻节点，成为不可达档位
             if (EDownedBosses.downedCruiser)
                 return 15;
-            if (EDownedBosses.downedAbyssalWraith)
-                return 12;
+            // 原 12 档挂幽邃魔灵，该 Boss 移除后与 13、14 一样成为不可达档位
             if (EDownedBosses.downedNihilityTwin)
                 return 11;
             if (NPC.downedMoonlord)

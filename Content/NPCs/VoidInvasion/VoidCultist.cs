@@ -49,8 +49,7 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             Idle,
             Closing,
             Avoid,
-            Attack,
-            Summoning
+            Attack
         }
         public AIStyle aiStyle { get; set; }
         public float drawAlpha { get; set; }
@@ -197,7 +196,6 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
         }
         public Player Target { get { return NPC.target.ToPlayer(); } }
         public virtual int CloseTime => 60;
-        public int noSummon = 0;
         public override void OnSpawn(IEntitySource source)
         {
             NPC.direction = -1;
@@ -206,103 +204,9 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 NPC.direction = 1;
             }
         }
-        public virtual void SummoningAI()
-        {
-            NPC.noGravity = false;
-            NPC.velocity.X *= 0.8f;
-            bool hasProj = false;
-            int index = -1;
-            Projectile proji = null;
-            foreach (var proj in Main.projectile)
-            {
-                if (proj.active && proj.type == ModContent.ProjectileType<VoidRitualCircle>())
-                {
-                    index = proj.whoAmI;
-                    proji = proj;
-                    hasProj = true;
-                    break;
-                }
-            }
-            if (hasProj)
-            {
-                if (CEUtils.getDistance(NPC.Center, proji.Center) > 660 || NPC.Center.Y < proji.Center.Y - 30)
-                {
-                    if (!Main.dedServ)
-                    {
-                        //传送闪现前后各34颗Void,dedServ跳整套,双burst对称是旧视觉不是重复代码
-                        for (int i = 0; i < 34; i++)
-                        {
-                            var p = PRTLoader.NewParticle<PRT_Void>(NPC.Center, CEUtils.randomRot().ToRotationVector2() * ((float)Main.rand.Next(0, 500)) * 0.01f, Color.White, 1f);
-                            p.Opacity = ((float)Main.rand.Next(20, 100)) * 0.01f;
-                        }
-                    }
-                    NPC.Center = proji.Center + new Vector2(Main.rand.Next(-260, 261), 40);
-                    if (!Main.dedServ)
-                    {
-                        for (int i = 0; i < 34; i++)
-                        {
-                            var p = PRTLoader.NewParticle<PRT_Void>(NPC.Center, CEUtils.randomRot().ToRotationVector2() * ((float)Main.rand.Next(0, 400)) * 0.01f, Color.White, 1f);
-                            p.Opacity = ((float)Main.rand.Next(20, 100)) * 0.01f;
-                        }
-                    }
-                    if (Main.dedServ)
-                    {
-                        NPC.netUpdate = true;
-                    }
-                }
-                if (proji.Center.X > NPC.Center.X)
-                {
-                    NPC.direction = 1;
-                }
-                else
-                {
-                    NPC.direction = -1;
-                }
-                if (noSummon <= 0)
-                {
-                    if (!Main.dedServ)
-                    {
-                        //召唤法阵3颗PRT_Pixel走像素RT,Configure贝塞尔三点是旧PixelParticle语义
-                        for (int i = 0; i < 3; i++)
-                        {
-                            PRTLoader.NewParticle<PRT_Pixel>(Vector2.Zero, Vector2.Zero, Color.White, 1f)
-                                .Configure(NPC.Center + new Vector2(Main.rand.Next(-10, 11), Main.rand.Next(-10, 11)), (NPC.Center + index.ToProj().Center) / 2 + new Vector2(Main.rand.Next(-140, 141), Main.rand.Next(-80, 81)), index.ToProj().Center, 90, Color.Purple, Color.White);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                int count = 0;
-                foreach (NPC n in Main.npc)
-                {
-                    if (n.active)
-                    {
-                        if (n.ModNPC is VoidCultist)
-                        {
-                            count++;
-                        }
-                    }
-                }
-                if (count >= 4 && noSummon <= 0)
-                {
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(0, -220), Vector2.Zero, ModContent.ProjectileType<VoidRitualCircle>(), 0, 0);
-                    }
-                }
-                else
-                {
-                    aiStyle = AIStyle.Idle;
-                }
-            }
-
-        }
-
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write((byte)aiStyle);
-            writer.Write(noSummon);
             writer.Write(tryCloseTime);
             writer.Write(AvoidTime);
             writer.Write(idleMoveDir);
@@ -312,7 +216,6 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             aiStyle = (AIStyle)reader.ReadByte();
-            noSummon = reader.ReadInt32();
             tryCloseTime = reader.ReadInt32();
             AvoidTime = reader.ReadInt32();
             idleMoveDir = reader.ReadInt32();
@@ -320,42 +223,6 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
         }
         public override void AI()
         {
-
-            noSummon--;
-            if (aiStyle != AIStyle.Attack && aiStyle != AIStyle.Summoning && noSummon <= 0)
-            {
-                if (true)
-                {
-                    int count = 0;
-                    foreach (NPC n in Main.npc)
-                    {
-                        if (n.active)
-                        {
-                            if (n.ModNPC is VoidCultist)
-                            {
-                                count++;
-                            }
-                        }
-                    }
-                    if (count >= 4)
-                    {
-                        aiStyle = AIStyle.Summoning;
-                        NPC.netUpdate = true;
-                    }
-                }
-            }
-            if (noSummon <= 0 && Main.rand.NextBool(60))
-            {
-                foreach (Projectile p in Main.projectile)
-                {
-                    if (p.active && p.ModProjectile is VoidRitualCircle)
-                    {
-                        aiStyle = AIStyle.Summoning;
-                        NPC.netUpdate = true;
-                        break;
-                    }
-                }
-            }
             if (Math.Abs(NPC.velocity.Y) <= 1)
             {
                 walkingCount += Math.Abs(NPC.velocity.X * 0.05f);
@@ -389,7 +256,6 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                     case AIStyle.Attack: attackAI(); break;
                     case AIStyle.Avoid: tryAvoid(Target.Center); break;
                     case AIStyle.Idle: Idle(); break;
-                    case AIStyle.Summoning: SummoningAI(); break;
                     default: break;
                 }
             }
@@ -418,18 +284,6 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
         public virtual Texture2D RightHandTex => null;
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            if (aiStyle == AIStyle.Summoning)
-            {
-                float handRotL = (float)(Math.Cos(NPC.ai[0] * 0.06f) * 70) + NPC.direction * 26;
-                float handRotR = (float)(Math.Cos(NPC.ai[0] * 0.06f) * 66) + NPC.direction * 4;
-                Main.EntitySpriteDraw(RightHandTex, NPC.Center + drawOffset * NPC.scale - screenPos + new Vector2(8 * NPC.scale * NPC.direction, 6), null, drawColor * drawAlpha, NPC.rotation + MathHelper.ToRadians(180 + handRotR), (NPC.direction > 0 ? new Vector2(RightHandTex.Width, 0) : new Vector2(0, 0)), NPC.scale, (NPC.direction > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
-
-                Main.EntitySpriteDraw(BodyTex, NPC.Center + drawOffset * NPC.scale - screenPos, null, drawColor * drawAlpha, NPC.rotation, BodyTex.Size() / 2, NPC.scale, (NPC.direction > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
-
-                Main.EntitySpriteDraw(LeftHandTex, NPC.Center + drawOffset * NPC.scale - screenPos + new Vector2(-4 * NPC.scale * NPC.direction, 6), null, drawColor * drawAlpha, NPC.rotation + MathHelper.ToRadians(180 + handRotL), (NPC.direction < 0 ? new Vector2(LeftHandTex.Width, 0) : new Vector2(0, 0)), NPC.scale, (NPC.direction > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
-
-                return false;
-            }
             Main.EntitySpriteDraw(getTex(), NPC.Center + drawOffset * NPC.scale - screenPos, null, drawColor * drawAlpha, NPC.rotation, getTex().Size() / 2, NPC.scale, (NPC.direction > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
             return false;
         }

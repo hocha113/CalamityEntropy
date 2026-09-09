@@ -3,6 +3,7 @@ using CalamityEntropy.Content.Biomes;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Accessories;
+using CalamityEntropy.Content.Items.Books.BookMarks;
 using CalamityEntropy.Content.Items.Lores;
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Projectiles;
@@ -114,6 +115,11 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<NihilityTwinBag>()));
+
+            // 深渊亡魂移除后,幽渊魂髓与深渊书签改由本 Boss 承接(数量与概率照搬旧掉落表);
+            // 与旧主人一样不挂 NotExpert,专家模式下也照常掉,不进宝袋
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<WraithSoulEssence>(), 1, 15, 25));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAbyss>(), 2));
 
             // 灾厄至尊回复药水→原版超级治疗药水,数量照搬(misc-map);按人掉落并隐藏图鉴条目
             npcLoot.Add(new DropPerPlayerOnThePlayer(ItemID.SuperHealingPotion, 1, 5, 15, new HiddenDropCondition()));

@@ -245,8 +245,6 @@ namespace CalamityEntropy.Content.Items.Pets.Glue
                                 dmg = 329;
                             if (EDownedBosses.downedNihilityTwin)
                                 dmg = 579;
-                            if (EDownedBosses.downedAbyssalWraith)
-                                dmg = 729;
                             if (EDownedBosses.downedCruiser)
                                 dmg = 999;
                             CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromThis(), player, JaronaTarget.ToNPC().Center, dmg, 160, DamageClass.Generic).ArmorPenetration = dmg;

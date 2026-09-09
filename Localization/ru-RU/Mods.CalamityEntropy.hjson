@@ -760,11 +760,6 @@ Items: {
 		Tooltip: ""
 	}
 
-	AbyssalWraithPlush: {
-		DisplayName: Плюшевый Призрак бездны
-		Tooltip: ""
-	}
-
 	Voidshade: {
 		DisplayName: Тень бездны
 		Tooltip: ""
@@ -4154,18 +4149,8 @@ Items: {
 		// DisplayName: Wraith Soul Essence
 		/* Tooltip:
 			'''
-			Soul marrow drawn from the remains of the Abyssal Wraith, cold enough to burn
-			Obtained by defeating the Abyssal Wraith
-			''' */
-	}
-
-	AbyssalSigil: {
-		// DisplayName: Abyssal Sigil
-		/* Tooltip:
-			'''
-			Use at night to unfold a summoning circle above you, calling forth the Abyssal Wraith
-			The circle takes a few seconds to charge; stand your ground until it flares
-			Not consumable
+			Soul marrow drawn from the remains of the Nihility Twins, cold enough to burn
+			Obtained by defeating the Nihility Twins
 			''' */
 	}
 
@@ -4685,13 +4670,7 @@ Projectiles: {
 	GodSlayer.DisplayName: Цареубийца.
 	RailPulseBowProjectile.DisplayName: Снаряд лука с рельсовым импульсом
 	JailerWhipProjectile.DisplayName: Снаряд-хлыст тюремщика
-	VoidLightBall.DisplayName: Световой шар пустоты
 	SpImpact.DisplayName: Sp Impact
-	SighterPin.DisplayName: Sighter Pin
-	VoidFeather.DisplayName: Пустое перо
-	HugeLightBall.DisplayName: Huge Light Ball
-	HomingLightBall.DisplayName: Homing Light Ball
-	AbyssalLaser.DisplayName: Глубинный лазер
 	TwistedTwinMinion.DisplayName: Прислужник искажённого близнеца
 	AbyssalDragonHoldout.DisplayName: Abyssal Dragon Holdout
 	AbyssDragonProj.DisplayName: Abyss Dragon Proj
@@ -4730,7 +4709,6 @@ Projectiles: {
 	TargetSetProj.DisplayName: Target Set
 	UhrwerkHammerCallout.DisplayName: Uhrwerk Hammer Callout
 	AquaticPet.DisplayName: Aquatic Pet
-	VoidRitualCircle.DisplayName: Void Ritual Circle
 	VPVoidLightBall.DisplayName: Void Light Ball
 	VPRot.DisplayName: Void Pope Hand
 	VoidshadeHeld.DisplayName: Voidshade
@@ -5333,7 +5311,6 @@ Projectiles: {
 	// AzafureSawSpark.DisplayName: Azafure Saw Spark
 	// VFChargeFXProj.DisplayName: V F Charge F X Proj
 	// VoidFaquirEnergyBallMelee.DisplayName: Void Faquir Energy Ball Melee
-	// AbyssalSigilRitual.DisplayName: Abyssal Sigil
 	// PartySparkle.DisplayName: Party Sparkle
 	// TyrantPhantomBlade.DisplayName: Tyrant Phantom Blade
 	// GaleWindBlade.DisplayName: Gale Wind Blade
@@ -6001,10 +5978,7 @@ NPCs: {
 
 	CruiserHead: {
 		DisplayName: Крейсер
-		// BossChecklistIntegration.EntryName: Cruiser
-	}
 
-	Cruiser: {
 		BossChecklistIntegration: {
 			EntryName: Крейсер
 			SpawnInfo: Используй [i:CalamityEntropy/VoidBottle] для призыва
@@ -6013,16 +5987,6 @@ NPCs: {
 	}
 
 	CruiserBody.DisplayName: Крейсер
-
-	AbyssalWraith: {
-		DisplayName: Призрак бездны
-
-		BossChecklistIntegration: {
-			// EntryName: Abyssal Wraith
-			// SpawnInfo: Use [i:CalamityEntropy/AbyssalSigil] at night to summon
-			// DespawnMessage: ""
-		}
-	}
 
 	VoidCultistAssassin.DisplayName: Ассассин культистов Пустоты
 	VoidPope.DisplayName: Патриарх Пустоты
@@ -6222,7 +6186,6 @@ CruiserBestiary:
 	Верховный хищник, рожденный из пустоты, напоминающий того Пожирателя Богов, с которым ты когда-то сталкивался.
 	Он питается порядком, сеет хаос и превращает мир в свою охотничью территорию... но ты не добыча для поедания.
 	'''
-AbyssalWraithBestiary: ???
 NihilityTwinBestiary:
 	'''
 	Основные сущности пустоты, возникающие из разломов, они стали врагами порядка через бессмысленную энтропию.
@@ -6702,7 +6665,7 @@ TSA5:
 	'''
 TSU5: Нужно победить фантомов.
 TSA6: При спринте остаются трещины, которые продолжают наносить ущерб цели.
-TSU6: Нужно победить богобоязненных.
+TSU6: Нужно победить Крейсера
 TSA7: Устойчивость к смертельной травме и восстановление ценности жизни до половины максимальной стоимости жизни, эффект 5 минут охлаждения
 TSU7: Нужно победить Йо.
 TSA8: Нападение привело к пустоте.

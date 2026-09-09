@@ -942,11 +942,6 @@ namespace CalamityEntropy.Common
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkCosmic>(), 2));
                 // 2026-08-31 平衡案:沐生之羽改由月亮领主掉落(Vitalfeather.cs 的 VitalfeatherDropGNPC),巡游者侧退役
             }
-            if (npc.type == ModContent.NPCType<Content.NPCs.AbyssalWraith.AbyssalWraith>())
-            {
-                // 深渊亡魂扶正掉落表（原 DoG / 幽海飞龙掉落重挂；幽渊魂髓的掉落在 AbyssalWraith.ModifyNPCLoot 侧）
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAbyss>(), 2));
-            }
             if (npc.type == NPCID.BoneLee)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkBlackKnife>(), 10));
@@ -1494,6 +1489,9 @@ namespace CalamityEntropy.Common
             }
             if (shop.NpcType == 108)
             {
+                // 命运之绳原挂灾厄大法师货架,脱钩时随该 NPC 一并删除,现无条件重挂到原版巫师
+                shop.Add(ModContent.ItemType<ThreadOfFate>());
+
                 shop.Add(ModContent.ItemType<AuraCard>(), new Condition(Mod.GetLocalization("HaveOracleDeck"), () => Main.LocalPlayer.Entropy().oracleDeckInInv));
                 shop.Add(ModContent.ItemType<BrillianceCard>(), new Condition(Mod.GetLocalization("HaveOracleDeck"), () => Main.LocalPlayer.Entropy().oracleDeckInInv));
                 shop.Add(ModContent.ItemType<InspirationCard>(), new Condition(Mod.GetLocalization("HaveOracleDeck"), () => Main.LocalPlayer.Entropy().oracleDeckInInv));

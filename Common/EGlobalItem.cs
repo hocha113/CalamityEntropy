@@ -315,13 +315,6 @@ namespace CalamityEntropy.Common
 
         public override bool? UseItem(Item item, Player player)
         {
-            /*if (item.type == ItemID.RodOfHarmony)
-            {
-                if (NPC.AnyNPCs(ModContent.NPCType<AbyssalWraith>()))
-                {
-                    SubworldSystem.Enter<VOIDSubworld>();
-                }
-            }*/
             if (player.channel || player.whoAmI != Main.myPlayer || item.pick > 0 || item.damage <= 0 || item.ammo != AmmoID.None || item.axe > 0 || !player.Entropy().TarnishCard)
             {
                 return null;

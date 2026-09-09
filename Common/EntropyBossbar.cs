@@ -1,5 +1,4 @@
-﻿using CalamityEntropy.Content.NPCs.AbyssalWraith;
-using CalamityEntropy.Content.NPCs.SpiritFountain;
+﻿using CalamityEntropy.Content.NPCs.SpiritFountain;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -36,8 +35,6 @@ namespace CalamityEntropy.Common
         internal static Asset<Texture2D> EbarcTex;
         [VaultLoaden("CalamityEntropy/Assets/Bossbar/CrackedNoiseB")]
         internal static Asset<Texture2D> CrackedNoiseBTex;
-        [VaultLoaden("CalamityEntropy/Assets/Bossbar/awraithbar")]
-        internal static Asset<Texture2D> AwraithbarTex;
         [VaultLoaden("CalamityEntropy/Assets/Bossbar/hl")]
         internal static Asset<Texture2D> HlTex;
         [VaultLoaden("CalamityEntropy/Assets/Bossbar/df")]
@@ -208,12 +205,6 @@ namespace CalamityEntropy.Common
             Texture2D barc = EbarcTex.Value;
             Texture2D crack = CrackedNoiseBTex.Value;
             Texture2D bar1 = bar1Norm;
-            Texture2D awBar = AwraithbarTex.Value;
-            bool abyssalWraith = false;
-            if (npc.ModNPC is AbyssalWraith)
-            {
-                abyssalWraith = true;
-            }
             if (npc.GetBossHeadTextureIndex() < 0)
             {
                 bar1 = bar1_;
@@ -228,14 +219,7 @@ namespace CalamityEntropy.Common
             spriteBatch.UseSampleState_UI(SamplerState.LinearWrap);
             try
             {
-                if (abyssalWraith)
-                {
-                    spriteBatch.Draw(awBar, center + new Vector2(0, 8), new Rectangle(0, (int)(1.4f * -drawOfs), (int)(500 * prog), bar2.Height), barColor, 0, bar2.Size() * 0.5f, 1, SpriteEffects.None, 0);
-                }
-                else
-                {
-                    spriteBatch.Draw(bar2, center + new Vector2(0, 8), new Rectangle(drawOfs, 0, (int)(500 * prog), bar2.Height), barColor, 0, bar2.Size() * 0.5f, 1, SpriteEffects.None, 0);
-                }
+                spriteBatch.Draw(bar2, center + new Vector2(0, 8), new Rectangle(drawOfs, 0, (int)(500 * prog), bar2.Height), barColor, 0, bar2.Size() * 0.5f, 1, SpriteEffects.None, 0);
             }
             catch { }
             spriteBatch.UseSampleState_UI(SamplerState.AnisotropicClamp);

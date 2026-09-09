@@ -820,11 +820,6 @@ Items: {
 		Tooltip: ""
 	}
 
-	AbyssalWraithPlush: {
-		DisplayName: Abyssal Wraith Plush
-		Tooltip: ""
-	}
-
 	Voidshade: {
 		DisplayName: Voidshade
 		Tooltip: Releases a fractal shockwave when swung
@@ -4388,18 +4383,8 @@ Items: {
 		DisplayName: Wraith Soul Essence
 		Tooltip:
 			'''
-			Soul marrow drawn from the remains of the Abyssal Wraith, cold enough to burn
-			Obtained by defeating the Abyssal Wraith
-			'''
-	}
-
-	AbyssalSigil: {
-		DisplayName: Abyssal Sigil
-		Tooltip:
-			'''
-			Use at night to unfold a summoning circle above you, calling forth the Abyssal Wraith
-			The circle takes a few seconds to charge; stand your ground until it flares
-			Not consumable
+			Soul marrow drawn from the remains of the Nihility Twins, cold enough to burn
+			Obtained by defeating the Nihility Twins
 			'''
 	}
 
@@ -4975,13 +4960,7 @@ Projectiles: {
 	GodSlayer.DisplayName: God Slayer
 	RailPulseBowProjectile.DisplayName: Rail Pulse Bow Projectile
 	JailerWhipProjectile.DisplayName: Jailer Whip Projectile
-	VoidLightBall.DisplayName: Void Light Ball
 	SpImpact.DisplayName: Sp Impact
-	SighterPin.DisplayName: Sighter Pin
-	VoidFeather.DisplayName: Void Feather
-	HugeLightBall.DisplayName: Huge Light Ball
-	HomingLightBall.DisplayName: Homing Light Ball
-	AbyssalLaser.DisplayName: Abyssal Laser
 	TwistedTwinMinion.DisplayName: Twisted Twin Minion
 	AbyssalDragonHoldout.DisplayName: Abyssal Dragon Holdout
 	AbyssDragonProj.DisplayName: Abyss Dragon Proj
@@ -5020,7 +4999,6 @@ Projectiles: {
 	TargetSetProj.DisplayName: Target Set
 	UhrwerkHammerCallout.DisplayName: Uhrwerk Hammer Callout
 	AquaticPet.DisplayName: Aquatic Pet
-	VoidRitualCircle.DisplayName: Void Ritual Circle
 	VPVoidLightBall.DisplayName: Void Light Ball
 	VPRot.DisplayName: Void Pope Hand
 	VoidshadeHeld.DisplayName: Voidshade
@@ -5623,7 +5601,6 @@ Projectiles: {
 	AzafureSawSpark.DisplayName: Azafure Saw Spark
 	VFChargeFXProj.DisplayName: V F Charge F X Proj
 	VoidFaquirEnergyBallMelee.DisplayName: Void Faquir Energy Ball Melee
-	AbyssalSigilRitual.DisplayName: Abyssal Sigil
 	PartySparkle.DisplayName: Party Sparkle
 	TyrantPhantomBlade.DisplayName: Tyrant Phantom Blade
 	GaleWindBlade.DisplayName: Gale Wind Blade
@@ -6291,10 +6268,7 @@ NPCs: {
 
 	CruiserHead: {
 		DisplayName: Cruiser
-		BossChecklistIntegration.EntryName: Cruiser
-	}
 
-	Cruiser: {
 		BossChecklistIntegration: {
 			EntryName: Cruiser
 			SpawnInfo: Use [i:CalamityEntropy/VoidBottle] to summon
@@ -6303,16 +6277,6 @@ NPCs: {
 	}
 
 	CruiserBody.DisplayName: Cruiser
-
-	AbyssalWraith: {
-		DisplayName: Abyssal Wraith
-
-		BossChecklistIntegration: {
-			EntryName: Abyssal Wraith
-			SpawnInfo: Use [i:CalamityEntropy/AbyssalSigil] at night to summon
-			DespawnMessage: ""
-		}
-	}
 
 	VoidCultistAssassin.DisplayName: Void Cultist Assassin
 	VoidPope.DisplayName: Void Pope
@@ -6468,7 +6432,6 @@ CruiserBestiary:
 	A supreme predator born from the void, cruising through the seams of reality in serpentine form.
 	It feasts on order, spreads chaos, and tears the world apart as its hunting ground... and you are no prey to be devoured.
 	'''
-AbyssalWraithBestiary: ???
 NihilityTwinBestiary:
 	'''
 	Basic entities of the void, emerging from the rifts, they have become enemies of order through mindless entropy.
@@ -6952,7 +6915,7 @@ TSA5:
 	'''
 TSU5: Need to kill the Nihility Twins
 TSA6: Leave behind a rift when dashing. The rift will continuously damaie enemies in radius
-TSU6: Need to kill the Abyssal Wraith
+TSU6: Need to kill the Cruiser
 TSA7: Survive a fatal injury and restore your health to half of your maximum health on a 5 minute cooldown
 TSU7: Need to kill Cruiser
 TSA8: Attack will cause [cebuff:CalamityEntropy/VoidTouch]

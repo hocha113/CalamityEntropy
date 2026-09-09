@@ -85,9 +85,8 @@ namespace CalamityEntropy.Content.Items.Donator.Jy
         };
         public static int Level()
         {
-            // 2026-08-31 平衡案:成长阶段重置为11档(11档亚波伦暂用幽邃魔灵代替)
-            if (EDownedBosses.downedAbyssalWraith)
-                return 11;
+            // 2026-08-31 平衡案:成长阶段重置为11档;11档原借幽邃魔灵作亚波伦的替身,
+            // 该 Boss 移除后此档无门槛可挂,封顶回落到10档(巡游者),伤害表保留11档待日后重挂
             if (EDownedBosses.downedCruiser)
                 return 10;
             if (EDownedBosses.downedNihilityTwin)

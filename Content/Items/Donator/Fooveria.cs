@@ -93,7 +93,8 @@ namespace CalamityEntropy.Content.Items.Donator
                 }
             }
 
-            // 2026-08-31 平衡案:成长阶段重置为10档(10档亚波伦暂用幽邃魔灵代替)
+            // 2026-08-31 平衡案:成长阶段重置为10档;10档原借幽邃魔灵作亚波伦的替身,
+            // 该 Boss 移除后此档无门槛可挂,封顶回落到9档(巡游者)
             Check(NPC.downedSlimeKing || NPC.downedBoss1);
             Check(NPC.downedBoss2);
             Check(NPC.downedBoss3);
@@ -103,7 +104,6 @@ namespace CalamityEntropy.Content.Items.Donator
             Check(NPC.downedMoonlord);
             Check(EDownedBosses.downedNihilityTwin);
             Check(EDownedBosses.downedCruiser);
-            Check(EDownedBosses.downedAbyssalWraith);
 
             return Level;
 

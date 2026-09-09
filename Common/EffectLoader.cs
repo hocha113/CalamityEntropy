@@ -4,11 +4,9 @@ using CalamityEntropy.Content.Items.Donator;
 using CalamityEntropy.Content.Items.Donator.Ratziel;
 using CalamityEntropy.Content.Items.Pets;
 using CalamityEntropy.Content.Items.Weapons;
-using CalamityEntropy.Content.NPCs.AbyssalWraith;
 using CalamityEntropy.Content.NPCs.Cruiser;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
-using CalamityEntropy.Content.Projectiles.AbyssalWraithProjs;
 using CalamityEntropy.Content.Projectiles.Chainsaw;
 using CalamityEntropy.Content.Projectiles.Cruiser;
 using CalamityEntropy.Content.Projectiles.Pets.Abyss;
@@ -274,10 +272,6 @@ namespace CalamityEntropy.Common
                 {
                     continue;
                 }
-                if (p.ModProjectile is AbyssalLaser al)
-                {
-                    al.drawLaser();
-                }
                 if (p.ModProjectile is VoidStar)
                 {
                     if (p.ai[0] >= 60 || p.ai[2] == 0)
@@ -353,34 +347,6 @@ namespace CalamityEntropy.Common
                         for (int i = 0; i <= 30; i++)
                         {
                             aw.DrawPortal(aw.spawnPos, new Color(50, 35, 240) * aw.alphaPor, aw.spawnRot, 270 * s, 0.3f, i * 3f);
-                            s = s + (sj - s) * 0.05f;
-                        }
-                    }
-                }
-            }
-            foreach (NPC n in Main.ActiveNPCs)
-            {
-                if (n.ModNPC == null)
-                {
-                    continue;
-                }
-                if (n.ModNPC is AbyssalWraith aw)
-                {
-                    if (aw.portalAlpha > 0)
-                    {
-                        float s = 0;
-                        float sj = 1;
-                        for (int i = 0; i <= 30; i++)
-                        {
-                            aw.DrawPortal(aw.portalPos + new Vector2(0, 220 - i * 2.2f), new Color(50, 35, 240) * aw.portalAlpha, 270 * s, 0.3f, i * 3f);
-                            s = s + (sj - s) * 0.05f;
-                        }
-
-                        s = 0;
-                        sj = 1;
-                        for (int i = 0; i <= 30; i++)
-                        {
-                            aw.DrawPortal(aw.portalTarget + new Vector2(0, 220 - i * 2.2f), new Color(50, 35, 240) * aw.portalAlpha, 270 * s, 0.3f, i * 3f);
                             s = s + (sj - s) * 0.05f;
                         }
                     }
@@ -1339,16 +1305,9 @@ namespace CalamityEntropy.Common
 
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-            int abyssalWraithType = ModContent.NPCType<AbyssalWraith>();
             int cruiserHeadType = ModContent.NPCType<CruiserHead>();
             foreach (NPC npc in Main.ActiveNPCs)
             {
-                if (npc.type == abyssalWraithType && npc.ModNPC is AbyssalWraith aw)
-                {
-                    NPCLoader.PreDraw(npc, Main.spriteBatch, Main.screenPosition, Color.White);
-                    aw.Draw();
-                    NPCLoader.PostDraw(npc, Main.spriteBatch, Main.screenPosition, Color.White);
-                }
                 if (npc.type == cruiserHeadType && npc.ModNPC is CruiserHead ch && ch.phase == 2)
                 {
                     ch.candraw = true;

@@ -864,11 +864,6 @@ Items: {
 		Tooltip: ""
 	}
 
-	AbyssalWraithPlush: {
-		DisplayName: 幽邃魔灵玩偶
-		Tooltip: ""
-	}
-
 	Voidshade: {
 		DisplayName: 虚影薄锋
 		Tooltip:
@@ -4462,18 +4457,8 @@ Items: {
 		DisplayName: 幽渊魂髓
 		Tooltip:
 			'''
-			自深渊亡魂残躯中抽出的魂质骨髓，冷得烫手
-			击败深渊亡魂获得
-			'''
-	}
-
-	AbyssalSigil: {
-		DisplayName: 虚空祭印
-		Tooltip:
-			'''
-			夜晚使用，在上方展开召唤法阵，唤来深渊亡魂
-			法阵需要几秒蓄能，站稳等它亮起
-			不会被消耗
+			自虚无双子残躯中抽出的魂质骨髓，冷得烫手
+			击败虚无双子获得
 			'''
 	}
 
@@ -5031,13 +5016,7 @@ Projectiles: {
 	GodSlayer.DisplayName: 弑神者
 	RailPulseBowProjectile.DisplayName: 磁轨脉冲弓
 	JailerWhipProjectile.DisplayName: 狱卒长鞭
-	VoidLightBall.DisplayName: 虚光射线
 	SpImpact.DisplayName: 冲击波
-	SighterPin.DisplayName: 视域之矛
-	VoidFeather.DisplayName: 虚空之羽
-	HugeLightBall.DisplayName: 虚空圣光
-	HomingLightBall.DisplayName: 虚空光球
-	AbyssalLaser.DisplayName: 深渊激光
 	TwistedTwinMinion.DisplayName: 纠缠双子
 	AbyssalDragonHoldout.DisplayName: 幽渊魔龙杖
 	AbyssDragonProj.DisplayName: 幽渊魔龙
@@ -5076,7 +5055,6 @@ Projectiles: {
 	TargetSetProj.DisplayName: 奴役
 	UhrwerkHammerCallout.DisplayName: Uhrwerk Hammer Callout
 	AquaticPet.DisplayName: 海灾酱
-	VoidRitualCircle.DisplayName: 虚空邪教徒召唤法阵
 	VPVoidLightBall.DisplayName: 虚光球
 	VPRot.DisplayName: 虚空教主
 	VoidshadeHeld.DisplayName: 虚影薄锋
@@ -5679,7 +5657,6 @@ Projectiles: {
 	AzafureSawSpark.DisplayName: 锯片火花
 	// VFChargeFXProj.DisplayName: V F Charge F X Proj
 	// VoidFaquirEnergyBallMelee.DisplayName: Void Faquir Energy Ball Melee
-	AbyssalSigilRitual.DisplayName: 虚空祭印
 	PartySparkle.DisplayName: 派对星光
 	TyrantPhantomBlade.DisplayName: 暴君幻影剑
 	// GaleWindBlade.DisplayName: Gale Wind Blade
@@ -6341,10 +6318,7 @@ NPCs: {
 
 	CruiserHead: {
 		DisplayName: 巡游者
-		// BossChecklistIntegration.EntryName: Cruiser
-	}
 
-	Cruiser: {
 		BossChecklistIntegration: {
 			EntryName: 巡游者
 			SpawnInfo: 使用[i:CalamityEntropy/VoidBottle]召唤
@@ -6353,16 +6327,6 @@ NPCs: {
 	}
 
 	CruiserBody.DisplayName: 巡游者
-
-	AbyssalWraith: {
-		DisplayName: 幽邃魔灵
-
-		BossChecklistIntegration: {
-			EntryName: 幽邃魔灵
-			SpawnInfo: 夜晚使用[i:CalamityEntropy/AbyssalSigil]召唤
-			DespawnMessage: ""
-		}
-	}
 
 	VoidCultistAssassin.DisplayName: 虚空邪教徒
 	VoidPope.DisplayName: 虚空教主
@@ -6559,7 +6523,6 @@ CruiserBestiary:
 	来源于虚空的顶级猎杀者，以巨蟒之姿巡曳于现实的缝隙之间。
 	他捕食秩序，传播混沌，将现世撕碎为他的猎场...而你也绝不是任它吞噬的猎物。
 	'''
-AbyssalWraithBestiary: 虚空之中存在的不可描述之神，窥探祂的真身是不可能的，因为即便你看到了祂，你的视线也只会被虚无吞没
 NihilityTwinBestiary:
 	'''
 	虚空中的底层生物，自裂隙而来，因无意识的熵增行为而成为了秩序之敌。
@@ -7050,7 +7013,7 @@ TSA5:
 	'''
 TSU5: 需击败虚无双子
 TSA6: 冲刺时留下裂缝，持续对接触到的目标造成伤害
-TSU6: 需击败深渊亡魂
+TSU6: 需击败巡游者
 TSA7: 抵挡一次致命伤害并将你的生命值回复至最大生命值的一半，此效果有5分钟的冷却
 TSU7: 需击败巡游者
 TSA8: 攻击造成虚空之触

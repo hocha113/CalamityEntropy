@@ -175,7 +175,8 @@ namespace CalamityEntropy.Content.Items.Donator
                 Get("TSA5") + (flag ? "" : Get("LOCKED") + " " + Get("TSU5")))
             { OverrideColor = (flag ? Color.Yellow : Color.Gray) });
 
-            flag = EDownedBosses.downedAbyssalWraith;
+            // 第6能力原挂幽邃魔灵,该 Boss 移除后改挂巡游者
+            flag = EDownedBosses.downedCruiser;
             tooltips.Add(new TooltipLine(Mod, "Ability Desc",
                 Get("TSA6") + (flag ? "" : Get("LOCKED") + " " + Get("TSU6")))
             { OverrideColor = (flag ? Color.Yellow : Color.Gray) });
@@ -249,7 +250,7 @@ namespace CalamityEntropy.Content.Items.Donator
             string enchanted = $"{pathAbility}4".ToLangValue();
             string downedPolterText = $"{lockedValue} {$"{pathCondition}5".ToLangValue()})";
 
-            string dogText = DyeText(EDownedBosses.downedAbyssalWraith ? $"{pathAbility}6".ToLangValue() : $"{lockedValue} {$"{pathCondition}6".ToLangValue()})", EDownedBosses.downedAbyssalWraith ? Color.Yellow : Color.Gray);
+            string dogText = DyeText(EDownedBosses.downedCruiser ? $"{pathAbility}6".ToLangValue() : $"{lockedValue} {$"{pathCondition}6".ToLangValue()})", EDownedBosses.downedCruiser ? Color.Yellow : Color.Gray);
 
             allowTeleportSlice = NPC.downedBoss1 ? DyeText(allowTeleportSlice, Color.Yellow) : DyeText(downedBrimmyText + "\n" + allowTeleportSlice, Color.Gray);
             enchanted = EDownedBosses.downedNihilityTwin ? DyeText(enchanted, Color.Yellow) : DyeText(downedPolterText + "\n" + enchanted, Color.Gray);
@@ -266,12 +267,12 @@ namespace CalamityEntropy.Content.Items.Donator
             string lockedValue = lockedPath.ToLangValue();
             string allowDashText = $"{pathAbility}1".ToLangValue();
             string downedEoCText = $"{lockedValue} {$"{pathCondition}1".ToLangValue()})";
-            //错位修正:突刺第二段应读A6裂缝能力(原误读A5),与U6深渊亡魂解锁条件对齐
+            //错位修正:突刺第二段应读A6裂缝能力(原误读A5),与U6解锁条件对齐
             string tearDashText = $"{pathAbility}6".ToLangValue();
             string downedDoGText = $"{lockedValue} {$"{pathCondition}6".ToLangValue()})";
 
             allowDashText = NPC.downedBoss1 ? DyeText(allowDashText, Color.Yellow) : DyeText(downedEoCText + "\n" + allowDashText, Color.Gray);
-            tearDashText = EDownedBosses.downedAbyssalWraith ? DyeText(tearDashText, Color.Yellow) : DyeText(downedDoGText + "\n" + tearDashText, Color.Gray);
+            tearDashText = EDownedBosses.downedCruiser ? DyeText(tearDashText, Color.Yellow) : DyeText(downedDoGText + "\n" + tearDashText, Color.Gray);
 
             string combination = DyeText(titleText, Color.Crimson)
                    + "\n" + allowDashText
@@ -567,7 +568,7 @@ namespace CalamityEntropy.Content.Items.Donator
             {
                 if (Projectile.ai[1] == 0)
                 {
-                    if (EDownedBosses.downedAbyssalWraith)
+                    if (EDownedBosses.downedCruiser)
                     {
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity / 16f, ModContent.ProjectileType<BloodCrack>(), Projectile.damage / 6, 0, Projectile.owner);
                     }
@@ -586,7 +587,7 @@ namespace CalamityEntropy.Content.Items.Donator
                 }
                 else
                 {
-                    if (EDownedBosses.downedAbyssalWraith)
+                    if (EDownedBosses.downedCruiser)
                     {
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity.RotatedBy(MathHelper.PiOver2) / 16f / 2, ModContent.ProjectileType<BloodCrack>(), Projectile.damage / 6, 0, Projectile.owner);
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity.RotatedBy(-MathHelper.PiOver2) / 16f / 2, ModContent.ProjectileType<BloodCrack>(), Projectile.damage / 6, 0, Projectile.owner);

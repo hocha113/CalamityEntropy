@@ -19,7 +19,6 @@ using CalamityEntropy.Content.Items.Vanity;
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Items.Weapons.Whips;
 using CalamityEntropy.Content.NPCs;
-using CalamityEntropy.Content.NPCs.AbyssalWraith;
 using CalamityEntropy.Content.NPCs.Acropolis;
 using CalamityEntropy.Content.NPCs.Apsychos;
 using CalamityEntropy.Content.NPCs.Cruiser;
@@ -153,7 +152,6 @@ namespace CalamityEntropy
             ets = true;
             pixel = CEUtils.getExtraTex("white");
 
-            AbyssalWraith.loadHead();
             CruiserHead.loadHead();
 
             EntropySkies.setUpSkies();
@@ -165,7 +163,6 @@ namespace CalamityEntropy
             On_Lighting.AddLight_Vector2_Vector3 += al_vv;
             On_Lighting.AddLight_Vector2_int += al_torch;
             On_Player.AddBuff += add_buff;
-            On_NPC.AddBuff += add_buff_npc;
             On_NPC.TargetClosest += targetClost;
             On_NPC.TargetClosestUpgraded += targetClostUpgraded;
             On_NPC.FindFrame += findFrame;
@@ -505,7 +502,6 @@ namespace CalamityEntropy
             On_Lighting.AddLight_Vector2_Vector3 -= al_vv;
             On_Lighting.AddLight_Vector2_int -= al_torch;
             On_Player.AddBuff -= add_buff;
-            On_NPC.AddBuff -= add_buff_npc;
             On_NPC.TargetClosest -= targetClost;
             On_NPC.TargetClosestUpgraded -= targetClostUpgraded;
             On_NPC.FindFrame -= findFrame;
@@ -540,14 +536,6 @@ namespace CalamityEntropy
                 return orig(smart);
             }
             return Vector2.Zero;
-        }
-
-        private void add_buff_npc(On_NPC.orig_AddBuff orig, NPC self, int type, int time, bool quiet)
-        {
-            if (!(Main.debuff[type] && self.ModNPC is AbyssalWraith))
-            {
-                orig(self, type, time, quiet);
-            }
         }
 
         public void drawtile(On_Main.orig_DrawTiles orig, Main self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets, int waterStyleOverride)
@@ -1628,20 +1616,6 @@ namespace CalamityEntropy
                             });
                         }
                         {
-                            // 深渊亡魂扶正为月后二阶（progression-map §四），召唤物为虚空祭印 AbyssalSigil
-                            string entryName = "AbyssalWraith";
-                            List<int> collection = new List<int>() { ModContent.ItemType<AbyssalWraithPlush>() };
-                            Func<bool> awDowned = () => EDownedBosses.downedAbyssalWraith;
-                            AddBoss(bossChecklist, Instance, entryName, 20.8f, awDowned, ModContent.NPCType<AbyssalWraith>(), new Dictionary<string, object>()
-                            {
-                                ["displayName"] = Language.GetText("Mods.CalamityEntropy.NPCs.AbyssalWraith.BossChecklistIntegration.EntryName"),
-                                ["spawnInfo"] = Language.GetText("Mods.CalamityEntropy.NPCs.AbyssalWraith.BossChecklistIntegration.SpawnInfo"),
-                                ["despawnMessage"] = Language.GetText("Mods.CalamityEntropy.NPCs.AbyssalWraith.BossChecklistIntegration.DespawnMessage"),
-                                ["spawnItems"] = ModContent.ItemType<AbyssalSigil>(),
-                                ["collectibles"] = collection
-                            });
-                        }
-                        {
                             string entryName = "Cruiser";
                             List<int> segments = new List<int>() { ModContent.NPCType<CruiserHead>(), ModContent.NPCType<CruiserBody>(), ModContent.NPCType<CruiserTail>() };
                             List<int> collection = new List<int>() { ModContent.ItemType<CruiserBag>(), ModContent.ItemType<CruiserTrophy>(), ModContent.ItemType<VoidScales>(), ModContent.ItemType<VoidMonolith>(), ModContent.ItemType<CruiserRelic>(), ModContent.ItemType<VoidRelics>(), ModContent.ItemType<VoidAnnihilate>(), ModContent.ItemType<VoidElytra>(), ModContent.ItemType<VoidEcho>(), ModContent.ItemType<Content.Items.Weapons.Silence>(), ModContent.ItemType<WingsOfHush>(), ModContent.ItemType<WindOfUndertaker>(), ModContent.ItemType<VoidToy>(), ModContent.ItemType<TheocracyPearlToy>(), ModContent.ItemType<CruiserPlush>() };
@@ -1653,9 +1627,11 @@ namespace CalamityEntropy
                             Func<bool> cruiser = () => EDownedBosses.downedCruiser;
                             AddBoss(bossChecklist, Instance, entryName, 22.1f, cruiser, segments, new Dictionary<string, object>()
                             {
-                                ["displayName"] = Language.GetTextValue("Mods.CalamityEntropy.NPCs.Cruiser.BossChecklistIntegration.EntryName"),
-                                ["spawnInfo"] = Language.GetTextValue("Mods.CalamityEntropy.NPCs.Cruiser.BossChecklistIntegration.SpawnInfo"),
-                                ["despawnMessage"] = Language.GetTextValue("Mods.CalamityEntropy.NPCs.Cruiser.BossChecklistIntegration.DespawnMessage"),
+                                // 键挂在头部 NPC 的内部名下,与其余 Boss 一致:BossChecklist 自身按
+                                // Mods.<模组>.NPCs.<头部NPC>.BossChecklistIntegration.EntryName 取名,挂错位置会回退英文
+                                ["displayName"] = Language.GetText("Mods.CalamityEntropy.NPCs.CruiserHead.BossChecklistIntegration.EntryName"),
+                                ["spawnInfo"] = Language.GetText("Mods.CalamityEntropy.NPCs.CruiserHead.BossChecklistIntegration.SpawnInfo"),
+                                ["despawnMessage"] = Language.GetText("Mods.CalamityEntropy.NPCs.CruiserHead.BossChecklistIntegration.DespawnMessage"),
                                 ["spawnItems"] = ModContent.ItemType<VoidBottle>(),
                                 ["collectibles"] = collection,
                                 ["customPortrait"] = portrait
@@ -1707,7 +1683,6 @@ namespace CalamityEntropy
             EntropyBossbar.bossbarColor[NPCID.MoonLordHead] = new Color(213, 194, 156);
             EntropyBossbar.bossbarColor[NPCID.MoonLordHand] = new Color(213, 194, 156);
             EntropyBossbar.bossbarColor[ModContent.NPCType<CruiserHead>()] = new Color(150, 60, 255);
-            EntropyBossbar.bossbarColor[ModContent.NPCType<AbyssalWraith>()] = new Color(200, 40, 255);
             EntropyBossbar.bossbarColor[ModContent.NPCType<VoidPope>()] = new Color(200, 40, 255);
             EntropyBossbar.bossbarColor[ModContent.NPCType<NihilityActeriophage>()] = new Color(255, 155, 248);
             EntropyBossbar.bossbarColor[ModContent.NPCType<ChaoticCell>()] = new Color(255, 155, 248);

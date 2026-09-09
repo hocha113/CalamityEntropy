@@ -175,13 +175,7 @@ namespace CalamityEntropy.Assets.Register
         [VaultLoaden("CalamityEntropy/Assets/Effects/ColorLerp2", AssetMode.EffectValue, "Pass1")]
         public static Effect ColorLerp2;
 
-        //深渊亡魂与先知系,pass 名与文件名相同的单独指明
-        [VaultLoaden("CalamityEntropy/Assets/Effects/aweffect", AssetMode.EffectValue, "aweffect")]
-        public static Effect aweffect;
-        [VaultLoaden("CalamityEntropy/Assets/Effects/AWSkyEffect", AssetMode.EffectValue, "AWSkyEffect")]
-        public static Effect AWSkyEffect;
-        [VaultLoaden("CalamityEntropy/Assets/Effects/awsky2", AssetMode.EffectValue, "EnchantedPass")]
-        public static Effect awsky2;
+        //先知系,pass 名与文件名相同的单独指明
         [VaultLoaden("CalamityEntropy/Assets/Effects/fableeyelaser", AssetMode.EffectValue, "fableeyelaser")]
         public static Effect fableeyelaser;
 

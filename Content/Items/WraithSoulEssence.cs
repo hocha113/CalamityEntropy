@@ -8,7 +8,8 @@ namespace CalamityEntropy.Content.Items
 {
     /// <summary>
     /// 幽渊魂髓:月后二阶材料,承接原灾厄 CosmiliteBar / AscendantSpiritEssence / TwistingNether(material-map §一)。
-    /// 获取:深渊亡魂击杀掉落 15–25(见 AbyssalWraith.ModifyNPCLoot),巨龙商店亦有售。
+    /// 获取:虚无双子击杀掉落 15–25(原挂深渊亡魂,该 Boss 移除后改挂,见 NihilityActeriophage.ModifyNPCLoot),
+    /// 巨龙商店亦有售,抽奖机 p6/p7 池内也有。
     /// </summary>
     public class WraithSoulEssence : ModItem
     {

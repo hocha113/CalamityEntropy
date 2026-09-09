@@ -157,7 +157,6 @@ namespace CalamityEntropy.Common
         public bool GodHeadVisual = false;
         public bool samsaraCasketOpened = false;
         public int sCasketLevel = 0;
-        public bool AWraith = false;
         public int SacredJudgeShields = 2;
         public float screenShift = 0;
         public bool holyMantle = false;
@@ -3388,11 +3387,11 @@ namespace CalamityEntropy.Common
             }
             
             if (HeatEffectTime > 0) HeatEffectTime--;
-            if (AWraith || HeatEffectTime > 0)
+            //原本还有一路由幽邃魔灵在场逐帧点亮,该 Boss 移除后只剩 HeatEffectTime 这一路驱动
+            if (HeatEffectTime > 0)
             {
                 Player.ManageSpecialBiomeVisuals("HeatDistortion", true);
             }
-            AWraith = false;
             // 2026-08-31 平衡案:始源冠冕重做(2防/+25生命/蜂蜜),原每秒回血退役
             if (!Player.dead)
             {

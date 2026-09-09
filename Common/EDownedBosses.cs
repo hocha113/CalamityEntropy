@@ -8,7 +8,6 @@ namespace CalamityEntropy.Common
     public class EDownedBosses : ModSystem
     {
         public static bool downedCruiser = false;
-        public static bool downedAbyssalWraith = false;
         public static bool downedNihilityTwin = false;
         public static bool EntropyMode = false;
         public static bool TDR = false;
@@ -23,7 +22,6 @@ namespace CalamityEntropy.Common
         {
             EntropyMode = false;
             downedCruiser = false;
-            downedAbyssalWraith = false;
             downedNihilityTwin = false;
             downedProphet = false;
             downedLuminaris = false;
@@ -46,10 +44,6 @@ namespace CalamityEntropy.Common
             if (downedCruiser)
             {
                 tag["downedCruiser"] = true;
-            }
-            if (downedAbyssalWraith)
-            {
-                tag["downedAbyssalWraith"] = true;
             }
             if (downedNihilityTwin)
             {
@@ -86,7 +80,6 @@ namespace CalamityEntropy.Common
         public override void LoadWorldData(TagCompound tag)
         {
             downedCruiser = tag.ContainsKey("downedCruiser");
-            downedAbyssalWraith = tag.ContainsKey("downedAbyssalWraith");
             downedNihilityTwin = tag.ContainsKey("downedNihilityTwin");
             EntropyMode = tag.ContainsKey("EntropyMode");
             downedProphet = tag.ContainsKey("downedProphet");
@@ -109,8 +102,8 @@ namespace CalamityEntropy.Common
         {
             var flags = new BitsByte();
             var flags2 = new BitsByte();
+            //flags[1] 是已移除的深渊亡魂旧位,留空不复用,其余位序保持不变
             flags[0] = downedCruiser;
-            flags[1] = downedAbyssalWraith;
             flags[2] = downedNihilityTwin;
             flags[3] = downedProphet;
             flags[4] = downedLuminaris;
@@ -132,7 +125,6 @@ namespace CalamityEntropy.Common
             BitsByte flags2 = reader.ReadByte();
 
             downedCruiser = flags[0];
-            downedAbyssalWraith = flags[1];
             downedNihilityTwin = flags[2];
             downedProphet = flags[3];
             downedLuminaris = flags[4];

@@ -46,7 +46,7 @@ TlipocasScytheLegend: {
 		TScytheU3: Take down Prophet
 		TScytheU4: Take down the Nihility Twins
 		TScytheU5: Take down the Nihility Twins
-		TScytheU6: Take down the Abyssal Wraith
+		TScytheU6: Take down Cruiser
 		TScytheU7: Take down Cruiser
 		TScytheU8: Take down Cruiser
 		TScytheU9: Take down Cruiser
@@ -276,17 +276,16 @@ SusiesBracelet: {
 
 	Trials: {
 		Trial: Trial
-		t0: Slime King / Eye of Cthulhu
-		t1: Any evil boss
-		t2: Skeletron / Queen Bee
-		t3: Wall of Flesh
-		t4: All mech boss
-		t5: Plantera
-		t6: Moonlord
-		t7: Nihility Twins
-		t8: Nihility Twins
-		t9: Abyssal Wraith
-		t10: Cruiser
-		t11: Trials - Done
+		t0: Slime King
+		t1: Eye of Cthulhu
+		t2: Any evil boss
+		t3: Skeletron
+		t4: Wall of Flesh
+		t5: All mech boss
+		t6: Plantera
+		t7: Golem
+		t8: The Prophet
+		t9: Moonlord
+		t10: Trials - Done
 	}
 }

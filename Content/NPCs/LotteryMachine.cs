@@ -881,8 +881,8 @@ namespace CalamityEntropy.Content.NPCs
                             {
                                 pool.addPool(p5);
                             }
-                            // 池门槛按进度表：p6 改深渊亡魂后、p7 改巡游者后
-                            if (EDownedBosses.downedAbyssalWraith)
+                            // 池门槛按进度表：p6 原挂深渊亡魂，该 Boss 移除后回落到虚无双子；p7 巡游者后
+                            if (EDownedBosses.downedNihilityTwin)
                             {
                                 pool.addPool(p6);
                             }

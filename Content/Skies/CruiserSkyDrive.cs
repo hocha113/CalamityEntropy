@@ -9,7 +9,7 @@ namespace CalamityEntropy.Content.Skies
     /// 下一帧未续租自动过期;各端本地观察 NPC 状态驱动,不走网络包。
     /// 来源:CruiserHead AI(登场窗 noaitime 渐临 0→0.6,开战推满,P2 抬躁动;
     /// Boss 在投瓶瞬间即已生成并骑瓶蓄力,故单点上报即覆盖召唤全程)、
-    /// 旧 crSky 计时(VoidMonolith 佩戴 / AbyssalWraith 在场,走弱档)。
+    /// 旧 crSky 计时(VoidMonolith 佩戴,走弱档)。
     /// Intensity 是演出强度曲线,与 CrSky 的存在包络 opacity 相乘使用。
     /// </summary>
     public static class CruiserSkyDrive

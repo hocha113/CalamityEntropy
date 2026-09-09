@@ -13,7 +13,7 @@ namespace CalamityEntropy.Content.Skies
     /// 强度 = <see cref="CruiserSkyDrive.Intensity"/>(UseOpacity,原版再乘 Filter 淡入);
     /// EnablePixelEffect 关闭时强度归零,IsVisible 随之为假,优雅退化。
     /// 激活/停用由 CBScene 的 ManageSpecialBiomeVisuals 统一负责,
-    /// 本类不再自灭,旧版与 VoidMonolith/AbyssalWraith 触发路径互相打架的问题随之消失。
+    /// 本类不再自灭,旧版与 VoidMonolith 触发路径互相打架的问题随之消失。
     /// </summary>
     public class CrScreenShaderData : ScreenShaderData
     {

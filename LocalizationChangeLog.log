@@ -992,3 +992,29 @@
 [Mods.CalamityEntropy.Items.Accessories.Wings.RuneWing.Tooltip] - changed // 灵魂冲刺改为按键触发 30 帧、40 格、30 秒冷却;占位符 [DT] 退役,新增 [CD]=冷却秒数
 [Mods.CalamityEntropy.Items.Accessories.Wings.VoidElytra.Tooltip] - changed // 四向冲刺迁入统一冲刺框架,补写飞行时间不足时改扣血的实际行为
 [Mods.CalamityEntropy.Projectiles.VoidCoreSlash.DisplayName] - added // 虚空核心冲刺的虚空斩弹幕
+[Mods.CalamityEntropy.NPCs.Cruiser.BossChecklistIntegration.EntryName] - removed // 巡游者的 BossChecklist 三键整体迁到头部 NPC 名下,原 NPCs.Cruiser 不是真实 NPC 内部名,BCL 读不到,条目名一直回退英文
+[Mods.CalamityEntropy.NPCs.Cruiser.BossChecklistIntegration.SpawnInfo] - removed // 同上
+[Mods.CalamityEntropy.NPCs.Cruiser.BossChecklistIntegration.DespawnMessage] - removed // 同上
+[Mods.CalamityEntropy.NPCs.CruiserHead.BossChecklistIntegration.EntryName] - added // 原 NPCs.Cruiser.BossChecklistIntegration.EntryName 的新位置,文本不变
+[Mods.CalamityEntropy.NPCs.CruiserHead.BossChecklistIntegration.SpawnInfo] - added // 同上
+[Mods.CalamityEntropy.NPCs.CruiserHead.BossChecklistIntegration.DespawnMessage] - added // 同上
+[Mods.CalamityEntropy.NPCs.AbyssalWraith.DisplayName] - removed // 幽邃魔灵整体移除,以下同批
+[Mods.CalamityEntropy.NPCs.AbyssalWraith.BossChecklistIntegration.EntryName] - removed
+[Mods.CalamityEntropy.NPCs.AbyssalWraith.BossChecklistIntegration.SpawnInfo] - removed
+[Mods.CalamityEntropy.NPCs.AbyssalWraith.BossChecklistIntegration.DespawnMessage] - removed
+[Mods.CalamityEntropy.AbyssalWraithBestiary] - removed
+[Mods.CalamityEntropy.Items.AbyssalSigil.DisplayName] - removed // 虚空祭印随 Boss 移除
+[Mods.CalamityEntropy.Items.AbyssalSigil.Tooltip] - removed
+[Mods.CalamityEntropy.Items.AbyssalWraithPlush.DisplayName] - removed // 玩偶随 Boss 移除
+[Mods.CalamityEntropy.Items.AbyssalWraithPlush.Tooltip] - removed
+[Mods.CalamityEntropy.Projectiles.AbyssalSigilRitual.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.AbyssalLaser.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.VoidLightBall.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.HomingLightBall.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.HugeLightBall.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.VoidFeather.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.SighterPin.DisplayName] - removed
+[Mods.CalamityEntropy.Projectiles.VoidRitualCircle.DisplayName] - removed // 虚空邪教徒的召唤法阵只为召唤该 Boss 而存在,一并移除
+[Mods.CalamityEntropy.Items.WraithSoulEssence.Tooltip] - changed // 掉落主人由幽邃魔灵改为虚无双子
+[Mods.CalamityEntropy.TSU6] - changed // 特拉波卡之镰第6能力解锁条件由幽邃魔灵改为巡游者
+[Mods.CalamityEntropy.TlipocasScytheLegend.Downed.TScytheU6] - changed // 同上

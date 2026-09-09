@@ -3,6 +3,7 @@ using CalamityEntropy.Content.Items.Pets;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Vanity
 {
@@ -65,7 +66,7 @@ namespace CalamityEntropy.Content.Items.Vanity
                 .AddIngredient(ModContent.ItemType<GodsSnack>(), 1)
                 .AddIngredient(ItemID.Bottle, 1)
                 .AddIngredient(ItemID.FallenStar, 5)
-                .AddIngredient(ItemID.Gel, 20)
+                .AddCalOrOwn(CEID.Item_BlightedGel, ItemID.Gel, 20)
                 .AddTile(TileID.WorkBenches).Register();
         }
     }

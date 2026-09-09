@@ -15,6 +15,7 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 {
@@ -59,7 +60,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             // 2026-08-31 平衡案:"灵魂轮刃"按轮刃链裁定为上一级符文轮刃
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<RunicSwirlblade>())
-                .AddIngredient(ItemID.FragmentNebula, 10)
+                .AddCalOrOwn(CEID.Item_MeldBlob, 8, ItemID.FragmentNebula, 10)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

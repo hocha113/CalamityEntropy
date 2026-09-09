@@ -12,6 +12,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Amnesty
 {
@@ -32,7 +33,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Amnesty
             Item.knockBack = 0;
             Item.maxStack = 1;
             Item.value = Item.buyPrice(2, 0);
-            Item.rare = ModContent.RarityType<AbyssalBlue>();
+            Item.rare = CECal.RarityCosmicPurple(ModContent.RarityType<AbyssalBlue>());
             Item.shoot = ModContent.ProjectileType<AmnestyHeld>();
             Item.shootSpeed = 16f;
             Item.mana = 4;
@@ -55,6 +56,17 @@ namespace CalamityEntropy.Content.Items.Weapons.Amnesty
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_HyperdeathRiftScepter, CEID.Item_AscendantSpiritEssence, CEID.Item_CosmiliteBar, CEID.Tile_CosmicAnvil))
+            {
+                CreateRecipe()
+                .AddIngredient<Depletion.Depletion>()
+                .AddIngredient(CEID.Item_HyperdeathRiftScepter)
+                .AddIngredient(CEID.Item_AscendantSpiritEssence, 2)
+                .AddIngredient(CEID.Item_CosmiliteBar, 8)
+                .AddTile(CEID.Tile_CosmicAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<Depletion.Depletion>()
                 .AddIngredient<ChaoticPiece>(10)

@@ -11,6 +11,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -77,6 +78,14 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_TheBallista))
+            {
+                CreateRecipe().AddIngredient(ItemID.FragmentSolar, 16)
+                .AddIngredient(CEID.Item_TheBallista)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.Uzi)
                 .AddIngredient(ItemID.FragmentSolar, 10)

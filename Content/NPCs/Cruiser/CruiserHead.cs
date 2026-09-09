@@ -14,6 +14,7 @@ using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.Cruiser;
 using CalamityEntropy.Content.Skies;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using InnoVault;
 using InnoVault.PRT;
@@ -178,13 +179,13 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             }
             NPC.defense = 80;
             NPC.lifeMax = 1120000;
-            // 难度映射:死亡→大师、复仇→专家(difficulty-map)
-            if (Main.masterMode)
+            //装灾厄读死亡/复仇,缺席仍走大师/专家兜底
+            if (CECal.IsDeathMode)
             {
                 NPC.damage += 4;
                 length += 4;
             }
-            else if (Main.expertMode)
+            else if (CECal.IsRevengeance)
             {
                 NPC.damage += 2;
                 length += 3;
@@ -1298,14 +1299,14 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                         int num = 8;
                         int counts = 3;
                         float speed = 9;
-                        // 难度映射:复仇→专家、死亡→大师(difficulty-map)
-                        if (Main.expertMode)
+                        //装灾厄读复仇/死亡,缺席仍走专家/大师兜底。下方原版专家/大师层不动
+                        if (CECal.IsRevengeance)
                         {
                             num = 11;
                             counts = 4;
                             speed = 12;
                         }
-                        if (Main.masterMode)
+                        if (CECal.IsDeathMode)
                         {
                             num = 11;
                             counts = 5;

@@ -1,6 +1,7 @@
 ﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Books
 {
@@ -18,6 +19,15 @@ namespace CalamityEntropy.Content.Items.Books
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_LoreAwakening))
+            {
+                CreateRecipe().AddIngredient(CEID.Item_LoreAwakening)
+                .AddIngredient(ItemID.Leather, 6)
+                .AddIngredient(ItemID.ManaCrystal, 1)
+                .AddTile(TileID.WorkBenches)
+                .Register();
+                return;
+            }
             // 原灾厄 LoreAwakening(新手袋赠品, 零门槛)原料删除, 不影响可达性
             CreateRecipe()
                 .AddIngredient(ItemID.Silk, 10)

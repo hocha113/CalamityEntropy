@@ -1,7 +1,9 @@
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -53,6 +55,17 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AsgardianAegis, CEID.Item_RampartofDeities))
+            {
+                CreateRecipe().
+                AddIngredient(CEID.Item_AsgardianAegis, 1).
+                AddIngredient(CEID.Item_RampartofDeities, 1).
+                AddIngredient(ModContent.ItemType<HolyMantle>(), 1).
+                AddIngredient(ModContent.ItemType<VoidBar>(), 10).
+                AddTile(ModContent.TileType<VoidWellTile>()).
+                Register();
+                return;
+            }
             CreateRecipe().
                 AddIngredient(ItemID.AnkhShield, 1).
                 AddIngredient(ItemID.HeroShield, 1).

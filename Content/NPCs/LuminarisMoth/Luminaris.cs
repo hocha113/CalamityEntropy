@@ -8,6 +8,7 @@ using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles.LuminarisShoots;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using CalamityEntropy.Utilities;
 using InnoVault;
@@ -248,12 +249,12 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
             {
                 enrange += 0.1f;
             }
-            // 难度映射:复仇→专家、死亡→大师(difficulty-map)
-            if (Main.expertMode)
+            //装灾厄读复仇/死亡,缺席仍走专家/大师兜底。勿连带改下方 EntropyMode
+            if (CECal.IsRevengeance)
             {
                 enrange += 0.15f;
             }
-            if (Main.masterMode)
+            if (CECal.IsDeathMode)
             {
                 enrange += 0.15f;
             }
@@ -1064,7 +1065,10 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<LuminarisBag>()));
-            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAstral>(), 3));
+            if (!CERef.Has)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAstral>(), 3));
+            }
 
             // 治疗药水按人 5-15 瓶,隐藏图鉴条目(承接原灾厄 PerPlayer 语义)
             npcLoot.Add(new DropPerPlayerOnThePlayer(ItemID.GreaterHealingPotion, 1, 5, 15, new HiddenDropCondition()));

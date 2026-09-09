@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -40,6 +41,16 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_PerennialBar))
+            {
+                CreateRecipe()
+                .AddIngredient(ItemID.Shotgun)
+                .AddIngredient<HellIndustrialComponents>(8)
+                .AddIngredient(CEID.Item_PerennialBar, 8)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.Shotgun)
                 .AddIngredient<HellIndustrialComponents>(6)

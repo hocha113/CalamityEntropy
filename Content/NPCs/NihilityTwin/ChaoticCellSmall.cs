@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.Biomes;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Utilities;
@@ -44,8 +45,12 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
                 NPC.damage += 2;
             }
             NPC.lifeMax = 2200;
-            // 难度收敛:原复仇/死亡加成同值,按 difficulty-map 代入后化简为专家档(大师蕴含专家)
-            if (Main.expertMode)
+            //拆回 3.33 两条:死亡与复仇加成同值,无灾厄时兜底大师/专家
+            if (CECal.IsDeathMode)
+            {
+                NPC.damage += 2;
+            }
+            else if (CECal.IsRevengeance)
             {
                 NPC.damage += 2;
             }

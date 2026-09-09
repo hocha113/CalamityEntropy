@@ -1,4 +1,5 @@
 using CalamityEntropy.Common;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Lores;
@@ -392,7 +393,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                 if (NPC.netSpam >= 10)
                     NPC.netSpam = 9;
                 int d = 1;
-                if (Main.masterMode)
+                if (CECal.IsDeathMode)
                     if (Main.GameUpdateCount % 2 == 0)
                         d++;
                 if (Main.zenithWorld)
@@ -657,12 +658,12 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             {
                 enrange += 0.07f;
             }
-            // 难度映射:复仇→专家、死亡→大师(difficulty-map)
-            if (Main.expertMode)
+            //装灾厄读复仇/死亡,缺席仍走专家/大师兜底。勿连带改下方 EntropyMode
+            if (CECal.IsRevengeance)
             {
                 enrange += 0.1f;
             }
-            if (Main.masterMode)
+            if (CECal.IsDeathMode)
             {
                 enrange += 0.1f;
             }
@@ -1175,7 +1176,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             int dmg = 40;
             if (Main.expertMode)
                 dmg *= 2;
-            if (Main.masterMode)
+            if (Main.masterMode || CECal.IsDeathMode)
                 dmg *= 2;
             dmg = (int)(dmg * NPC.scale);
             if (Main.netMode != NetmodeID.MultiplayerClient)

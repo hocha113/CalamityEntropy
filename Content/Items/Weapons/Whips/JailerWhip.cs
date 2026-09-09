@@ -5,6 +5,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Whips
 {
@@ -32,7 +33,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ItemID.ShadowKey)
+            CreateRecipe().AddCalOrOwn(CEID.Item_AncientBoneDust, 2, ItemID.ShadowKey, 1)
                 .AddIngredient(ItemID.Chain, 6)
                 .AddIngredient(ItemID.Silk, 4)
                 .AddIngredient(ItemID.HellstoneBar, 5)

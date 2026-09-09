@@ -1,4 +1,5 @@
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -35,6 +36,19 @@ namespace CalamityEntropy.Content.Items
         {
             float brightness = Main.essScale * Main.rand.NextFloat(0.9f, 1.1f);
             Lighting.AddLight(Item.Center, 0.25f * brightness, 0.6f * brightness, 0.7f * brightness);
+        }
+
+        public override void AddRecipes()
+        {
+            if (CECal.CalChainReady(CEID.Item_AscendantSpiritEssence))
+            {
+                CreateRecipe()
+                    .AddIngredient(CEID.Item_AscendantSpiritEssence)
+                    .Register();
+                Recipe.Create(CEID.Item_AscendantSpiritEssence)
+                    .AddIngredient(Type)
+                    .Register();
+            }
         }
     }
 }

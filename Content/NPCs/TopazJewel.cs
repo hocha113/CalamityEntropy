@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.NPCs.FriendFinderNPC;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -10,6 +11,7 @@ namespace CalamityEntropy.Content.NPCs
     {
         private const int BoltShootGateValue = 30;
         private const int BoltShootGateValue_Death = 24;
+        private const int BoltShootGateValue_BossRush = 18;
         private const float LightTelegraphDuration = 45f;
         public override void SetStaticDefaults()
         {
@@ -72,7 +74,7 @@ namespace CalamityEntropy.Content.NPCs
             {
                 NPC.ai[0] += 1.6f;
             }
-            if (NPC.ai[0] >= (Main.masterMode ? BoltShootGateValue_Death : BoltShootGateValue))
+            if (NPC.ai[0] >= (CECal.IsBossRushActive ? BoltShootGateValue_BossRush : CECal.IsDeathMode ? BoltShootGateValue_Death : BoltShootGateValue))
             {
                 NPC.ai[0] = 0f;
 

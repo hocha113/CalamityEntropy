@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator
 {
@@ -31,7 +32,7 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.width = 50;
             Item.height = 50;
             Item.value = Item.buyPrice(platinum: 2, gold: 80);
-            Item.rare = ModContent.RarityType<Golden>();
+            Item.rare = CECal.RarityBurnishedAuric(ModContent.RarityType<Golden>());
             Item.accessory = true;
         }
 
@@ -88,6 +89,17 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_SeraphTracers, CEID.Item_WingsofRebirth))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_SeraphTracers)
+                .AddIngredient(CEID.Item_WingsofRebirth)
+                .AddIngredient<FadingRunestone>(2)
+                .AddTile<VoidWellTile>()
+                .DisableDecraft()
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.TerrasparkBoots)
                 .AddIngredient(ItemID.LongRainbowTrailWings)

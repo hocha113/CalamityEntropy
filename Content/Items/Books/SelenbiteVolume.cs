@@ -11,6 +11,7 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Books
 {
@@ -37,6 +38,16 @@ namespace CalamityEntropy.Content.Items.Books
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_ExodiumCluster, CEID.Item_Necroplasm))
+            {
+                CreateRecipe()
+                .AddIngredient<DarkScripture>()
+                .AddIngredient(CEID.Item_ExodiumCluster, 12)
+                .AddIngredient(CEID.Item_Necroplasm, 4)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<NightEpic>()
                 .AddIngredient(ItemID.LunarBar, 10)

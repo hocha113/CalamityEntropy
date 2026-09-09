@@ -1,6 +1,7 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
 {
@@ -23,6 +24,15 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_WulfrumMetalScrap))
+            {
+                CreateRecipe(100)
+                .AddIngredient(ModContent.ItemType<OsseousRemains>())
+                .AddIngredient(CEID.Item_WulfrumMetalScrap, 1)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             // 灾厄原料按 material-map.md 替换：WulfrumMetalScrap→铁锭（另开铅锭平行配方）
             CreateRecipe(100)
                 .AddIngredient(ModContent.ItemType<OsseousRemains>())

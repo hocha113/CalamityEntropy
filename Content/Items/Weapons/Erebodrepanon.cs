@@ -16,6 +16,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -54,7 +55,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.DeathSickle)
+                .AddCalOrOwn(CEID.Item_DeathsAscension, ItemID.DeathSickle)
                 .AddIngredient<WyrmTooth>(12)
                 .AddIngredient<FadingRunestone>()
                 .AddTile<AbyssalAltarTile>()

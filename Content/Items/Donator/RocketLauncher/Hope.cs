@@ -1,10 +1,12 @@
 using CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo;
+using CalamityEntropy.Content.Items.Weapons;
 using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 {
@@ -68,6 +70,17 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AerialiteBar))
+            {
+                CreateRecipe()
+                .AddIngredient<RustExpeditioner>()
+                .AddIngredient<OsseousRemains>(20)
+                .AddIngredient(CEID.Item_AerialiteBar, 10)
+                .AddIngredient(ItemID.SunplateBlock, 4)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.Minishark)
                 .AddIngredient(ItemID.Feather, 10)

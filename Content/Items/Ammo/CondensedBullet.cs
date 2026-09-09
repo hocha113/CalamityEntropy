@@ -2,6 +2,7 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Ammo
 {
@@ -29,6 +30,14 @@ namespace CalamityEntropy.Content.Items.Ammo
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_PurifiedGel))
+            {
+                CreateRecipe(50)
+                .AddIngredient(CEID.Item_PurifiedGel)
+                .AddTile(TileID.WorkBenches)
+                .Register();
+                return;
+            }
             CreateRecipe(50)
                 .AddIngredient(ItemID.Gel, 10)
                 .AddIngredient(ItemID.SoulofLight, 1)

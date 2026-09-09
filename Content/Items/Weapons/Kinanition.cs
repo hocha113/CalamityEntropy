@@ -10,6 +10,7 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -116,6 +117,17 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_Barinade, CEID.Item_Barinautical, CEID.Item_Lumenyl, CEID.Item_LifeAlloy))
+            {
+                CreateRecipe().
+                AddIngredient(CEID.Item_Barinade, 1).
+                AddIngredient(CEID.Item_Barinautical, 1).
+                AddIngredient(CEID.Item_Lumenyl, 20).
+                AddIngredient(CEID.Item_LifeAlloy, 5).
+                AddTile(TileID.MythrilAnvil).
+                Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.HallowedRepeater)
                 .AddIngredient(ItemID.ChlorophyteShotbow)

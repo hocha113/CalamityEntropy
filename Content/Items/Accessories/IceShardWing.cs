@@ -2,6 +2,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -34,7 +35,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().AddIngredient(ItemID.SoulofFlight, 20).
-                AddIngredient(ItemID.HallowedBar, 5).
+                AddCalOrOwn(CEID.Item_CryonicBar, ItemID.HallowedBar, 5).
                 AddIngredient(ItemID.PurificationPowder, 5).
                 AddTile(TileID.MythrilAnvil).
                 Register();

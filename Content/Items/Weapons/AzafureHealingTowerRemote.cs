@@ -12,6 +12,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -50,6 +51,16 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_MysteriousCircuitry))
+            {
+                CreateRecipe()
+                .AddIngredient<HellIndustrialComponents>(6)
+                .AddIngredient(CEID.Item_MysteriousCircuitry)
+                .AddIngredient(ItemID.HealingPotion)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(6)
                 .AddRecipeGroup(CERecipeGroups.AnyOrichalcumBar, 10)

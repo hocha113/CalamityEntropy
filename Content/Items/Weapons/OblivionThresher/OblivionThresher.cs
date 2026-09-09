@@ -8,6 +8,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
 {
@@ -39,6 +40,16 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_SuperradiantSlaughterer, CEID.Item_AscendantSpiritEssence))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_SuperradiantSlaughterer)
+                .AddIngredient<VoidBar>(5)
+                .AddIngredient(CEID.Item_AscendantSpiritEssence, 2)
+                .AddTile<VoidWellTile>()
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<Pioneer>()
                 .AddIngredient<VoidBar>(5)

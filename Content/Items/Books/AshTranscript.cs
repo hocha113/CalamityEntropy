@@ -11,6 +11,7 @@ using Terraria;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Books
 {
@@ -23,7 +24,7 @@ namespace CalamityEntropy.Content.Items.Books
             Item.useAnimation = Item.useTime = 25;
             Item.crit = 10;
             Item.mana = 20;
-            Item.rare = ModContent.RarityType<NihilityBlue>();
+            Item.rare = CECal.RarityTurquoise(ModContent.RarityType<NihilityBlue>());
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
         }
         [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/BookMark5")]
@@ -33,6 +34,17 @@ namespace CalamityEntropy.Content.Items.Books
         public override int SlotCount => 4;
 
         // 2026-08-31 平衡案:改为拜月邪教徒50%直接掉落,原配方删除
+        public override void AddRecipes()
+        {
+            if (CECal.CalChainReady(CEID.Item_DivineGeode, CEID.Tile_ProfanedCrucible))
+            {
+                CreateRecipe().AddIngredient<NightEpic>()
+                    .AddIngredient(CEID.Item_DivineGeode, 6)
+                    .AddIngredient(ItemID.Ectoplasm, 6)
+                    .AddTile(CEID.Tile_ProfanedCrucible)
+                    .Register();
+            }
+        }
     }
 
     /// <summary>灰烬笔录掉落:拜月邪教徒 50%。</summary>

@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items
 {
@@ -33,6 +34,16 @@ namespace CalamityEntropy.Content.Items
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_ExoPrism, CEID.Item_AshesofAnnihilation))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_ExoPrism, 5)
+                .AddIngredient(CEID.Item_AshesofAnnihilation, 5)
+                .AddIngredient<VoidBar>(5)
+                .AddTile<VoidWellTile>()
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<VoidBar>(9999)
                 .AddTile<VoidWellTile>()

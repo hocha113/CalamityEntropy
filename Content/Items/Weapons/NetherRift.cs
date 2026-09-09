@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -45,7 +46,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.BlueMoon)
+                .AddCalOrOwn(CEID.Item_CrescentMoon, ItemID.BlueMoon)
                 .AddIngredient<VoidBar>(5)
                 .AddTile<VoidWellTile>()
                 .Register();

@@ -10,6 +10,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Depletion
 {
@@ -30,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Depletion
             Item.knockBack = 0;
             Item.maxStack = 1;
             Item.value = Item.buyPrice(2, 40);
-            Item.rare = ModContent.RarityType<Golden>();
+            Item.rare = CECal.RarityBurnishedAuric(ModContent.RarityType<Golden>());
             Item.shoot = ModContent.ProjectileType<DepletionHeld>();
             Item.shootSpeed = 16f;
             Item.mana = 5;
@@ -53,6 +54,16 @@ namespace CalamityEntropy.Content.Items.Weapons.Depletion
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_UnholyEssence, CEID.Item_EffulgentFeather))
+            {
+                CreateRecipe()
+                .AddIngredient<Malign.Malign>()
+                .AddIngredient(CEID.Item_UnholyEssence, 8)
+                .AddIngredient(CEID.Item_EffulgentFeather, 8)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<Malign.Malign>()
                 .AddIngredient(ItemID.FragmentNebula, 10)

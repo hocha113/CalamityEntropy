@@ -1,5 +1,6 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Items.Books.BookMarks;
 using CalamityEntropy.Content.Projectiles.Cruiser;
 using System.Collections.Generic;
@@ -49,8 +50,8 @@ namespace CalamityEntropy.Content.NPCs
         }
         public override bool CanTownNPCSpawn(int numTownNPCs)
         {
-            // 入住条件改为击败巡游者（进度表：原渊海灾虫槽位并入巡游者）
-            if (EDownedBosses.downedCruiser)
+            // 灾厄在场读渊海灾虫,缺席回落巡游者
+            if (CECal.DownedPrimordialWyrm)
             {
                 return true;
             }
@@ -149,25 +150,56 @@ namespace CalamityEntropy.Content.NPCs
         public static string ShopName = "Shop";
         public override void AddShops()
         {
-            // 货架全部换为自有与原版商品（杂项处置表 §三 定稿清单）
-            var npcShop = new NPCShop(Type, ShopName)
+            NPCShop npcShop = new NPCShop(Type, ShopName)
                 .Add<WyrmTooth>()
                 .Add<VoidBar>()
                 .Add<NihilityFragments>()
-                .Add<WraithSoulEssence>()
-                .Add(ItemID.LunarOre)
-                .Add(ItemID.SuperHealingPotion)
-                .Add(ItemID.Celeb2)
-                .Add(ItemID.LastPrism)
-                .Add(ItemID.LunarFlareBook)
-                .Add(ItemID.PaladinsHammer)
-                .Add(ItemID.BoneTorch)
-                .Add(new Item(ItemID.FossilOre, 50))
-                .Add(ItemID.SharkToothNecklace)
-                .Add(ItemID.StaticHook)
-                .Add(ItemID.MusicBoxBoss5)
-                .Add<BookmarkMarivium>();
+                .Add<WraithSoulEssence>();
+            AddCalOrOwn(npcShop, CEID.Item_Lumenyl, ItemID.LunarOre);
+            npcShop.Add(ItemID.SuperHealingPotion);
+            AddCalOrOwn(npcShop, CEID.Item_GrandDad, ItemID.Celeb2);
+            AddCalOrOwn(npcShop, CEID.Item_EidolicWail, ItemID.LastPrism);
+            AddCalOrOwn(npcShop, CEID.Item_EidolonStaff, ItemID.LunarFlareBook);
+            AddCalOrOwn(npcShop, CEID.Item_Valediction, ItemID.PaladinsHammer);
+            AddCalOrOwn(npcShop, CEID.Item_VoidTorch, ItemID.BoneTorch);
+            AddCalOrOwn(npcShop, CEID.Item_AbyssShellFossil, ItemID.FossilOre, 50);
+            AddCalOrOwn(npcShop, CEID.Item_ReaperTooth, ItemID.SharkToothNecklace);
+            AddCalOrOwn(npcShop, CEID.Item_BobbitHook, ItemID.StaticHook);
+            npcShop.Add(ItemID.MusicBoxBoss5);
+            npcShop.Add<BookmarkMarivium>();
+            AddCal(npcShop, CEID.Item_CalamarisLament);
+            AddCal(npcShop, CEID.Item_DeepSeaDumbbell);
+            AddCal(npcShop, CEID.Item_HalibutCannon);
+            AddCal(npcShop, CEID.Item_DepthCells);
+            AddCal(npcShop, CEID.Item_PlantyMush);
+            AddCal(npcShop, CEID.Item_AbyssalTreasure);
+            if (CERef.Has && CEID.Item_Rock > 0)
+            {
+                npcShop.Add(CEID.Item_Rock, new Condition(Mod.GetLocalization("PassedBossRush"), () => CECal.DownedBossRush));
+            }
             npcShop.Register();
+        }
+
+        //货架条目:灾厄在场且该内容存在时上架灾厄商品,否则上架 4.0 的替身
+        private static NPCShop AddCalOrOwn(NPCShop shop, int calType, int ownType, int ownStack = 1)
+        {
+            if (CERef.Has && calType > 0)
+            {
+                return shop.Add(calType);
+            }
+            if (ownStack > 1)
+            {
+                return shop.Add(new Item(ownType, ownStack));
+            }
+            return shop.Add(ownType);
+        }
+
+        private static void AddCal(NPCShop shop, int calType)
+        {
+            if (CERef.Has && calType > 0)
+            {
+                shop.Add(calType);
+            }
         }
 
         public override void ModifyActiveShop(string shopName, Item[] items)
@@ -176,6 +208,12 @@ namespace CalamityEntropy.Content.NPCs
             {
                 if (item == null || item.type == ItemID.None)
                 {
+                    continue;
+                }
+
+                if (CEID.Item_Rock > 0 && item.type == CEID.Item_Rock)
+                {
+                    item.shopCustomPrice = 100000000;
                     continue;
                 }
 
@@ -205,8 +243,14 @@ namespace CalamityEntropy.Content.NPCs
         public int dcd = 0;
         public override void TownNPCAttackProj(ref int projType, ref int attackDelay)
         {
-            // 攻击弹幕统一改自有巡游者激光（zenith 分支同用），尖啸音沿用自有 he 系列
-            projType = ModContent.ProjectileType<CruiserLaser2>();
+            if (CERef.Has && CEID.Proj_EidolicWailSoundwave > 0)
+            {
+                projType = CEID.Proj_EidolicWailSoundwave;
+            }
+            else
+            {
+                projType = ModContent.ProjectileType<CruiserLaser2>();
+            }
             attackDelay = 4;
             if (dcd <= 0)
             {

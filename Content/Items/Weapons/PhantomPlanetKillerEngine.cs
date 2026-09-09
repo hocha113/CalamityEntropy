@@ -7,6 +7,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -50,6 +51,15 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_CosmicViperEngine, CEID.Item_PoleWarper))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_CosmicViperEngine)
+                .AddIngredient(CEID.Item_PoleWarper)
+                .AddIngredient(ModContent.ItemType<VoidBar>(), 5)
+                .AddTile(ModContent.TileType<VoidWellTile>()).Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<AzafureSupportRemote>()
                 .AddIngredient(ModContent.ItemType<VoidBar>(), 5)

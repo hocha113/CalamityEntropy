@@ -3,6 +3,7 @@ using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -33,6 +34,16 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AerialiteBar))
+            {
+                CreateRecipe().
+                AddIngredient<RustyDetectionEquipment>().
+                AddIngredient<HellIndustrialComponents>(4).
+                AddIngredient(CEID.Item_AerialiteBar, 8).
+                AddTile(TileID.Anvils).
+                Register();
+                return;
+            }
             CreateRecipe().
                 AddIngredient<RustyDetectionEquipment>().
                 AddIngredient<HellIndustrialComponents>(5).

@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
 {
@@ -27,6 +28,15 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AerialiteBar))
+            {
+                CreateRecipe(100)
+                .AddIngredient(CEID.Item_AerialiteBar, 1)
+                .AddIngredient(ModContent.ItemType<OsseousRemains>())
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             CreateRecipe(100)
                 .AddIngredient(ItemID.SoulofFlight)
                 .AddIngredient<OsseousRemains>()

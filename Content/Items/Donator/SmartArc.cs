@@ -3,6 +3,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator
 {
@@ -93,6 +94,16 @@ namespace CalamityEntropy.Content.Items.Donator
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_SeaPrism, CEID.Item_PrismShard))
+            {
+                CreateRecipe()
+                .AddIngredient(ItemID.IllegalGunParts, 2)
+                .AddIngredient(CEID.Item_SeaPrism, 6)
+                .AddIngredient(CEID.Item_PrismShard, 4)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.IllegalGunParts)
                 .AddIngredient(ItemID.IceBlock, 10)

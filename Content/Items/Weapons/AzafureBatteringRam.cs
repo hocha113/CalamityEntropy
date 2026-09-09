@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -41,8 +42,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(4)
-                .AddIngredient<AzafurePlating>(10)
-                .AddIngredient(ItemID.MeteoriteBar, 5)
+                .AddCalOrOwn(CEID.Item_DubiousPlating, ModContent.ItemType<AzafurePlating>(), 10)
+                .AddCalOrOwn(CEID.Item_AerialiteBar, ItemID.MeteoriteBar, 5)
                 .AddIngredient(ItemID.HellstoneBar, 18)
                 .AddTile(TileID.Anvils)
                 .Register();

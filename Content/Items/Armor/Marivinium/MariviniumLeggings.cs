@@ -3,6 +3,7 @@ using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Armor.Marivinium
 {
@@ -30,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Armor.Marivinium
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.HallowedGreaves)
+                .AddCalOrOwn(CEID.Item_OmegaBlueTentacles, ItemID.HallowedGreaves)
                 .AddIngredient<WyrmTooth>(5)
                 .AddIngredient<FadingRunestone>()
                 .AddTile<AbyssalAltarTile>()

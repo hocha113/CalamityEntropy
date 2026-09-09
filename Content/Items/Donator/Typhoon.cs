@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator
 {
@@ -141,6 +142,16 @@ namespace CalamityEntropy.Content.Items.Donator
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_P90))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_P90)
+                .AddIngredient(ItemID.FragmentVortex, 6)
+                .AddIngredient(ItemID.LunarBar, 8)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.ChainGun)
                 .AddIngredient(ItemID.LunarBar, 10)

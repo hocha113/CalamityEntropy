@@ -15,6 +15,7 @@ using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Books
 {
@@ -28,7 +29,7 @@ namespace CalamityEntropy.Content.Items.Books
             Item.crit = 10;
             Item.mana = 30;
             Item.shootSpeed = 45;
-            Item.rare = ModContent.RarityType<Golden>();
+            Item.rare = CECal.RarityExoticRainbow(ModContent.RarityType<Golden>());
             Item.value = Item.buyPrice(platinum: 2, gold: 40);
         }
         [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/BookMark7")]
@@ -39,6 +40,14 @@ namespace CalamityEntropy.Content.Items.Books
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_ExoPrism, CEID.Tile_DraedonsForge))
+            {
+                CreateRecipe().AddIngredient<ProphecyMasterpiece>()
+                .AddIngredient(CEID.Item_ExoPrism, 5)
+                .AddTile(CEID.Tile_DraedonsForge)
+                .Register();
+                return;
+            }
             CreateRecipe().AddIngredient<CosmicBlessing>()
                 .AddIngredient<VoidBar>(5)
                 .AddTile(ModContent.TileType<VoidWellTile>())

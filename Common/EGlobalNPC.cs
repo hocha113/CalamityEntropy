@@ -25,6 +25,7 @@ using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.Pets;
+using CalamityEntropy.Core.CalamityRef;
 using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -797,14 +798,17 @@ namespace CalamityEntropy.Common
             if (npc.type == NPCID.MoonLordCore)
             {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<MoonlightCore>(), 3));
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Nothing>(), 3));
-                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsMasterMode(), ModContent.ItemType<DeusCore>()));
+                if (!CERef.Has)
+                {
+                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Nothing>(), 3));
+                    npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsMasterMode(), ModContent.ItemType<DeusCore>()));
+                }
             }
             if (npc.type == NPCID.GoblinSorcerer)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Tarnish>(), 3));
             }
-            if (npc.type == NPCID.BloodNautilus)
+            if (!CERef.Has && npc.type == NPCID.BloodNautilus)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Fool>(), 5));
             }
@@ -824,23 +828,35 @@ namespace CalamityEntropy.Common
             if (npc.type == NPCID.KingSlime)
             {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<ExquisiteCrown>(), 3));
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<EntityCard>(), 3));
+                if (!CERef.Has)
+                {
+                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<EntityCard>(), 3));
+                }
             }
             if (npc.type == NPCID.EyeofCthulhu)
             {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<RottenFangs>(), 3));
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<WisperCard>(), 3));
+                if (!CERef.Has)
+                {
+                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<WisperCard>(), 3));
+                }
             }
             if (npc.type == NPCID.Deerclops)
             {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BookmarkSnowgrave>(), 5));
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Frail>(), 3));
+                if (!CERef.Has)
+                {
+                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Frail>(), 3));
+                }
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAries>(), 3));
             }
             if (npc.type == NPCID.Paladin)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<DevouringCard>(), 2));
-                npcLoot.Add(ItemDropRule.ByCondition(new PostMoonLord(), ModContent.ItemType<AnimaSola>(), 20));
+                if (!CERef.Has)
+                {
+                    npcLoot.Add(ItemDropRule.ByCondition(new PostMoonLord(), ModContent.ItemType<AnimaSola>(), 20));
+                }
             }
             if (npc.type == NPCID.Golem)
             {
@@ -856,15 +872,20 @@ namespace CalamityEntropy.Common
             }
             if (npc.type == NPCID.Plantera)
             {
-                // 原 3/5 与 2/5 概率，分子写法保持不化简
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<LashingBramblerod>(), 5, 1, 1, 3));
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<MutantBulb>(), 5, 1, 1, 2));
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAquarius>(), 3));
+                if (!CERef.Has)
+                {
+                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAquarius>(), 3));
+                }
             }
             if (npc.type == NPCID.WyvernHead)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<VetrasylsEye>(), 20));
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAerialite>(), 10));
+                if (!CERef.Has)
+                {
+                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAerialite>(), 10));
+                }
             }
             if (npc.boss)
             {
@@ -877,80 +898,84 @@ namespace CalamityEntropy.Common
             // —— 以下为脱离灾厄重挂（bookmark-rehang.md：原灾厄 Boss 掉落改挂自然敌怪 / 自有 Boss）——
             if (npc.type == NPCID.Vulture || npc.type == NPCID.Antlion || npc.type == NPCID.WalkingAntlion || npc.type == NPCID.FlyingAntlion || npc.type == NPCID.TombCrawlerHead)
             {
-                // 原灾厄荒漠灾虫掉落，改挂前期沙漠敌怪
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkLeo>(), 30));
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<DustyWhistle>(), 25));
+                if (!CERef.Has)
+                {
+                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkLeo>(), 30));
+                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<DustyWhistle>(), 25));
+                }
             }
-            if (npc.type == NPCID.TombCrawlerHead)
+            if (!CERef.Has && npc.type == NPCID.TombCrawlerHead)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<AntlionShell>(), 3));
             }
             if (npc.type == NPCID.AnomuraFungus || npc.type == NPCID.MushiLadybug || npc.type == NPCID.FungiBulb || npc.type == NPCID.GiantFungiBulb || npc.type == NPCID.FungoFish || npc.type == NPCID.ZombieMushroom || npc.type == NPCID.ZombieMushroomHat)
             {
-                // 原灾厄菌生蟹掉落，改挂发光蘑菇群系敌怪
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkSpore>(), 40));
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BlueFlatTopMushroom>(), 40));
-                // 新材料星辉鳞尘（material-map §一）：夜间 25% 掉 1–3
+                if (!CERef.Has)
+                {
+                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkSpore>(), 40));
+                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BlueFlatTopMushroom>(), 40));
+                }
                 npcLoot.Add(ItemDropRule.ByCondition(new IsNight(), ModContent.ItemType<StarlitScaleDust>(), 4, 1, 3));
             }
-            if (npc.type == NPCID.Shark)
+            if (!CERef.Has && npc.type == NPCID.Shark)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<TerrorOfAbyss>(), 100));
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsHardmode(), ModContent.ItemType<AbyssalPiercer>(), 50));
             }
-            if (npc.type == NPCID.Shark || npc.type == NPCID.Squid || npc.type == NPCID.SeaSnail || npc.type == NPCID.PinkJellyfish)
+            if (!CERef.Has && (npc.type == NPCID.Shark || npc.type == NPCID.Squid || npc.type == NPCID.SeaSnail || npc.type == NPCID.PinkJellyfish))
             {
-                // 原灾厄深渊怪宠物掉落，改挂困难模式海洋敌怪（misc-map §五增补段）
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsHardmode(), ModContent.ItemType<ToyRock>(), 40));
             }
             if (npc.type == NPCID.CultistBoss)
             {
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacrificalMask>()));
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacredStone>(), 3));
+                if (!CERef.Has)
+                {
+                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacrificalMask>()));
+                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacredStone>(), 3));
+                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkProfaned>()));
+                }
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Content.Items.Weapons.BuriedSun>(), 3));
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Revelation>(), 3));
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BlazingSwirlblade>(), 3));
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkProfaned>()));
             }
-            if (npc.type == NPCID.Crab)
+            if (!CERef.Has && npc.type == NPCID.Crab)
             {
-                // 原灾厄菌生蟹掉落，改挂海洋螃蟹
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkCancer>(), 100));
             }
-            if (npc.type == NPCID.IceElemental || npc.type == NPCID.IcyMerman || npc.type == NPCID.IceTortoise || npc.type == NPCID.ArmoredViking || npc.type == NPCID.Wolf)
+            if (!CERef.Has && (npc.type == NPCID.IceElemental || npc.type == NPCID.IcyMerman || npc.type == NPCID.IceTortoise || npc.type == NPCID.ArmoredViking || npc.type == NPCID.Wolf))
             {
-                // 原灾厄极地之灵掉落，改挂困难模式冰雪群系敌怪
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkIce>(), 40));
             }
-            if (npc.type == NPCID.IceGolem)
+            if (!CERef.Has && npc.type == NPCID.IceGolem)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<FrostboundCage>(), 5));
             }
-            if (npc.type == NPCID.RedDevil)
+            if (!CERef.Has && npc.type == NPCID.RedDevil)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<EvilFriend>(), 20));
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkBrimstone>(), 50));
             }
-            if (npc.type == NPCID.Lavabat)
+            if (!CERef.Has && npc.type == NPCID.Lavabat)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<FriendBox>(), 100));
             }
             if (npc.type == ModContent.NPCType<Content.NPCs.Cruiser.CruiserHead>())
             {
-                // 原灾厄渊海灾虫掉落，槽位并入巡游者（progression-map §五）
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<WyrmTooth>(), 1, 65, 80));
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkCosmic>(), 2));
-                // 2026-08-31 平衡案:沐生之羽改由月亮领主掉落(Vitalfeather.cs 的 VitalfeatherDropGNPC),巡游者侧退役
+                if (!CERef.Has)
+                {
+                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkCosmic>(), 2));
+                }
             }
             if (npc.type == NPCID.BoneLee)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkBlackKnife>(), 10));
             }
-            if (npc.type == NPCID.Unicorn)
+            if (!CERef.Has && npc.type == NPCID.Unicorn)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkCapricorn>(), 50));
             }
-            if (npc.type == NPCID.TheDestroyer)
+            if (!CERef.Has && npc.type == NPCID.TheDestroyer)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkOfNight>(), 2));
             }
@@ -958,9 +983,117 @@ namespace CalamityEntropy.Common
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkSulphurous>(), 50));
             }
-            if (npc.type == NPCID.DesertScorpionWalk || npc.type == NPCID.DesertScorpionWall)
+            if (!CERef.Has && (npc.type == NPCID.DesertScorpionWalk || npc.type == NPCID.DesertScorpionWall))
             {
                 npcLoot.Add(ItemDropRule.ByCondition(new PostPlantera(), ModContent.ItemType<BookMarkScorpio>(), 50));
+            }
+            RegisterCalamityNpcLoot(npc, npcLoot);
+        }
+
+        private static void RegisterCalamityNpcLoot(NPC npc, NPCLoot npcLoot)
+        {
+            if (!CERef.Has)
+            {
+                return;
+            }
+            if (CEID.NPC_HiveMind > 0 && npc.type == CEID.NPC_HiveMind)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<MindCorruptor>(), 3));
+            }
+            if (CEID.NPC_PerforatorHive > 0 && npc.type == CEID.NPC_PerforatorHive)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SinewLash>(), 3));
+            }
+            if (CEID.NPC_RavagerBody > 0 && npc.type == CEID.NPC_RavagerBody)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacrificalMask>()));
+            }
+            if (CEID.NPC_ProfanedGuardianCommander > 0 && npc.type == CEID.NPC_ProfanedGuardianCommander)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<LavaPancake>(), 2));
+            }
+            if (CEID.NPC_Providence > 0 && npc.type == CEID.NPC_Providence)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<HellBohea>(), 2));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacredStone>(), 3));
+            }
+            if (CEID.NPC_CeaselessVoid > 0 && npc.type == CEID.NPC_CeaselessVoid)
+            {
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BottleDarkMatter>(), 4));
+            }
+            if (CEID.NPC_Yharon > 0 && npc.type == CEID.NPC_Yharon)
+            {
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BookMarkAuric>(), 4));
+                npcLoot.Add(ItemDropRule.ByCondition(new PreMoonLordCondition(), ModContent.ItemType<FlowingLight>()));
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<Vitalfeather>(), 4));
+            }
+            if (CEID.NPC_SupremeCalamitas > 0 && npc.type == CEID.NPC_SupremeCalamitas)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<TheFilthyContractWithMammon>(), 3));
+            }
+            if (CEID.NPC_DevourerofGodsHead > 0 && npc.type == CEID.NPC_DevourerofGodsHead)
+            {
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BookmarkCosmic>(), 3));
+            }
+            if (CEID.NPC_EidolonWyrmHead > 0 && npc.type == CEID.NPC_EidolonWyrmHead)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAbyss>(), 2));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Nothing>(), 2));
+            }
+            if (CEID.NPC_PrimordialWyrmHead > 0 && npc.type == CEID.NPC_PrimordialWyrmHead)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkMarivium>()));
+            }
+            if (CEID.NPC_GiantClam > 0 && npc.type == CEID.NPC_GiantClam)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkSunkenSea>()));
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<EntityCard>()));
+            }
+            if (CEID.NPC_DesertScourgeHead > 0 && npc.type == CEID.NPC_DesertScourgeHead)
+            {
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<AntlionShell>(), 3));
+            }
+            if (CEID.NPC_Crabulon > 0 && npc.type == CEID.NPC_Crabulon)
+            {
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BookmarkSpore>(), 3));
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BookMarkCancer>(), 3));
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<WisperCard>(), 2));
+            }
+            if (CEID.NPC_Cryogen > 0 && npc.type == CEID.NPC_Cryogen)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<FrostboundCage>(), 3));
+            }
+            if ((CEID.NPC_ToxicMinnow > 0 && npc.type == CEID.NPC_ToxicMinnow)
+                || (CEID.NPC_CannonballJellyfish > 0 && npc.type == CEID.NPC_CannonballJellyfish)
+                || (CEID.NPC_Sulflounder > 0 && npc.type == CEID.NPC_Sulflounder)
+                || (CEID.NPC_Toxicatfish > 0 && npc.type == CEID.NPC_Toxicatfish))
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<TerrorOfAbyss>(), 24));
+            }
+            if ((CEID.NPC_DevilFish > 0 && npc.type == CEID.NPC_DevilFish)
+                || (CEID.NPC_Laserfish > 0 && npc.type == CEID.NPC_Laserfish)
+                || (CEID.NPC_ToxicMinnow > 0 && npc.type == CEID.NPC_ToxicMinnow)
+                || (CEID.NPC_LuminousCorvina > 0 && npc.type == CEID.NPC_LuminousCorvina)
+                || (CEID.NPC_Viperfish > 0 && npc.type == CEID.NPC_Viperfish)
+                || (CEID.NPC_OarfishHead > 0 && npc.type == CEID.NPC_OarfishHead))
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<ToyRock>(), 50));
+            }
+            if (CEID.NPC_Viperfish > 0 && npc.type == CEID.NPC_Viperfish)
+            {
+                npcLoot.Add(ItemDropRule.ByCondition(new AquaticScourgeDownedCondition(), ModContent.ItemType<AbyssalPiercer>(), 5));
+            }
+            if (CEID.NPC_GiantSquid > 0 && npc.type == CEID.NPC_GiantSquid)
+            {
+                npcLoot.Add(ItemDropRule.ByCondition(new AquaticScourgeDownedCondition(), ModContent.ItemType<AbyssalPiercer>(), 2));
+            }
+            if (CEID.NPC_Eidolist > 0 && npc.type == CEID.NPC_Eidolist)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Fool>(), 3));
+            }
+            if (CEID.NPC_SlimeGodCore > 0 && npc.type == CEID.NPC_SlimeGodCore)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Frail>()));
             }
         }
         public float WhiteLerp = 0;
@@ -1053,6 +1186,21 @@ namespace CalamityEntropy.Common
                 }
             }
         }
+        public override void OnHitNPC(NPC npc, NPC target, NPC.HitInfo hit)
+        {
+            if (CEID.NPC_Trasher > 0 && npc.type == CEID.NPC_Trasher && target.life <= 0)
+            {
+                if (target.type == NPCID.Turtle || target.type == NPCID.TurtleJungle)
+                {
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        int i = Item.NewItem(target.GetSource_Death(), target.getRect(), new Item(ModContent.ItemType<SusiesBracelet>()));
+                        CEUtils.SyncItem(i);
+                    }
+                }
+            }
+        }
+
         public override void OnKill(NPC npc)
         {
             if (npc.HasBuff<FlamingBlood>())

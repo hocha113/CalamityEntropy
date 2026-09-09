@@ -1,4 +1,5 @@
 using CalamityEntropy.Common;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Biomes;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items;
@@ -88,12 +89,12 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             }
             NPC.defense = 75;
             NPC.lifeMax = 360000;
-            // 难度映射:死亡→大师、复仇→专家(difficulty-map)
-            if (Main.masterMode)
+            //装灾厄读死亡/复仇,缺席仍走大师/专家兜底
+            if (CECal.IsDeathMode)
             {
                 NPC.damage += 5;
             }
-            else if (Main.expertMode)
+            else if (CECal.IsRevengeance)
             {
                 NPC.damage += 4;
             }
@@ -119,7 +120,10 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             // 深渊亡魂移除后,幽渊魂髓与深渊书签改由本 Boss 承接(数量与概率照搬旧掉落表);
             // 与旧主人一样不挂 NotExpert,专家模式下也照常掉,不进宝袋
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<WraithSoulEssence>(), 1, 15, 25));
-            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAbyss>(), 2));
+            if (!CERef.Has)
+            {
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAbyss>(), 2));
+            }
 
             // 灾厄至尊回复药水→原版超级治疗药水,数量照搬(misc-map);按人掉落并隐藏图鉴条目
             npcLoot.Add(new DropPerPlayerOnThePlayer(ItemID.SuperHealingPotion, 1, 5, 15, new HiddenDropCondition()));

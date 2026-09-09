@@ -2,6 +2,7 @@ using CalamityEntropy.Common;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items;
 
@@ -26,7 +27,7 @@ public class SignalBlocker : ModItem
     public override void AddRecipes()
     {
         CreateRecipe().AddIngredient<HellIndustrialComponents>(3).
-            AddIngredient<AzafureCircuitry>().
+            AddCalOrOwn(CEID.Item_MysteriousCircuitry, ModContent.ItemType<AzafureCircuitry>()).
             AddTile(TileID.WorkBenches).
             Register();
     }

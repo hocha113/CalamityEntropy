@@ -14,6 +14,7 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -40,6 +41,15 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_SeaPrism))
+            {
+                CreateRecipe()
+                .AddIngredient<HellIndustrialComponents>(4)
+                .AddIngredient(CEID.Item_SeaPrism, 8)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.Minishark)
                 .AddIngredient<HellIndustrialComponents>(5)

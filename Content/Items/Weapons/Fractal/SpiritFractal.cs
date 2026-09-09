@@ -10,6 +10,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Fractal
 {
@@ -62,6 +63,16 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_VoidEdge, CEID.Item_TerrorBlade, CEID.Item_RuinousSoul))
+            {
+                CreateRecipe().AddIngredient<ElementalFractal>()
+                .AddIngredient(CEID.Item_VoidEdge)
+                .AddIngredient(CEID.Item_TerrorBlade)
+                .AddIngredient<RuneSong>()
+                .AddIngredient(CEID.Item_RuinousSoul, 4)
+                .AddTile(TileID.LunarCraftingStation).Register();
+                return;
+            }
             CreateRecipe().AddIngredient<RuneSong>()
                 .AddIngredient<NihilityFragments>(10)
                 .AddIngredient(ItemID.LunarBar, 10)

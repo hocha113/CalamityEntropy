@@ -22,6 +22,7 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Bait
 {
@@ -38,7 +39,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             Item.shootSpeed = 44;
             Item.useAnimation = Item.useTime = 24;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
-            Item.rare = ModContent.RarityType<NihilityBlue>();
+            Item.rare = CECal.RarityTurquoise(ModContent.RarityType<NihilityBlue>());
             Item.width = 52;
             Item.height = 54; 
             Item.autoReuse = false;

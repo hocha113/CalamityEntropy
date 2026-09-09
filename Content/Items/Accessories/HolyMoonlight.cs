@@ -3,6 +3,7 @@ using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -32,6 +33,18 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_RoverDrive, CEID.Item_ManaPolarizer, CEID.Item_CryoStone, CEID.Item_AscendantSpiritEssence))
+            {
+                CreateRecipe().
+                AddIngredient(CEID.Item_RoverDrive, 1).
+                AddIngredient(CEID.Item_ManaPolarizer, 1).
+                AddIngredient(CEID.Item_CryoStone, 1).
+                AddIngredient(ModContent.ItemType<VoidBar>(), 5).
+                AddIngredient(CEID.Item_AscendantSpiritEssence, 4).
+                AddTile(ModContent.TileType<VoidWellTile>()).
+                Register();
+                return;
+            }
             CreateRecipe().
                 AddIngredient(ItemID.MoonStone, 1).
                 AddIngredient(ItemID.ManaFlower, 1).

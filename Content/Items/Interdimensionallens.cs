@@ -1,6 +1,7 @@
 ﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items
 {
@@ -35,7 +36,7 @@ namespace CalamityEntropy.Content.Items
         public override void AddRecipes()
         {
             Recipe recipe = CreateRecipe();
-            recipe.AddIngredient(ItemID.Obsidian, 4);
+            recipe.AddCalOrOwn(CEID.Item_Voidstone, ItemID.Obsidian, 4);
             recipe.AddIngredient(ItemID.Glass, 4);
             recipe.AddTile(TileID.WorkBenches);
             recipe.Register();

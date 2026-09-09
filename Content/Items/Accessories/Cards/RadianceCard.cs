@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories.Cards
 {
@@ -33,6 +34,16 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_StarblightSoot, CEID.Item_EssenceofSunlight))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_StarblightSoot, 5)
+                .AddIngredient(CEID.Item_EssenceofSunlight, 5)
+                .AddIngredient(ItemID.SoulofLight, 3)
+                .AddTile(TileID.CrystalBall)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.SoulofLight, 4)
                 .AddIngredient(ItemID.PixieDust, 4)

@@ -9,6 +9,7 @@ using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Books.BookMarks
 {
@@ -31,7 +32,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         {
             // 铁锭用配方组兼容铅锭世界
             CreateRecipe().AddRecipeGroup(RecipeGroupID.IronBar, 4)
-                .AddIngredient<AzafureCircuitry>()
+                .AddCalOrOwn(CEID.Item_EnergyCore, ModContent.ItemType<AzafureCircuitry>())
                 .AddIngredient(ItemID.FallenStar, 2)
                 .AddTile(TileID.Anvils)
                 .Register();

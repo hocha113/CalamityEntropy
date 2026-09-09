@@ -1,9 +1,11 @@
 ﻿using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -35,6 +37,15 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_CleansingBlaze))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_CleansingBlaze)
+                .AddIngredient(ModContent.ItemType<VoidBar>(), 5)
+                .AddTile(ModContent.TileType<VoidWellTile>())
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.ElfMelter)
                 .AddIngredient<ChaoticPiece>(10)

@@ -6,6 +6,7 @@ using CalamityEntropy.Core.Weapons;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Armor.Marivinium
 {
@@ -85,7 +86,7 @@ namespace CalamityEntropy.Content.Items.Armor.Marivinium
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.HallowedMask)
+                .AddCalOrOwn(CEID.Item_OmegaBlueHelmet, ItemID.HallowedMask)
                 .AddIngredient<WyrmTooth>(4)
                 .AddIngredient<FadingRunestone>()
                 .AddTile<AbyssalAltarTile>()

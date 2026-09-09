@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -45,6 +46,16 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_Lumenyl, CEID.Item_AscendantSpiritEssence))
+            {
+                CreateRecipe().
+                AddIngredient<VoidBar>(5).
+                AddIngredient(CEID.Item_Lumenyl, 6).
+                AddIngredient(CEID.Item_AscendantSpiritEssence, 4).
+                AddTile(ModContent.TileType<VoidWellTile>()).
+                Register();
+                return;
+            }
             CreateRecipe().
                 AddIngredient(ItemID.StarVeil).
                 AddIngredient(ItemID.NeptunesShell).

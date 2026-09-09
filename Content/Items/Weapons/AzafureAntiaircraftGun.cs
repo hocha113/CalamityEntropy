@@ -13,6 +13,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -49,6 +50,17 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_DubiousPlating, CEID.Item_ScoriaBar))
+            {
+                CreateRecipe()
+                .AddIngredient<HellIndustrialComponents>(4)
+                .AddIngredient(CEID.Item_DubiousPlating, 10)
+                .AddIngredient(CEID.Item_ScoriaBar, 6)
+                .AddIngredient(ItemID.HellstoneBar, 18)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.RocketLauncher)
                 .AddIngredient<HellIndustrialComponents>(10)

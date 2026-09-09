@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.Particles.CalamityPorts;
+using CalamityEntropy.Core.CalamityRef;
 using InnoVault.PRT;
 using ReLogic.Utilities;
 using System;
@@ -59,7 +60,7 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             else
             {
                 NPC.ai[2] = 0f;
-                UnicornAI_DSF(NPC, Mod, true, Main.masterMode ? 8f : Main.expertMode ? 6f : 4f, 5f, 0.2f);
+                UnicornAI_DSF(NPC, Mod, true, CECal.IsDeathMode ? 8f : CECal.IsRevengeance ? 6f : 4f, 5f, 0.2f);
             }
             if (NPC.lavaWet) NPC.velocity.Y += -0.8f;
         }

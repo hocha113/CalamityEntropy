@@ -2,6 +2,7 @@ using CalamityEntropy.Common;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories.EvilCards
 {
@@ -62,7 +63,7 @@ namespace CalamityEntropy.Content.Items.Accessories.EvilCards
                 .AddIngredient<Nothing>()
                 .AddIngredient<Fool>()
                 .AddIngredient<ThreadOfAbyss>()
-                .AddIngredient(ItemID.LunarBar, 5)
+                .AddCalOrOwn(CEID.Item_CoreofCalamity, 1, ItemID.LunarBar, 5)
                 .AddTile(TileID.Bookcases)
                 .Register();
         }

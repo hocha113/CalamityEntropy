@@ -5,6 +5,7 @@ using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -26,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.channel = true;
             Item.knockBack = 4;
             Item.value = Item.buyPrice(platinum: 2, gold: 40);
-            Item.rare = ModContent.RarityType<VoidPurple>();
+            Item.rare = CECal.RarityHotPink(ModContent.RarityType<VoidPurple>());
             Item.UseSound = null;
             Item.shoot = ModContent.ProjectileType<MercySpawner>();
             Item.shootSpeed = 1f;

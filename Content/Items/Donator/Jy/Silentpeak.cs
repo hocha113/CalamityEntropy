@@ -1,6 +1,7 @@
 ﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles.LuminarisShoots;
@@ -85,17 +86,19 @@ namespace CalamityEntropy.Content.Items.Donator.Jy
         };
         public static int Level()
         {
-            // 2026-08-31 平衡案:成长阶段重置为11档;11档原借幽邃魔灵作亚波伦的替身,
-            // 该 Boss 移除后此档无门槛可挂,封顶回落到10档(巡游者),伤害表保留11档待日后重挂
-            if (EDownedBosses.downedCruiser)
+            // 装灾厄走 3.33 细档(含 11 档死档回生),无灾厄保持 4.0 的 11 档形状
+            //死档回生:灾厄在场解锁 11 档,缺席时恒假=4.0 现状
+            if (CECal.DownedCalamitas(false) && CECal.DownedExoMechs(false))
+                return 11;
+            if (CECal.DownedYharon(EDownedBosses.downedCruiser))
                 return 10;
-            if (EDownedBosses.downedNihilityTwin)
+            if (CECal.DownedDoG(EDownedBosses.downedNihilityTwin))
                 return 9;
             if (NPC.downedMoonlord)
                 return 8;
             if (NPC.downedGolemBoss)
                 return 7;
-            if (NPC.downedPlantBoss)
+            if (NPC.downedPlantBoss && CECal.DownedCalamitasClone(true))
                 return 6;
             if (NPC.downedMechBossAny)
                 return 5;
@@ -103,9 +106,9 @@ namespace CalamityEntropy.Content.Items.Donator.Jy
                 return 4;
             if (NPC.downedBoss3)
                 return 3;
-            if (NPC.downedBoss2)
+            if (NPC.downedBoss2 || CECal.DownedPerforator || CECal.DownedHiveMind)
                 return 2;
-            if (NPC.downedBoss1 || NPC.downedSlimeKing)
+            if (NPC.downedBoss1 || CECal.DownedDesertScourge || NPC.downedSlimeKing)
                 return 1;
             return 0;
         }

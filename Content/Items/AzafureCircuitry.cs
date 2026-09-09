@@ -1,4 +1,5 @@
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -24,6 +25,19 @@ namespace CalamityEntropy.Content.Items
             Item.maxStack = 9999;
             Item.value = Item.sellPrice(silver: 3);
             Item.rare = ModContent.RarityType<AzafureOrange>();
+        }
+
+        public override void AddRecipes()
+        {
+            if (CECal.CalChainReady(CEID.Item_MysteriousCircuitry))
+            {
+                CreateRecipe()
+                    .AddIngredient(CEID.Item_MysteriousCircuitry)
+                    .Register();
+                Recipe.Create(CEID.Item_MysteriousCircuitry)
+                    .AddIngredient(Type)
+                    .Register();
+            }
         }
     }
 }

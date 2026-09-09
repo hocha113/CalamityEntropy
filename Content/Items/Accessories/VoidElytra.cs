@@ -7,6 +7,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -36,7 +37,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.width = 22;
             Item.height = 20;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
-            Item.rare = ModContent.RarityType<NihilityBlue>();
+            Item.rare = CECal.RarityTurquoise(ModContent.RarityType<NihilityBlue>());
             Item.accessory = true;
 
         }

@@ -3,6 +3,7 @@ using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -26,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.SharkToothNecklace).
+                AddCalOrOwn(CEID.Item_ReaperToothNecklace, ItemID.SharkToothNecklace).
                 AddIngredient<WyrmTooth>(9).
                 AddIngredient<FadingRunestone>().
                 AddTile(ModContent.TileType<AbyssalAltarTile>()).

@@ -11,6 +11,7 @@ using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -58,6 +59,17 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AscendantSpiritEssence))
+            {
+                CreateRecipe()
+                .AddIngredient<DedicatedOracle>()
+                .AddIngredient<AnimaSola>()
+                .AddIngredient<VoidBar>(5)
+                .AddIngredient(CEID.Item_AscendantSpiritEssence, 2)
+                .AddTile<VoidWellTile>()
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<DedicatedOracle>()
                 .AddIngredient<VoidBar>(5)

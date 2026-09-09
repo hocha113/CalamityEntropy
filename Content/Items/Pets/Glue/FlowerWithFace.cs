@@ -1,6 +1,7 @@
 ﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs.Pets;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Items.Donator;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles.Pets.Desert;
@@ -237,15 +238,18 @@ namespace CalamityEntropy.Content.Items.Pets.Glue
                                 dmg = 49;
                             if (Main.hardMode)
                                 dmg = 59;
-                            if ((NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3) || NPC.downedPlantBoss)
+                            if ((NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3) || NPC.downedPlantBoss || CECal.DownedCalamitasClone(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3))
                                 dmg = 99;
                             if (NPC.downedGolemBoss)
                                 dmg = 219;
                             if (NPC.downedMoonlord)
                                 dmg = 329;
-                            if (EDownedBosses.downedNihilityTwin)
+                            if (CECal.DownedProvidence(EDownedBosses.downedNihilityTwin))
                                 dmg = 579;
-                            if (EDownedBosses.downedCruiser)
+                            //死档回生:灾厄在场解锁 729 档,缺席恒假=4.0 现状
+                            if (CECal.DownedDoG(false))
+                                dmg = 729;
+                            if (CECal.DownedCalamitas(EDownedBosses.downedCruiser) || CECal.DownedExoMechs(EDownedBosses.downedCruiser))
                                 dmg = 999;
                             CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromThis(), player, JaronaTarget.ToNPC().Center, dmg, 160, DamageClass.Generic).ArmorPenetration = dmg;
                         }

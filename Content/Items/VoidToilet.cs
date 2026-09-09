@@ -2,6 +2,7 @@
 using CalamityEntropy.Content.Tiles;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items
 {
@@ -27,7 +28,7 @@ namespace CalamityEntropy.Content.Items
             CreateRecipe().
                 AddIngredient(ItemID.Toilet).
                 AddIngredient<VoidBar>(5).
-                AddTile<VoidWellTile>().
+                AddCalTileOrOwn(CEID.Tile_VoidCondenser, ModContent.TileType<VoidWellTile>()).
                 Register();
         }
     }

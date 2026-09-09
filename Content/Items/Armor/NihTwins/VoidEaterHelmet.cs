@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Armor.NihTwins
 {
@@ -68,6 +69,16 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_Necroplasm))
+            {
+                CreateRecipe()
+                .AddIngredient<NihilityFragments>(5)
+                .AddIngredient(CEID.Item_Necroplasm, 6)
+                .AddIngredient(ItemID.LunarBar, 8)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
+                return;
+            }
             // 脱离灾厄:原 Necroplasm×6 换虚无碎片并与原有 5 枚合并
             CreateRecipe()
                 .AddIngredient<NihilityFragments>(11)

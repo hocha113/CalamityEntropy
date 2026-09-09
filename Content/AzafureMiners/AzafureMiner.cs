@@ -2,6 +2,7 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.AzafureMiners
 {
@@ -26,6 +27,16 @@ namespace CalamityEntropy.Content.AzafureMiners
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_EnergyCore, CEID.Item_DubiousPlating))
+            {
+                CreateRecipe().AddIngredient(CEID.Item_EnergyCore)
+                .AddIngredient<HellIndustrialComponents>(6)
+                .AddIngredient(CEID.Item_DubiousPlating, 6)
+                .AddRecipeGroup(CERecipeGroups.IronBar, 2)
+                .AddTile(TileID.HeavyWorkBench)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>()
                 .AddIngredient(ItemID.CobaltBar, 10)

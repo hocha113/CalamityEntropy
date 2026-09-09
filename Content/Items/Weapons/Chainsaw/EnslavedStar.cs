@@ -2,6 +2,7 @@ using CalamityEntropy.Content.Projectiles.Chainsaw;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
 {
@@ -33,6 +34,17 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_PlagueCellCanister, CEID.Item_ScoriaBar))
+            {
+                CreateRecipe().
+                AddIngredient<MechanicalChainsaw>().
+                AddIngredient(CEID.Item_PlagueCellCanister, 10).
+                AddIngredient(ItemID.Wire, 5).
+                AddIngredient(CEID.Item_ScoriaBar, 5).
+                AddTile(TileID.MythrilAnvil).
+                Register();
+                return;
+            }
             CreateRecipe().
                 AddIngredient<MechanicalChainsaw>().
                 AddIngredient(ItemID.Nanites, 25).

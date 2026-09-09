@@ -17,6 +17,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Bait
 {
@@ -57,6 +58,16 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AerialiteBar, CEID.Item_MysteriousCircuitry))
+            {
+                CreateRecipe()
+                .AddIngredient<HellIndustrialComponents>(6)
+                .AddIngredient(CEID.Item_AerialiteBar, 8)
+                .AddIngredient(CEID.Item_MysteriousCircuitry, 2)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(6)
                 .AddIngredient(ItemID.HellstoneBar, 15)

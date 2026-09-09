@@ -9,6 +9,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Fractal
 {
@@ -52,6 +53,45 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_SeashineSword))
+            {
+                CreateRecipe().AddIngredient<BrokenHilt>()
+                .AddIngredient(ItemID.WoodenSword)
+                .AddIngredient(ItemID.GoldBroadsword)
+                .AddIngredient(ItemID.LightsBane)
+                .AddIngredient(ItemID.EnchantedSword)
+                .AddIngredient(CEID.Item_SeashineSword)
+                .AddTile(TileID.Anvils)
+                .Register();
+
+                CreateRecipe().AddIngredient<BrokenHilt>()
+                .AddIngredient(ItemID.WoodenSword)
+                .AddIngredient(ItemID.GoldBroadsword)
+                .AddIngredient(ItemID.BloodButcherer)
+                .AddIngredient(ItemID.EnchantedSword)
+                .AddIngredient(CEID.Item_SeashineSword)
+                .AddTile(TileID.Anvils)
+                .Register();
+
+                CreateRecipe().AddIngredient<BrokenHilt>()
+                .AddIngredient(ItemID.WoodenSword)
+                .AddIngredient(ItemID.PlatinumBroadsword)
+                .AddIngredient(ItemID.LightsBane)
+                .AddIngredient(ItemID.EnchantedSword)
+                .AddIngredient(CEID.Item_SeashineSword)
+                .AddTile(TileID.Anvils)
+                .Register();
+
+                CreateRecipe().AddIngredient<BrokenHilt>()
+                .AddIngredient(ItemID.WoodenSword)
+                .AddIngredient(ItemID.PlatinumBroadsword)
+                .AddIngredient(ItemID.BloodButcherer)
+                .AddIngredient(ItemID.EnchantedSword)
+                .AddIngredient(CEID.Item_SeashineSword)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             CreateRecipe().AddIngredient<BrokenHilt>()
                 .AddIngredient(ItemID.GoldBroadsword)
                 .AddIngredient(ItemID.LightsBane)

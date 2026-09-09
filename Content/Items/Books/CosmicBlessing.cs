@@ -14,6 +14,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Books
 {
@@ -30,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Books
             Item.crit = 10;
             Item.mana = 12;
             Item.ArmorPenetration = 32;
-            Item.rare = ModContent.RarityType<AbyssalBlue>();
+            Item.rare = CECal.RarityCosmicPurple(ModContent.RarityType<AbyssalBlue>());
             Item.value = Item.buyPrice(platinum: 2);
         }
         [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/CB")]
@@ -41,6 +42,16 @@ namespace CalamityEntropy.Content.Items.Books
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_CosmiliteBar, CEID.Item_AscendantSpiritEssence, CEID.Tile_CosmicAnvil))
+            {
+                CreateRecipe()
+                .AddIngredient<SelenbiteVolume>()
+                .AddIngredient(CEID.Item_CosmiliteBar, 10)
+                .AddIngredient(CEID.Item_AscendantSpiritEssence, 2)
+                .AddTile(CEID.Tile_CosmicAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<SelenbiteVolume>()
                 .AddIngredient<NihilityFragments>(10)

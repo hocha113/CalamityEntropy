@@ -1,5 +1,6 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.NPCs.FriendFinderNPC;
 using CalamityEntropy.Content.Items.Donator;
 using CalamityEntropy.Content.Items.Weapons.Fractal;
@@ -105,6 +106,13 @@ namespace CalamityEntropy.Content.NPCs
         public bool say = false;
         public Color sayColor = Color.White;
         public string sayStr = "";
+
+        //奖池条目:灾厄在场且该内容存在时用灾厄物,否则用 4.0 的自有/原版替身
+        private static void AddCalOrOwn(RewardPool pool, int calType, int calStack, int ownType, int ownStack)
+        {
+            bool useCal = CERef.Has && calType > 0;
+            pool.Add(new RewardPoolItem(useCal ? calType : ownType, useCal ? calStack : ownStack));
+        }
 
         public override void SendExtraAI(BinaryWriter writer)
         {
@@ -319,16 +327,21 @@ namespace CalamityEntropy.Content.NPCs
                 sd = false;
                 #region pools
 
-                // 奖池灾厄条目已按杂项处置表 §二 换为自有与原版物品，原版条目保持不动
+                //灾厄在场按 3.33 下标换回灾厄物;YharimsStimulants 已删、Wrathwing 盗贼武器不改回
                 s1 = new RewardPool();
-                s1.Add(new RewardPoolItem(ItemID.IronBar, 10)); s1.Add(new RewardPoolItem(ItemID.Feather, 10));
-                s1.Add(new RewardPoolItem(ModContent.ItemType<AzafureCircuitry>(), 1)); s1.Add(new RewardPoolItem(ItemID.LifeCrystal, 1));
-                s1.Add(new RewardPoolItem(ModContent.ItemType<AzafurePlating>(), 4)); s1.Add(new RewardPoolItem(ModContent.ItemType<AzafureCircuitry>(), 4));
-                s1.Add(new RewardPoolItem(ItemID.AntlionMandible, 1)); s1.Add(new RewardPoolItem(ItemID.FlinxStaff, 1));
+                AddCalOrOwn(s1, CEID.Item_WulfrumMetalScrap, 10, ItemID.IronBar, 10);
+                s1.Add(new RewardPoolItem(ItemID.Feather, 10));
+                AddCalOrOwn(s1, CEID.Item_EnergyCore, 1, ModContent.ItemType<AzafureCircuitry>(), 1);
+                s1.Add(new RewardPoolItem(ItemID.LifeCrystal, 1));
+                AddCalOrOwn(s1, CEID.Item_DubiousPlating, 4, ModContent.ItemType<AzafurePlating>(), 4);
+                AddCalOrOwn(s1, CEID.Item_MysteriousCircuitry, 4, ModContent.ItemType<AzafureCircuitry>(), 4);
+                AddCalOrOwn(s1, CEID.Item_StormlionMandible, 1, ItemID.AntlionMandible, 1);
+                AddCalOrOwn(s1, CEID.Item_StormjawStaff, 1, ItemID.FlinxStaff, 1);
                 s1.Add(new RewardPoolItem(ItemID.Diamond, 5));
-                s1.Add(new RewardPoolItem(ItemID.Bone, 5));
+                AddCalOrOwn(s1, CEID.Item_BloodOrb, 5, ItemID.Bone, 5);
                 s1.Add(new RewardPoolItem(68, 8));
-                s1.Add(new RewardPoolItem(ItemID.Bone, 2)); s1.Add(new RewardPoolItem(ItemID.PoopBlock, 10));
+                AddCalOrOwn(s1, CEID.Item_AncientBoneDust, 2, ItemID.Bone, 2);
+                s1.Add(new RewardPoolItem(ItemID.PoopBlock, 10));
                 s1.Add(new RewardPoolItem(296, 1));
                 s1.Add(new RewardPoolItem(0, 1));
                 s1.Add(new RewardPoolItem(ItemID.Heart, 10));
@@ -337,11 +350,13 @@ namespace CalamityEntropy.Content.NPCs
                 s1.Add(new RewardPoolItem(ItemID.Ruby, 8));
 
                 g1 = new RewardPool();
-                g1.Add(new RewardPoolItem(ItemID.SharkFin, 1)); g1.Add(new RewardPoolItem(1320, 1));
+                AddCalOrOwn(g1, CEID.Item_SulphuricScale, 1, ItemID.SharkFin, 1);
+                g1.Add(new RewardPoolItem(1320, 1));
                 g1.Add(new RewardPoolItem(ItemID.LifeCrystal, 4));
-                g1.Add(new RewardPoolItem(ItemID.Shuriken, 100));
-                g1.Add(new RewardPoolItem(ItemID.PoisonedKnife, 100));
-                g1.Add(new RewardPoolItem(ItemID.GillsPotion, 5)); g1.Add(new RewardPoolItem(1303, 1));
+                AddCalOrOwn(g1, CEID.Item_AshenStalactite, 1, ItemID.Shuriken, 100);
+                AddCalOrOwn(g1, CEID.Item_RottenDogtooth, 1, ItemID.PoisonedKnife, 100);
+                AddCalOrOwn(g1, CEID.Item_AnechoicCoating, 5, ItemID.GillsPotion, 5);
+                g1.Add(new RewardPoolItem(1303, 1));
                 g1.Add(new RewardPoolItem(1322, 1));
                 g1.Add(new RewardPoolItem(ItemID.HealingPotion, 10));
                 g1.Add(new RewardPoolItem(ItemID.HeartLantern, 1));
@@ -352,29 +367,31 @@ namespace CalamityEntropy.Content.NPCs
                 p1 = new RewardPool();
                 p1.Add(new RewardPoolItem(2341, 1));
                 p1.Add(new RewardPoolItem(906, 1));
-                p1.Add(new RewardPoolItem(ItemID.Katana, 1)); p1.Add(new RewardPoolItem(2296, 1));
-                p1.Add(new RewardPoolItem(ItemID.FallenStar, 300)); p1.Add(new RewardPoolItem(ItemID.ObsidianShield, 1));
+                AddCalOrOwn(p1, CEID.Item_OldLordClaymore, 1, ItemID.Katana, 1);
+                p1.Add(new RewardPoolItem(2296, 1));
+                p1.Add(new RewardPoolItem(ItemID.FallenStar, 300));
+                AddCalOrOwn(p1, CEID.Item_GiantShell, 1, ItemID.ObsidianShield, 1);
                 p1.Add(new RewardPoolItem(2430, 1));
-                p1.Add(new RewardPoolItem(ItemID.GoldenCrate, 2));
+                AddCalOrOwn(p1, CEID.Item_BurntSienna, 2, ItemID.GoldenCrate, 2);
                 p1.Add(new RewardPoolItem(ItemID.HealingPotion, 100));
                 p1.Add(new RewardPoolItem(ItemID.ManaPotion, 100));
-                p1.Add(new RewardPoolItem(ItemID.RoyalGel, 1));
-                p1.Add(new RewardPoolItem(ItemID.LifeformAnalyzer, 1));
+                AddCalOrOwn(p1, CEID.Item_CrownJewel, 1, ItemID.RoyalGel, 1);
+                AddCalOrOwn(p1, CEID.Item_RustyBeaconPrototype, 1, ItemID.LifeformAnalyzer, 1);
                 p1.Add(new RewardPoolItem(ItemID.LifeCrystal, 8));
 
                 g2 = new RewardPool();
-                g2.Add(new RewardPoolItem(ItemID.LifeFruit, 3));
-                g2.Add(new RewardPoolItem(ItemID.Amarok, 1));
-                g2.Add(new RewardPoolItem(ItemID.Ectoplasm, 2));
-                g2.Add(new RewardPoolItem(ItemID.SkyFracture, 1));
+                AddCalOrOwn(g2, CEID.Item_TitanHeart, 3, ItemID.LifeFruit, 3);
+                AddCalOrOwn(g2, CEID.Item_UrsaSergeant, 1, ItemID.Amarok, 1);
+                AddCalOrOwn(g2, CEID.Item_SolarVeil, 2, ItemID.Ectoplasm, 2);
+                AddCalOrOwn(g2, CEID.Item_Poseidon, 1, ItemID.SkyFracture, 1);
                 g2.Add(new RewardPoolItem(1518, 1));
                 g2.Add(new RewardPoolItem(381, 15));
                 g2.Add(new RewardPoolItem(1184, 15));
                 g2.Add(new RewardPoolItem(1612, 1));
-                g2.Add(new RewardPoolItem(ItemID.UnholyTrident, 1));
-                g2.Add(new RewardPoolItem(ItemID.VenusMagnum, 1));
-                g2.Add(new RewardPoolItem(ItemID.FrozenTurtleShell, 1));
-                g2.Add(new RewardPoolItem(ItemID.Excalibur, 1));
+                AddCalOrOwn(g2, CEID.Item_IcicleTrident, 1, ItemID.UnholyTrident, 1);
+                AddCalOrOwn(g2, CEID.Item_ElephantKiller, 1, ItemID.VenusMagnum, 1);
+                AddCalOrOwn(g2, CEID.Item_Abaddon, 1, ItemID.FrozenTurtleShell, 1);
+                AddCalOrOwn(g2, CEID.Item_CelestialClaymore, 1, ItemID.Excalibur, 1);
                 g2.Add(new RewardPoolItem(ItemID.WrathPotion, 6));
 
                 p2 = new RewardPool();
@@ -382,29 +399,29 @@ namespace CalamityEntropy.Content.NPCs
                 p2.Add(new RewardPoolItem(365, 15));
                 p2.Add(new RewardPoolItem(1105, 15));
                 p2.Add(new RewardPoolItem(1253, 10));
-                p2.Add(new RewardPoolItem(ItemID.BeamSword, 1));
-                p2.Add(new RewardPoolItem(ItemID.CrystalSerpent, 1));
-                p2.Add(new RewardPoolItem(ItemID.ShadowFlameHexDoll, 1));
-                p2.Add(new RewardPoolItem(ItemID.SanguineStaff, 1));
-                p2.Add(new RewardPoolItem(ItemID.FrostDaggerfish, 150));
-                p2.Add(new RewardPoolItem(ItemID.HallowedBar, 3));
-                p2.Add(new RewardPoolItem(ItemID.MagmaStone, 1));
-                p2.Add(new RewardPoolItem(ItemID.MagicalHarp, 1));
-                p2.Add(new RewardPoolItem(ItemID.OnyxBlaster, 1));
-                p2.Add(new RewardPoolItem(ItemID.Ectoplasm, 2));
+                AddCalOrOwn(p2, CEID.Item_StormSaber, 1, ItemID.BeamSword, 1);
+                AddCalOrOwn(p2, CEID.Item_FrigidflashBolt, 1, ItemID.CrystalSerpent, 1);
+                AddCalOrOwn(p2, CEID.Item_TheFirstShadowflame, 1, ItemID.ShadowFlameHexDoll, 1);
+                AddCalOrOwn(p2, CEID.Item_IgneousExaltation, 1, ItemID.SanguineStaff, 1);
+                AddCalOrOwn(p2, CEID.Item_IceStar, 1, ItemID.FrostDaggerfish, 150);
+                AddCalOrOwn(p2, CEID.Item_CryonicBar, 3, ItemID.HallowedBar, 3);
+                AddCalOrOwn(p2, CEID.Item_RuinMedallion, 1, ItemID.MagmaStone, 1);
+                AddCalOrOwn(p2, CEID.Item_BelchingSaxophone, 1, ItemID.MagicalHarp, 1);
+                AddCalOrOwn(p2, CEID.Item_TheDarkMaster, 1, ItemID.OnyxBlaster, 1);
+                AddCalOrOwn(p2, CEID.Item_SolarVeil, 2, ItemID.Ectoplasm, 2);
 
                 g3 = new RewardPool();
-                g3.Add(new RewardPoolItem(ItemID.OpticStaff, 1));
-                g3.Add(new RewardPoolItem(ItemID.ChlorophyteBar, 10));
-                g3.Add(new RewardPoolItem(ItemID.LifeFruit, 5));
+                AddCalOrOwn(g3, CEID.Item_HivePod, 1, ItemID.OpticStaff, 1);
+                AddCalOrOwn(g3, CEID.Item_LivingShard, 10, ItemID.ChlorophyteBar, 10);
+                AddCalOrOwn(g3, CEID.Item_CoreofCalamity, 2, ItemID.LifeFruit, 5);
                 g3.Add(new RewardPoolItem(1006, 30));
                 g3.Add(new RewardPoolItem(1551, 1));
                 g3.Add(new RewardPoolItem(3018, 1));
                 g3.Add(new RewardPoolItem(3021, 1));
-                g3.Add(new RewardPoolItem(ItemID.CelestialShell, 1));
-                g3.Add(new RewardPoolItem(ItemID.CharmofMyths, 1));
-                g3.Add(new RewardPoolItem(ItemID.CelestialStone, 1));
-                g3.Add(new RewardPoolItem(ItemID.ArcticDivingGear, 1));
+                AddCalOrOwn(g3, CEID.Item_TheCommunity, 1, ItemID.CelestialShell, 1);
+                AddCalOrOwn(g3, CEID.Item_Regenerator, 1, ItemID.CharmofMyths, 1);
+                AddCalOrOwn(g3, CEID.Item_BloomStone, 1, ItemID.CelestialStone, 1);
+                AddCalOrOwn(g3, CEID.Item_AbyssalDivingGear, 1, ItemID.ArcticDivingGear, 1);
 
                 p3 = new RewardPool();
                 p3.Add(new RewardPoolItem(938, 1));
@@ -417,13 +434,13 @@ namespace CalamityEntropy.Content.NPCs
                 p3.Add(new RewardPoolItem(1445, 1));
                 p3.Add(new RewardPoolItem(1446, 1));
                 p3.Add(new RewardPoolItem(4679, 1));
-                p3.Add(new RewardPoolItem(ItemID.Tsunami, 1));
-                p3.Add(new RewardPoolItem(ItemID.Marrow, 1));
-                p3.Add(new RewardPoolItem(ItemID.TacticalShotgun, 1));
-                p3.Add(new RewardPoolItem(ItemID.RazorbladeTyphoon, 1));
-                p3.Add(new RewardPoolItem(ItemID.PaladinsHammer, 1));
-                p3.Add(new RewardPoolItem(ItemID.ChlorophyteBar, 20));
-                p3.Add(new RewardPoolItem(ItemID.FishronWings, 1));
+                AddCalOrOwn(p3, CEID.Item_BlossomFlux, 1, ItemID.Tsunami, 1);
+                AddCalOrOwn(p3, CEID.Item_EternalBlizzard, 1, ItemID.Marrow, 1);
+                AddCalOrOwn(p3, CEID.Item_Keelhaul, 1, ItemID.TacticalShotgun, 1);
+                AddCalOrOwn(p3, CEID.Item_HadalUrn, 1, ItemID.RazorbladeTyphoon, 1);
+                AddCalOrOwn(p3, CEID.Item_FantasyTalisman, 1, ItemID.PaladinsHammer, 1);
+                AddCalOrOwn(p3, CEID.Item_PerennialBar, 20, ItemID.ChlorophyteBar, 20);
+                AddCalOrOwn(p3, CEID.Item_GrandScale, 2, ItemID.FishronWings, 1);
 
                 p4 = new RewardPool();
                 p4.Add(new RewardPoolItem(3110, 1));
@@ -432,62 +449,59 @@ namespace CalamityEntropy.Content.NPCs
                 p4.Add(new RewardPoolItem(1858, 1));
                 p4.Add(new RewardPoolItem(3883, 1));
                 p4.Add(new RewardPoolItem(3817, 80));
-                p4.Add(new RewardPoolItem(ItemID.VampireKnives, 1));
-                p4.Add(new RewardPoolItem(ItemID.BeetleHusk, 5));
-                p4.Add(new RewardPoolItem(ItemID.Nanites, 50));
-                p4.Add(new RewardPoolItem(ItemID.TerraBlade, 1));
-                p4.Add(new RewardPoolItem(ItemID.NorthPole, 1));
-                p4.Add(new RewardPoolItem(ItemID.SpectreBar, 25));
-                p4.Add(new RewardPoolItem(ItemID.PossessedHatchet, 1));
-                p4.Add(new RewardPoolItem(ItemID.StakeLauncher, 1));
-                p4.Add(new RewardPoolItem(ItemID.TheEyeOfCthulhu, 1));
-                p4.Add(new RewardPoolItem(ItemID.SniperRifle, 1));
+                AddCalOrOwn(p4, CEID.Item_Malachite, 1, ItemID.VampireKnives, 1);
+                AddCalOrOwn(p4, CEID.Item_LifeAlloy, 5, ItemID.BeetleHusk, 5);
+                AddCalOrOwn(p4, CEID.Item_PlagueCellCanister, 50, ItemID.Nanites, 50);
+                AddCalOrOwn(p4, CEID.Item_ExaltedOathblade, 1, ItemID.TerraBlade, 1);
+                AddCalOrOwn(p4, CEID.Item_TenebreusTides, 1, ItemID.NorthPole, 1);
+                AddCalOrOwn(p4, CEID.Item_ScoriaBar, 25, ItemID.SpectreBar, 25);
+                AddCalOrOwn(p4, CEID.Item_AegisBlade, 1, ItemID.PossessedHatchet, 1);
+                AddCalOrOwn(p4, CEID.Item_StarSputter, 1, ItemID.StakeLauncher, 1);
+                AddCalOrOwn(p4, CEID.Item_Vesuvius, 1, ItemID.TheEyeOfCthulhu, 1);
+                AddCalOrOwn(p4, CEID.Item_BrinyBaron, 1, ItemID.SniperRifle, 1);
 
                 p5 = new RewardPool();
-                p5.Add(new RewardPoolItem(ItemID.LunarBar, 15));
-                p5.Add(new RewardPoolItem(ItemID.FragmentSolar, 15));
-                p5.Add(new RewardPoolItem(ItemID.Meowmere, 1));
-                p5.Add(new RewardPoolItem(ItemID.Phantasm, 1));
-                p5.Add(new RewardPoolItem(ItemID.NebulaBlaze, 1));
-                p5.Add(new RewardPoolItem(ItemID.MasterNinjaGear, 1));
-                p5.Add(new RewardPoolItem(ItemID.InfluxWaver, 1));
-                p5.Add(new RewardPoolItem(ItemID.StarWrath, 1));
-                p5.Add(new RewardPoolItem(ItemID.CelestialEmblem, 1));
-                p5.Add(new RewardPoolItem(ItemID.LunarOre, 30));
-                p5.Add(new RewardPoolItem(ItemID.VortexBeater, 1));
-                p5.Add(new RewardPoolItem(ItemID.BlackBelt, 1));
-                p5.Add(new RewardPoolItem(ItemID.NightVisionHelmet, 1));
-                p5.Add(new RewardPoolItem(ItemID.RainbowCrystalStaff, 1));
+                AddCalOrOwn(p5, CEID.Item_Necroplasm, 40, ItemID.LunarBar, 15);
+                AddCalOrOwn(p5, CEID.Item_Bloodstone, 5, ItemID.FragmentSolar, 15);
+                AddCalOrOwn(p5, CEID.Item_ArkoftheElements, 1, ItemID.Meowmere, 1);
+                AddCalOrOwn(p5, CEID.Item_ClockworkBow, 1, ItemID.Phantasm, 1);
+                AddCalOrOwn(p5, CEID.Item_SanctifiedSpark, 1, ItemID.NebulaBlaze, 1);
+                AddCalOrOwn(p5, CEID.Item_AbyssalDivingSuit, 1, ItemID.MasterNinjaGear, 1);
+                AddCalOrOwn(p5, CEID.Item_MirrorBlade, 1, ItemID.InfluxWaver, 1);
+                AddCalOrOwn(p5, CEID.Item_Swordsplosion, 1, ItemID.StarWrath, 1);
+                AddCalOrOwn(p5, CEID.Item_MoonstoneCrown, 1, ItemID.CelestialEmblem, 1);
+                AddCalOrOwn(p5, CEID.Item_ExodiumCluster, 1, ItemID.LunarOre, 30);
+                AddCalOrOwn(p5, CEID.Item_PlanetaryAnnihilation, 1, ItemID.VortexBeater, 1);
+                AddCalOrOwn(p5, CEID.Item_StatisNinjaBelt, 1, ItemID.BlackBelt, 1);
+                AddCalOrOwn(p5, CEID.Item_OccultSkullCrown, 1, ItemID.NightVisionHelmet, 1);
+                AddCalOrOwn(p5, CEID.Item_UltraLiquidator, 1, ItemID.RainbowCrystalStaff, 1);
                 p5.Add(new RewardPoolItem(ItemID.LastPrism, 1));
 
-                // 原 VoidEaterMarionette/MirrorofKalandra/Riftburst/Omicron 实为灾厄物品（处置表误标自有），
-                // 按材料表表外兜底规则以月总掉落同职业替换
                 p6 = new RewardPool();
-                p6.Add(new RewardPoolItem(ItemID.SpookyWood, 99));
-                p6.Add(new RewardPoolItem(ItemID.FrostCore, 5));
-                p6.Add(new RewardPoolItem(ItemID.FragmentSolar, 25));
-                p6.Add(new RewardPoolItem(ItemID.SuperHealingPotion, 15));
-                p6.Add(new RewardPoolItem(ModContent.ItemType<WraithSoulEssence>(), 20));
-                p6.Add(new RewardPoolItem(ItemID.Meowmere, 1));
-                p6.Add(new RewardPoolItem(ItemID.Terrarian, 1));
-                p6.Add(new RewardPoolItem(ItemID.StardustDragonStaff, 1));
-                p6.Add(new RewardPoolItem(ItemID.MoonlordTurretStaff, 1));
-                p6.Add(new RewardPoolItem(ItemID.SDMG, 1));
-                p6.Add(new RewardPoolItem(ItemID.LastPrism, 1));
+                AddCalOrOwn(p6, CEID.Item_NightmareFuel, 25, ItemID.SpookyWood, 99);
+                AddCalOrOwn(p6, CEID.Item_EndothermicEnergy, 25, ItemID.FrostCore, 5);
+                AddCalOrOwn(p6, CEID.Item_DarksunFragment, 25, ItemID.FragmentSolar, 25);
+                AddCalOrOwn(p6, CEID.Item_OmegaHealingPotion, 10, ItemID.SuperHealingPotion, 15);
+                AddCalOrOwn(p6, CEID.Item_CosmicDischarge, 1, ModContent.ItemType<WraithSoulEssence>(), 20);
+                AddCalOrOwn(p6, CEID.Item_GalaxySmasher, 1, ItemID.Meowmere, 1);
+                AddCalOrOwn(p6, CEID.Item_Murasama, 1, ItemID.Terrarian, 1);
+                AddCalOrOwn(p6, CEID.Item_VoidEaterMarionette, 1, ItemID.StardustDragonStaff, 1);
+                AddCalOrOwn(p6, CEID.Item_MirrorofKalandra, 1, ItemID.MoonlordTurretStaff, 1);
+                AddCalOrOwn(p6, CEID.Item_Riftburst, 1, ItemID.SDMG, 1);
+                AddCalOrOwn(p6, CEID.Item_Omicron, 1, ItemID.LastPrism, 1);
 
                 p7 = new RewardPool();
-                p7.Add(new RewardPoolItem(ItemID.Celeb2, 1));
-                p7.Add(new RewardPoolItem(ModContent.ItemType<AzafureCircuitry>(), 30));
-                p7.Add(new RewardPoolItem(ModContent.ItemType<VoidBar>(), 10));
-                p7.Add(new RewardPoolItem(ModContent.ItemType<WraithSoulEssence>(), 15));
-                p7.Add(new RewardPoolItem(ModContent.ItemType<VoidOre>(), 100));
-                p7.Add(new RewardPoolItem(ItemID.SDMG, 1));
-                p7.Add(new RewardPoolItem(ModContent.ItemType<FinalFractal>(), 1));
-                //飞龙剑的原版内部名为DD2SquireBetsySword
-                p7.Add(new RewardPoolItem(ItemID.DD2SquireBetsySword, 1));
+                AddCalOrOwn(p7, CEID.Item_ChickenCannon, 1, ItemID.Celeb2, 1);
+                AddCalOrOwn(p7, CEID.Item_CodebreakerBase, 1, ModContent.ItemType<AzafureCircuitry>(), 30);
+                AddCalOrOwn(p7, CEID.Item_YharimsCrystal, 1, ModContent.ItemType<VoidBar>(), 10);
+                AddCalOrOwn(p7, CEID.Item_AscendantSpiritEssence, 15, ModContent.ItemType<WraithSoulEssence>(), 15);
+                AddCalOrOwn(p7, CEID.Item_AuricOre, 100, ModContent.ItemType<VoidOre>(), 100);
+                AddCalOrOwn(p7, CEID.Item_DragonsBreath, 1, ItemID.SDMG, 1);
+                AddCalOrOwn(p7, CEID.Item_ArkoftheCosmos, 1, ModContent.ItemType<FinalFractal>(), 1);
+                AddCalOrOwn(p7, CEID.Item_DragonPow, 1, ItemID.DD2SquireBetsySword, 1);
                 p7.Add(new RewardPoolItem(ModContent.ItemType<FlowingLight>(), 1));
-                p7.Add(new RewardPoolItem(ModContent.ItemType<VoidScales>(), 10));
-                p7.Add(new RewardPoolItem(ModContent.ItemType<VoidBar>(), 5));
+                AddCalOrOwn(p7, CEID.Item_YharonSoulFragment, 10, ModContent.ItemType<VoidScales>(), 10);
+                AddCalOrOwn(p7, CEID.Item_AuricBar, 5, ModContent.ItemType<VoidBar>(), 5);
                 p7.Add(new RewardPoolItem(ItemID.Zenith, 1));
 
                 #endregion
@@ -722,9 +736,8 @@ namespace CalamityEntropy.Content.NPCs
                         useCd = 400;
                         sameItemCount = 60;
                     }
-                    else if (itemType == ModContent.ItemType<VoidOre>())
+                    else if (itemType == (CERef.Has && CEID.Item_AuricOre > 0 ? CEID.Item_AuricOre : ModContent.ItemType<VoidOre>()))
                     {
-                        // 彩蛋判定改为手持自有虚空矿，文案不变
                         Say("LMDialog9", Color.Red);
                         textureSpecial = 9;
                         specialTime = 90;
@@ -881,12 +894,12 @@ namespace CalamityEntropy.Content.NPCs
                             {
                                 pool.addPool(p5);
                             }
-                            // 池门槛按进度表：p6 原挂深渊亡魂，该 Boss 移除后回落到虚无双子；p7 巡游者后
-                            if (EDownedBosses.downedNihilityTwin)
+                            // 灾厄在场读神明吞噬者/丛林龙,缺席回落虚无双子/巡游者
+                            if (CECal.DownedDoG(EDownedBosses.downedNihilityTwin))
                             {
                                 pool.addPool(p6);
                             }
-                            if (EDownedBosses.downedCruiser)
+                            if (CECal.DownedYharon(EDownedBosses.downedCruiser))
                             {
                                 pool.addPool(p7);
                             }

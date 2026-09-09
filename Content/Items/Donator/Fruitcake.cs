@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Common;
+using CalamityEntropy.Core.CalamityRef;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -25,6 +26,16 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_OverloadedSludge, CEID.Item_PurifiedGel))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_OverloadedSludge)
+                .AddIngredient(ItemID.WoodenArrow)
+                .AddIngredient(ItemID.SlimeCrown)
+                .AddIngredient(CEID.Item_PurifiedGel, 8)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.Bone, 20)
                 .AddIngredient(ItemID.QueenSlimeCrystal)
@@ -57,7 +68,7 @@ namespace CalamityEntropy.Content.Items.Donator
         {
             // 成长阶梯按 progression-map.md 重排：原版节点 + 自有 Boss 线
             int l = 0;
-            if (NPC.downedSlimeKing || NPC.downedBoss1 || NPC.downedBoss2)
+            if (NPC.downedSlimeKing || NPC.downedBoss1 || NPC.downedBoss2 || CECal.DownedDesertScourge)
             {
                 l = 1;
             }
@@ -65,11 +76,11 @@ namespace CalamityEntropy.Content.Items.Donator
             {
                 l = 2;
             }
-            if (EDownedBosses.downedApsychos)
+            if (CECal.DownedSlimeGod)
             {
                 l = 3;
             }
-            if (NPC.downedMechBossAny)
+            if (CECal.DownedCryogen || CECal.DownedBrimstoneElemental)
             {
                 l = 4;
             }
@@ -81,7 +92,7 @@ namespace CalamityEntropy.Content.Items.Donator
             {
                 l = 6;
             }
-            if (EDownedBosses.downedNihilityTwin)
+            if (CECal.DownedPolterghast)
             {
                 l = 7;
             }

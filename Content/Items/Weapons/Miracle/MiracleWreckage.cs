@@ -15,6 +15,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Miracle
 {
@@ -67,6 +68,14 @@ namespace CalamityEntropy.Content.Items.Weapons.Miracle
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_DevilsDevastation))
+            {
+                CreateRecipe().AddIngredient(CEID.Item_DevilsDevastation).
+                AddIngredient<FadingRunestone>(2).
+                AddTile<VoidWellTile>().
+                Register();
+                return;
+            }
             CreateRecipe().AddIngredient<FadingRunestone>(1)
                 .AddTile<VoidWellTile>().
                 Register();

@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Core.CalamityRef;
+using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using Terraria;
@@ -17,7 +18,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
         public override void SetDefaults()
         {
             Item.DefaultToWhip(ModContent.ProjectileType<VitalfeatherProjectile>(), 140, 2, 4, 42);
-            Item.rare = ModContent.RarityType<Golden>();
+            Item.rare = CECal.RarityBurnishedAuric(ModContent.RarityType<Golden>());
             Item.value = Item.buyPrice(platinum: 2, gold: 40);
             Item.autoReuse = true;
         }
@@ -40,7 +41,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
     {
         public override void ModifyNPCLoot(NPC npc, NPCLoot npcLoot)
         {
-            if (npc.type == NPCID.MoonLordCore)
+            if (!CERef.Has && npc.type == NPCID.MoonLordCore)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Vitalfeather>(), 4));
             }

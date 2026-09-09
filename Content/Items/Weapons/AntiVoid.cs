@@ -15,6 +15,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -95,8 +96,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             CreateRecipe()
                 .AddIngredient<VoidBlade>()
-                .AddIngredient<WraithSoulEssence>(4)
-                .AddIngredient<NihilityFragments>(4)
+                .AddCalOrOwn(CEID.Item_TwistingNether, ModContent.ItemType<WraithSoulEssence>(), 4)
+                .AddCalOrOwn(CEID.Item_RuinousSoul, ModContent.ItemType<NihilityFragments>(), 4)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }

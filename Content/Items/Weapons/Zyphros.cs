@@ -7,6 +7,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -69,6 +70,16 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_Drataliornus))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_Drataliornus, 1)
+                .AddIngredient(ModContent.ItemType<WyrmTooth>(), 14)
+                .AddIngredient(ModContent.ItemType<FadingRunestone>())
+                .AddTile(ModContent.TileType<AbyssalAltarTile>())
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.Phantasm)
                 .AddIngredient(ModContent.ItemType<WyrmTooth>(), 12)

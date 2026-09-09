@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.NPCs.SpiritFountain;
+using CalamityEntropy.Core.CalamityRef;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -49,15 +50,19 @@ namespace CalamityEntropy.Common
         public float lastProg = 1;
         public float comboTarget = 1;
         public static Dictionary<int, Color> bossbarColor;
+        //亵渎天神与三守卫激怒时血条转青。加载期填 CEID,未命中的 0 不进集合
+        public static HashSet<int> profanedEnrageNPCs = new HashSet<int>();
         public float whiteLerp = 0;
         public int comboTimeCount = 0;
         public override void Load()
         {
             bossbarColor = new Dictionary<int, Color>();
+            profanedEnrageNPCs = new HashSet<int>();
         }
         public override void Unload()
         {
             bossbarColor = null;
+            profanedEnrageNPCs = null;
         }
         public static Color getNpcBarColor(NPC npc)
         {
@@ -70,6 +75,10 @@ namespace CalamityEntropy.Common
                     return new Color(150, 60, 255);
                 }
             }*/
+            if (profanedEnrageNPCs != null && profanedEnrageNPCs.Contains(npc.type) && CECal.NPCEnraged(npc))
+            {
+                return new Color(102, 255, 255);
+            }
             if (bossbarColor.ContainsKey(npc.type))
             {
                 return bossbarColor[npc.type];
@@ -106,10 +115,18 @@ namespace CalamityEntropy.Common
             {
                 return;
             }
-            // 脱离灾厄:原按灾厄激怒/增防标志切换底色,现固定黄色
             Color turnColorBtm = Color.Yellow;
+            if (CECal.NPCIncreasingDefenseOrDR(npc))
+            {
+                turnColorBtm = Color.Gray;
+            }
+            if (CECal.NPCEnraged(npc))
+            {
+                turnColorBtm = Color.Red;
+            }
             buttomColor = Color.Lerp(buttomColor, turnColorBtm, 0.1f);
-            bool immune = npc.dontTakeDamage && !(npc.ModNPC is SpiritFountain);
+            bool slimeGodCore = CEID.NPC_SlimeGodCore > 0 && npc.type == CEID.NPC_SlimeGodCore;
+            bool immune = npc.dontTakeDamage && !(npc.ModNPC is SpiritFountain) && !slimeGodCore;
 
             Vector2 center = new Vector2(Main.screenWidth / 2, Main.screenHeight - 70);
 
@@ -211,7 +228,7 @@ namespace CalamityEntropy.Common
             }
 
             spriteBatch.Draw(barWhite, center, new Rectangle(0, 0, 18 + (int)(500 * comboProg), bar1.Height), Color.White, 0, bar1.Size() * 0.5f, 1, SpriteEffects.None, 0);
-            if (npc.dontTakeDamage)
+            if (npc.dontTakeDamage && !slimeGodCore)
             {
                 spriteBatch.Draw(barWhite2, center, new Rectangle(0, 0, 18 + (int)(500 * prog) + 2, bar1.Height), Color.Lerp(barColor, Color.White, 0.5f), 0, bar1.Size() * 0.5f, 1, SpriteEffects.None, 0);
             }
@@ -263,8 +280,10 @@ namespace CalamityEntropy.Common
             statDrawPos.X += 105 + 45 + 4 + 146;
 
             Main.spriteBatch.Draw(df, statDrawPos, null, Color.White, 0, df.Size() / 2, 1, SpriteEffects.None, 0);
-            // 脱离灾厄:原展示灾厄 DR 百分比,本模组无独立 DR 属性,改为只显示防御
-            dstring = npc.defense.ToString();
+            float dr = CECal.GetDisplayDR(npc) * EGlobalNPC.DamageReduceMult(npc);
+            dstring = dr > 0f
+                ? npc.defense.ToString() + "(-" + (int)(dr * 100f) + "%)"
+                : npc.defense.ToString();
 
             if (drawShield)
             {

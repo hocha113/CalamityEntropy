@@ -1,3 +1,4 @@
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
@@ -29,25 +30,11 @@ namespace CalamityEntropy.Content.Items
 
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
-            // MagicStorage 与 ImproveGame 的开局便利注入：原挂灾厄新手包（原写法存于 git 历史 EGlobalItem），
-            // 脱离灾厄后重挂至此。发放侧已受 ExtraItemsInStarterBag 门控，包内只保留跨模组存在性门控。
-            if (ModLoader.TryGetMod("MagicStorage", out Mod magicStorage))
+            if (CERef.Has)
             {
-                if (magicStorage.TryFind<ModItem>("CraftingAccess", out ModItem craftingAccess))
-                    itemLoot.Add(ItemDropRule.Common(craftingAccess.Type));
-                if (magicStorage.TryFind<ModItem>("StorageHeart", out ModItem storageHeart))
-                    itemLoot.Add(ItemDropRule.Common(storageHeart.Type));
-                if (magicStorage.TryFind<ModItem>("StorageUnit", out ModItem storageUnit))
-                    itemLoot.Add(ItemDropRule.Common(storageUnit.Type, 1, 10, 10));
+                return;
             }
-            if (ModLoader.TryGetMod("ImproveGame", out Mod improveGame))
-            {
-                foreach (string name in new[] { "MagickWand", "SpaceWand", "CreateWand", "PotionBag", "BannerChest" })
-                {
-                    if (improveGame.TryFind<ModItem>(name, out ModItem tool))
-                        itemLoot.Add(ItemDropRule.Common(tool.Type));
-                }
-            }
+            StartBagGItem.AddConvenienceMods(itemLoot);
         }
     }
 }

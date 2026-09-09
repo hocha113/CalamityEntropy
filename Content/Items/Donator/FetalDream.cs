@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 namespace CalamityEntropy.Content.Items.Donator
 {
     public class FetalDream : ModItem, IDevItem, IGetFromStarterBag
@@ -23,6 +24,19 @@ namespace CalamityEntropy.Content.Items.Donator
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_BloodOrb, CEID.Item_Bloodstone))
+            {
+                CreateRecipe()
+                .AddIngredient(ItemID.StoneBlock)
+                .AddIngredient(ItemID.BlackLens, 5)
+                .AddIngredient(CEID.Item_BloodOrb, 9)
+                .AddIngredient(CEID.Item_Bloodstone, 10)
+                .AddCondition(Condition.BloodMoon)
+                .AddCondition(Condition.NearWater)
+                .DisableDecraft()
+                .Register();
+                return;
+            }
             // 灾厄原料按 material-map.md 替换：BloodOrb→脊椎骨/腐肉双平行配方、Bloodstone→虚无碎片
             CreateRecipe()
                 .AddIngredient(ItemID.StoneBlock)
@@ -62,7 +76,7 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.shoot = ModContent.ProjectileType<FetalDreamSlash>();
             Item.shootSpeed = 16;
             Item.DamageType = DamageClass.Default;
-            Item.rare = ModContent.RarityType<GlowGreen>();
+            Item.rare = CECal.RarityPureGreen(ModContent.RarityType<GlowGreen>());
             Item.Entropy().stroke = true;
             Item.Entropy().NameColor = Color.LightGreen;
             Item.Entropy().strokeColor = Color.DarkGreen;

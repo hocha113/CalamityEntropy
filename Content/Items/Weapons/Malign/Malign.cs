@@ -10,6 +10,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Malign
 {
@@ -54,6 +55,16 @@ namespace CalamityEntropy.Content.Items.Weapons.Malign
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AshesofCalamity))
+            {
+                CreateRecipe()
+                .AddIngredient(ItemID.CrystalSerpent)
+                .AddIngredient(ItemID.Ectoplasm, 6)
+                .AddIngredient(CEID.Item_AshesofCalamity, 4)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.CrystalSerpent)
                 .AddIngredient(ItemID.SpectreStaff)

@@ -22,6 +22,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using static Terraria.GameContent.Animations.IL_Actions.Sprites;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -48,6 +49,16 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_SparkSpreader, CEID.Item_AerialiteBar))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_SparkSpreader)
+                .AddIngredient<HellIndustrialComponents>(6)
+                .AddIngredient(CEID.Item_AerialiteBar, 8)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(5)
                 .AddIngredient(ItemID.HellstoneBar, 15)

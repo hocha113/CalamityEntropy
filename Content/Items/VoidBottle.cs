@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.NPCs.Cruiser;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using Terraria;
@@ -32,7 +33,7 @@ namespace CalamityEntropy.Content.Items
 
         public override bool CanUseItem(Player player)
         {
-            return !NPC.AnyNPCs(ModContent.NPCType<CruiserHead>());
+            return !NPC.AnyNPCs(ModContent.NPCType<CruiserHead>()) && !CECal.IsBossRushActive;
         }
 
         public override bool? UseItem(Player player)
@@ -51,7 +52,7 @@ namespace CalamityEntropy.Content.Items
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<NihilityFragments>(), 3).
+                AddCalOrOwn(CEID.Item_DarkPlasma, ModContent.ItemType<NihilityFragments>(), 3).
                 AddIngredient(ItemID.Bottle, 1).
                 AddTile(TileID.LunarCraftingStation).
                 Register();

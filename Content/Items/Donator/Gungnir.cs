@@ -12,6 +12,7 @@ using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 namespace CalamityEntropy.Content.Items.Donator
 {
     public class Gungnir : ModItem, IDonatorItem
@@ -32,6 +33,21 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_CosmiliteBar, CEID.Item_DivineGeode, CEID.Item_AscendantSpiritEssence, CEID.Tile_CosmicAnvil))
+            {
+                CreateRecipe()
+                .AddIngredient(ItemID.Gungnir)
+                .AddIngredient(CEID.Item_CosmiliteBar, 12)
+                .AddIngredient(CEID.Item_DivineGeode, 12)
+                .AddIngredient(ItemID.FragmentNebula, 4)
+                .AddIngredient(ItemID.FragmentSolar, 4)
+                .AddIngredient(ItemID.FragmentStardust, 4)
+                .AddIngredient(ItemID.FragmentVortex, 4)
+                .AddIngredient(CEID.Item_AscendantSpiritEssence, 2)
+                .AddTile(CEID.Tile_CosmicAnvil)
+                .Register();
+                return;
+            }
             // 灾厄原料按 material-map.md 替换：CosmiliteBar×12+AscendantSpiritEssence×2→幽渊魂髓（合并为×14）、DivineGeode→虚无碎片
             CreateRecipe()
                 .AddIngredient(ItemID.Gungnir)

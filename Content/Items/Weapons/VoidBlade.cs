@@ -2,6 +2,7 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -40,6 +41,17 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_Voidstone, CEID.Item_PurifiedGel))
+            {
+                Recipe recipe = CreateRecipe();
+                recipe.AddIngredient(ItemID.Katana, 1);
+                recipe.AddIngredient(CEID.Item_Voidstone, 5);
+                recipe.AddIngredient(ItemID.Silk, 20);
+                recipe.AddIngredient(CEID.Item_PurifiedGel, 6);
+                recipe.AddTile(TileID.DemonAltar);
+                recipe.Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.Katana, 1)
                 .AddIngredient(ItemID.Ectoplasm, 20)

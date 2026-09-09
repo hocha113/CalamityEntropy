@@ -8,6 +8,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -55,6 +56,15 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_MeldBlob, CEID.Item_SolarVeil))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_MeldBlob, 9)
+                .AddIngredient(CEID.Item_SolarVeil, 8)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.SpookyWood, 100)
                 .AddTile(TileID.MythrilAnvil)

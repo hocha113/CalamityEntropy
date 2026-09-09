@@ -2,6 +2,7 @@ using CalamityEntropy.Common;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories.Cards
 {
@@ -27,6 +28,15 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AncientBoneDust, CEID.Item_EssenceofHavoc))
+            {
+                CreateRecipe().
+                AddIngredient(CEID.Item_AncientBoneDust, 5).
+                AddIngredient(CEID.Item_EssenceofHavoc, 3).
+                AddTile(TileID.Bookcases).
+                Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.FossilOre, 30)
                 .AddIngredient(ItemID.Amber, 2)

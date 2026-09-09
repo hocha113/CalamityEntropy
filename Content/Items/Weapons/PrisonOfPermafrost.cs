@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -21,7 +22,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.channel = true;
             Item.knockBack = 5;
             Item.value = 145000;
-            Item.rare = ModContent.RarityType<VoidPurple>();
+            Item.rare = CECal.RarityHotPink(ModContent.RarityType<VoidPurple>());
             Item.UseSound = null;
             Item.shoot = ModContent.ProjectileType<PrisonOfPermafrostCircle>();
             Item.shootSpeed = 1f;
@@ -52,12 +53,23 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
-            Recipe recipe = CreateRecipe();
-            recipe.AddIngredient(ItemID.BlizzardStaff);
-            recipe.AddIngredient(ItemID.FrostStaff);
-            recipe.AddIngredient(ItemID.LunarBar, 5);
-            recipe.AddTile(TileID.LunarCraftingStation);
-            recipe.Register();
+            if (CECal.CalChainReady(CEID.Item_IceBarrage, CEID.Item_GlacialEmbrace, CEID.Item_AuricBar, CEID.Item_AscendantSpiritEssence, CEID.Tile_CosmicAnvil))
+            {
+                Recipe calRecipe = CreateRecipe();
+                calRecipe.AddIngredient(CEID.Item_IceBarrage, 1);
+                calRecipe.AddIngredient(CEID.Item_GlacialEmbrace, 1);
+                calRecipe.AddIngredient(CEID.Item_AuricBar, 5);
+                calRecipe.AddIngredient(CEID.Item_AscendantSpiritEssence, 2);
+                calRecipe.AddTile(CEID.Tile_CosmicAnvil);
+                calRecipe.Register();
+                return;
+            }
+            Recipe ownRecipe = CreateRecipe();
+            ownRecipe.AddIngredient(ItemID.BlizzardStaff);
+            ownRecipe.AddIngredient(ItemID.FrostStaff);
+            ownRecipe.AddIngredient(ItemID.LunarBar, 5);
+            ownRecipe.AddTile(TileID.LunarCraftingStation);
+            ownRecipe.Register();
         }
     }
 }

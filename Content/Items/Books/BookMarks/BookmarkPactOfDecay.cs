@@ -13,6 +13,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Effects;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 namespace CalamityEntropy.Content.Items.Books.BookMarks
 {
     public class BookmarkPactOfDecay : BookMark
@@ -20,7 +21,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public override void SetDefaults()
         {
             base.SetDefaults();
-            Item.rare = ModContent.RarityType<VoidPurple>();
+            Item.rare = CECal.RarityCalamityRed(ModContent.RarityType<VoidPurple>());
             Item.value = Item.buyPrice(platinum: 2, gold: 40);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("PactOfDecay");

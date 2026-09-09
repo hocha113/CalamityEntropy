@@ -10,6 +10,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 {
@@ -50,6 +51,16 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_PearlShard, CEID.Item_SeaPrism, CEID.Item_PrismShard))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_PearlShard, 6)
+                .AddIngredient(CEID.Item_SeaPrism, 10)
+                .AddIngredient(CEID.Item_PrismShard, 6)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.Sapphire, 10)
                 .AddIngredient(ItemID.Coral, 10)

@@ -2,6 +2,7 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -38,6 +39,16 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_DepthCells, CEID.Item_Lumenyl, CEID.Item_SmoothVoidstone, CEID.Tile_VoidCondenser))
+            {
+                CreateRecipe().
+                AddIngredient(CEID.Item_DepthCells, 10).
+                AddIngredient(CEID.Item_Lumenyl, 15).
+                AddIngredient(CEID.Item_SmoothVoidstone, 45).
+                AddTile(CEID.Tile_VoidCondenser).
+                Register();
+                return;
+            }
             CreateRecipe().
                 AddIngredient(ItemID.Tombstone, 1).
                 AddIngredient(ItemID.WaterCandle, 1).

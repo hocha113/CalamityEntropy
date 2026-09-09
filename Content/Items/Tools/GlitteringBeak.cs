@@ -8,6 +8,7 @@ using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Tools
 {
@@ -121,7 +122,7 @@ namespace CalamityEntropy.Content.Items.Tools
         {
             // 灾厄繁花矿镐换为原版夜明镐（虚空主题取旋涡）；门槛由龙牙与暗淡符石把关
             CreateRecipe().
-                AddIngredient(ItemID.VortexPickaxe).
+                AddCalOrOwn(CEID.Item_BlossomPickaxe, ItemID.VortexPickaxe).
                 AddIngredient<FadingRunestone>().
                 AddIngredient<WyrmTooth>(5).
                 AddTile<AbyssalAltarTile>().

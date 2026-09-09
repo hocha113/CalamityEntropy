@@ -1,5 +1,6 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.NPCs.LuminarisMoth;
+using CalamityEntropy.Core.CalamityRef;
 using MonoMod.RuntimeDetour;
 using System;
 using System.Collections.Concurrent;
@@ -31,6 +32,11 @@ namespace CalamityEntropy.Content.ILEditing
             if (NPC_Get_Name != null)
             {
                 EModHooks.Add(NPC_Get_Name, On_NPC_Get_Hook);
+            }
+
+            if (CERef.Has)
+            {
+                StoreForbiddenArchivePositionHook.LoadHook();
             }
 
             CalamityEntropy.Instance.Logger.Info("CalamityEntropy's Hook Loaded");
@@ -68,6 +74,72 @@ namespace CalamityEntropy.Content.ILEditing
             return orgName;
         }
     }
+
+    //A4:3.33 用 IL 抓 PlaceArchive 局部坐标。现改为 EModHooks 后置,读灾厄已写入的 DungeonArchivePos,避免局部下标随灾厄改版漂移
+    public static class StoreForbiddenArchivePositionHook
+    {
+        private delegate void PlaceArchiveOrig();
+
+        public static void LoadHook()
+        {
+            Type archiveType = CERef.DungeonArchiveType;
+            if (archiveType == null)
+            {
+                return;
+            }
+            MethodInfo method = archiveType.GetMethod("PlaceArchive", BindingFlags.Public | BindingFlags.Static);
+            if (method == null)
+            {
+                CalamityEntropy.Instance.Logger.Warn("[CERef] 反射失败 Method: PlaceArchive");
+                return;
+            }
+            EModHooks.Add(method, On_PlaceArchive);
+        }
+
+        private static void On_PlaceArchive(PlaceArchiveOrig orig)
+        {
+            orig();
+            if (CERef.Has)
+            {
+                CopyDungeonArchivePos();
+            }
+        }
+
+        public static void CopyDungeonArchivePos()
+        {
+            Type sysType = CERef.WorldgenManagementSystemType;
+            if (sysType == null)
+            {
+                return;
+            }
+            FieldInfo field = sysType.GetField("DungeonArchivePos", BindingFlags.Public | BindingFlags.Static);
+            if (field == null)
+            {
+                return;
+            }
+            object raw = field.GetValue(null);
+            if (raw is Point pos && pos != Point.Zero)
+            {
+                EDownedBosses.ForbiddenArchiveCenter = pos;
+            }
+        }
+    }
+
+    public class ForbiddenArchiveCenterSync : ModSystem
+    {
+        public override void OnWorldLoad()
+        {
+            if (EDownedBosses.ForbiddenArchiveCenter.X >= 0)
+            {
+                return;
+            }
+            if (CERef.Has)
+            {
+                StoreForbiddenArchivePositionHook.CopyDungeonArchivePos();
+            }
+        }
+    }
+
     public static class EModHooks
     {
         private static ConcurrentDictionary<(MethodBase, Delegate), Hook> _hooks = new ConcurrentDictionary<(MethodBase, Delegate), Hook>();

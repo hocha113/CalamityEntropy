@@ -1,5 +1,6 @@
 using CalamityEntropy.Content.Items.Donator;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Content.Tiles;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +8,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -20,7 +22,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.width = 40;
             Item.height = 40;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
-            Item.rare = ModContent.RarityType<NihilityBlue>();
+            Item.rare = CECal.RarityTurquoise(ModContent.RarityType<NihilityBlue>());
             Item.accessory = true;
             Item.defense = 8;
         }
@@ -126,6 +128,18 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_ChaliceOfTheBloodGod, CEID.Item_TheAbsorber, CEID.Item_Radiance))
+            {
+                CreateRecipe().
+                    AddIngredient(CEID.Item_ChaliceOfTheBloodGod).
+                    AddIngredient(CEID.Item_TheAbsorber).
+                    AddIngredient(CEID.Item_Radiance).
+                    AddIngredient(5295).
+                    AddIngredient<FadingRunestone>(3).
+                    AddTile<VoidWellTile>().
+                    Register();
+                return;
+            }
             CreateRecipe().
                     AddIngredient(ItemID.ShinyStone).
                     AddIngredient(ModContent.ItemType<SilvasCrown>()).

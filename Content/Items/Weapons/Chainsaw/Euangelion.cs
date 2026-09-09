@@ -2,6 +2,7 @@ using CalamityEntropy.Content.Projectiles.Chainsaw;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
 {
@@ -32,6 +33,17 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_UnholyEssence, CEID.Item_Necroplasm))
+            {
+                CreateRecipe().
+                AddIngredient<EnslavedStar>().
+                AddIngredient(ItemID.LunarBar, 5).
+                AddIngredient(CEID.Item_UnholyEssence, 10).
+                AddIngredient(CEID.Item_Necroplasm, 5).
+                AddTile(TileID.LunarCraftingStation).
+                Register();
+                return;
+            }
             CreateRecipe().
                 AddIngredient<EnslavedStar>().
                 AddIngredient(ItemID.FragmentSolar, 4).

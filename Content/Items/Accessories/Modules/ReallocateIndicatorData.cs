@@ -8,6 +8,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Utilities;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories.Modules
 {
@@ -78,7 +79,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Modules
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient<HellIndustrialComponents>(2).AddIngredient<AzafureCircuitry>(2).AddTile(TileID.WorkBenches).Register();
+            CreateRecipe().AddIngredient<HellIndustrialComponents>(2).AddCalOrOwn(CEID.Item_MysteriousCircuitry, ModContent.ItemType<AzafureCircuitry>(), 2).AddTile(TileID.WorkBenches).Register();
         }
         public override void UpdateAccessory(Player player, bool hideVisual)
         {

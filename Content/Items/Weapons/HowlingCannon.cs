@@ -12,6 +12,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -69,6 +70,16 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_Norfleet, CEID.Item_RuinousSoul, CEID.Item_AscendantSpiritEssence, CEID.Tile_CosmicAnvil))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_Norfleet)
+                .AddIngredient(CEID.Item_RuinousSoul, 4)
+                .AddIngredient(CEID.Item_AscendantSpiritEssence, 6)
+                .AddTile(CEID.Tile_CosmicAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.SnowmanCannon)
                 .AddIngredient<ChaoticPiece>(10)

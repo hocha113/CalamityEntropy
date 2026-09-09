@@ -10,6 +10,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Fractal
 {
@@ -48,6 +49,18 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_FlarefrostBlade, CEID.Item_LifeAlloy))
+            {
+                CreateRecipe()
+                .AddIngredient<StarlitFractal>()
+                .AddIngredient(CEID.Item_FlarefrostBlade)
+                .AddIngredient(ItemID.LunarBar, 5)
+                .AddIngredient(CEID.Item_LifeAlloy, 5)
+                .AddIngredient(ItemID.FragmentSolar, 5)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<StarlitFractal>()
                 .AddIngredient(ItemID.LunarBar, 10)

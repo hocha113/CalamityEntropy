@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.IO;
@@ -44,13 +45,13 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
         public float MaxVelocity = 10f;
         public float DistanceFromPlayer = 500f;
 
-        // 难度轴按裁定表收敛：死亡→大师、复仇→专家（大师蕴含专家，原纯专家档并入）
-        public float AmountOfProjectiles = (Main.masterMode) ? 2f : (Main.expertMode) ? 4f : 3f;
-        public float TimeBetweenProjectiles = (Main.masterMode) ? 50f : (Main.expertMode) ? 35f : 45f;
-        public float TimeBetweenBurst = (Main.masterMode) ? 240f : 180f;
+        //装灾厄读死亡/复仇。弹幕间隔补回 3.33 专家中间档 40
+        public float AmountOfProjectiles = (CECal.IsDeathMode) ? 2f : (CECal.IsRevengeance) ? 4f : 3f;
+        public float TimeBetweenProjectiles = (CECal.IsDeathMode) ? 50f : (CECal.IsRevengeance) ? 35f : (Main.expertMode) ? 40f : 45f;
+        public float TimeBetweenBurst = (CECal.IsDeathMode) ? 240f : 180f;
         public float ProjectileSpeed = 26f;
 
-        public float TimeBeforeDash = (Main.expertMode) ? 100f : 120f;
+        public float TimeBeforeDash = (CECal.IsRevengeance) ? 100f : 120f;
         public float TimeDashing = 100f;
         public float DashSpeed = 22f;
 

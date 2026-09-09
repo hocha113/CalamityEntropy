@@ -11,6 +11,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator
 {
@@ -37,7 +38,7 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.knockBack = 5f;
             Item.mana = 500;
             Item.value = Item.buyPrice(platinum: 3, gold: 20);
-            Item.rare = ModContent.RarityType<VoidPurple>();
+            Item.rare = CECal.RarityCalamityRed(ModContent.RarityType<VoidPurple>());
             Item.shootSpeed = 16f;
             Item.crit = 8;
             Item.shoot = ModContent.ProjectileType<FilthyCircle>();

@@ -21,6 +21,7 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 {
@@ -40,7 +41,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Item.ArmorPenetration = 30;
             Item.UseSound = SoundID.Item1 with { Volume = 1.2f };
             Item.value = Item.buyPrice(platinum: 2);
-            Item.rare = ModContent.RarityType<AbyssalBlue>();
+            Item.rare = CECal.RarityCosmicPurple(ModContent.RarityType<AbyssalBlue>());
             Item.shoot = ModContent.ProjectileType<SawofMacrocosmProj>();
             Item.shootSpeed = 52f;
             Item.knockBack = 2f;
@@ -63,6 +64,17 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_DimensionTearingDisk, CEID.Item_CosmiliteBar, CEID.Item_AscendantSpiritEssence, CEID.Tile_CosmicAnvil))
+            {
+                CreateRecipe()
+                .AddIngredient(ModContent.ItemType<BlazingSwirlblade>())
+                .AddIngredient(CEID.Item_DimensionTearingDisk)
+                .AddIngredient(CEID.Item_CosmiliteBar, 6)
+                .AddIngredient(CEID.Item_AscendantSpiritEssence, 2)
+                .AddTile(CEID.Tile_CosmicAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<BlazingSwirlblade>())
                 .AddIngredient(ModContent.ItemType<ExergySwirlblade>())

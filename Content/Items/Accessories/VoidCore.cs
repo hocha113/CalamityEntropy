@@ -11,6 +11,7 @@ using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -52,6 +53,16 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_RuinousSoul))
+            {
+                CreateRecipe()
+                .AddIngredient<AzafureDriverCore>()
+                .AddIngredient<NihilityFragments>(10)
+                .AddIngredient(CEID.Item_RuinousSoul, 6)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
+                return;
+            }
             // 脱离灾厄:原 RuinousSoul×6 按 material-map 换虚无碎片并与原有 10 枚合并
             CreateRecipe()
                 .AddIngredient<AzafureDriverCore>()

@@ -5,6 +5,7 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -80,7 +81,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             //脱离灾厄:灾厄Voidstone按material-map换黑曜石
-            CreateRecipe().AddIngredient(ItemID.BreakerBlade).AddIngredient(ItemID.Obsidian, 12).AddTile(TileID.Anvils).Register();
+            CreateRecipe().AddIngredient(ItemID.BreakerBlade).AddCalOrOwn(CEID.Item_Voidstone, ItemID.Obsidian, 12).AddTile(TileID.Anvils).Register();
         }
     }
 }

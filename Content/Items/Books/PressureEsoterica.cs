@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Books
 {
@@ -34,6 +35,16 @@ namespace CalamityEntropy.Content.Items.Books
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_PrimordialEarth, CEID.Item_DepthCells))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_PrimordialEarth)
+                .AddIngredient(CEID.Item_DepthCells, 3)
+                .AddIngredient(ItemID.Ectoplasm, 8)
+                .AddTile(TileID.Bookcases)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.WaterBolt)
                 .AddIngredient(ItemID.SpectreBar, 20)

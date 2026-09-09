@@ -2,6 +2,7 @@ using CalamityEntropy.Common;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories.EvilCards
 {
@@ -26,6 +27,14 @@ namespace CalamityEntropy.Content.Items.Accessories.EvilCards
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_EssenceofHavoc, CEID.Item_PerennialBar))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_EssenceofHavoc, 6)
+                .AddIngredient(CEID.Item_PerennialBar, 2)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.SoulofNight, 5)
                 .AddIngredient(ItemID.Ectoplasm, 5)

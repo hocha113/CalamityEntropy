@@ -1,5 +1,6 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Core.CalamityRef;
 using System;
 using Terraria;
 using Terraria.Audio;
@@ -77,11 +78,11 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
                     NPC.velocity = NPC.velocity.MoveTowards(Vector2.Zero, 0.25f);
                     NPC.rotation = NPC.rotation.AngleTowards(NPC.AngleTo(Target.Center) + (NPC.spriteDirection > 0).ToInt() * MathHelper.Pi, 0.2f);
 
-                    // 提速门槛按进度表映射：渊海灾祸→荧光蛾、幽魂→虚无双子
+                    // 灾厄在场读渊海灾祸/幽花,缺席回落幻光星蛾/虚无双子
                     float chargeSpeed = 11.5f;
-                    if (EDownedBosses.downedLuminaris)
+                    if (CECal.DownedAquaticScourge)
                         chargeSpeed += 4f;
-                    if (EDownedBosses.downedNihilityTwin)
+                    if (CECal.DownedPolterghast)
                         chargeSpeed += 3.5f;
                     if (NPC.velocity.Length() < 1.25f)
                     {

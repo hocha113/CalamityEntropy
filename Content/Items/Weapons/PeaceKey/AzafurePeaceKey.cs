@@ -11,6 +11,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.PeaceKey
 {
@@ -57,6 +58,16 @@ namespace CalamityEntropy.Content.Items.Weapons.PeaceKey
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_ScoriaBar))
+            {
+                CreateRecipe()
+                .AddIngredient<AzafureProtectiveCannon>()
+                .AddIngredient<AzafureTacticalRadio>()
+                .AddIngredient(CEID.Item_ScoriaBar, 6)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<AzafureProtectiveCannon>()
                 .AddIngredient<AzafureTacticalRadio>()

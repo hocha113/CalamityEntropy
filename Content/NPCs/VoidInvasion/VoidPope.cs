@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.NPCs.FriendFinderNPC;
+using CalamityEntropy.Core.CalamityRef;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.IO;
@@ -58,12 +59,12 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             }
             NPC.defense = 60;
             NPC.lifeMax = 2800000;
-            // 难度轴按裁定表收敛：死亡→大师、复仇→专家
-            if (Main.masterMode)
+            //装灾厄读死亡/复仇,缺席仍走大师/专家兜底
+            if (CECal.IsDeathMode)
             {
                 NPC.damage += 20;
             }
-            else if (Main.expertMode)
+            else if (CECal.IsRevengeance)
             {
                 NPC.damage += 20;
             }

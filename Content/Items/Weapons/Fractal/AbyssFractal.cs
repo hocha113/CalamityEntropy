@@ -12,6 +12,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Fractal
 {
@@ -50,6 +51,15 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AbyssBlade, CEID.Item_Floodtide, CEID.Item_Lumenyl))
+            {
+                CreateRecipe().AddIngredient<BrilliantFractal>()
+                .AddIngredient(CEID.Item_AbyssBlade)
+                .AddIngredient(CEID.Item_Floodtide)
+                .AddIngredient(CEID.Item_Lumenyl, 8)
+                .AddTile(TileID.MythrilAnvil).Register();
+                return;
+            }
             CreateRecipe().AddIngredient<BrilliantFractal>()
                 .AddIngredient(ItemID.InfluxWaver)
                 .AddIngredient(ItemID.BrokenHeroSword)

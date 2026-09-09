@@ -2,6 +2,7 @@ using CalamityEntropy.Content.Projectiles.Chainsaw;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
 {
@@ -32,6 +33,22 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_DubiousPlating))
+            {
+                CreateRecipe().
+                AddIngredient(CEID.Item_DubiousPlating, 5).
+                AddIngredient(ItemID.IronBar, 10).
+                AddIngredient(ItemID.Chain, 1).
+                AddTile(TileID.Anvils).
+                Register();
+                CreateRecipe().
+                AddIngredient(CEID.Item_DubiousPlating, 5).
+                AddIngredient(ItemID.LeadBar, 10).
+                AddIngredient(ItemID.Chain, 1).
+                AddTile(TileID.Anvils).
+                Register();
+                return;
+            }
             CreateRecipe().
                 AddIngredient(ItemID.IronBar, 10).
                 AddIngredient(ItemID.Chain, 1).

@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -75,7 +76,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.StarWrath)
+                .AddCalOrOwn(CEID.Item_JawsOfOblivion, ItemID.StarWrath)
                 .AddIngredient(ModContent.ItemType<WyrmTooth>(), 12)
                 .AddIngredient(ModContent.ItemType<FadingRunestone>())
                 .AddTile(ModContent.TileType<VoidWellTile>())

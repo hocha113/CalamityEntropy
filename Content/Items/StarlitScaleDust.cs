@@ -1,3 +1,4 @@
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -26,6 +27,19 @@ namespace CalamityEntropy.Content.Items
             // 可作弹药：注射器类武器 useAmmo 指向本类型（getAmmoName 对本类型有特判）
             Item.ammo = Item.type;
             Item.consumable = true;
+        }
+
+        public override void AddRecipes()
+        {
+            if (CECal.CalChainReady(CEID.Item_StarblightSoot))
+            {
+                CreateRecipe()
+                    .AddIngredient(CEID.Item_StarblightSoot)
+                    .Register();
+                Recipe.Create(CEID.Item_StarblightSoot)
+                    .AddIngredient(Type)
+                    .Register();
+            }
         }
     }
 }

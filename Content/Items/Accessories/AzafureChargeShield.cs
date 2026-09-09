@@ -9,6 +9,7 @@ using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -56,6 +57,17 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_DubiousPlating, CEID.Item_AerialiteBar))
+            {
+                CreateRecipe()
+                .AddIngredient<HellIndustrialComponents>(6)
+                .AddIngredient(CEID.Item_DubiousPlating, 10)
+                .AddIngredient(CEID.Item_AerialiteBar, 5)
+                .AddIngredient(ItemID.HellstoneBar, 5)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(6)
                 .AddIngredient<AzafurePlating>(10)

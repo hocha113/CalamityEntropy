@@ -12,6 +12,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Fractal
 {
@@ -87,7 +88,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<ElementalFractal>()
+                .AddCalOrOwn(CEID.Item_MawOfInfinity, ModContent.ItemType<ElementalFractal>())
                 .AddIngredient<SpiritFractal>()
                 .AddIngredient<VoidBar>(5)
                 .AddTile<VoidWellTile>()

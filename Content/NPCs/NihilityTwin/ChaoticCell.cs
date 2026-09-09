@@ -1,4 +1,5 @@
 using CalamityEntropy.Content.Biomes;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
@@ -59,12 +60,12 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             }
             NPC.defense = 50;
             NPC.lifeMax = 360000;
-            // 难度映射:死亡→大师、复仇→专家(difficulty-map)
-            if (Main.masterMode)
+            //装灾厄读死亡/复仇,缺席仍走大师/专家兜底
+            if (CECal.IsDeathMode)
             {
                 NPC.damage += 8;
             }
-            else if (Main.expertMode)
+            else if (CECal.IsRevengeance)
             {
                 NPC.damage += 4;
             }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -59,6 +60,16 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_RoverDrive, CEID.Item_AshesofCalamity))
+            {
+                CreateRecipe()
+                .AddIngredient<AzafureChargeShield>()
+                .AddIngredient(CEID.Item_RoverDrive)
+                .AddIngredient(CEID.Item_AshesofCalamity, 6)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<AzafureChargeShield>()
                 .AddIngredient(ItemID.MartianConduitPlating, 100)

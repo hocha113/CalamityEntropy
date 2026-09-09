@@ -3,6 +3,7 @@ using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items
 {
@@ -25,6 +26,16 @@ namespace CalamityEntropy.Content.Items
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_VoidCondenser))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_VoidCondenser)
+                .AddIngredient(ModContent.ItemType<VoidScales>(), 10)
+                .AddIngredient(ItemID.FragmentVortex, 6)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.AdamantiteForge)
                 .AddIngredient<VoidScales>(10)

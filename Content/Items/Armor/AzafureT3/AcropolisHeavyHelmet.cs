@@ -15,6 +15,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Armor.AzafureT3
 {
@@ -76,6 +77,16 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_UnholyEssence))
+            {
+                CreateRecipe()
+                .AddIngredient<AzafureSteamKnightHelmet>()
+                .AddIngredient(ItemID.LunarBar, 10)
+                .AddIngredient(CEID.Item_UnholyEssence, 5)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<AzafureSteamKnightHelmet>()
                 .AddIngredient(ItemID.LunarBar, 10)

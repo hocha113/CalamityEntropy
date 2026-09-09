@@ -10,6 +10,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Fractal
 {
@@ -52,6 +53,16 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_WindBlade))
+            {
+                CreateRecipe()
+                	        .AddIngredient<ShatteredFractal>()
+                .AddIngredient(ItemID.Starfury)
+                .AddIngredient(CEID.Item_WindBlade)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<ShatteredFractal>()
                 .AddIngredient(ItemID.BeeKeeper)

@@ -19,6 +19,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Bait
 {
@@ -61,7 +62,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
         {
             CreateRecipe()
                 .AddIngredient<AzafureMicroBeacon>()
-                .AddIngredient(ItemID.SunStone)
+                .AddCalOrOwn(CEID.Item_ScoriaBar, 8, ItemID.SunStone, 1)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }

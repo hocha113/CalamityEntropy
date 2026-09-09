@@ -13,6 +13,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Fractal
 {
@@ -56,6 +57,17 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_TitanArm, CEID.Item_AegisBlade, CEID.Item_AureusCell, CEID.Item_StarblightSoot))
+            {
+                CreateRecipe().AddIngredient<AbyssFractal>()
+                .AddIngredient(CEID.Item_TitanArm)
+                .AddIngredient(CEID.Item_AegisBlade)
+                .AddIngredient(ItemID.PiercingStarlight)
+                .AddIngredient(CEID.Item_AureusCell, 4)
+                .AddIngredient(CEID.Item_StarblightSoot, 16)
+                .AddTile(TileID.MythrilAnvil).Register();
+                return;
+            }
             CreateRecipe().AddIngredient<AbyssFractal>()
                 .AddIngredient(ItemID.TheHorsemansBlade)
                 .AddIngredient(ItemID.FragmentSolar, 5)

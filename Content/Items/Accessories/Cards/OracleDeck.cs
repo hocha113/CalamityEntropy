@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories.Cards
 {
@@ -65,7 +66,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
                 .AddIngredient<TemperanceCard>()
                 .AddIngredient<EnduranceCard>()
                 .AddIngredient<ThreadOfFate>()
-                .AddIngredient(ItemID.LunarBar, 5)
+                .AddCalOrOwn(CEID.Item_CoreofCalamity, 1, ItemID.LunarBar, 5)
                 .AddTile(TileID.Bookcases)
                 .Register();
         }

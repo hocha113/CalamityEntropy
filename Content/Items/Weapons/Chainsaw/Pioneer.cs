@@ -3,6 +3,7 @@ using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
 {
@@ -20,7 +21,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 6;
             Item.value = 36;
-            Item.rare = ModContent.RarityType<AbyssalBlue>();
+            Item.rare = CECal.RarityCosmicPurple(ModContent.RarityType<AbyssalBlue>());
             Item.UseSound = SoundID.Item23;
             Item.channel = true;
             Item.noMelee = true;
@@ -35,6 +36,16 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_ExodiumCluster, CEID.Item_DarksunFragment))
+            {
+                CreateRecipe().
+                AddIngredient<Euangelion>().
+                AddIngredient(CEID.Item_ExodiumCluster, 20).
+                AddIngredient(CEID.Item_DarksunFragment, 5).
+                AddTile(TileID.LunarCraftingStation).
+                Register();
+                return;
+            }
             CreateRecipe().
                 AddIngredient<Euangelion>().
                 AddIngredient(ItemID.LunarBar, 10).

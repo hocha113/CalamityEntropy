@@ -13,6 +13,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -35,7 +36,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.autoReuse = true;
             Item.maxStack = 1;
             Item.value = Item.buyPrice(platinum: 2);
-            Item.rare = ModContent.RarityType<AbyssalBlue>();
+            Item.rare = CECal.RarityCosmicPurple(ModContent.RarityType<AbyssalBlue>());
             Item.shoot = ModContent.ProjectileType<TheDeadCutProjectile>();
             Item.shootSpeed = 16f;
             Item.DamageType = DamageClass.Melee;
@@ -61,7 +62,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             Recipe recipe = CreateRecipe();
             recipe.AddIngredient(ModContent.ItemType<Revelation>());
-            recipe.AddIngredient(ItemID.LunarBar, 10);
+            recipe.AddCalOrOwn(CEID.Item_TwistingNether, 5, ItemID.LunarBar, 10);
             recipe.AddTile(TileID.LunarCraftingStation);
             recipe.Register();
         }

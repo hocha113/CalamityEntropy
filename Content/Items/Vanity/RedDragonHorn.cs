@@ -2,6 +2,7 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Vanity
 {
@@ -64,6 +65,15 @@ namespace CalamityEntropy.Content.Items.Vanity
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AncientBoneDust, CEID.Item_BloodOrb))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_AncientBoneDust, 6)
+                .AddIngredient(CEID.Item_BloodOrb, 2)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             // 血珠按映射拆为脊椎骨/腐肉双平行配方
             CreateRecipe()
                 .AddIngredient(ItemID.Bone, 6)

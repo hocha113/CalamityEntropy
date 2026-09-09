@@ -8,6 +8,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Whips
 {
@@ -38,6 +39,17 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AncientBoneDust))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_AncientBoneDust)
+                .AddIngredient(ItemID.Silk, 8)
+                .AddRecipeGroup(CERecipeGroups.evilBar, 5)
+                .AddIngredient(ItemID.GoldCoin, 99)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.GoldenKey)
                 .AddIngredient(ItemID.Silk, 10)

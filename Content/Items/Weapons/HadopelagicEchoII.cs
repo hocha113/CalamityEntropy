@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -44,7 +45,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.ChargedBlasterCannon)
+                .AddCalOrOwn(CEID.Item_EidolicWail, ItemID.ChargedBlasterCannon)
                 .AddIngredient<WyrmTooth>(12)
                 .AddIngredient<FadingRunestone>()
                 .AddTile(ModContent.TileType<AbyssalAltarTile>())

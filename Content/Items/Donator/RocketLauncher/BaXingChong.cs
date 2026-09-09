@@ -9,6 +9,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 {
@@ -33,7 +34,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
             Item.knockBack = 2f;
             Item.UseSound = null;
             Item.value = Item.buyPrice(platinum: 3, gold: 20);
-            Item.rare = ModContent.RarityType<VoidPurple>();
+            Item.rare = CECal.RarityCalamityRed(ModContent.RarityType<VoidPurple>());
         }
 
         #region Animations
@@ -72,6 +73,17 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_Spyker, CEID.Item_UniversalGenesis, CEID.Item_MiracleMatter))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_Spyker)
+                .AddIngredient(CEID.Item_UniversalGenesis)
+                .AddIngredient(CEID.Item_MiracleMatter)
+                .AddIngredient<FadingRunestone>()
+                .AddTile(ModContent.TileType<VoidWellTile>())
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<Redemption>()
                 .AddIngredient<FadingRunestone>()

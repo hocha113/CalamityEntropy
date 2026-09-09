@@ -11,6 +11,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -65,6 +66,17 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_Kingsbane, CEID.Item_Onyxia, CEID.Item_RuinousSoul))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_Kingsbane)
+                .AddIngredient(CEID.Item_Onyxia)
+                .AddIngredient<FadingRunestone>()
+                .AddIngredient(CEID.Item_RuinousSoul, 2)
+                .AddTile<VoidWellTile>()
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.VortexBeater)
                 .AddIngredient(ItemID.OnyxBlaster)

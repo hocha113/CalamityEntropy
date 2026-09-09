@@ -1,6 +1,7 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -32,10 +33,10 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ModContent.ItemType<AzafurePlating>(), 20).
-                AddIngredient(ModContent.ItemType<AzafureCircuitry>(), 15).
+                AddCalOrOwn(CEID.Item_DubiousPlating, ModContent.ItemType<AzafurePlating>(), 20).
+                AddCalOrOwn(CEID.Item_MysteriousCircuitry, ModContent.ItemType<AzafureCircuitry>(), 15).
                 //脱离灾厄:灾厄可疑废料按material-map废料族规则换铁锭
-                AddIngredient(ItemID.IronBar, 1).
+                AddCalOrOwn(CEID.Item_SuspiciousScrap, ItemID.IronBar, 1).
                 AddTile(TileID.Anvils).
                 Register();
         }

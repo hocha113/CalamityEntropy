@@ -6,6 +6,7 @@ using CalamityEntropy.Content.Items.Donator.RocketLauncher;
 using CalamityEntropy.Content.Items.PrefixItem;
 using CalamityEntropy.Content.Items.Vanity;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -152,8 +153,31 @@ namespace CalamityEntropy.Common
                         }
                     }
                 }
-                // 原灾厄热泉/深渊宝箱注入已随脱钩删除（misc-map §五）：EnduranceCard 改挂困难海洋木匣（EGlobalItem），
-                // WispLantern 已改挂原版水中宝箱 1/4（见上方注入），AbyssLantern 保留合成为唯一来源（bookmark-rehang §六）
+                //装灾厄时补回深渊宝箱三段覆写;水中宝箱 WispLantern 1/4 保留(无灾厄唯一来源)
+                if (CERef.Has && CEID.Tile_AbyssTreasureChest > 0 && chestTile.TileType == CEID.Tile_AbyssTreasureChest)
+                {
+                    if (WorldGen.genRand.NextBool(3))
+                    {
+                        for (int inventoryIndex = 0; inventoryIndex < Chest.maxItems; inventoryIndex++)
+                        {
+                            if (chest.item[inventoryIndex].type == ItemID.None)
+                            {
+                                int type = ModContent.ItemType<WispLantern>();
+                                if (WorldGen.genRand.NextBool(4))
+                                {
+                                    type = ModContent.ItemType<AbyssLantern>();
+                                }
+                                if (WorldGen.genRand.NextBool(2))
+                                {
+                                    type = ModContent.ItemType<EnduranceCard>();
+                                }
+                                chest.item[inventoryIndex].SetDefaults(type);
+                                itemsPlaced++;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
     }

@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -36,6 +37,17 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_ArmoredShell, CEID.Item_CoreofCalamity))
+            {
+                CreateRecipe()
+                    .AddIngredient(ItemID.Celeb2, 1)
+                    .AddIngredient(ModContent.ItemType<VoidBar>(), 5)
+                    .AddIngredient(CEID.Item_ArmoredShell, 8)
+                    .AddIngredient(CEID.Item_CoreofCalamity, 1)
+                    .AddTile(ModContent.TileType<VoidWellTile>())
+                    .Register();
+                return;
+            }
             CreateRecipe()
                     .AddIngredient(ItemID.Celeb2)
                     .AddIngredient<VoidBar>(5)

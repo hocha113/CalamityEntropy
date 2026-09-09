@@ -13,6 +13,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityEntropy.CEUtils;
+using CalamityEntropy.Core.CalamityRef;
 namespace CalamityEntropy.Content.Items.Donator
 {
     public class YoungMaster : ModItem, IDonatorItem
@@ -23,7 +24,7 @@ namespace CalamityEntropy.Content.Items.Donator
         {
             // 灾厄原料按 material-map.md 替换：SaharaSlicers→光辉飞盘
             CreateRecipe()
-                .AddIngredient(ItemID.LightDisc)
+                .AddCalOrOwn(CEID.Item_SaharaSlicers, ItemID.LightDisc)
                 .AddIngredient(ItemID.TitaniumBar, 10)
                 .AddIngredient(ItemID.SoulofMight, 15)
                 .AddTile(TileID.MythrilAnvil)

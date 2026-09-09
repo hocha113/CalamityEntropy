@@ -14,6 +14,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using CalamityEntropy.Core.CalamityRef;
 namespace CalamityEntropy.Content.Items.Donator
 {
     public class ScorchingShoot : ModItem, IDonatorItem
@@ -36,7 +37,7 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.noMelee = true;
             Item.knockBack = 6f;
             Item.value = Item.buyPrice(platinum: 2, gold: 40);
-            Item.rare = ModContent.RarityType<Golden>();
+            Item.rare = CECal.RarityBurnishedAuric(ModContent.RarityType<Golden>());
             Item.UseSound = CEUtils.GetSound("gunshot_large");
             Item.autoReuse = true;
             Item.shoot = ProjectileID.Bullet;
@@ -119,6 +120,17 @@ namespace CalamityEntropy.Content.Items.Donator
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AngelicShotgun, CEID.Item_Auralis, CEID.Item_AuricBar, CEID.Item_DarksunFragment, CEID.Tile_CosmicAnvil))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_AngelicShotgun)
+                .AddIngredient(CEID.Item_Auralis)
+                .AddIngredient(CEID.Item_AuricBar, 5)
+                .AddIngredient(CEID.Item_DarksunFragment, 20)
+                .AddTile(CEID.Tile_CosmicAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<BuriedSun>()
                 .AddIngredient<ChaoticPiece>(5)

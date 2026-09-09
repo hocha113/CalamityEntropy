@@ -7,6 +7,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Books
 {
@@ -30,6 +31,14 @@ namespace CalamityEntropy.Content.Items.Books
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AshesofCalamity))
+            {
+                CreateRecipe().AddIngredient<DarkScripture>()
+                .AddIngredient(CEID.Item_AshesofCalamity, 6)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe().AddIngredient<RedemptionBible>()
                 .AddIngredient<DarkScripture>()
                 .AddIngredient(ItemID.BrokenHeroSword)

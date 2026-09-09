@@ -13,6 +13,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -46,6 +47,16 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_PlasmaRod, CEID.Item_AerialiteBar))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_PlasmaRod)
+                .AddIngredient<HellIndustrialComponents>(4)
+                .AddIngredient(CEID.Item_AerialiteBar, 5)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.MeteoriteBar, 20)
                 .AddIngredient<HellIndustrialComponents>(5)

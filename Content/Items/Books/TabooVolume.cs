@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Books
 {
@@ -23,7 +24,7 @@ namespace CalamityEntropy.Content.Items.Books
             Item.crit = 10;
             Item.mana = 42;
             Item.shootSpeed = 29;
-            Item.rare = ModContent.RarityType<VoidPurple>();
+            Item.rare = CECal.RarityCalamityRed(ModContent.RarityType<VoidPurple>());
             Item.value = Item.buyPrice(platinum: 3, gold: 20);
         }
         [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/BookMark8")]
@@ -34,6 +35,16 @@ namespace CalamityEntropy.Content.Items.Books
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_Heresy, CEID.Item_AshesofAnnihilation, CEID.Tile_DraedonsForge))
+            {
+
+                CreateRecipe().AddIngredient<BurntLostClassics>()
+                .AddIngredient(CEID.Item_Heresy)
+                .AddIngredient(CEID.Item_AshesofAnnihilation, 6)
+                .AddTile(CEID.Tile_DraedonsForge)
+                .Register();
+                return;
+            }
             CreateRecipe().AddIngredient<ControlTerminal>()
                 .AddIngredient<VoidOde>()
                 .AddIngredient<FadingRunestone>()

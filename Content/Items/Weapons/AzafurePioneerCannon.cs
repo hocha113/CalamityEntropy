@@ -13,6 +13,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -50,6 +51,17 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_DivineGeode))
+            {
+                CreateRecipe()
+                .AddIngredient<AzafureAntiaircraftGun>()
+                .AddIngredient<HellIndustrialComponents>(4)
+                .AddIngredient(CEID.Item_DivineGeode, 6)
+                .AddIngredient(ItemID.LunarBar, 8)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<AzafureAntiaircraftGun>()
                 .AddIngredient<HellIndustrialComponents>(10)

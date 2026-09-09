@@ -2,9 +2,11 @@
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -37,6 +39,16 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_DefiledGreatsword, CEID.Item_NightmareFuel))
+            {
+                CreateRecipe().
+                AddIngredient(CEID.Item_DefiledGreatsword, 1).
+                AddIngredient(CEID.Item_NightmareFuel, 10).
+                AddIngredient(ModContent.ItemType<VoidBar>(), 5).
+                AddTile(ModContent.TileType<VoidWellTile>()).
+                Register();
+                return;
+            }
             CreateRecipe().
                 AddIngredient<RuneSong>().
                 AddIngredient<ChaoticPiece>(5).

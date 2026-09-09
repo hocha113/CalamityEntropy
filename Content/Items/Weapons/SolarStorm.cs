@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -28,7 +29,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.noMelee = true;
             Item.knockBack = 5f;
             Item.value = Item.buyPrice(platinum: 2, gold: 40);
-            Item.rare = ModContent.RarityType<Golden>();
+            Item.rare = CECal.RarityBurnishedAuric(ModContent.RarityType<Golden>());
             Item.shoot = ProjectileID.WoodenArrowFriendly;
             Item.channel = true;
             Item.shootSpeed = 16f;
@@ -44,6 +45,19 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_ContinentalGreatbow, CEID.Item_TelluricGlare, CEID.Item_AuricBar, CEID.Tile_CosmicAnvil))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_ContinentalGreatbow)
+                .AddIngredient(CEID.Item_TelluricGlare)
+                .AddIngredient<Prominence>()
+                .AddIngredient(CEID.Item_AuricBar, 5)
+                .AddIngredient(ItemID.FragmentSolar, 20)
+                .AddIngredient(ItemID.FragmentVortex, 5)
+                .AddTile(CEID.Tile_CosmicAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<Prominence>()
                 .AddIngredient(ItemID.Uzi)

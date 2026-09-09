@@ -15,6 +15,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Illusory
 {
@@ -59,7 +60,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Illusory
         public override void AddRecipes()
         {
             CreateRecipe()
-        .AddIngredient(ItemID.StardustDragonStaff)
+        .AddCalOrOwn(CEID.Item_DazzlingStabberStaff, ItemID.StardustDragonStaff)
                 .AddIngredient(ItemID.EmpressBlade)
                 .AddIngredient<VoidBar>(5)
                 .AddTile<VoidWellTile>()

@@ -2,7 +2,8 @@
 author = Serrat Antler, HoCha113
 version = 4.1
 modReferences = InnoVault
-weakReferences = AlchemistNPCLite
+weakReferences = AlchemistNPCLite, CalamityMod
+sortAfter = CalamityMod
 homepage = discord.gg/eAXVkq66
 buildIgnore = .*, Properties\*, *.csproj, *.user, obj\*, bin\*, *.config, LICENSE, README.md, Effects\Compiler\*, Doc\*
 hideCode = false

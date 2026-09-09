@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -22,7 +23,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.width = 38;
             Item.height = 22;
             Item.value = Item.buyPrice(gold: 2);
-            Item.rare = ModContent.RarityType<AzafureOrange>();
+            Item.rare = CECal.RarityDarkOrange(ModContent.RarityType<AzafureOrange>());
             Item.accessory = true;
         }
 
@@ -64,7 +65,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<AzafurePlating>(8)
+                .AddCalOrOwn(CEID.Item_DubiousPlating, ModContent.ItemType<AzafurePlating>(), 8)
                 .AddRecipeGroup(CERecipeGroups.IronBar, 8)
                 .AddIngredient(ItemID.Bomb, 6)
                 .AddTile(TileID.Anvils)

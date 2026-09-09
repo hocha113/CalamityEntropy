@@ -1,4 +1,5 @@
-﻿using InnoVault;
+﻿using CalamityEntropy.Core.CalamityRef;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System.Collections.Generic;
@@ -126,16 +127,16 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 {
                     aiStyle = AIStyle.Avoid;
                     AvoidTime = 80;
-                    // 难度轴按裁定表收敛：复仇→专家、死亡→大师（组合判定按代入后化简）
+                    //装灾厄读复仇/死亡。第三段保持 3.33「大师且死亡」合取
                     if (Main.masterMode)
                     {
                         AvoidTime -= 23;
                     }
-                    if (Main.expertMode)
+                    if (CECal.IsRevengeance)
                     {
                         AvoidTime -= 23;
                     }
-                    if (Main.masterMode)
+                    if (Main.masterMode && CECal.IsDeathMode)
                     {
                         if (Main.rand.NextBool(3))
                         {
@@ -150,8 +151,8 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
                 }
             }
         }
-        public override int CloseTime => (Main.masterMode ? 20 : base.CloseTime);
-        public override int maxAtkDist => (Main.masterMode ? 800 : base.maxAtkDist);
+        public override int CloseTime => (Main.masterMode && CECal.IsDeathMode ? 20 : base.CloseTime);
+        public override int maxAtkDist => (Main.masterMode && CECal.IsDeathMode ? 800 : base.maxAtkDist);
 
         public override void PostAI()
         {

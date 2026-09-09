@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -54,7 +55,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.MeteoriteBar, 8).
+                AddCalOrOwn(CEID.Item_AerialiteBar, ItemID.MeteoriteBar, 8).
                 AddIngredient(ItemID.SunplateBlock, 6).
                 AddIngredient(ItemID.Feather, 2).
                 AddTile(TileID.Anvils).

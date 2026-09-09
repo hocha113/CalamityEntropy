@@ -2,6 +2,7 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Vanity
 {
@@ -60,8 +61,8 @@ namespace CalamityEntropy.Content.Items.Vanity
         public override void AddRecipes()
         {
             // 灾厄虚空石/虚空火把按 bookmark-rehang §六 裁决换黑曜石与微光火把
-            CreateRecipe().AddIngredient(ItemID.Obsidian, 4)
-                .AddIngredient(ItemID.ShimmerTorch, 1)
+            CreateRecipe().AddCalOrOwn(CEID.Item_Voidstone, ItemID.Obsidian, 4)
+                .AddCalOrOwn(CEID.Item_VoidTorch, ItemID.ShimmerTorch, 1)
                 .AddTile(TileID.WorkBenches)
                 .Register();
         }

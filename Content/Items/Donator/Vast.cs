@@ -1,6 +1,7 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles.CalamityPorts;
+using CalamityEntropy.Core.CalamityRef;
 using InnoVault.PRT;
 using Terraria;
 using Terraria.DataStructures;
@@ -14,7 +15,7 @@ namespace CalamityEntropy.Content.Items.Donator
         // 2026-08-31 平衡案:捐赠者更名
         public string DonatorName => "四九天宁";
 
-        // 2026-08-31 平衡案重做(去成长):-10%魔力消耗,+5%魔法暴击与魔法伤害,自动饮用魔力药水,
+        // 装灾厄走 3.33 成长(VastLV 标签),无灾厄保持 4.0 魔流层数机制
         // 饮用后2秒内缓慢额外恢复药水20%的魔力,魔法暴击给目标3秒灵魂紊乱,
         // 每消耗250魔力叠一层魔流(至多5层),每层+3%魔法暴击伤害。
         public const int ManaPerStack = 250;
@@ -34,24 +35,86 @@ namespace CalamityEntropy.Content.Items.Donator
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.Entropy().addEquip("Vast", !hideVisual);
-            player.manaCost -= 0.10f;
-            player.GetCritChance(DamageClass.Magic) += 5;
-            player.GetDamage(DamageClass.Magic) += 0.05f;
-            player.manaFlower = true;
-            VastMPlayer vmp = player.GetModPlayer<VastMPlayer>();
-            if (vmp.ExtraManaLv > 0)
+            if (!CERef.Has)
             {
-                player.AddCritDamage(DamageClass.Magic, CritDamagePerStack * vmp.ExtraManaLv);
+                player.manaCost -= 0.10f;
+                player.GetCritChance(DamageClass.Magic) += 5;
+                player.GetDamage(DamageClass.Magic) += 0.05f;
+                player.manaFlower = true;
+                VastMPlayer vmp = player.GetModPlayer<VastMPlayer>();
+                if (vmp.ExtraManaLv > 0)
+                {
+                    player.AddCritDamage(DamageClass.Magic, CritDamagePerStack * vmp.ExtraManaLv);
+                }
+                return;
             }
+            int level = (int)MathHelper.Clamp(Level(), 0, 5);
+            player.manaFlower = true;
+            if (player.HasBuff(BuffID.ManaRegeneration))
+            {
+                player.GetCritChance(DamageClass.Magic) += 4;
+            }
+            for (int i = 0; i <= level; i++)
+            {
+                player.Entropy().addEquip("VastLV" + i);
+            }
+            player.manaCost -= 0.08f;
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady())
+            {
+                CreateRecipe()
+                    .AddIngredient(ItemID.Diamond)
+                    .AddIngredient(ItemID.ManaFlower)
+                    .AddIngredient(ItemID.ArcaneCrystal)
+                    .NearShimmer()
+                    .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.ArcaneFlower)
                 .AddIngredient(ItemID.ArcaneCrystal)
                 .AddIngredient(ItemID.LunarBar, 5)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
+        }
+
+        public static int Level()
+        {
+            if (!CERef.Has)
+            {
+                return 0;
+            }
+            if (CECal.DownedPolterghast)
+            {
+                return 7;
+            }
+            if (NPC.downedMoonlord)
+            {
+                return 6;
+            }
+            if (EDownedBosses.downedProphet)
+            {
+                return 5;
+            }
+            if (CECal.DownedCryogen || CECal.DownedBrimstoneElemental)
+            {
+                return 4;
+            }
+            if (CECal.DownedSlimeGod)
+            {
+                return 3;
+            }
+            if (NPC.downedBoss2)
+            {
+                return 2;
+            }
+            if (NPC.downedSlimeKing || NPC.downedBoss1 || CECal.DownedDesertScourge)
+            {
+                return 1;
+            }
+            return 0;
         }
     }
     public class VastMPlayer : ModPlayer

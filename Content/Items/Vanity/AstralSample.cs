@@ -3,6 +3,7 @@ using CalamityEntropy.Content.Items.Donator;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Vanity
 {
@@ -63,7 +64,7 @@ namespace CalamityEntropy.Content.Items.Vanity
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.ChlorophyteBar, 3)
+                .AddCalOrOwn(CEID.Item_AureusCell, ItemID.ChlorophyteBar, 3)
                 .AddIngredient(ItemID.GoldDust, 10)
                 .AddTile(TileID.TinkerersWorkbench)
                 .Register();

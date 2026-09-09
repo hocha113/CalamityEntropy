@@ -19,6 +19,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Bait
 {
@@ -62,7 +63,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             CreateRecipe()
                 .AddIngredient(ItemID.HallowedBar, 8)
                 .AddIngredient(ItemID.Wire, 20)
-                .AddIngredient<AzafureCircuitry>(2)
+                .AddCalOrOwn(CEID.Item_MysteriousCircuitry, ModContent.ItemType<AzafureCircuitry>(), 2)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }

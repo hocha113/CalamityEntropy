@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -50,6 +51,14 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_PearlShard, CEID.Item_SeaPrism))
+            {
+                CreateRecipe().AddIngredient(CEID.Item_PearlShard, 4)
+                .AddIngredient(CEID.Item_SeaPrism, 8)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.Sapphire, 10)
                 .AddIngredient(ItemID.Coral, 10)

@@ -1,5 +1,6 @@
 using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
@@ -42,10 +43,54 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
             Item.Entropy().Legend = true;
         }
         public static int MaxShield(int lv) => 10 + lv * 4;
-        /// <summary>2026-08-31 平衡案:去除成长性,固定取最高等级强度(时期移至月后)。</summary>
+        /// <summary>装灾厄走 3.33 的 10 档阶梯,无灾厄保持 4.0 常数 10</summary>
         public static int Level()
         {
-            return 10;
+            if (!CERef.Has)
+            {
+                return 10;
+            }
+            if (CECal.DownedYharon(EDownedBosses.downedCruiser))
+            {
+                return 10;
+            }
+            if (CECal.DownedDoG(EDownedBosses.downedCruiser))
+            {
+                return 9;
+            }
+            if (CECal.DownedProvidence(EDownedBosses.downedNihilityTwin))
+            {
+                return 8;
+            }
+            if (NPC.downedMoonlord)
+            {
+                return 7;
+            }
+            if (NPC.downedPlantBoss && CECal.DownedCalamitasClone(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3))
+            {
+                return 6;
+            }
+            if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
+            {
+                return 5;
+            }
+            if (Main.hardMode)
+            {
+                return 4;
+            }
+            if (NPC.downedQueenBee || NPC.downedBoss3)
+            {
+                return 3;
+            }
+            if (NPC.downedBoss2 || CECal.DownedPerforator || CECal.DownedHiveMind)
+            {
+                return 2;
+            }
+            if (NPC.downedBoss1 || CECal.DownedDesertScourge || NPC.downedSlimeKing)
+            {
+                return 1;
+            }
+            return 0;
         }
         public static int GetMaxTarget(int lv) => lv / 2 + 1;
         public static float TargetDist(int lv) => 600 + lv * 200;
@@ -93,6 +138,16 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady())
+            {
+                CreateRecipe()
+                    .AddIngredient(ItemID.Book)
+                    .AddIngredient(ItemID.ManaCrystal)
+                    .AddIngredient(ItemID.Sapphire, 5)
+                    .NearShimmer()
+                    .Register();
+                return;
+            }
             // 2026-08-31 平衡案:时期移至月后,配方=魔法书+5星尘碎片+5夜明锭
             CreateRecipe()
                 .AddIngredient(ItemID.SpellTome)

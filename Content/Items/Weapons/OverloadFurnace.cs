@@ -2,6 +2,7 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -31,6 +32,16 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_DubiousPlating, CEID.Item_MysteriousCircuitry))
+            {
+                CreateRecipe().
+                AddIngredient(CEID.Item_DubiousPlating, 5).
+                AddIngredient(CEID.Item_MysteriousCircuitry, 2).
+                AddIngredient(ItemID.Ruby, 1).
+                AddTile(TileID.Anvils).
+                Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.GoldBar, 15)
                 .AddIngredient(ItemID.Ruby, 5)

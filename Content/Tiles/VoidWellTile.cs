@@ -1,4 +1,6 @@
-﻿using CalamityEntropy.Content.Items;
+﻿using System.Collections.Generic;
+using CalamityEntropy.Content.Items;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -30,7 +32,8 @@ namespace CalamityEntropy.Content.Tiles
 
             DustType = DustID.CorruptTorch;
 
-            AdjTiles = new int[] {
+            List<int> adj = new List<int>
+            {
                 TileID.WorkBenches,
                 TileID.Chairs,
                 TileID.Tables,
@@ -43,6 +46,11 @@ namespace CalamityEntropy.Content.Tiles
                 TileID.LunarCraftingStation,
                 TileID.DemonAltar
             };
+            if (CERef.Has && CEID.Tile_CosmicAnvil > 0)
+            {
+                adj.Add(CEID.Tile_CosmicAnvil);
+            }
+            AdjTiles = adj.ToArray();
         }
     }
 }

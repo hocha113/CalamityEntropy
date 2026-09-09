@@ -2,6 +2,7 @@ using CalamityEntropy.Content.Projectiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -26,6 +27,16 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_ScoriaBar, CEID.Item_SolarVeil))
+            {
+                CreateRecipe()
+                .AddIngredient<ShadowPact>(1)
+                .AddIngredient(CEID.Item_ScoriaBar, 6)
+                .AddIngredient(CEID.Item_SolarVeil, 4)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<ShadowPact>()
                 .AddIngredient(ItemID.SunStone)

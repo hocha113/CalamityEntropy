@@ -1,6 +1,7 @@
 using CalamityEntropy.Common.LoreReworks;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Cooldowns;
 using CalamityEntropy.Core.Dash;
 using CalamityEntropy.Content.Cooldowns;
@@ -1770,7 +1771,13 @@ namespace CalamityEntropy.Common
                     Player.maxMinions--;
                 }
             }
-            //脱离灾厄:腐化巢心Lore增伤随灾厄Lore下线删除
+            if (CEID.Item_LoreHiveMind > 0 && LoreReworkSystem.Enabled(CEID.Item_LoreHiveMind))
+            {
+                if (hitTimeCount < LEHiveCorrupt.TimeSec * 60)
+                {
+                    Player.GetDamage(DamageClass.Generic) += LEHiveCorrupt.DamageAddition;
+                }
+            }
             if (shadowRune)
             {
                 Player.GetAttackSpeed(DamageClass.SummonMeleeSpeed) += ShadowRune.WhipAtkSpeedAddition;
@@ -2037,6 +2044,7 @@ namespace CalamityEntropy.Common
             deusCoreAdd = 0;
 
             modifiers.ModifyHurtInfo += EPHurtModifier;
+            modifiers.ModifyHurtInfo += EPHurtModifier2;
             if (AzureShield > 0)
             {
                 modifiers.SourceDamage *= 0.75f;
@@ -2126,7 +2134,13 @@ namespace CalamityEntropy.Common
             HitTCounter = 600;
             hitTimeCount = 0;
             JustHit = true;
-            //脱离灾厄:血肉巢穴Lore受击回血随灾厄Lore下线删除
+            if (CEID.Item_LorePerforators > 0 && LoreReworkSystem.Enabled(CEID.Item_LorePerforators))
+            {
+                if (Main.rand.NextFloat() < LEHiveCrimson.chance)
+                {
+                    Player.Heal(LEHiveCrimson.HealAmount);
+                }
+            }
         }
         public bool JustHit = false;
         // 瘟疫内燃机命中派生挂在此处;苍溟漩涡改走 OnHitNPCWithItem/WithProj,避免自触发
@@ -2247,7 +2261,17 @@ namespace CalamityEntropy.Common
         }
 
         public bool noCsDodge = false;
-        //脱离灾厄:EPHurtModifier2(血肉墙Lore减伤)随灾厄Lore下线,连同注册点一并裁删
+        private void EPHurtModifier2(ref Player.HurtInfo info)
+        {
+            if (info.Damage > 10 && !info.Cancelled
+                && CEID.Item_LoreWallofFlesh > 0 && LoreReworkSystem.Enabled(CEID.Item_LoreWallofFlesh)
+                && !Player.HasCooldown(DamageReduceCD.ID))
+            {
+                Player.AddCooldown(DamageReduceCD.ID, LEWof.Cooldown * 60);
+                info.Damage = (int)(info.Damage * (1 - LEWof.DmgReduce));
+            }
+        }
+
         private void EPHurtModifier(ref Player.HurtInfo info)
         {
             if (AzureRapierBlock > 0)
@@ -4069,28 +4093,43 @@ namespace CalamityEntropy.Common
 
         public override void CatchFish(FishingAttempt attempt, ref int itemDrop, ref int npcSpawn, ref AdvancedPopupRequest sonar, ref Vector2 sonarPosition)
         {
-            // 群系判定按 biome-map.md（GreedCard→腐化/猩红钓鱼；灾厄 Voidstone 词条整体删除；FetalDream→血月海洋）。
-            // 词条为先命中先得的优先级结构：命中即返回，替代旧的顺序赋值互相覆盖（2026-08-27 修正）。
-            if ((Player.ZoneCorrupt || Player.ZoneCrimson) && Main.rand.NextBool(3))
+            if (CERef.Has)
+            {
+                if (CECal.ZoneAbyssLayer4(Player, false) && attempt.rare && Main.rand.NextBool(8))
+                {
+                    itemDrop = ModContent.ItemType<FetalDream>();
+                    return;
+                }
+                if (CEID.Item_Voidstone > 0 && CECal.ZoneSulphur(Player, false) && attempt.common && Main.rand.NextBool(10))
+                {
+                    itemDrop = CEID.Item_Voidstone;
+                    return;
+                }
+                if (CECal.ZoneAstral(Player, false) && Main.rand.NextBool(18) && attempt.uncommon)
+                {
+                    itemDrop = ModContent.ItemType<GreedCard>();
+                    return;
+                }
+            }
+            else if ((Player.ZoneCorrupt || Player.ZoneCrimson) && Main.rand.NextBool(3))
             {
                 itemDrop = ModContent.ItemType<GreedCard>();
                 return;
             }
             if (!Player.ZoneBeach)
+            {
                 return;
-            // 血月稀有档最高优先（沿用原裁定）。最终期望：血月海洋 rare 渔获 1/8
-            if (Main.bloodMoon && attempt.rare && Main.rand.NextBool(8))
+            }
+            if (!CERef.Has && Main.bloodMoon && attempt.rare && Main.rand.NextBool(8))
             {
                 itemDrop = ModContent.ItemType<FetalDream>();
                 return;
             }
-            // 沉沦海书签：最终期望 = 标称 1/20，仅血月 rare 被 FetalDream 命中时抢占
             if (Main.rand.NextBool(20))
             {
                 itemDrop = ModContent.ItemType<BookMarkSunkenSea>();
                 return;
             }
-            // 增补段（bookmark-rehang §五）：困难海洋，标称 1/20。最终期望 ≈ 19/20 × 1/20 = 4.75%
             if (Main.hardMode && Main.rand.NextBool(20))
             {
                 itemDrop = ModContent.ItemType<AbyssalPiercer>();
@@ -4104,8 +4143,10 @@ namespace CalamityEntropy.Common
         {
             if (starterBagReceived || !ModContent.GetInstance<ServerConfig>().ExtraItemsInStarterBag)
                 return;
-            // 礼包本体（EntropyStarterBag）按名字松耦合查找，类型存在即生效；
-            // 发放成功才置旗标，老角色可在礼包实装后进世界补领
+            if (CERef.Has)
+            {
+                return;
+            }
             if (Mod.TryFind<ModItem>("EntropyStarterBag", out ModItem starterBag))
             {
                 Player.QuickSpawnItem(Player.GetSource_GiftOrReward(), starterBag.Type);

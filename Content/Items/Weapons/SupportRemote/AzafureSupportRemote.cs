@@ -12,6 +12,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.SupportRemote
 {
@@ -53,6 +54,17 @@ namespace CalamityEntropy.Content.Items.Weapons.SupportRemote
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_MysteriousCircuitry))
+            {
+                CreateRecipe()
+                .AddIngredient<HellIndustrialComponents>(10)
+                .AddIngredient(CEID.Item_MysteriousCircuitry, 2)
+                .AddRecipeGroup(CERecipeGroups.AnyOrichalcumBar, 8)
+                .AddIngredient<AzafureDroneRemote>()
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<AzafureDroneRemote>()
                 .AddIngredient(ItemID.HallowedBar, 10)

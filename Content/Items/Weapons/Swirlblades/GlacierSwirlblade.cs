@@ -14,6 +14,7 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 {
@@ -55,6 +56,16 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_IceStar, CEID.Item_CryonicBar))
+            {
+                CreateRecipe()
+                .AddIngredient(ModContent.ItemType<AzafureSwirlblade>())
+                .AddIngredient(CEID.Item_IceStar)
+                .AddIngredient(CEID.Item_CryonicBar, 6)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<AzafureSwirlblade>())
                 .AddIngredient(ItemID.FrostCore, 2)

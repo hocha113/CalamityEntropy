@@ -18,6 +18,7 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -74,9 +75,9 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ItemID.WhitePearl, 4)
-                .AddIngredient(ItemID.Coral, 6)
-                .AddIngredient(ItemID.CrystalShard, 10)
+            CreateRecipe().AddCalOrOwn(CEID.Item_PearlShard, ItemID.WhitePearl, 4)
+                .AddCalOrOwn(CEID.Item_SeaPrism, ItemID.Coral, 6)
+                .AddCalOrOwn(CEID.Item_PrismShard, ItemID.CrystalShard, 10)
                 .AddTile(TileID.Anvils)
                 .Register();
         }

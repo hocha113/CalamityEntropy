@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -51,8 +52,8 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.StardustCellStaff)
-                .AddIngredient(ItemID.StardustDragonStaff)
+                .AddCalOrOwn(CEID.Item_EndoHydraStaff, ItemID.StardustCellStaff)
+                .AddCalOrOwn(CEID.Item_YharonsKindleStaff, ItemID.StardustDragonStaff)
                 .AddIngredient<WyrmTooth>(10)
                 .AddIngredient<FadingRunestone>()
                 .AddTile<AbyssalAltarTile>().Register();

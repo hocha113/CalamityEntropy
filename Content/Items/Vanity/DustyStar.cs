@@ -3,6 +3,7 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Vanity
 {
@@ -68,7 +69,7 @@ namespace CalamityEntropy.Content.Items.Vanity
         }
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient(ItemID.Bone, 1)
+            CreateRecipe().AddCalOrOwn(CEID.Item_AncientBoneDust, ItemID.Bone, 1)
                 .AddIngredient(ItemID.FallenStar, 5)
                 .AddTile(TileID.WorkBenches).Register();
         }

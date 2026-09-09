@@ -8,6 +8,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 {
@@ -73,6 +74,17 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_LifeAlloy, CEID.Item_InfectedArmorPlating))
+            {
+                CreateRecipe()
+                .AddIngredient<Struggle>()
+                .AddIngredient<OsseousRemains>(20)
+                .AddIngredient(CEID.Item_LifeAlloy, 5)
+                .AddIngredient(CEID.Item_InfectedArmorPlating, 10)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<Struggle>()
                 .AddIngredient<OsseousRemains>(20)

@@ -1,4 +1,5 @@
 using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.Cruiser;
@@ -606,14 +607,14 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                     int num = 8;
                     int counts = 2;
                     float speed = 24f;
-                    // 难度映射:复仇→专家、死亡→大师(difficulty-map)
-                    if (Main.expertMode)
+                    //装灾厄读复仇/死亡,缺席仍走专家/大师兜底。下方原版层不动
+                    if (CECal.IsRevengeance)
                     {
                         num = 10;
                         counts = 3;
                         speed = 25f;
                     }
-                    if (Main.masterMode)
+                    if (CECal.IsDeathMode)
                     {
                         num = 10;
                         counts = 4;

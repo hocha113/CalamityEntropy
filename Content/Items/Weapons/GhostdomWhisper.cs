@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -51,6 +52,16 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AstrealDefeat, CEID.Item_DarkPlasma))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_AstrealDefeat, 1)
+                .AddIngredient(CEID.Item_DarkPlasma, 8)
+                .AddIngredient(ModContent.ItemType<VoidBar>(), 5)
+                .AddTile(ModContent.TileType<VoidWellTile>())
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<Kinanition>()
                 .AddIngredient<VoidBar>(5)

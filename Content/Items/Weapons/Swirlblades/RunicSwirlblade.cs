@@ -16,6 +16,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 {
@@ -57,6 +58,16 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_SamsaraSlicer))
+            {
+                CreateRecipe()
+                .AddIngredient(ModContent.ItemType<GlacierSwirlblade>())
+                .AddIngredient(CEID.Item_SamsaraSlicer)
+                .AddIngredient(ItemID.Ectoplasm, 6)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<GlacierSwirlblade>())
                 .AddIngredient(ItemID.SpectreBar, 5)

@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.NPCs.Prophet;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -30,7 +31,7 @@ namespace CalamityEntropy.Content.Items
 
         public override bool CanUseItem(Player player)
         {
-            return !NPC.AnyNPCs(ModContent.NPCType<TheProphet>()) && player.ZoneDungeon;
+            return !NPC.AnyNPCs(ModContent.NPCType<TheProphet>()) && player.ZoneDungeon && !CECal.IsBossRushActive;
         }
 
         public override bool? UseItem(Player player)

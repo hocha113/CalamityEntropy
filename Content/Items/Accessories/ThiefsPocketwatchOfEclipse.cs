@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -47,6 +48,25 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AscendantSpiritEssence, CEID.Item_DarksunFragment, CEID.Tile_CosmicAnvil))
+            {
+                CreateRecipe()
+                .AddIngredient<LurkersCharm>(1)
+                .AddIngredient(CEID.Item_AscendantSpiritEssence, 4)
+                .AddIngredient(CEID.Item_DarksunFragment, 20)
+                .AddIngredient(ItemID.GoldWatch)
+                .AddTile(CEID.Tile_CosmicAnvil)
+                .Register();
+
+                CreateRecipe()
+                .AddIngredient<LurkersCharm>(1)
+                .AddIngredient(CEID.Item_AscendantSpiritEssence, 4)
+                .AddIngredient(CEID.Item_DarksunFragment, 20)
+                .AddIngredient(ItemID.PlatinumWatch)
+                .AddTile(CEID.Tile_CosmicAnvil)
+                .Register();
+                return;
+            }
             // 脱离灾厄:升华精魄→幽渊魂髓、暗日碎片→日耀碎片、宇宙铁砧→远古操纵机(material-map)
             CreateRecipe()
                 .AddIngredient<LurkersCharm>()

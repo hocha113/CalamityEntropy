@@ -13,6 +13,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -75,6 +76,23 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_EnergyCore, CEID.Item_WulfrumMetalScrap, CEID.Item_MeldBlob, CEID.Item_AstralBar))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_EnergyCore, 2)
+                .AddIngredient(CEID.Item_WulfrumMetalScrap, 8)
+                .AddCondition(Mod.GetLocalization("NonZenithWorld"), () => !Main.zenithWorld)
+                .AddTile(TileID.Anvils)
+                .Register();
+                CreateRecipe()
+                .AddIngredient(CEID.Item_MeldBlob, 4)
+                .AddIngredient(ItemID.LunarBar, 8)
+                .AddIngredient(CEID.Item_AstralBar, 8)
+                .AddCondition(Mod.GetLocalization("ZenithWorld"), () => Main.zenithWorld)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddRecipeGroup(CERecipeGroups.IronBar, 10)
                 .AddIngredient(ItemID.TungstenBar, 10)

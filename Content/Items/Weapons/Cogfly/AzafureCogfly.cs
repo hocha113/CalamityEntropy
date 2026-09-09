@@ -10,6 +10,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Cogfly
 {
@@ -50,6 +51,15 @@ namespace CalamityEntropy.Content.Items.Weapons.Cogfly
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_MysteriousCircuitry))
+            {
+                CreateRecipe().AddIngredient<HellIndustrialComponents>(4)
+                .AddIngredient(CEID.Item_MysteriousCircuitry)
+                .AddRecipeGroup(CERecipeGroups.IronBar, 4)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(5)
                 .AddIngredient(ItemID.IronBar, 10)

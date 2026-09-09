@@ -2,6 +2,7 @@ using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Armor.NihTwins
 {
@@ -26,6 +27,16 @@ namespace CalamityEntropy.Content.Items.Armor.NihTwins
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_ExodiumCluster))
+            {
+                CreateRecipe()
+                .AddIngredient<ChaoticPiece>(8)
+                .AddIngredient(CEID.Item_ExodiumCluster, 12)
+                .AddIngredient(ItemID.LunarBar, 12)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<ChaoticPiece>(8)
                 .AddIngredient(ItemID.LunarBar, 12)

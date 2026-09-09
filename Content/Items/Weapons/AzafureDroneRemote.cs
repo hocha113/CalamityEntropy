@@ -15,6 +15,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -60,6 +61,18 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_MysteriousCircuitry, CEID.Item_AerialiteBar, CEID.Item_EnergyCore))
+            {
+                CreateRecipe()
+                .AddIngredient<HellIndustrialComponents>(6)
+                .AddIngredient(CEID.Item_MysteriousCircuitry)
+                .AddIngredient(CEID.Item_AerialiteBar, 8)
+                .AddIngredient(CEID.Item_EnergyCore)
+                .AddIngredient(ItemID.Dynamite, 1)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(5)
                 .AddIngredient(ItemID.HellstoneBar, 15)

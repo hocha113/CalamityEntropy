@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -43,6 +44,15 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_RogueEmblem))
+            {
+                CreateRecipe().AddIngredient(ItemID.Magiluminescence)
+                .AddIngredient(CEID.Item_RogueEmblem, 1)
+                .AddIngredient(ItemID.SoulofNight, 4)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.Magiluminescence)
                 .AddIngredient(ItemID.AvengerEmblem)

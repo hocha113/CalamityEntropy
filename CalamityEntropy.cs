@@ -35,6 +35,7 @@ using CalamityEntropy.Content.Skies;
 using CalamityEntropy.Content.UI;
 using CalamityEntropy.Content.UI.EntropyBookUI;
 using CalamityEntropy.Content.UI.Poops;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Dash;
 using CalamityEntropy.Utilities;
 using InnoVault;
@@ -1444,9 +1445,14 @@ namespace CalamityEntropy
             {
                 if (!type.IsSubclassOf(baseTypeLR) || type.IsAbstract)
                     continue;
-                var loreEffect = (LoreEffect)Activator.CreateInstance(type);
+                LoreEffect loreEffect = (LoreEffect)Activator.CreateInstance(type);
+                //CEID 在灾厄缺席时返回 0。不跳过会把全部效果塞进 ItemID.None,读 Decription 加载期 NRE
+                if (loreEffect.ItemType <= 0)
+                {
+                    continue;
+                }
                 LoreReworkSystem.loreEffects[loreEffect.ItemType] = loreEffect;
-                var _ = loreEffect.Decription.Value;
+                _ = loreEffect.Decription.Value;
             }
             RegistryMusicBoxes();
             for (int i = 0; i < NPCLoader.NPCCount; i++)
@@ -1454,6 +1460,8 @@ namespace CalamityEntropy
                 NPCID.Sets.SpecificDebuffImmunity[i][ModContent.BuffType<Content.Buffs.HeatDeath>()] = false;
                 NPCID.Sets.SpecificDebuffImmunity[i][ModContent.BuffType<LifeOppress>()] = false;
             }
+            RegisterCalamityDebuffImmunityOverrides();
+            EntropyModeGNPC.FillCalTypes();
 
             string MyGameFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games");
             string Isaac1 = Path.Combine(MyGameFolder, "Binding of Isaac Repentance").Replace("/", "\\");
@@ -1690,6 +1698,7 @@ namespace CalamityEntropy
             EntropyBossbar.bossbarColor[ModContent.NPCType<Luminaris>()] = new Color(150, 100, 215);
             EntropyBossbar.bossbarColor[ModContent.NPCType<AcropolisMachine>()] = new Color(255, 93, 13);
             EntropyBossbar.bossbarColor[ModContent.NPCType<Apsychos>()] = new Color(255, 160, 20);
+            RegisterCalamityBossbarColors();
 
             try
             {
@@ -1786,6 +1795,133 @@ namespace CalamityEntropy
             {
                 EntropyBossbar.bossbarColor[mnpc.Type] = color;
             }
+        }
+
+        private static void SetBossbarColor(int npcType, Color color)
+        {
+            if (npcType > 0)
+            {
+                EntropyBossbar.bossbarColor[npcType] = color;
+            }
+        }
+
+        private static void AddIfFound(HashSet<int> set, int npcType)
+        {
+            if (npcType > 0)
+            {
+                set.Add(npcType);
+            }
+        }
+
+        //3.33 原表:强制 30 个灾厄 Boss 不免疫本模组三个自有减益。CEID 未命中返回 0,必须跳过
+        private static void RegisterCalamityDebuffImmunityOverrides()
+        {
+            if (!CERef.Has)
+            {
+                return;
+            }
+            int[] specBuffs = new int[]
+            {
+                ModContent.BuffType<VoidVirus>(),
+                ModContent.BuffType<SoulDisorder>(),
+                ModContent.BuffType<Deceive>()
+            };
+            int[] specNpcs = new int[]
+            {
+                CEID.NPC_DesertScourgeHead,
+                CEID.NPC_DevourerofGodsHead,
+                CEID.NPC_AstrumDeusHead,
+                CEID.NPC_AquaticScourgeHead,
+                CEID.NPC_AstrumAureus,
+                CEID.NPC_BrimstoneElemental,
+                CEID.NPC_Dragonfolly,
+                CEID.NPC_CalamitasClone,
+                CEID.NPC_CeaselessVoid,
+                CEID.NPC_Crabulon,
+                CEID.NPC_Cryogen,
+                CEID.NPC_CryogenShield,
+                CEID.NPC_AresBody,
+                CEID.NPC_Artemis,
+                CEID.NPC_Apollo,
+                CEID.NPC_ThanatosHead,
+                CEID.NPC_GreatSandShark,
+                CEID.NPC_HiveMind,
+                CEID.NPC_PerforatorHive,
+                CEID.NPC_Leviathan,
+                CEID.NPC_Anahita,
+                CEID.NPC_PlaguebringerGoliath,
+                CEID.NPC_Polterghast,
+                CEID.NPC_PrimordialWyrmHead,
+                CEID.NPC_Providence,
+                CEID.NPC_RavagerBody,
+                CEID.NPC_Signus,
+                CEID.NPC_StormWeaverHead,
+                CEID.NPC_Yharon,
+                CEID.NPC_SupremeCalamitas
+            };
+            foreach (int buff in specBuffs)
+            {
+                foreach (int npcType in specNpcs)
+                {
+                    if (npcType > 0)
+                    {
+                        NPCID.Sets.SpecificDebuffImmunity[npcType][buff] = false;
+                    }
+                }
+            }
+        }
+
+        //3.33 手调色表 38 条。未命中的 CEID 经 SetBossbarColor 过滤,不污染 NPCID 0
+        private static void RegisterCalamityBossbarColors()
+        {
+            EntropyBossbar.profanedEnrageNPCs.Clear();
+            if (!CERef.Has)
+            {
+                return;
+            }
+            SetBossbarColor(CEID.NPC_DesertScourgeHead, new Color(216, 210, 175));
+            SetBossbarColor(CEID.NPC_GiantClam, new Color(128, 255, 255));
+            SetBossbarColor(CEID.NPC_Crabulon, new Color(133, 255, 237));
+            SetBossbarColor(CEID.NPC_HiveMind, new Color(140, 60, 255));
+            SetBossbarColor(CEID.NPC_PerforatorHive, new Color(155, 60, 60));
+            SetBossbarColor(CEID.NPC_CrimulanPaladin, new Color(255, 60, 75));
+            SetBossbarColor(CEID.NPC_SplitCrimulanPaladin, new Color(255, 60, 75));
+            SetBossbarColor(CEID.NPC_EbonianPaladin, new Color(160, 170, 220));
+            SetBossbarColor(CEID.NPC_SplitEbonianPaladin, new Color(160, 170, 220));
+            SetBossbarColor(CEID.NPC_Cryogen, new Color(140, 255, 255));
+            SetBossbarColor(CEID.NPC_AquaticScourgeHead, new Color(215, 195, 155));
+            SetBossbarColor(CEID.NPC_BrimstoneElemental, new Color(255, 145, 115));
+            SetBossbarColor(CEID.NPC_CalamitasClone, new Color(255, 145, 115));
+            SetBossbarColor(CEID.NPC_GreatSandShark, new Color(225, 190, 130));
+            SetBossbarColor(CEID.NPC_Anahita, new Color(180, 180, 230));
+            SetBossbarColor(CEID.NPC_Leviathan, new Color(80, 235, 140));
+            SetBossbarColor(CEID.NPC_AstrumAureus, new Color(130, 130, 160));
+            SetBossbarColor(CEID.NPC_PlaguebringerGoliath, new Color(60, 160, 30));
+            SetBossbarColor(CEID.NPC_RavagerBody, new Color(190, 180, 155));
+            SetBossbarColor(CEID.NPC_AstrumDeusHead, new Color(96, 230, 190));
+            SetBossbarColor(CEID.NPC_ProfanedGuardianCommander, new Color(255, 255, 120));
+            SetBossbarColor(CEID.NPC_ProfanedGuardianDefender, new Color(255, 255, 120));
+            SetBossbarColor(CEID.NPC_ProfanedGuardianHealer, new Color(255, 255, 120));
+            SetBossbarColor(CEID.NPC_Providence, new Color(255, 255, 120));
+            SetBossbarColor(CEID.NPC_Dragonfolly, new Color(200, 180, 100));
+            SetBossbarColor(CEID.NPC_CeaselessVoid, new Color(180, 210, 220));
+            SetBossbarColor(CEID.NPC_StormWeaverHead, new Color(120, 145, 180));
+            SetBossbarColor(CEID.NPC_Signus, new Color(223, 75, 170));
+            SetBossbarColor(CEID.NPC_Polterghast, new Color(100, 255, 255));
+            SetBossbarColor(CEID.NPC_OldDuke, new Color(190, 170, 130));
+            SetBossbarColor(CEID.NPC_DevourerofGodsHead, new Color(121, 230, 255));
+            SetBossbarColor(CEID.NPC_Yharon, new Color(255, 220, 100));
+            SetBossbarColor(CEID.NPC_AresBody, new Color(242, 112, 73));
+            SetBossbarColor(CEID.NPC_Apollo, new Color(146, 200, 130));
+            SetBossbarColor(CEID.NPC_Artemis, new Color(146, 200, 130));
+            SetBossbarColor(CEID.NPC_ThanatosHead, new Color(135, 220, 240));
+            SetBossbarColor(CEID.NPC_SupremeCalamitas, new Color(255, 145, 115));
+            SetBossbarColor(CEID.NPC_PrimordialWyrmHead, new Color(255, 255, 80));
+
+            AddIfFound(EntropyBossbar.profanedEnrageNPCs, CEID.NPC_Providence);
+            AddIfFound(EntropyBossbar.profanedEnrageNPCs, CEID.NPC_ProfanedGuardianCommander);
+            AddIfFound(EntropyBossbar.profanedEnrageNPCs, CEID.NPC_ProfanedGuardianHealer);
+            AddIfFound(EntropyBossbar.profanedEnrageNPCs, CEID.NPC_ProfanedGuardianDefender);
         }
 
         public static float blackMaskAlpha = 0;

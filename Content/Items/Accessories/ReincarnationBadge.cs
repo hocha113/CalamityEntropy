@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -17,7 +18,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.width = 98;
             Item.height = 60;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
-            Item.rare = ModContent.RarityType<NihilityBlue>();
+            Item.rare = CECal.RarityTurquoise(ModContent.RarityType<NihilityBlue>());
             Item.accessory = true;
 
         }
@@ -34,6 +35,13 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AscendantInsignia, CEID.Item_AscendantSpiritEssence, CEID.Tile_CosmicAnvil))
+            {
+                CreateRecipe().AddIngredient(CEID.Item_AscendantInsignia)
+                .AddIngredient(CEID.Item_AscendantSpiritEssence, 4)
+                .AddTile(CEID.Tile_CosmicAnvil).Register();
+                return;
+            }
             // 脱离灾厄:灾厄升华勋章改为原版飞升徽记(其灾厄配方本源),站台改远古操纵机
             CreateRecipe().AddIngredient(ItemID.EmpressFlightBooster)
                 .AddIngredient<VoidBar>(5)

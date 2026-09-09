@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories.SoulCards
 {
@@ -62,7 +63,7 @@ namespace CalamityEntropy.Content.Items.Accessories.SoulCards
                 .AddIngredient<RequiemCard>()
                 .AddIngredient<WisperCard>()
                 .AddIngredient<CursedThread>()
-                .AddIngredient(ItemID.LunarBar, 5)
+                .AddCalOrOwn(CEID.Item_CoreofCalamity, 1, ItemID.LunarBar, 5)
                 .AddTile(TileID.Bookcases)
                 .Register();
         }

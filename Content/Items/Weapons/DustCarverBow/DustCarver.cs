@@ -1,6 +1,8 @@
+using CalamityEntropy;
 using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Tiles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
@@ -32,10 +34,43 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
             Item.QuickDrawItemWithBloomToWorld(spriteBatch, Color.Red, ref scale, rotation);
             return false;
         }
-        /// <summary>2026-08-31 平衡案:去除成长性,按新配方档位(血雨弓,困难模式早期)固定取6级。</summary>
+        /// <summary>装灾厄走 3.33 的 16 段细档阶梯,无灾厄保持 4.0 常数 6 级</summary>
         public static int GetLevel()
         {
-            return 6;
+            if (!CERef.Has)
+            {
+                return 6;
+            }
+            int Level = 0;
+            bool flag = true;
+            void Check(bool f)
+            {
+                if (f && flag)
+                {
+                    Level++;
+                }
+                else
+                {
+                    flag = false;
+                }
+            }
+            Check(NPC.downedBoss1);
+            Check(NPC.downedBoss2 || CECal.DownedPerforator || CECal.DownedHiveMind);
+            Check(CECal.DownedSlimeGod);
+            Check(Main.hardMode);
+            Check(CECal.DownedBrimstoneElemental);
+            Check(CECal.DownedCalamitasClone(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3));
+            Check(NPC.downedPlantBoss);
+            Check(CECal.DownedRavager);
+            Check(NPC.downedAncientCultist);
+            Check(NPC.downedMoonlord);
+            Check(CECal.DownedProvidence(EDownedBosses.downedNihilityTwin));
+            Check(CECal.DownedPolterghast);
+            Check(CECal.DownedDoG(EDownedBosses.downedCruiser));
+            Check(CECal.DownedYharon(EDownedBosses.downedCruiser));
+            Check(CECal.DownedCalamitas(EDownedBosses.downedCruiser) && CECal.DownedExoMechs(EDownedBosses.downedCruiser));
+            Check(CECal.DownedPrimordialWyrm);
+            return Level;
         }
         public override bool CanConsumeAmmo(Item ammo, Player player)
         {
@@ -83,8 +118,7 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
             }
             tooltips.Add(new TooltipLine(Mod, "Lore", Language.GetOrRegister("Mods.CalamityEntropy.LegendaryAbility.DCarverDia" + LevelNow.ToString()).Value) { OverrideColor = Color.Crimson });
         }
-        // 2026-08-31 平衡案:魔灵数目降低至4
-        public int SpiritCount => 4;
+        public int SpiritCount => CERef.Has ? int.Min(6, GetLevel() / 2) : 4;
         public override void SetDefaults()
         {
             Item.width = 80;
@@ -133,6 +167,17 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_BloodOrb))
+            {
+                CreateRecipe()
+                    .AddIngredient(CEID.Item_BloodOrb, 5)
+                    .AddRecipeGroup(CERecipeGroups.evilBar, 4)
+                    .AddIngredient(ItemID.Silk, 4)
+                    .AddIngredient(ItemID.RichMahogany, 12)
+                    .AddTile(TileID.WorkBenches)
+                    .Register();
+                return;
+            }
             // 2026-08-31 平衡案:配方=血雨弓+消逝符石,虚空井合成
             CreateRecipe()
                 .AddIngredient(ItemID.BloodRainBow)

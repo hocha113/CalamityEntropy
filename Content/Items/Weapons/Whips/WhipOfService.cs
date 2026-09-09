@@ -3,6 +3,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Whips
 {
@@ -29,6 +30,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AncientBoneDust))
+            {
+                CreateRecipe().AddIngredient(ItemID.BlandWhip)
+                .AddIngredient(CEID.Item_AncientBoneDust, 2)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.BlandWhip)
                 .AddIngredient(ItemID.DarkShard, 2)

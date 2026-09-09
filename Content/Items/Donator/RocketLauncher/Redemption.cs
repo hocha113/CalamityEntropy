@@ -14,6 +14,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 {
@@ -146,6 +147,17 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_TheHive, CEID.Item_AuricBar, CEID.Tile_CosmicAnvil))
+            {
+                CreateRecipe()
+                .AddIngredient<Filthless>()
+                .AddIngredient(CEID.Item_TheHive)
+                .AddIngredient<OsseousRemains>(20)
+                .AddIngredient(CEID.Item_AuricBar, 5)
+                .AddTile(CEID.Tile_CosmicAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<Filthless>()
                 .AddIngredient<Zeal>()

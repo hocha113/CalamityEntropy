@@ -2,6 +2,7 @@ using CalamityEntropy.Content.Projectiles.Chainsaw;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
 {
@@ -35,13 +36,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
             CreateRecipe().
                 AddIngredient<BrokenChainsaw>().
                 AddIngredient(ItemID.AdamantiteBar, 10).
-                AddIngredient(ItemID.SoulofNight, 3).
+                AddCalOrOwn(CEID.Item_EssenceofHavoc, ItemID.SoulofNight, 3).
                 AddTile(TileID.MythrilAnvil).
                 Register();
             CreateRecipe().
                 AddIngredient<BrokenChainsaw>().
                 AddIngredient(ItemID.TitaniumBar, 10).
-                AddIngredient(ItemID.SoulofNight, 3).
+                AddCalOrOwn(CEID.Item_EssenceofHavoc, ItemID.SoulofNight, 3).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

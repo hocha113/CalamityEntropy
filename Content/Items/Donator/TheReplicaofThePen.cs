@@ -9,6 +9,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator
 {
@@ -31,6 +32,17 @@ namespace CalamityEntropy.Content.Items.Donator
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_DarkPlasma, CEID.Item_RuinousSoul))
+            {
+                CreateRecipe()
+                .AddIngredient<VoidBar>(6)
+                .AddIngredient(CEID.Item_DarkPlasma, 4)
+                .AddIngredient(CEID.Item_RuinousSoul, 2)
+                .AddIngredient(ItemID.Goggles)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
+                return;
+            }
             // 灾厄原料按 material-map.md 替换：DarkPlasma×4+RuinousSoul×2→虚无碎片（合并为×6）
             CreateRecipe()
                 .AddIngredient<VoidBar>(6)

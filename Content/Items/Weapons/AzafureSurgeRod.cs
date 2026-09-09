@@ -14,6 +14,7 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -77,7 +78,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         {
             CreateRecipe().
                 AddIngredient<HellIndustrialComponents>(6).
-                AddIngredient<AzafureCircuitry>(2).
+                AddCalOrOwn(CEID.Item_MysteriousCircuitry, ModContent.ItemType<AzafureCircuitry>(), 2).
                 AddIngredient(ItemID.CobaltBar, 8).
                 AddTile(TileID.Anvils).
                 Register();

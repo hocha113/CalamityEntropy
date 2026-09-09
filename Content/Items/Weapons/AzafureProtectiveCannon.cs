@@ -9,6 +9,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -54,6 +55,18 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_MysteriousCircuitry))
+            {
+                CreateRecipe()
+                .AddIngredient<HellIndustrialComponents>(4)
+                .AddIngredient(CEID.Item_MysteriousCircuitry)
+                .AddIngredient(ItemID.HallowedBar, 6)
+                .AddRecipeGroup(CERecipeGroups.IronBar, 6)
+                .AddIngredient(ItemID.Wire, 12)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(6)
                 .AddIngredient<AzafureCircuitry>(4)

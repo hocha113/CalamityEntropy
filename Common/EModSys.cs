@@ -13,6 +13,7 @@ using CalamityEntropy.Content.NPCs.Prophet;
 using CalamityEntropy.Content.NPCs.SpiritFountain;
 using CalamityEntropy.Content.UI;
 using CalamityEntropy.Content.UI.EntropyBookUI;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
@@ -885,8 +886,19 @@ namespace CalamityEntropy.Common
                 .AddIngredient(ItemID.Lens, 4)
                 .AddTile(TileID.DemonAltar)
                 .Register();
-            // 原对灾厄配方的篡改（黄金马桶产物替换、树精法杖移除性别药水材料）已随灾厄脱钩删除；
-            // 自有 AuricToilet 的独立配方已在其自身 AddRecipes 补挂
+
+            // 装灾厄时把灾厄马桶产物改挂自有 AuricToilet;无灾厄不碰配方表
+            if (CERef.Has && CEID.Item_AuricToilet > 0)
+            {
+                int ownToilet = ModContent.ItemType<Content.Items.AuricToilet>();
+                foreach (Recipe recipe in Main.recipe)
+                {
+                    if (recipe.createItem.type == CEID.Item_AuricToilet)
+                    {
+                        recipe.createItem.type = ownToilet;
+                    }
+                }
+            }
         }
 
         public override void PreUpdateProjectiles()

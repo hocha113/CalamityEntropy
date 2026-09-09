@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.Buffs.Pets;
+using CalamityEntropy.Core.CalamityRef;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -144,7 +145,7 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Deus
             Player player = Main.player[Projectile.owner];
 
             player.zephyrfish = false;
-            if (NPC.downedAncientCultist)
+            if (CECal.DownedAstrumDeus)
             {
                 Lighting.AddLight(Projectile.Center, 1.2f, 1f, 1.2f);
             }
@@ -176,7 +177,7 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Deus
             shotCd--;
             if (n != null && shotCd < 0)
             {
-                if (Projectile.owner == Main.myPlayer && NPC.downedAncientCultist)
+                if (Projectile.owner == Main.myPlayer && CECal.DownedAstrumDeus)
                 {
                     shotCd = 400;
 

@@ -9,6 +9,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -43,6 +44,15 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_UrchinStinger))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_UrchinStinger)
+                .AddIngredient(ItemID.ManaCrystal, 2)
+                .AddTile(TileID.Anvils)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.Amethyst, 10)
                 .AddIngredient(ItemID.Sapphire, 10)

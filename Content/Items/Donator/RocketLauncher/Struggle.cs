@@ -8,6 +8,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 {
@@ -71,6 +72,17 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_CoreofCalamity, CEID.Item_UnholyCore))
+            {
+                CreateRecipe()
+                .AddIngredient<Crave>()
+                .AddIngredient<OsseousRemains>(20)
+                .AddIngredient(CEID.Item_CoreofCalamity, 3)
+                .AddIngredient(CEID.Item_UnholyCore, 10)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<Crave>()
                 .AddIngredient<OsseousRemains>(20)

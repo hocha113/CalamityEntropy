@@ -2,6 +2,7 @@
 using CalamityEntropy.Content.Tiles;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items
 {
@@ -19,18 +20,18 @@ namespace CalamityEntropy.Content.Items
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.createTile = ModContent.TileType<AToilet>();
-            Item.rare = ModContent.RarityType<Golden>();
+            Item.rare = CECal.RarityBurnishedAuric(ModContent.RarityType<Golden>());
         }
 
         public override void AddRecipes()
         {
             // 三把灾厄主题椅换为原版奇珍椅，保持“三椅合一”的配方趣味；门槛由虚空锭把关
             CreateRecipe().
-                AddIngredient(ItemID.GoldenChair).
-                AddIngredient(ItemID.LihzahrdChair).
-                AddIngredient(ItemID.MartianHoverChair).
-                AddIngredient<VoidBar>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddCalOrOwn(CEID.Item_BotanicChair, ItemID.GoldenChair).
+                AddCalOrOwn(CEID.Item_CosmiliteChair, ItemID.LihzahrdChair).
+                AddCalOrOwn(CEID.Item_SilvaChair, ItemID.MartianHoverChair).
+                AddCalOrOwn(CEID.Item_AuricBar, ModContent.ItemType<VoidBar>(), 5).
+                AddCalTileOrOwn(CEID.Tile_CosmicAnvil, TileID.LunarCraftingStation).
                 Register();
         }
     }

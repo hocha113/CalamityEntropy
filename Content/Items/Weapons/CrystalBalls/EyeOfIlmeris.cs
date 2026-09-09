@@ -2,6 +2,7 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
 {
@@ -29,6 +30,16 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_PearlShard, CEID.Item_SeaPrism))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_PearlShard, 2)
+                .AddIngredient(CEID.Item_SeaPrism, 5)
+                .AddIngredient(ItemID.Glass, 10)
+                .AddTile(TileID.WorkBenches)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.WhitePearl, 2)
                 .AddIngredient(ItemID.Sapphire, 10)

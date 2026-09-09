@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Nemesis
 {
@@ -56,8 +57,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Nemesis
 
         public override void AddRecipes()
         {
-            CreateRecipe().AddIngredient<FlowingLight>()
-                .AddIngredient(ItemID.StarWrath)
+            CreateRecipe().AddCalOrOwn(CEID.Item_GalactusBlade, ModContent.ItemType<FlowingLight>())
+                .AddCalOrOwn(CEID.Item_TheBurningSky, ItemID.StarWrath)
                 .AddIngredient<FadingRunestone>()
                 .AddTile<VoidWellTile>()
                 .Register();

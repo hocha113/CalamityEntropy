@@ -1,4 +1,5 @@
 using CalamityEntropy.Common;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Accessories.SoulCards;
@@ -163,12 +164,12 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             NPC.damage = 68;
             DamageReduction = 0.10f;
             NPC.lifeMax = 48000;
-            // 难度映射:死亡→大师、复仇→专家(difficulty-map)
-            if (Main.masterMode)
+            //装灾厄读死亡/复仇,缺席仍走大师/专家兜底
+            if (CECal.IsDeathMode)
             {
                 NPC.damage += 4;
             }
-            else if (Main.expertMode)
+            else if (CECal.IsRevengeance)
             {
                 NPC.damage += 2;
             }
@@ -340,12 +341,12 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             {
                 difficult += 0.06f;
             }
-            // 难度映射:复仇→专家、死亡→大师(difficulty-map)
-            if (Main.expertMode)
+            //装灾厄读复仇/死亡,缺席仍走专家/大师兜底
+            if (CECal.IsRevengeance)
             {
                 difficult += 0.1f;
             }
-            if (Main.masterMode)
+            if (CECal.IsDeathMode)
             {
                 difficult += 0.1f;
             }

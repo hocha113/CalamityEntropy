@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -48,6 +49,14 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_ScoriaBar, CEID.Item_SolarVeil, CEID.Item_PlagueCellCanister))
+            {
+                CreateRecipe().AddIngredient(CEID.Item_ScoriaBar, 6)
+                .AddIngredient(CEID.Item_SolarVeil, 4)
+                .AddIngredient(CEID.Item_PlagueCellCanister, 1)
+                .AddTile(TileID.MythrilAnvil).Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.AdamantiteGlaive)
                 .AddIngredient(ItemID.MartianConduitPlating, 10)

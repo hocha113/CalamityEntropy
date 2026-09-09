@@ -11,6 +11,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.AzafureMissileLauncher
 {
@@ -49,6 +50,16 @@ namespace CalamityEntropy.Content.Items.Weapons.AzafureMissileLauncher
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_MysteriousCircuitry))
+            {
+                CreateRecipe()
+                .AddIngredient<HellIndustrialComponents>(8)
+                .AddIngredient(CEID.Item_MysteriousCircuitry, 4)
+                .AddIngredient(ItemID.HallowedBar, 10)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(6)
                 .AddIngredient<AzafureCircuitry>(4)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Whips
 {
@@ -29,7 +30,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
         {
             CreateRecipe()
                 .AddIngredient(ItemID.AncientBattleArmorMaterial)
-                .AddIngredient(ItemID.SoulofLight, 8)
+                .AddCalOrOwn(CEID.Item_EssenceofSunlight, ItemID.SoulofLight, 8)
                 .AddIngredient(ItemID.GoldBar, 6)
                 .AddIngredient(ItemID.Silk, 6)
                 .AddTile(TileID.Anvils)
@@ -37,7 +38,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
 
             CreateRecipe()
                 .AddIngredient(ItemID.AncientBattleArmorMaterial)
-                .AddIngredient(ItemID.SoulofLight, 8)
+                .AddCalOrOwn(CEID.Item_EssenceofSunlight, ItemID.SoulofLight, 8)
                 .AddIngredient(ItemID.PlatinumBar, 6)
                 .AddIngredient(ItemID.Silk, 6)
                 .AddTile(TileID.Anvils)

@@ -1,5 +1,6 @@
 using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Cooldowns;
@@ -62,11 +63,43 @@ namespace CalamityEntropy.Content.Items.Donator
         public string DevName => "Kino";
 
         public int SpeedUpTime = 0;
-        // 2026-08-31 平衡案:去除成长属性,取最高级数值。原17级 downed 旗标阶梯退役,
-        // 配方改挂消逝符石(虚空井),定位为符石级战士武器。
+        /// <summary>装灾厄走 3.33 的 16 段细档阶梯,无灾厄保持 4.0 常数 16 级</summary>
         public static int GetLevel()
         {
-            return 16;
+            if (!CERef.Has)
+            {
+                return 16;
+            }
+            int Level = 0;
+            bool flag = true;
+            void Check(bool f)
+            {
+                if (f && flag)
+                {
+                    Level++;
+                }
+                else
+                {
+                    flag = false;
+                }
+            }
+            Check(NPC.downedBoss1);
+            Check(NPC.downedBoss2 || CECal.DownedPerforator || CECal.DownedHiveMind);
+            Check(CECal.DownedSlimeGod);
+            Check(Main.hardMode);
+            Check(CECal.DownedBrimstoneElemental);
+            Check(CECal.DownedCalamitasClone(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3));
+            Check(EDownedBosses.downedProphet);
+            Check(CECal.DownedRavager);
+            Check(NPC.downedAncientCultist);
+            Check(NPC.downedMoonlord);
+            Check(CECal.DownedSignus);
+            Check(CECal.DownedPolterghast);
+            Check(CECal.DownedDoG(EDownedBosses.downedCruiser));
+            Check(EDownedBosses.downedCruiser);
+            Check(CECal.DownedCalamitas(EDownedBosses.downedCruiser) && CECal.DownedExoMechs(EDownedBosses.downedCruiser));
+            Check(CECal.DownedPrimordialWyrm);
+            return Level;
         }
         public int NowLevel = 0;
         public bool RecheckStats = true;
@@ -147,7 +180,7 @@ namespace CalamityEntropy.Content.Items.Donator
                 Get("TSA1") + (flag ? "" : Get("LOCKED") + " " + Get("TSU1")))
             { OverrideColor = flag ? Color.Yellow : Color.Gray });
 
-            flag = EDownedBosses.downedApsychos;
+            flag = CECal.DownedSlimeGod;
             tooltips.Add(new TooltipLine(Mod, "Ability Desc", Get("TSA1B"))
             { OverrideColor = flag ? Color.Yellow : Color.Gray });
 
@@ -156,7 +189,7 @@ namespace CalamityEntropy.Content.Items.Donator
                 Get("TSA2") + (flag ? "" : Get("LOCKED") + " " + Get("TSU2")))
             { OverrideColor = (flag ? Color.Yellow : Color.Gray) });
 
-            flag = NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3;
+            flag = CECal.DownedBrimstoneElemental;
             tooltips.Add(new TooltipLine(Mod, "Ability Desc", Get("TSA2B"))
             { OverrideColor = (flag ? Color.Yellow : Color.Gray) });
 
@@ -170,18 +203,18 @@ namespace CalamityEntropy.Content.Items.Donator
                 Get("TSA4") + (flag ? "" : Get("LOCKED") + " " + Get("TSU4")))
             { OverrideColor = (flag ? Color.Yellow : Color.Gray) });
 
-            flag = EDownedBosses.downedNihilityTwin;
+            flag = CECal.DownedPolterghast;
             tooltips.Add(new TooltipLine(Mod, "Ability Desc",
                 Get("TSA5") + (flag ? "" : Get("LOCKED") + " " + Get("TSU5")))
             { OverrideColor = (flag ? Color.Yellow : Color.Gray) });
 
-            // 第6能力原挂幽邃魔灵,该 Boss 移除后改挂巡游者
-            flag = EDownedBosses.downedCruiser;
+            // 灾厄在场读神明吞噬者,缺席回落巡游者
+            flag = CECal.DownedDoG(EDownedBosses.downedCruiser);
             tooltips.Add(new TooltipLine(Mod, "Ability Desc",
                 Get("TSA6") + (flag ? "" : Get("LOCKED") + " " + Get("TSU6")))
             { OverrideColor = (flag ? Color.Yellow : Color.Gray) });
 
-            flag = EDownedBosses.downedCruiser;
+            flag = CECal.DownedYharon(EDownedBosses.downedCruiser);
             tooltips.Add(new TooltipLine(Mod, "Ability Desc",
                 Get("TSA7") + (flag ? "" : Get("LOCKED") + " " + Get("TSU7")))
             { OverrideColor = (flag ? Color.Yellow : Color.Gray) });
@@ -191,7 +224,7 @@ namespace CalamityEntropy.Content.Items.Donator
                 Get("TSA8") + (flag ? "" : Get("LOCKED") + " " + Get("TSU8")))
             { OverrideColor = (flag ? Color.Yellow : Color.Gray) });
 
-            flag = EDownedBosses.downedCruiser;
+            flag = CECal.DownedCalamitas(EDownedBosses.downedCruiser);
             tooltips.Add(new TooltipLine(Mod, "Ability Desc",
                 Get("TSA9") + (flag ? "" : Get("LOCKED") + " " + Get("TSU9")))
             { OverrideColor = (flag ? Color.Yellow : Color.Gray) });
@@ -227,7 +260,7 @@ namespace CalamityEntropy.Content.Items.Donator
             string lockedValue = lockedPath.ToLangValue();
             string baseThrowText = $"{pathAbility}2".ToLangValue();
             string downedEvilText = $"{lockedValue} {$"{pathCondition}2".ToLangValue()}";
-            bool downedAnyEvil = NPC.downedBoss2;
+            bool downedAnyEvil = NPC.downedBoss2 || CECal.DownedPerforator || CECal.DownedHiveMind;
             string pressThrowText = $"{pathAbility}3".ToLangValue();
             string downedProphetText = $"{lockedValue} {$"{pathCondition}3".ToLangValue()}";
             baseThrowText = downedAnyEvil ? DyeText(baseThrowText, Color.Yellow) : DyeText(downedEvilText + "\n" + baseThrowText, Color.Gray);
@@ -250,10 +283,11 @@ namespace CalamityEntropy.Content.Items.Donator
             string enchanted = $"{pathAbility}4".ToLangValue();
             string downedPolterText = $"{lockedValue} {$"{pathCondition}5".ToLangValue()})";
 
-            string dogText = DyeText(EDownedBosses.downedCruiser ? $"{pathAbility}6".ToLangValue() : $"{lockedValue} {$"{pathCondition}6".ToLangValue()})", EDownedBosses.downedCruiser ? Color.Yellow : Color.Gray);
+            bool downedDoG = CECal.DownedDoG(EDownedBosses.downedCruiser);
+            string dogText = DyeText(downedDoG ? $"{pathAbility}6".ToLangValue() : $"{lockedValue} {$"{pathCondition}6".ToLangValue()})", downedDoG ? Color.Yellow : Color.Gray);
 
             allowTeleportSlice = NPC.downedBoss1 ? DyeText(allowTeleportSlice, Color.Yellow) : DyeText(downedBrimmyText + "\n" + allowTeleportSlice, Color.Gray);
-            enchanted = EDownedBosses.downedNihilityTwin ? DyeText(enchanted, Color.Yellow) : DyeText(downedPolterText + "\n" + enchanted, Color.Gray);
+            enchanted = CECal.DownedPolterghast ? DyeText(enchanted, Color.Yellow) : DyeText(downedPolterText + "\n" + enchanted, Color.Gray);
 
             string combination = DyeText(titleText, Color.Crimson)
                    + "\n" + allowTeleportSlice
@@ -272,7 +306,7 @@ namespace CalamityEntropy.Content.Items.Donator
             string downedDoGText = $"{lockedValue} {$"{pathCondition}6".ToLangValue()})";
 
             allowDashText = NPC.downedBoss1 ? DyeText(allowDashText, Color.Yellow) : DyeText(downedEoCText + "\n" + allowDashText, Color.Gray);
-            tearDashText = EDownedBosses.downedCruiser ? DyeText(tearDashText, Color.Yellow) : DyeText(downedDoGText + "\n" + tearDashText, Color.Gray);
+            tearDashText = CECal.DownedDoG(EDownedBosses.downedCruiser) ? DyeText(tearDashText, Color.Yellow) : DyeText(downedDoGText + "\n" + tearDashText, Color.Gray);
 
             string combination = DyeText(titleText, Color.Crimson)
                    + "\n" + allowDashText
@@ -294,10 +328,10 @@ namespace CalamityEntropy.Content.Items.Donator
             string closeDamageText = $"{pathAbility}9".ToLangValue();
             string dowendScalLocked = $"{lockedValue} {$"{pathCondition}9".ToLangValue()}";
 
-            invinciDashText = EDownedBosses.downedApsychos ? DyeText(invinciDashText, Color.Yellow) : DyeText(downedSGLocked + "\n" + invinciDashText, Color.Gray);
-            selfReviveText = EDownedBosses.downedCruiser ? DyeText(selfReviveText, Color.Yellow) : DyeText(dowendYharonLocked + "\n" + selfReviveText, Color.Gray);
+            invinciDashText = CECal.DownedSlimeGod ? DyeText(invinciDashText, Color.Yellow) : DyeText(downedSGLocked + "\n" + invinciDashText, Color.Gray);
+            selfReviveText = CECal.DownedYharon(EDownedBosses.downedCruiser) ? DyeText(selfReviveText, Color.Yellow) : DyeText(dowendYharonLocked + "\n" + selfReviveText, Color.Gray);
             voidTouchText = EDownedBosses.downedCruiser ? DyeText(voidTouchText, Color.Yellow) : DyeText(downedPurpleWormLocked + "\n" + voidTouchText, Color.Gray);
-            closeDamageText = EDownedBosses.downedCruiser ? DyeText(closeDamageText, Color.Yellow) : DyeText(dowendScalLocked + "\n" + closeDamageText, Color.Gray);
+            closeDamageText = CECal.DownedCalamitas(EDownedBosses.downedCruiser) ? DyeText(closeDamageText, Color.Yellow) : DyeText(dowendScalLocked + "\n" + closeDamageText, Color.Gray);
 
             string combination = DyeText(titleText, Color.Crimson)
                    + "\n" + invinciDashText
@@ -441,11 +475,11 @@ namespace CalamityEntropy.Content.Items.Donator
         public override bool AllowPrefix(int pre) => true;
 
         public static bool AllowDash() => NPC.downedBoss1;
-        public static bool DashImmune() => EDownedBosses.downedApsychos;
-        public static bool AllowThrow() => NPC.downedBoss2;
+        public static bool DashImmune() => CECal.DownedSlimeGod;
+        public static bool AllowThrow() => NPC.downedBoss2 || CECal.DownedPerforator || CECal.DownedHiveMind;
         public static bool AllowSpin() => EDownedBosses.downedProphet;
-        public static bool DashUpgrade() => EDownedBosses.downedNihilityTwin;
-        public static bool AllowRevive() => EDownedBosses.downedCruiser;
+        public static bool DashUpgrade() => CECal.DownedSignus;
+        public static bool AllowRevive() => CECal.DownedYharon(EDownedBosses.downedCruiser);
         public static bool AllowVoidEmpowerment() => EDownedBosses.downedNihilityTwin;
         public override bool AltFunctionUse(Player player) => AllowThrow();
 
@@ -473,7 +507,7 @@ namespace CalamityEntropy.Content.Items.Donator
                 {
                     CEChargeWeapon.Empower(p);
                 }
-                if (EDownedBosses.downedNihilityTwin)
+                if (CECal.DownedPolterghast)
                 {
                     Projectile.NewProjectile(source, position + velocity.normalize() * 400 * (DashUpgrade() ? 1.33f : 1), velocity.normalize() * 1000 * (DashUpgrade() ? 1.33f : 1), ModContent.ProjectileType<TSSlash>(), damage * 2, knockback, player.whoAmI, 0, 1);
                 }
@@ -498,6 +532,17 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_Voidstone, CEID.Item_BloodOrb, CEID.Item_LoreAwakening))
+            {
+                CreateRecipe()
+                    .AddIngredient(CEID.Item_Voidstone, 10)
+                    .AddIngredient(CEID.Item_BloodOrb, 10)
+                    .AddIngredient(ItemID.Deathweed)
+                    .AddIngredient(CEID.Item_LoreAwakening)
+                    .AddTile(TileID.Anvils)
+                    .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.Obsidian, 10)
                 .AddIngredient(ItemID.Vertebrae, 10)
@@ -568,7 +613,7 @@ namespace CalamityEntropy.Content.Items.Donator
             {
                 if (Projectile.ai[1] == 0)
                 {
-                    if (EDownedBosses.downedCruiser)
+                    if (CECal.DownedDoG(EDownedBosses.downedCruiser))
                     {
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity / 16f, ModContent.ProjectileType<BloodCrack>(), Projectile.damage / 6, 0, Projectile.owner);
                     }
@@ -587,7 +632,7 @@ namespace CalamityEntropy.Content.Items.Donator
                 }
                 else
                 {
-                    if (EDownedBosses.downedCruiser)
+                    if (CECal.DownedDoG(EDownedBosses.downedCruiser))
                     {
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity.RotatedBy(MathHelper.PiOver2) / 16f / 2, ModContent.ProjectileType<BloodCrack>(), Projectile.damage / 6, 0, Projectile.owner);
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity.RotatedBy(-MathHelper.PiOver2) / 16f / 2, ModContent.ProjectileType<BloodCrack>(), Projectile.damage / 6, 0, Projectile.owner);
@@ -624,7 +669,7 @@ namespace CalamityEntropy.Content.Items.Donator
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             modifiers.SourceDamage *= 1.5f;
-            if (EDownedBosses.downedCruiser)
+            if (CECal.DownedCalamitas(EDownedBosses.downedCruiser))
             {
                 float dmgMult = Utils.Remap(CEUtils.getDistance(target.Center, Projectile.Center), 160, 300, 1.25f, 1);
                 modifiers.FinalDamage *= dmgMult;
@@ -677,7 +722,7 @@ namespace CalamityEntropy.Content.Items.Donator
             {
                 if (TlipocasScythe.AllowSpin() && Projectile.IsEmpowered())
                 {
-                    Projectile.GetOwner().Heal(EDownedBosses.downedNihilityTwin ? 10 : 7);
+                    Projectile.GetOwner().Heal(CECal.DownedPolterghast ? 10 : 7);
                 }
                 CEUtils.PlaySound("voidseekershort", 1, target.Center, 6, CEUtils.WeapSound);
                 flagS = false;
@@ -691,9 +736,9 @@ namespace CalamityEntropy.Content.Items.Donator
                 EGlobalNPC.AddVoidTouch(target, 60, 3, 1000, 12);
             }
             // 2026-08-31 平衡案:不再造成孱弱巫咒/血管爆裂/燃烧/重度出血
-            if (EDownedBosses.downedNihilityTwin)
+            if (CECal.DownedProvidence(EDownedBosses.downedNihilityTwin))
             {
-                if (EDownedBosses.downedCruiser)
+                if (CECal.DownedPrimordialWyrm)
                 {
                     target.AddBuff<LifeOppress>(60 * 3);
                 }
@@ -1049,7 +1094,7 @@ namespace CalamityEntropy.Content.Items.Donator
             if (StickOnMouse)
                 modifiers.SourceDamage /= 2.0f;
 
-            if (EDownedBosses.downedCruiser)
+            if (CECal.DownedCalamitas(EDownedBosses.downedCruiser))
             {
                 float dmgMult = Utils.Remap(CEUtils.getDistance(target.Center, Projectile.Center), 160, 300, 1.25f, 1);
                 modifiers.FinalDamage *= dmgMult;
@@ -1082,7 +1127,7 @@ namespace CalamityEntropy.Content.Items.Donator
             {
                 if (TlipocasScythe.AllowSpin() && Projectile.IsEmpowered())
                 {
-                    Projectile.GetOwner().Heal(EDownedBosses.downedNihilityTwin ? 10 : 7);
+                    Projectile.GetOwner().Heal(CECal.DownedPolterghast ? 10 : 7);
                 }
             }
             if (counter < 16 * 10)
@@ -1099,9 +1144,9 @@ namespace CalamityEntropy.Content.Items.Donator
                 EGlobalNPC.AddVoidTouch(target, 60, 3, 1000, 12);
             }
             // 2026-08-31 平衡案:不再造成孱弱巫咒/血管爆裂/燃烧/重度出血
-            if (EDownedBosses.downedNihilityTwin)
+            if (CECal.DownedProvidence(EDownedBosses.downedNihilityTwin))
             {
-                if (EDownedBosses.downedCruiser)
+                if (CECal.DownedPrimordialWyrm)
                 {
                     target.AddBuff<LifeOppress>(60 * 3);
                 }
@@ -1201,13 +1246,13 @@ namespace CalamityEntropy.Content.Items.Donator
             }
             if (Main.myPlayer == Projectile.owner)
             {
-                if (Main.mouseLeft && !player.HasCooldown(TeleportSlashCooldown.ID) && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
+                if (Main.mouseLeft && !player.HasCooldown(TeleportSlashCooldown.ID) && CECal.DownedBrimstoneElemental)
                 {
                     player.AddCooldown(TeleportSlashCooldown.ID, (EDownedBosses.downedCruiser ? 20 : 30) * 60);
                     player.Entropy().screenShift = 1f;
                     player.Entropy().screenPos = player.Center;
                     Projectile.NewProjectile(Projectile.GetSource_FromAI(), player.Center, (Projectile.Center - player.Center).SafeNormalize((Main.MouseWorld - player.Center).SafeNormalize(Vector2.UnitX)) * 16, ModContent.ProjectileType<TlipocasScytheHeld>(), (int)(Projectile.damage * TeleportSlashDamageMult * 1.25f), Projectile.knockBack, player.whoAmI, 1, 1);
-                    if (EDownedBosses.downedNihilityTwin)
+                    if (CECal.DownedPolterghast)
                     {
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), player.Center, (Projectile.Center - player.Center).SafeNormalize((Main.MouseWorld - player.Center).SafeNormalize(Vector2.UnitX)) * 16, ModContent.ProjectileType<TlipocasScytheHeld>(), (int)(Projectile.damage * TeleportSlashDamageMult * 0.5f), Projectile.knockBack, player.whoAmI, 1, 1, 1);
                         var p = PRTLoader.NewParticle<PRT_PlayerShadowBlack>(player.Center, Vector2.Zero, Color.White, 1);

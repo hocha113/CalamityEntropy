@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -50,6 +51,16 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_Voidstone))
+            {
+                CreateRecipe()
+                .AddIngredient(ModContent.ItemType<Kinanition>())
+                .AddIngredient(CEID.Item_Voidstone, 6)
+                .AddIngredient(ModContent.ItemType<ChaoticPiece>(), 6)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<Kinanition>()
                 .AddIngredient<ChaoticPiece>(10)

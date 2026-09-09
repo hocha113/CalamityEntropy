@@ -3,6 +3,7 @@ using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -15,7 +16,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.width = 22;
             Item.height = 22;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
-            Item.rare = ModContent.RarityType<NihilityBlue>();
+            Item.rare = CECal.RarityTurquoise(ModContent.RarityType<NihilityBlue>());
             Item.accessory = true;
 
         }
@@ -32,6 +33,16 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_DivineGeode, CEID.Item_Bloodstone))
+            {
+                CreateRecipe().
+                AddIngredient(CEID.Item_DivineGeode, 3).
+                AddIngredient(CEID.Item_Bloodstone, 5).
+                AddIngredient(ItemID.Ectoplasm, 3).
+                AddTile(TileID.LunarCraftingStation).
+                Register();
+                return;
+            }
             CreateRecipe().
                 AddIngredient(ItemID.Ectoplasm, 5).
                 AddIngredient(ItemID.FragmentSolar, 3).

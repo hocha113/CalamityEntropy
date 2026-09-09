@@ -1,5 +1,6 @@
 using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
@@ -96,12 +97,12 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
                 NPC.damage += 4;
                 SpiritCount += 2;
             }
-            // 难度映射:复仇→专家、死亡→大师(difficulty-map)
-            if (Main.expertMode)
+            //装灾厄读复仇/死亡,缺席仍走专家/大师兜底
+            if (CECal.IsRevengeance)
             {
                 SpiritCount += 2;
             }
-            if (Main.masterMode)
+            if (CECal.IsDeathMode)
             {
                 SpiritCount += 2;
             }
@@ -273,12 +274,12 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             {
                 enrage += 0.1f;
             }
-            // 难度映射:死亡→大师、复仇→专家(difficulty-map)
-            if (Main.masterMode)
+            //装灾厄读死亡/复仇,缺席仍走大师/专家兜底。上方原版层不动
+            if (CECal.IsDeathMode)
             {
                 enrage += 0.2f;
             }
-            else if (Main.expertMode)
+            else if (CECal.IsRevengeance)
             {
                 enrage += 0.1f;
             }

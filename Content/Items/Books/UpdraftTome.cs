@@ -5,6 +5,7 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Books
 {
@@ -26,6 +27,15 @@ namespace CalamityEntropy.Content.Items.Books
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AerialiteBar))
+            {
+                CreateRecipe()
+                .AddIngredient(CEID.Item_AerialiteBar, 6)
+                .AddIngredient<AncientScriptures>()
+                .AddTile(TileID.SkyMill)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<AncientScriptures>()
                 .AddIngredient<SpectralWhispers>()

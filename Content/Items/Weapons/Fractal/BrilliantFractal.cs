@@ -9,6 +9,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Fractal
 {
@@ -47,6 +48,15 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_StormSaber, CEID.Item_CelestialClaymore, CEID.Item_BrimstoneSword))
+            {
+                CreateRecipe().AddIngredient<WelkinFractal>()
+                .AddIngredient(CEID.Item_StormSaber)
+                .AddIngredient(CEID.Item_CelestialClaymore)
+                .AddIngredient(CEID.Item_BrimstoneSword)
+                .AddTile(TileID.MythrilAnvil).Register();
+                return;
+            }
             CreateRecipe().AddIngredient<WelkinFractal>()
                 .AddIngredient(ItemID.ChlorophyteClaymore)
                 .AddIngredient(ItemID.BreakerBlade)

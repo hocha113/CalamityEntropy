@@ -1,6 +1,7 @@
 ﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Dusts;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Donator.RocketLauncher;
 using CalamityEntropy.Content.Particles.CalamityPorts;
@@ -221,18 +222,24 @@ namespace CalamityEntropy.Content.Items.Weapons.Thalassian
         #endregion
         public static int Level()
         {
-            // 成长阶梯按 progression-map 重排：原灾厄 downed 门槛映射到自有 Boss 线与原版节点
-            // 原 14(Exo/SCal 单杀)、13(Yharon)、10(Providence) 档并入相邻节点，成为不可达档位
-            if (EDownedBosses.downedCruiser)
+            // 装灾厄走 3.33 细档(含 14/13/12/10 死档回生),无灾厄保持 4.0 形状
+            if (CECal.DownedExoMechs(EDownedBosses.downedCruiser) && CECal.DownedCalamitas(EDownedBosses.downedCruiser))
                 return 15;
-            // 原 12 档挂幽邃魔灵，该 Boss 移除后与 13、14 一样成为不可达档位
-            if (EDownedBosses.downedNihilityTwin)
+            if (CECal.DownedExoMechs(false) || CECal.DownedCalamitas(false))
+                return 14;
+            if (CECal.DownedYharon(false))
+                return 13;
+            if (CECal.DownedDoG(false))
+                return 12;
+            if ((CECal.DownedStormWeaver || CECal.DownedCeaselessVoid || CECal.DownedSignus) && CECal.DownedPolterghast)
                 return 11;
+            if (CECal.DownedProvidence(false))
+                return 10;
             if (NPC.downedMoonlord)
                 return 9;
-            if (NPC.downedGolemBoss || NPC.downedAncientCultist)
+            if (NPC.downedGolemBoss || NPC.downedAncientCultist || CECal.DownedRavager || CECal.DownedAstrumDeus)
                 return 8;
-            if (NPC.downedPlantBoss && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
+            if (NPC.downedPlantBoss && CECal.DownedCalamitasClone(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3))
                 return 7;
             if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
                 return 6;
@@ -242,9 +249,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Thalassian
                 return 4;
             if (NPC.downedQueenBee || NPC.downedBoss3)
                 return 3;
-            if (NPC.downedBoss2)
+            if (NPC.downedBoss2 || CECal.DownedPerforator || CECal.DownedHiveMind)
                 return 2;
-            if (NPC.downedBoss1 || NPC.downedSlimeKing)
+            if (NPC.downedBoss1 || CECal.DownedDesertScourge || NPC.downedSlimeKing)
                 return 1;
             return 0;
         }

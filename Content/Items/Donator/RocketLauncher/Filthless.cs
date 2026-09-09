@@ -13,6 +13,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 {
@@ -83,6 +84,17 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_DivineGeode, CEID.Item_RuinousSoul))
+            {
+                CreateRecipe()
+                .AddIngredient<Zeal>()
+                .AddIngredient<OsseousRemains>(20)
+                .AddIngredient(CEID.Item_DivineGeode, 20)
+                .AddIngredient(CEID.Item_RuinousSoul, 10)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<RustExpeditioner>()
                 .AddIngredient(ItemID.LunarBar, 10)

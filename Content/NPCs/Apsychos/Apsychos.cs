@@ -6,6 +6,7 @@ using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles.ApsychosProjs;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using InnoVault;
 using InnoVault.PRT;
@@ -265,12 +266,12 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             {
                 enrange += 0.1f;
             }
-            // 难度映射:复仇→专家、死亡→大师(difficulty-map)
-            if (Main.expertMode)
+            //装灾厄读复仇/死亡,缺席仍走专家/大师兜底。勿连带改下方 EntropyMode
+            if (CECal.IsRevengeance)
             {
                 enrange += 0.15f;
             }
-            if (Main.masterMode)
+            if (CECal.IsDeathMode)
             {
                 enrange += 0.15f;
             }

@@ -5,6 +5,7 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Books
 {
@@ -28,6 +29,15 @@ namespace CalamityEntropy.Content.Items.Books
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_AstralBar, CEID.Item_StarblightSoot))
+            {
+                CreateRecipe().AddIngredient<RedemptionBible>()
+                .AddIngredient(CEID.Item_AstralBar, 8)
+                .AddIngredient(CEID.Item_StarblightSoot, 6)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
+                return;
+            }
             CreateRecipe().AddIngredient<BurntLostClassics>()
                 .AddIngredient(ItemID.FragmentNebula, 10)
                 .AddTile(TileID.LunarCraftingStation)

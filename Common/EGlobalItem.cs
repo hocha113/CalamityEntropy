@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Common.LoreReworks;
 using CalamityEntropy.Content.ArmorPrefixes;
 using CalamityEntropy.Content.Buffs;
@@ -28,6 +29,7 @@ using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.TwistedTwin;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.UI.EntropyBookUI;
+using CalamityEntropy.Core.CalamityRef;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -87,7 +89,6 @@ namespace CalamityEntropy.Common
         public bool HasCustomStrokeColor = false;
         public List<S3Particle> particles1 = new List<S3Particle>();
         public float[] wispColor = null;
-        //脱离灾厄:骷髅王Lore的弹药省耗效果随灾厄Lore下线删除(原CanBeConsumedAsAmmo覆写)
         public readonly static Dictionary<int, int> GemItemIDToTileIDMap = new() {
             {ItemID.Ruby, TileID.Ruby },
             {ItemID.Sapphire, TileID.Sapphire },
@@ -141,6 +142,18 @@ namespace CalamityEntropy.Common
             }
         }
 
+        //装灾厄且开启骷髅王 Lore 时,弹药堆叠足够则有概率不消耗
+        public override bool CanBeConsumedAsAmmo(Item ammo, Item weapon, Player player)
+        {
+            if (CEID.Item_LoreSkeletron > 0 && LoreReworkSystem.Enabled(CEID.Item_LoreSkeletron))
+            {
+                if (ammo.stack >= LESkeletron.AmountLimit && Main.rand.NextFloat() < LESkeletron.Perc)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
         public override bool CanRightClick(Item item)
         {
@@ -1571,12 +1584,18 @@ namespace CalamityEntropy.Common
             if (item.type == ItemID.EaterOfWorldsBossBag)
             {
                 itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<CursedTorch>(), 2));
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<MindCorruptor>(), 5));
+                if (!CERef.Has)
+                {
+                    itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<MindCorruptor>(), 5));
+                }
             }
             if (item.type == ItemID.BrainOfCthulhuBossBag)
             {
                 itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<CreeperWand>(), 2));
-                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<SinewLash>(), 5));
+                if (!CERef.Has)
+                {
+                    itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<SinewLash>(), 5));
+                }
             }
             if (item.type == ItemID.EyeOfCthulhuBossBag)
             {
@@ -1699,9 +1718,8 @@ namespace CalamityEntropy.Common
                 itemLoot.Add(new CommonDrop(ModContent.ItemType<InspirationCard>(), 10, 1, 1, 3));
             }
             // —— 以下为脱离灾厄重挂（bookmark-rehang.md：原灾厄宝袋掉落改挂原版宝袋 / 自有 Boss 袋）——
-            if (item.Is<ApsychosBag>())
+            if (!CERef.Has && item.Is<ApsychosBag>())
             {
-                // 原灾厄史莱姆之神袋 1/2
                 itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkTaurus>(), 2));
             }
             if (item.Is<NihilityTwinBag>())
@@ -1714,24 +1732,162 @@ namespace CalamityEntropy.Common
             // 2026-08-31 平衡案:仙萤流光改为虚空井合成,巡游者袋来源退役
             // —— 增补段（bookmark-rehang / misc-map §五 · 表外补充裁定的原无映射条目）——
             // 2026-08-31 平衡案:苏西腕带改为海龟25%掉落,石巨人袋来源退役
-            if (item.type == ItemID.MoonLordBossBag)
+            if (!CERef.Has && item.type == ItemID.MoonLordBossBag)
             {
-                // 原灾厄亵渎卫士袋宠物（18.5→ML 档）
                 itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<LavaPancake>(), 10));
             }
             if (item.type == ItemID.ObsidianLockbox)
             {
                 itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<EnduranceCard>(), 3));
             }
-            // 原挂在灾厄新手包（StarterBag）上的开局注入已定稿分流：IGetFromStarterBag 物品经 StartBagGItem
-            // 注入自有礼包「熵之馈赠」，MagicStorage/ImproveGame 便利注入重挂 EntropyStarterBag.ModifyItemLoot（2026-08-27）
+            RegisterCalamityBagLoot(item, itemLoot);
         }
-        // 难度映射定稿（difficulty-map.md）：灾厄死亡模式 → 原版大师模式
+
+        private static void RegisterCalamityBagLoot(Item item, ItemLoot itemLoot)
+        {
+            if (!CERef.Has)
+            {
+                return;
+            }
+            if (CEID.Item_HiveMindBag > 0 && item.type == CEID.Item_HiveMindBag)
+            {
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<MindCorruptor>(), 3));
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<BookMarkAerialite>(), 2, 1, 1, 1));
+            }
+            if (CEID.Item_PerforatorBag > 0 && item.type == CEID.Item_PerforatorBag)
+            {
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<SinewLash>(), 3));
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<BookMarkAerialite>(), 2, 1, 1, 1));
+            }
+            if (CEID.Item_LeviathanBag > 0 && item.type == CEID.Item_LeviathanBag)
+            {
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<BookMarkAquarius>(), 2, 1, 1, 1));
+            }
+            if (CEID.Item_AstrumDeusBag > 0 && item.type == CEID.Item_AstrumDeusBag)
+            {
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<BookMarkAstral>(), 2, 1, 1, 1));
+                itemLoot.Add(ItemDropRule.ByCondition(new IsDeathMode(), ModContent.ItemType<DeusCore>()));
+            }
+            if (CEID.Item_YharonBag > 0 && item.type == CEID.Item_YharonBag)
+            {
+                itemLoot.Add(ItemDropRule.ByCondition(new FlowingLightDonorCondition(), ModContent.ItemType<FlowingLight>()));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAuric>(), 4));
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<Vitalfeather>(), 4, 1, 1, 1));
+            }
+            if (CEID.Item_BrimstoneElementalBag > 0 && item.type == CEID.Item_BrimstoneElementalBag)
+            {
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<BookMarkBrimstone>(), 2, 1, 1, 1));
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<EvilFriend>(), 9, 1, 1, 4));
+            }
+            if (CEID.Item_CrabulonBag > 0 && item.type == CEID.Item_CrabulonBag)
+            {
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<BookmarkSpore>(), 5, 1, 1, 2));
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<BookMarkCancer>(), 5, 1, 1, 2));
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<BlueFlatTopMushroom>(), 5, 1, 1, 2));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<WisperCard>(), 2));
+            }
+            if (CEID.Item_AquaticScourgeBag > 0 && item.type == CEID.Item_AquaticScourgeBag)
+            {
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<BookMarkCapricorn>(), 2, 1, 1, 1));
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<AquaticFlute>(), 3, 1, 1, 1));
+            }
+            if (CEID.Item_CryogenBag > 0 && item.type == CEID.Item_CryogenBag)
+            {
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<BookMarkIce>(), 2, 1, 1, 1));
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<FrostboundCage>(), 5, 1, 1, 2));
+            }
+            if (CEID.Item_DesertScourgeBag > 0 && item.type == CEID.Item_DesertScourgeBag)
+            {
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<BookMarkLeo>(), 2, 1, 1, 1));
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<AntlionShell>(), 3, 1, 1, 1));
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<DustyWhistle>(), 4, 1, 1, 1));
+            }
+            if (CEID.Item_CalamitasCoffer > 0 && item.type == CEID.Item_CalamitasCoffer)
+            {
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkPactOfDecay>()));
+            }
+            if (CEID.Item_DraedonBag > 0 && item.type == CEID.Item_DraedonBag)
+            {
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkPactOfWar>()));
+            }
+            if (CEID.Item_ProvidenceBag > 0 && item.type == CEID.Item_ProvidenceBag)
+            {
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<BookMarkProfaned>(), 5, 1, 1, 3));
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<SacredStone>(), 5, 1, 1, 3));
+            }
+            if (CEID.Item_AstrumAureusBag > 0 && item.type == CEID.Item_AstrumAureusBag)
+            {
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<BookMarkScorpio>(), 2, 1, 1, 1));
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<NightProjection>(), 9, 1, 1, 4));
+            }
+            if (CEID.Item_PolterghastBag > 0 && item.type == CEID.Item_PolterghastBag)
+            {
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<AnimaSola>(), 2, 1, 1, 1));
+            }
+            if (CEID.Item_StormWeaverBag > 0 && item.type == CEID.Item_StormWeaverBag)
+            {
+                itemLoot.Add(ItemDropRule.ByCondition(new IsDeathMode(), ModContent.ItemType<HeartOfStorm>()));
+            }
+            if (CEID.Item_SlimeGodBag > 0 && item.type == CEID.Item_SlimeGodBag)
+            {
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkTaurus>(), 2));
+            }
+            if (CEID.Item_CeaselessVoidBag > 0 && item.type == CEID.Item_CeaselessVoidBag)
+            {
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BottleDarkMatter>(), 4));
+            }
+            if (CEID.Item_DevourerofGodsBag > 0 && item.type == CEID.Item_DevourerofGodsBag)
+            {
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkCosmic>(), 2));
+            }
+            if (CEID.Item_PlaguebringerGoliathBag > 0 && item.type == CEID.Item_PlaguebringerGoliathBag)
+            {
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<PlagueInternalCombustionEngine>(), 4));
+            }
+            if (CEID.Item_CalamitasCloneBag > 0 && item.type == CEID.Item_CalamitasCloneBag)
+            {
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkOfNight>()));
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<FriendBox>(), 5));
+            }
+            if (CEID.Item_HydrothermalCrate > 0 && item.type == CEID.Item_HydrothermalCrate)
+            {
+                itemLoot.Add(new CommonDrop(ModContent.ItemType<EnduranceCard>(), 5, 1, 1, 1));
+            }
+        }
+        //掉落条件包装。真值来自 CECal.IsDeathMode,无灾厄仍兜底大师
         public class IsDeathMode : IItemDropRuleCondition, IProvideItemConditionDescription
         {
-            public bool CanDrop(DropAttemptInfo info) => Main.masterMode;
-            public bool CanShowItemDropInUI() => Main.masterMode;
+            public bool CanDrop(DropAttemptInfo info) => CECal.IsDeathMode;
+            public bool CanShowItemDropInUI() => CECal.IsDeathMode;
             public string GetConditionDescription() => Language.GetTextValue("Mods.CalamityEntropy.DeathMode");
         }
+    }
+
+    public class FlowingLightDonorCondition : IItemDropRuleCondition, IProvideItemConditionDescription
+    {
+        public bool CanDrop(DropAttemptInfo info)
+        {
+            if (info.player == null)
+            {
+                return false;
+            }
+            return info.player.name == "仙萤流光" || info.player.name == "五彩斑斓的黑";
+        }
+        public bool CanShowItemDropInUI() => false;
+        public string GetConditionDescription() => null;
+    }
+
+    public class PreMoonLordCondition : IItemDropRuleCondition, IProvideItemConditionDescription
+    {
+        public bool CanDrop(DropAttemptInfo info) => !NPC.downedMoonlord;
+        public bool CanShowItemDropInUI() => !NPC.downedMoonlord;
+        public string GetConditionDescription() => null;
+    }
+
+    public class AquaticScourgeDownedCondition : IItemDropRuleCondition, IProvideItemConditionDescription
+    {
+        public bool CanDrop(DropAttemptInfo info) => CECal.DownedAquaticScourge;
+        public bool CanShowItemDropInUI() => true;
+        public string GetConditionDescription() => null;
     }
 }

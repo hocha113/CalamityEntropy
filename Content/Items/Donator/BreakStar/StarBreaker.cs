@@ -18,6 +18,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator.BreakStar
 {
@@ -41,7 +42,7 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
         {
             // 灾厄原料按 material-map.md 表外兜底：Nadir（原犽戎档终局近战）→自有巡游者掉落近战 VoidAnnihilate
             CreateRecipe()
-                .AddIngredient<VoidAnnihilate>()
+                .AddCalOrOwn(CEID.Item_Nadir, ModContent.ItemType<VoidAnnihilate>())
                 .AddIngredient<FadingRunestone>()
                 .AddIngredient(ItemID.FragmentNebula, 4)
                 .AddIngredient(ItemID.FragmentSolar, 4)

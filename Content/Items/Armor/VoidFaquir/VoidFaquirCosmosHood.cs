@@ -3,6 +3,7 @@ using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
 {
@@ -51,6 +52,15 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
 
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_TwistingNether))
+            {
+                CreateRecipe()
+                .AddIngredient(ModContent.ItemType<VoidBar>(), 14)
+                .AddIngredient(CEID.Item_TwistingNether, 4)
+                .AddTile(ModContent.TileType<VoidWellTile>())
+                .Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<VoidBar>(), 12)
                 .AddTile(ModContent.TileType<VoidWellTile>())

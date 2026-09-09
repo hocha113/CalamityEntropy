@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.NPCs.LuminarisMoth;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -31,8 +32,8 @@ namespace CalamityEntropy.Content.Items
 
         public override bool CanUseItem(Player player)
         {
-            // 仅限夜晚,不再要求发光蘑菇群系(星辉鳞尘仍在夜间蘑菇地刷,但开打地点放开)
-            return !NPC.AnyNPCs(ModContent.NPCType<Luminaris>()) && !Main.dayTime;
+            //地点/夜晚门槛冻结。只补终焉之战互斥,不改回星辉群系
+            return !NPC.AnyNPCs(ModContent.NPCType<Luminaris>()) && !Main.dayTime && !CECal.IsBossRushActive;
         }
 
         public override bool? UseItem(Player player)
@@ -47,6 +48,15 @@ namespace CalamityEntropy.Content.Items
         }
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_StarblightSoot))
+            {
+                CreateRecipe().
+                AddIngredient(CEID.Item_StarblightSoot, 6).
+                AddIngredient(ItemID.FallenStar, 2).
+                AddTile(TileID.WorkBenches).
+                Register();
+                return;
+            }
             CreateRecipe()
                 .AddIngredient<StarlitScaleDust>(6)
                 .AddIngredient(ItemID.HallowedBar, 4)

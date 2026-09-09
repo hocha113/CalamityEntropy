@@ -6277,7 +6277,6 @@ NPCs: {
 	}
 
 	CruiserBody.DisplayName: Cruiser
-
 	VoidCultistAssassin.DisplayName: Void Cultist Assassin
 	VoidPope.DisplayName: Void Pope
 	VoidPopeHand.DisplayName: Void Pope Hand

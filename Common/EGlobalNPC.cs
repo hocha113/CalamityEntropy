@@ -1489,8 +1489,9 @@ namespace CalamityEntropy.Common
             }
             if (shop.NpcType == 108)
             {
-                // 命运之绳原挂灾厄大法师货架,脱钩时随该 NPC 一并删除,现无条件重挂到原版巫师
+                // 命运之绳与大法师手镜原挂灾厄大法师货架,脱钩时随该 NPC 一并删除,现重挂到原版巫师
                 shop.Add(ModContent.ItemType<ThreadOfFate>());
+                shop.Add(ModContent.ItemType<ArchmagesHandmirror>(), Condition.DownedMoonLord);
 
                 shop.Add(ModContent.ItemType<AuraCard>(), new Condition(Mod.GetLocalization("HaveOracleDeck"), () => Main.LocalPlayer.Entropy().oracleDeckInInv));
                 shop.Add(ModContent.ItemType<BrillianceCard>(), new Condition(Mod.GetLocalization("HaveOracleDeck"), () => Main.LocalPlayer.Entropy().oracleDeckInInv));

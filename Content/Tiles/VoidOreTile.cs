@@ -24,7 +24,9 @@ namespace CalamityEntropy.Content.Tiles
             base.DustType = 173;
             AddMapEntry(Color.DarkBlue, CreateMapEntryName());
             base.MineResist = 5f;
-            base.MinPick = 250;
+            // 原为 250,超过原版镐力上限(夜明/四柱系均为 225),正常流程里没有任何镐子挖得动;
+            // 判定是 pickPower < MinPick 才失败,取 225 正好让四柱镐可挖
+            base.MinPick = 225;
             // 脱离灾厄:原灾厄 AuricMine,按 sound-map 替换
             base.HitSound = SoundID.Tink with { Pitch = 0.3f, PitchVariance = 0.25f };
         }

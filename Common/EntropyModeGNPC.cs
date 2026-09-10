@@ -16,12 +16,15 @@ namespace CalamityEntropy.Common
         private static readonly HashSet<int> tetherNPCs = new HashSet<int>();
         private static readonly HashSet<int> slimeGodSlimes = new HashSet<int>();
         private static readonly HashSet<int> dogSegments = new HashSet<int>();
+        //3.33 CheckActive 永不脱战:三哨兵本体 + 编织者体节/尾。不并进 tetherNPCs,避免 PreAI 拉绳扩大到体节
+        private static readonly HashSet<int> sentinelStayNPCs = new HashSet<int>();
 
         internal static void FillCalTypes()
         {
             tetherNPCs.Clear();
             slimeGodSlimes.Clear();
             dogSegments.Clear();
+            sentinelStayNPCs.Clear();
             AddIfFound(tetherNPCs, CEID.NPC_Signus);
             AddIfFound(tetherNPCs, CEID.NPC_CeaselessVoid);
             AddIfFound(tetherNPCs, CEID.NPC_StormWeaverHead);
@@ -32,6 +35,11 @@ namespace CalamityEntropy.Common
             AddIfFound(dogSegments, CEID.NPC_DevourerofGodsHead);
             AddIfFound(dogSegments, CEID.NPC_DevourerofGodsBody);
             AddIfFound(dogSegments, CEID.NPC_DevourerofGodsTail);
+            AddIfFound(sentinelStayNPCs, CEID.NPC_Signus);
+            AddIfFound(sentinelStayNPCs, CEID.NPC_CeaselessVoid);
+            AddIfFound(sentinelStayNPCs, CEID.NPC_StormWeaverHead);
+            AddIfFound(sentinelStayNPCs, CEID.NPC_StormWeaverBody);
+            AddIfFound(sentinelStayNPCs, CEID.NPC_StormWeaverTail);
         }
 
         internal static void ClearCalTypes()
@@ -39,6 +47,12 @@ namespace CalamityEntropy.Common
             tetherNPCs.Clear();
             slimeGodSlimes.Clear();
             dogSegments.Clear();
+            sentinelStayNPCs.Clear();
+        }
+
+        internal static bool IsSlimeGodSlime(int type)
+        {
+            return slimeGodSlimes.Contains(type);
         }
 
         private static void AddIfFound(HashSet<int> set, int type)
@@ -79,9 +93,19 @@ namespace CalamityEntropy.Common
             return true;
         }
 
-        //3.33 对史莱姆之神四体的永不脱战在 CheckActive 最外层,与熵灾模式无关
+        //3.33:熵灾开且有活玩家时,三哨兵(含编织者体节/尾)永不脱战;史莱姆四体在最外层、不看熵灾
         public override bool CheckActive(NPC npc)
         {
+            if (CalamityEntropy.EntropyMode && CERef.Has && sentinelStayNPCs.Contains(npc.type))
+            {
+                foreach (Player plr in Main.ActivePlayers)
+                {
+                    if (!plr.dead)
+                    {
+                        return false;
+                    }
+                }
+            }
             return !slimeGodSlimes.Contains(npc.type);
         }
 

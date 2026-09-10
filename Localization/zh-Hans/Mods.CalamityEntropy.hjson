@@ -4891,6 +4891,7 @@ NihArmorConnet:
 LOCKED: ：[已锁定]
 BCU1: 需击败史莱姆王
 BCU2: 需击败血肉宿主或腐巢意志
+BCU2Own: 需击败世界吞噬怪或克苏鲁之脑
 BCU3: 需击败血肉墙
 BCU4: 需击败世纪之花
 BCC1: 右键后经短暂前摇后伸出藤蔓刺出
@@ -6993,9 +6994,11 @@ TScytheZenithDesc: “为我加冕，我的王，世界将迎来终夜。”
 TScytheDesc: “猩红的镰刀，小死神的灵魂附着其上”
 TSA1: 按住[上]发动攻击时会向鼠标方向突进一段距离
 TSA1B: 击败烬甲秽魔后可以获得无敌时间并对接触到的目标造成伤害
+TSA1BCal: 击败史莱姆之神后可以获得无敌时间并对接触到的目标造成伤害
 TSU1: 需击败克苏鲁之眼
 TSA2: 右键将镰刀丢出，造成多次伤害
 TSA2B: 击败三大机械Boss后，在丢出时按下左键将传送到鼠标处并发动一次较大的斩击，该技能有30秒冷却时间，在击败巡游者后将降为20秒
+TSA2BCal: 击败硫磺火元素后，在丢出时按下左键将传送到鼠标处并发动一次较大的斩击，该技能有30秒冷却时间，在击败巡游者后将降为20秒
 TSU2: 需击败任意邪恶Boss
 TSA3:
 	'''
@@ -7011,15 +7014,19 @@ TSA5:
 	大招命中的治疗量增加至10
 	'''
 TSU5: 需击败虚无双子
+TSU5Cal: 需击败噬魂幽花
 TSA6: 冲刺时留下裂缝，持续对接触到的目标造成伤害
 TSU6: 需击败巡游者
+TSU6Cal: 需击败神明吞噬者
 TSA7: 抵挡一次致命伤害并将你的生命值回复至最大生命值的一半，此效果有5分钟的冷却
 TSU7: 需击败巡游者
+TSU7Cal: 需击败犽狨
 TSA8: 攻击造成虚空之触
 TSU8: 需击败巡游者
 TSA9: 与目标之间的距离越近，造成的伤害越高，最高额外造成25%伤害
 PressShiftForMoreInfo: 按住Shift查看详细信息...
 TSU9: 需击败巡游者
+TSU9Cal: 需击败至尊灾厄
 AchievementBookmarkInsertName: 良好的阅读习惯
 AchievementBookmarkInsertDesc: 将任意书签放入一本熵语之书
 LMDialog1: 你好，如你所见，我是一台抽奖机
@@ -7053,6 +7060,7 @@ DungeonEnemiesDrop: 掉落自地牢敌怪
 VoidOreMine: 击败巡游者后在太空层挖取
 AbyssalPiercerObt: 在困难模式的海洋钓鱼获取
 AstralFishing: 星辉地钓鱼获取
+EvilFishing: 腐化之地或猩红之地钓鱼获取
 AzafureSet:
 	'''
 	穿着此盔甲时所有阿萨福勒装备将获得部分强化

@@ -23,15 +23,21 @@ TlipocasScytheLegend: {
 	Downed: {
 		TScytheU1: Победить глаз Ксавье
 		TScytheU1B: Победить Бога Слейма
+		TScytheU1BCal: Победить Бога Слейма
 		TScytheU2: Преодоление произвольного зла Boss
 		TScytheU2B: Преодоление серных огненных элементов.
+		TScytheU2BCal: Преодоление серных огненных элементов.
 		TScytheU3: Победить пророка
 		TScytheU4: Победить нигде Близнецов
 		TScytheU5: Победить фантомов
+		TScytheU5Cal: Победить фантомов
 		TScytheU6: Победить Крейсера
+		TScytheU6Cal: Победить Пожирателя Богов
 		TScytheU7: Поражение игрунки
+		TScytheU7Cal: Поражение игрунки
 		TScytheU8: Победить патруля
 		TScytheU9: Преодолеть высшую беду
+		TScytheU9Cal: Преодолеть высшую беду
 		TWOF: Нужно победить плоть и кровь.
 		TALLMECHBOSS: Уничтожить все машины Boss
 		TLevel2: Требуется уровень 2

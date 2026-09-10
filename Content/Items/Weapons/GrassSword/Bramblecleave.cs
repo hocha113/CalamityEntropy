@@ -252,7 +252,8 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
             tooltips.Replace("[C4]", Mod.GetLocalization("BCC4").Value);
 
             tooltips.Replace("[U1]", AllowLunge() ? "" : Mod.GetLocalization("LOCKED").Value + " " + Mod.GetLocalization("BCU1").Value);
-            tooltips.Replace("[U2]", AllowPull() ? "" : Mod.GetLocalization("LOCKED").Value + " " + Mod.GetLocalization("BCU2").Value);
+            string pullLockKey = CERef.Has ? "BCU2" : "BCU2Own";
+            tooltips.Replace("[U2]", AllowPull() ? "" : Mod.GetLocalization("LOCKED").Value + " " + Mod.GetLocalization(pullLockKey).Value);
             tooltips.Replace("[U3]", AllowStick() ? "" : Mod.GetLocalization("LOCKED").Value + " " + Mod.GetLocalization("BCU3").Value);
             tooltips.Replace("[U4]", AllowSpin() ? "" : Mod.GetLocalization("LOCKED").Value + " " + Mod.GetLocalization("BCU4").Value);
 

@@ -3975,7 +3975,11 @@ namespace CalamityEntropy.Common
                 //脱离灾厄:原灾厄infiniteFlight,改为每帧回满飞行时间的自研等价
                 Player.wingTime = Player.wingTimeMax;
             }
-            // 2026-08-31 平衡案:无垠重做,强化魔力贡献退役(魔流改为+3%魔法暴击伤害/层)
+            // 3.33 有灾厄:Vast ExtraManaLv 按原 GetEnhancedMana(0.04f/层) 进强化魔力。4.0 魔流不走此通道,只加暴击伤害
+            if (CERef.Has)
+            {
+                enhancedMana += 0.04f * Player.GetModPlayer<VastMPlayer>().ExtraManaLv;
+            }
             // 2026-08-31 平衡案:堕化卡组自然再生惩罚改为-100%(见 UpdateLifeRegen),原30%惩罚退役
             if (shadowRune)
             {

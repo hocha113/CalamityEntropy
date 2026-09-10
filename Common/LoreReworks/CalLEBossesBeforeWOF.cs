@@ -33,7 +33,7 @@ namespace CalamityEntropy.Common.LoreReworks
             {
                 return;
             }
-            //EModPlayer.DashCD 已随自研冲刺框架删除,实效见 CROSS-BATCH
+            //3.33 实效只有 DashCD;字段已随自研冲刺删除,无其它可复原效果,维持空壳待办
         }
         public override void ModifyTooltip(TooltipLine tooltip)
         {

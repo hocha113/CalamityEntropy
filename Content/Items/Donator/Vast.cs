@@ -48,7 +48,8 @@ namespace CalamityEntropy.Content.Items.Donator
                 }
                 return;
             }
-            int level = (int)MathHelper.Clamp(Level(), 0, 5);
+            //有灾厄不按 4.0 魔流 0-5 夹断;3.33 Level() 满档(幽花)是 7
+            int level = Level();
             player.manaFlower = true;
             if (player.HasBuff(BuffID.ManaRegeneration))
             {
@@ -84,6 +85,7 @@ namespace CalamityEntropy.Content.Items.Donator
         {
             if (!CERef.Has)
             {
+                //占位:无灾厄支不读本方法
                 return 0;
             }
             if (CECal.DownedPolterghast)
@@ -122,6 +124,7 @@ namespace CalamityEntropy.Content.Items.Donator
         public int ManaCostCount = 0;
         public int ExtraManaLv = 0;
         public int ExtraManaTime = 0;
+        public bool BossClearFlag = false;
         public int LastMana = 0;
         /// <summary>魔力药水缓回:剩余帧与总池。</summary>
         public int PotRegenTime = 0;
@@ -129,8 +132,8 @@ namespace CalamityEntropy.Content.Items.Donator
 
         public override void GetHealMana(Item item, bool quickHeal, ref int healValue)
         {
-            // 饮用魔力药水后2秒内缓慢额外恢复其20%的魔力
-            if (healValue > 0 && Player.Entropy().hasAcc("Vast"))
+            //4.0 魔流药水缓回;有灾厄不跑(3.33 无此钩)
+            if (!CERef.Has && healValue > 0 && Player.Entropy().hasAcc("Vast"))
             {
                 PotRegenPool = (int)(healValue * 0.2f);
                 PotRegenTime = 120;
@@ -150,63 +153,127 @@ namespace CalamityEntropy.Content.Items.Donator
                 ManaCostCount += LastMana - Player.statMana;
                 LastMana = Player.statMana;
             }
-            if (!Player.Entropy().hasAcc("Vast"))
+            if (!CERef.Has)
+            {
+                if (!Player.Entropy().hasAcc("Vast"))
+                {
+                    ExtraManaLv = 0;
+                    ExtraManaTime = 0;
+                    PotRegenTime = 0;
+                    return;
+                }
+                // 药水缓回:2秒内分10跳补足池子
+                if (PotRegenTime > 0)
+                {
+                    PotRegenTime--;
+                    if (PotRegenTime % 12 == 0 && PotRegenPool > 0)
+                    {
+                        int chunk = int.Max(1, PotRegenPool / 10);
+                        Player.statMana = int.Min(Player.statManaMax2, Player.statMana + chunk);
+                    }
+                }
+                // 每消耗250魔力叠一层魔流,至多5层
+                if (ManaCostCount >= Vast.ManaPerStack)
+                {
+                    ManaCostCount -= Vast.ManaPerStack;
+                    if (ExtraManaLv < Vast.MaxManaStacks)
+                    {
+                        ExtraManaLv++;
+                    }
+                    ExtraManaTime = 15 * 60;
+                }
+                if (ManaCostCount < 0)
+                {
+                    ManaCostCount = 0;
+                }
+                if (ExtraManaTime-- <= 0)
+                {
+                    ExtraManaLv = 0;
+                }
+                if (ExtraManaLv > 0)
+                {
+                    Player.AddBuff(ModContent.BuffType<ManaVein>(), 2);
+                }
+                SpawnManaFlowSmoke(Vast.MaxManaStacks);
+                return;
+            }
+
+            //3.33:VastLV3 起叠 ExtraManaLv;不挂 4.0 ManaVein 图标
+            if (!Player.Entropy().hasAcc("VastLV3"))
             {
                 ExtraManaLv = 0;
                 ExtraManaTime = 0;
-                PotRegenTime = 0;
                 return;
             }
-            // 药水缓回:2秒内分10跳补足池子
-            if (PotRegenTime > 0)
+            if (!BossClearFlag && Main.CurrentFrameFlags.AnyActiveBossNPC && !CECal.IsBossRushActive)
             {
-                PotRegenTime--;
-                if (PotRegenTime % 12 == 0 && PotRegenPool > 0)
-                {
-                    int chunk = int.Max(1, PotRegenPool / 10);
-                    Player.statMana = int.Min(Player.statManaMax2, Player.statMana + chunk);
-                }
+                ExtraManaTime = 0;
+                Player.ClearBuff(ModContent.BuffType<ManaVein>());
             }
-            // 每消耗250魔力叠一层魔流,至多5层
-            if (ManaCostCount >= Vast.ManaPerStack)
+            BossClearFlag = Main.CurrentFrameFlags.AnyActiveBossNPC;
+            if (ManaCostCount > 150 + Player.statManaMax / 10)
             {
-                ManaCostCount -= Vast.ManaPerStack;
-                if (ExtraManaLv < Vast.MaxManaStacks)
+                if (ExtraManaLv < 5)
                 {
                     ExtraManaLv++;
                 }
                 ExtraManaTime = 15 * 60;
+                if (ExtraManaLv == 5)
+                {
+                    ExtraManaTime = 15 * 60 * 5;
+                }
+                ManaCostCount -= 150 + Player.statManaMax / 10;
             }
             if (ManaCostCount < 0)
+            {
                 ManaCostCount = 0;
+            }
             if (ExtraManaTime-- <= 0)
             {
                 ExtraManaLv = 0;
             }
-            if (ExtraManaLv > 0)
+            if (Player.Entropy().hasAcc("VastLV3"))
             {
-                Player.AddBuff(ModContent.BuffType<ManaVein>(), 2);
+                Player.endurance += (Player.statManaMax2 - Player.Entropy().manaNorm) * 0.0003f;
             }
+            if (Player.Entropy().hasAcc("VastLV5") && NPC.downedMoonlord)
+            {
+                Player.GetCritChance(DamageClass.Magic) += ExtraManaLv;
+                Player.AddCritDamage(DamageClass.Magic, 0.03f * ExtraManaLv);
+            }
+            SpawnManaFlowSmoke(5);
+        }
+
+        private void SpawnManaFlowSmoke(int maxStacks)
+        {
             for (int i = 0; i < ExtraManaLv; i++)
             {
                 if (Main.rand.NextBool())
                 {
                     //PRT_HeavySmokeCal CalamityPorts,Configure签名对齐Calamity原构造
                     PRTLoader.NewParticle<PRT_HeavySmokeCal>(Player.Center + new Vector2(Main.rand.NextFloat(-3, 3), Player.height / 2) + CEUtils.randomVec(1), CEUtils.randomVec(1), new Color(100, 100, 255), 0.16f).Configure(1, 40, 0.1f, true, 0, true);
-
                 }
             }
-            if (ExtraManaLv >= Vast.MaxManaStacks)
+            if (ExtraManaLv >= maxStacks)
             {
                 PRTLoader.NewParticle<PRT_HeavySmokeCal>(CEUtils.randomPoint(Player.getRect()), Player.velocity * 0.2f + CEUtils.randomVec(1), new Color(100, 100, 255), 0.2f).Configure(1, 40, 0.1f, true, 0, true);
             }
-
         }
+
         public override void DrawEffects(PlayerDrawSet drawInfo, ref float r, ref float g, ref float b, ref float a, ref bool fullBright)
         {
+            //两侧 ExtraManaLv 语义不同,染色公式相同;0 层不染色
             r = float.Lerp(r, 0.5f, ExtraManaLv / 5f);
             g = float.Lerp(g, 0.5f, ExtraManaLv / 5f);
             b = float.Lerp(b, 1, ExtraManaLv / 5f);
+        }
+
+        public override void OnConsumeMana(Item item, int manaConsumed)
+        {
+            if (Player.HasBuff<ManaAwaken>())
+            {
+                Player.HealMana(manaConsumed * 2);
+            }
         }
     }
 }

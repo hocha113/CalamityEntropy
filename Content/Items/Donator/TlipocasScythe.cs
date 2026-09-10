@@ -169,6 +169,21 @@ namespace CalamityEntropy.Content.Items.Donator
                 tooltips.QuickAddTooltip($"{pathBase}TlipocazKilledNPCNot", Color.Gray, LineName: "CanNotKileldNPC");
             HandleLoreAndLevel(tooltips, pathLore);
         }
+        /// <summary>Shift 详表:装灾厄读 *Cal 键(3.33 灾厄 Boss 名),无灾厄读 4.0 原键</summary>
+        private string GetGate(string key)
+        {
+            if (CERef.Has)
+            {
+                return Mod.GetLocalization(key + "Cal").Value;
+            }
+            return Mod.GetLocalization(key).Value;
+        }
+        /// <summary>Alt 翻页锁定句同样按 CERef.Has 分发;无对应 Cal 键时保持 4.0</summary>
+        private static string GateDowned(string pathCondition, string suffix)
+        {
+            bool useCal = CERef.Has && (suffix == "1B" || suffix == "2B" || suffix == "5" || suffix == "6" || suffix == "7" || suffix == "9");
+            return (pathCondition + suffix + (useCal ? "Cal" : "")).ToLangValue();
+        }
         private void HandleHoldShift(List<TooltipLine> tooltips)
         {
             string Get(string key)
@@ -181,7 +196,7 @@ namespace CalamityEntropy.Content.Items.Donator
             { OverrideColor = flag ? Color.Yellow : Color.Gray });
 
             flag = CECal.DownedSlimeGod;
-            tooltips.Add(new TooltipLine(Mod, "Ability Desc", Get("TSA1B"))
+            tooltips.Add(new TooltipLine(Mod, "Ability Desc", GetGate("TSA1B"))
             { OverrideColor = flag ? Color.Yellow : Color.Gray });
 
             flag = AllowThrow();
@@ -190,7 +205,7 @@ namespace CalamityEntropy.Content.Items.Donator
             { OverrideColor = (flag ? Color.Yellow : Color.Gray) });
 
             flag = CECal.DownedBrimstoneElemental;
-            tooltips.Add(new TooltipLine(Mod, "Ability Desc", Get("TSA2B"))
+            tooltips.Add(new TooltipLine(Mod, "Ability Desc", GetGate("TSA2B"))
             { OverrideColor = (flag ? Color.Yellow : Color.Gray) });
 
             flag = EDownedBosses.downedProphet;
@@ -205,18 +220,18 @@ namespace CalamityEntropy.Content.Items.Donator
 
             flag = CECal.DownedPolterghast;
             tooltips.Add(new TooltipLine(Mod, "Ability Desc",
-                Get("TSA5") + (flag ? "" : Get("LOCKED") + " " + Get("TSU5")))
+                Get("TSA5") + (flag ? "" : Get("LOCKED") + " " + GetGate("TSU5")))
             { OverrideColor = (flag ? Color.Yellow : Color.Gray) });
 
             // 灾厄在场读神明吞噬者,缺席回落巡游者
             flag = CECal.DownedDoG(EDownedBosses.downedCruiser);
             tooltips.Add(new TooltipLine(Mod, "Ability Desc",
-                Get("TSA6") + (flag ? "" : Get("LOCKED") + " " + Get("TSU6")))
+                Get("TSA6") + (flag ? "" : Get("LOCKED") + " " + GetGate("TSU6")))
             { OverrideColor = (flag ? Color.Yellow : Color.Gray) });
 
             flag = CECal.DownedYharon(EDownedBosses.downedCruiser);
             tooltips.Add(new TooltipLine(Mod, "Ability Desc",
-                Get("TSA7") + (flag ? "" : Get("LOCKED") + " " + Get("TSU7")))
+                Get("TSA7") + (flag ? "" : Get("LOCKED") + " " + GetGate("TSU7")))
             { OverrideColor = (flag ? Color.Yellow : Color.Gray) });
 
             flag = EDownedBosses.downedCruiser;
@@ -226,7 +241,7 @@ namespace CalamityEntropy.Content.Items.Donator
 
             flag = CECal.DownedCalamitas(EDownedBosses.downedCruiser);
             tooltips.Add(new TooltipLine(Mod, "Ability Desc",
-                Get("TSA9") + (flag ? "" : Get("LOCKED") + " " + Get("TSU9")))
+                Get("TSA9") + (flag ? "" : Get("LOCKED") + " " + GetGate("TSU9")))
             { OverrideColor = (flag ? Color.Yellow : Color.Gray) });
         }
         #region Lore，与等级
@@ -277,16 +292,17 @@ namespace CalamityEntropy.Content.Items.Donator
             string lockedValue = lockedPath.ToLangValue();
             //冷却30/20秒已写进A2B文案本体;原ToFormatValue无占位符是no-op且携带错误数值(10/15),一并移除
             string allowTeleportSlice = $"{pathAbility}2B".ToLangValue();
-            string downedBrimmyText = $"{lockedValue} {$"{pathCondition}2B".ToLangValue()})";
+            string downedBrimmyText = $"{lockedValue} {GateDowned(pathCondition, "2B")}";
 
             //错位修正:虚空赋能段应读A4(原误读A5影子斩击);赋能8/15秒与+20%已写进A4文案本体
             string enchanted = $"{pathAbility}4".ToLangValue();
-            string downedPolterText = $"{lockedValue} {$"{pathCondition}5".ToLangValue()})";
+            string downedPolterText = $"{lockedValue} {GateDowned(pathCondition, "5")}";
 
             bool downedDoG = CECal.DownedDoG(EDownedBosses.downedCruiser);
-            string dogText = DyeText(downedDoG ? $"{pathAbility}6".ToLangValue() : $"{lockedValue} {$"{pathCondition}6".ToLangValue()})", downedDoG ? Color.Yellow : Color.Gray);
+            string dogText = DyeText(downedDoG ? $"{pathAbility}6".ToLangValue() : $"{lockedValue} {GateDowned(pathCondition, "6")}", downedDoG ? Color.Yellow : Color.Gray);
 
-            allowTeleportSlice = NPC.downedBoss1 ? DyeText(allowTeleportSlice, Color.Yellow) : DyeText(downedBrimmyText + "\n" + allowTeleportSlice, Color.Gray);
+            //与 Shift 页 TSA2B / 真实传送门槛对齐,不再用克眼给传送行上色
+            allowTeleportSlice = CECal.DownedBrimstoneElemental ? DyeText(allowTeleportSlice, Color.Yellow) : DyeText(downedBrimmyText + "\n" + allowTeleportSlice, Color.Gray);
             enchanted = CECal.DownedPolterghast ? DyeText(enchanted, Color.Yellow) : DyeText(downedPolterText + "\n" + enchanted, Color.Gray);
 
             string combination = DyeText(titleText, Color.Crimson)
@@ -300,10 +316,10 @@ namespace CalamityEntropy.Content.Items.Donator
             string titleText = $"{CEUtils.LocalPrefix}.LegendaryAbility.{GetType().Name}Legend.Conditions.DashTitle".ToLangValue();
             string lockedValue = lockedPath.ToLangValue();
             string allowDashText = $"{pathAbility}1".ToLangValue();
-            string downedEoCText = $"{lockedValue} {$"{pathCondition}1".ToLangValue()})";
+            string downedEoCText = $"{lockedValue} {GateDowned(pathCondition, "1")}";
             //错位修正:突刺第二段应读A6裂缝能力(原误读A5),与U6解锁条件对齐
             string tearDashText = $"{pathAbility}6".ToLangValue();
-            string downedDoGText = $"{lockedValue} {$"{pathCondition}6".ToLangValue()})";
+            string downedDoGText = $"{lockedValue} {GateDowned(pathCondition, "6")}";
 
             allowDashText = NPC.downedBoss1 ? DyeText(allowDashText, Color.Yellow) : DyeText(downedEoCText + "\n" + allowDashText, Color.Gray);
             tearDashText = CECal.DownedDoG(EDownedBosses.downedCruiser) ? DyeText(tearDashText, Color.Yellow) : DyeText(downedDoGText + "\n" + tearDashText, Color.Gray);
@@ -320,13 +336,13 @@ namespace CalamityEntropy.Content.Items.Donator
             string lockedValue = lockedPath.ToLangValue();
 
             string invinciDashText = $"{pathAbility}1B".ToLangValue();
-            string downedSGLocked = $"{lockedValue} {$"{pathCondition}1B".ToLangValue()}";
+            string downedSGLocked = $"{lockedValue} {GateDowned(pathCondition, "1B")}";
             string selfReviveText = $"{pathAbility}7".ToLangValue();
-            string dowendYharonLocked = $"{lockedValue} {$"{pathCondition}7".ToLangValue()}";
+            string dowendYharonLocked = $"{lockedValue} {GateDowned(pathCondition, "7")}";
             string voidTouchText = $"{pathAbility}8".ToLangValue();
-            string downedPurpleWormLocked = $"{lockedValue} {$"{pathCondition}8".ToLangValue()}";
+            string downedPurpleWormLocked = $"{lockedValue} {GateDowned(pathCondition, "8")}";
             string closeDamageText = $"{pathAbility}9".ToLangValue();
-            string dowendScalLocked = $"{lockedValue} {$"{pathCondition}9".ToLangValue()}";
+            string dowendScalLocked = $"{lockedValue} {GateDowned(pathCondition, "9")}";
 
             invinciDashText = CECal.DownedSlimeGod ? DyeText(invinciDashText, Color.Yellow) : DyeText(downedSGLocked + "\n" + invinciDashText, Color.Gray);
             selfReviveText = CECal.DownedYharon(EDownedBosses.downedCruiser) ? DyeText(selfReviveText, Color.Yellow) : DyeText(dowendYharonLocked + "\n" + selfReviveText, Color.Gray);

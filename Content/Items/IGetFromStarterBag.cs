@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CalamityEntropy.Common;
 using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.GameContent.ItemDropRules;
@@ -21,7 +22,8 @@ namespace CalamityEntropy.Content.Items
         public override void ModifyItemLoot(Item item, ItemLoot itemLoot)
         {
             bool calBag = CERef.Has && CEID.Item_StarterBag > 0 && item.type == CEID.Item_StarterBag;
-            bool ownBag = !CERef.Has && item.ModItem is EntropyStarterBag;
+            // 装灾厄后旧档熵之馈赠仍开出接口物品,避免空壳;发放仍由 OnEnterWorld 按 A9 停发
+            bool ownBag = item.ModItem is EntropyStarterBag;
             if (!calBag && !ownBag)
             {
                 return;
@@ -44,19 +46,20 @@ namespace CalamityEntropy.Content.Items
 
         internal static void AddConvenienceMods(ItemLoot itemLoot)
         {
+            ExtraItemsEnabledCondition extrasOn = new ExtraItemsEnabledCondition();
             if (ModLoader.TryGetMod("MagicStorage", out Mod magicStorage))
             {
                 if (magicStorage.TryFind<ModItem>("CraftingAccess", out ModItem craftingAccess))
                 {
-                    itemLoot.Add(ItemDropRule.Common(craftingAccess.Type));
+                    itemLoot.Add(ItemDropRule.ByCondition(extrasOn, craftingAccess.Type));
                 }
                 if (magicStorage.TryFind<ModItem>("StorageHeart", out ModItem storageHeart))
                 {
-                    itemLoot.Add(ItemDropRule.Common(storageHeart.Type));
+                    itemLoot.Add(ItemDropRule.ByCondition(extrasOn, storageHeart.Type));
                 }
                 if (magicStorage.TryFind<ModItem>("StorageUnit", out ModItem storageUnit))
                 {
-                    itemLoot.Add(ItemDropRule.Common(storageUnit.Type, 1, 10, 10));
+                    itemLoot.Add(ItemDropRule.ByCondition(extrasOn, storageUnit.Type, 1, 10, 10));
                 }
             }
             if (ModLoader.TryGetMod("ImproveGame", out Mod improveGame))
@@ -66,7 +69,7 @@ namespace CalamityEntropy.Content.Items
                 {
                     if (improveGame.TryFind<ModItem>(names[i], out ModItem tool))
                     {
-                        itemLoot.Add(ItemDropRule.Common(tool.Type));
+                        itemLoot.Add(ItemDropRule.ByCondition(extrasOn, tool.Type));
                     }
                 }
             }
@@ -81,8 +84,22 @@ namespace CalamityEntropy.Content.Items
             }
             public bool CanDrop(DropAttemptInfo info)
             {
+                if (!ServerConfig.Instance.ExtraItemsInStarterBag)
+                {
+                    return false;
+                }
                 int count = 1;
                 return gfsb.OwnAble(info.player, ref count);
+            }
+            public bool CanShowItemDropInUI() => false;
+            public string GetConditionDescription() => null;
+        }
+        // 开包当下读配置,关掉「新手礼包额外物品」则灾厄包与自有包都不塞额外件
+        private class ExtraItemsEnabledCondition : IItemDropRuleCondition, IProvideItemConditionDescription
+        {
+            public bool CanDrop(DropAttemptInfo info)
+            {
+                return ServerConfig.Instance.ExtraItemsInStarterBag;
             }
             public bool CanShowItemDropInUI() => false;
             public string GetConditionDescription() => null;

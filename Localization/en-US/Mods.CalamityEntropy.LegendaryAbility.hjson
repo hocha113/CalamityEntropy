@@ -41,15 +41,21 @@ TlipocasScytheLegend: {
 	Downed: {
 		TScytheU1: Take down Eye of Cthulhu
 		TScytheU1B: Take down Apsychos
+		TScytheU1BCal: Take down Slime God
 		TScytheU2: Take down any evil boss
 		TScytheU2B: Take down all mechanical bosses
+		TScytheU2BCal: Take down Brimstone Elemental
 		TScytheU3: Take down Prophet
 		TScytheU4: Take down the Nihility Twins
 		TScytheU5: Take down the Nihility Twins
+		TScytheU5Cal: Take down Polterghast
 		TScytheU6: Take down Cruiser
+		TScytheU6Cal: Take down The Devourer of Gods
 		TScytheU7: Take down Cruiser
+		TScytheU7Cal: Take down Yharon
 		TScytheU8: Take down Cruiser
 		TScytheU9: Take down Cruiser
+		TScytheU9Cal: Take down the Supreme Witch
 		TWOF: Take down the Wall of Flesh
 		TALLMECHBOSS: Take down all mechanical bosses
 		TLevel2: Reach level 2

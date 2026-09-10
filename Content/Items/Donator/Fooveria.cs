@@ -88,7 +88,7 @@ namespace CalamityEntropy.Content.Items.Donator
                 .AddTile(TileID.Anvils)
                 .Register();
         }
-        /// <summary>装灾厄走 3.33 的 15 段阶梯,无灾厄保持 4.0 的 10 段</summary>
+        /// <summary>装灾厄走 3.33 的 15 段阶梯,无灾厄保持 4.0 的 9 条 Check（伤害表 case 10 仍是死码）</summary>
         public static int GetLevel()
         {
             int Level = 0;

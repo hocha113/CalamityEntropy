@@ -182,6 +182,26 @@ namespace CalamityEntropy.Common
                 }
                 prog = (float)eowLifes / (float)ModContent.GetInstance<EModSys>().eowMaxLife;
             }
+            if (slimeGodCore)
+            {
+                int sgLifes = 0;
+                foreach (NPC n in Main.ActiveNPCs)
+                {
+                    if (EntropyModeGNPC.IsSlimeGodSlime(n.type))
+                    {
+                        sgLifes += n.life;
+                    }
+                }
+                int sgMax = ModContent.GetInstance<EModSys>().slimeGodMaxLife;
+                if (sgMax > 0)
+                {
+                    prog = (float)sgLifes / (float)sgMax;
+                }
+                if (prog == 0)
+                {
+                    prog = npc.life / (float)npc.lifeMax;
+                }
+            }
             if (prog < 0)
                 prog = 0;
             if (prog == 0)

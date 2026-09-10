@@ -354,7 +354,9 @@ namespace CalamityEntropy.Core.CalamityRef
         public static int NPC_SlimeGodCore => Get();
         public static int NPC_SplitCrimulanPaladin => Get();
         public static int NPC_SplitEbonianPaladin => Get();
+        public static int NPC_StormWeaverBody => Get();
         public static int NPC_StormWeaverHead => Get();
+        public static int NPC_StormWeaverTail => Get();
         public static int NPC_Sulflounder => Get();
         public static int NPC_SupremeCalamitas => Get();
         public static int NPC_ThanatosHead => Get();

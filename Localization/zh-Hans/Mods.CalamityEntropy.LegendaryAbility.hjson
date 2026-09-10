@@ -23,15 +23,21 @@ TlipocasScytheLegend: {
 	Downed: {
 		TScytheU1: 击败克苏鲁之眼
 		TScytheU1B: 击败烬甲秽魔
+		TScytheU1BCal: 击败史莱姆之神
 		TScytheU2: 击败任意邪恶Boss
 		TScytheU2B: 击败三大机械Boss
+		TScytheU2BCal: 击败硫磺火元素
 		TScytheU3: 击败先知
 		TScytheU4: 击败虚无双子
 		TScytheU5: 击败虚无双子
+		TScytheU5Cal: 击败噬魂幽花
 		TScytheU6: 击败巡游者
+		TScytheU6Cal: 击败神明吞噬者
 		TScytheU7: 击败巡游者
+		TScytheU7Cal: 击败犽狨
 		TScytheU8: 击败巡游者
 		TScytheU9: 击败巡游者
+		TScytheU9Cal: 击败至尊灾厄
 		TWOF: 需击败血肉墙
 		TALLMECHBOSS: 击败所有的机械Boss
 		TLevel2: 需达到2级

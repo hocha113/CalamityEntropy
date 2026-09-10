@@ -1424,9 +1424,19 @@ namespace CalamityEntropy
                     "AddCustomizedSource",
                     this.GetLocalization("AbyssalPiercerObt").Value,
                     new int[1] { ModContent.ItemType<AbyssalPiercer>() });
+                // 贪婪卡 MOT 来源按 CERef.Has 分发,无灾厄不得出现星辉
+                string greedCardSource;
+                if (CERef.Has)
+                {
+                    greedCardSource = this.GetLocalization("AstralFishing").Value;
+                }
+                else
+                {
+                    greedCardSource = this.GetLocalization("EvilFishing").Value;
+                }
                 moreObtainingTooltips.Call(
                     "AddCustomizedSource",
-                    this.GetLocalization("AstralFishing").Value,
+                    greedCardSource,
                     new int[1] { ModContent.ItemType<GreedCard>() });
 
             }

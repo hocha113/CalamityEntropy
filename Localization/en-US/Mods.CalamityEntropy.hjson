@@ -4835,6 +4835,7 @@ NihArmorConnet:
 LOCKED: " [LOCKED]:"
 BCU1: Requires defeating King Slime
 BCU2: Requires defeating Perforator or Hive Mind
+BCU2Own: Requires defeating Eater of Worlds or Brain of Cthulhu
 BCU3: Requires defeating Wall of Flesh
 BCU4: Requires defeating Plantera
 BCC1: Right Click to extend thorny vines after a brief charge
@@ -6885,11 +6886,17 @@ TScytheZenithDesc: "'Crown me, my king, and the world will welcome the end of th
 TScytheDesc: "'A scarlet scythe with tlipoca's soul adhering'"
 TSA1: Hold Up and attack will push a certain distance towards the mouse direction
 TSA1B: After killing Apsychos, Gain invincible time and deal damage to the targets you come into contact with
+TSA1BCal: After killing slime god, Gain invincible time and deal damage to the targets you come into contact with
 TSU1: Need to kill the Eye of Cthulhu
 TSA2: Press Left Click to throw the scythe and causing multiple injuries
 TSA2B:
 	'''
 	After killing all three mechanical bosses, Press Left Click when throwing to teleport to the cursor and launch a larger slash
+	This skill has a 30 second cooldown. The cooldown time will shrink to 20 after killing Cruiser
+	'''
+TSA2BCal:
+	'''
+	After killing Brimstone Elemental, Press Left Click when throwing to teleport to the cursor and launch a larger slash
 	This skill has a 30 second cooldown. The cooldown time will shrink to 20 after killing Cruiser
 	'''
 TSU2: Need to kill any evil boss
@@ -6913,15 +6920,19 @@ TSA5:
 	Ultimate hits heal for 10 life instead
 	'''
 TSU5: Need to kill the Nihility Twins
+TSU5Cal: Need to kill Polterghast
 TSA6: Leave behind a rift when dashing. The rift will continuously damaie enemies in radius
 TSU6: Need to kill the Cruiser
+TSU6Cal: Need to kill the Devourer of Gods
 TSA7: Survive a fatal injury and restore your health to half of your maximum health on a 5 minute cooldown
 TSU7: Need to kill Cruiser
+TSU7Cal: Need to kill Yharon
 TSA8: Attack will cause [cebuff:CalamityEntropy/VoidTouch]
 TSU8: Need to kill Cruiser
 TSA9: The closer the distance to the target, the higher the damage dealt, with a maximum damage increase of 25%
 PressShiftForMoreInfo: Press shift for more info...
 TSU9: Need to kill Cruiser
+TSU9Cal: Need to kill Supreme Calamitas
 AchievementBookmarkInsertName: Good reading habits
 AchievementBookmarkInsertDesc: Insert any bookmark into a customizable spellbook
 LMDialog1: Howdy, my friend.
@@ -6955,6 +6966,7 @@ DungeonEnemiesDrop: Drops from undergronud dungeon's enemies
 VoidOreMine: Generates in space layer after defeating Cruiser boss
 AbyssalPiercerObt: Obtained by fishing in the ocean in Hardmode
 AstralFishing: Fishing from astral infection
+EvilFishing: Fishing from the Corruption or Crimson
 AzafureSet:
 	'''
 	All azafure equipment receive enhancements to thier abilities

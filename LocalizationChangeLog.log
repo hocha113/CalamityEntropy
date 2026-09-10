@@ -1018,3 +1018,19 @@
 [Mods.CalamityEntropy.Items.WraithSoulEssence.Tooltip] - changed // 掉落主人由幽邃魔灵改为虚无双子
 [Mods.CalamityEntropy.TSU6] - changed // 特拉波卡之镰第6能力解锁条件由幽邃魔灵改为巡游者
 [Mods.CalamityEntropy.TlipocasScytheLegend.Downed.TScytheU6] - changed // 同上
+
+[4.1-Changes]
+[Mods.CalamityEntropy.TSA1BCal] - added // 提洛波卡镰刀:装灾厄时突刺无敌门槛改回 3.33 史莱姆之神
+[Mods.CalamityEntropy.TSA2BCal] - added // 装灾厄时传送门槛改回 3.33 硫磺火元素;冷却缩短仍写巡游者
+[Mods.CalamityEntropy.TSU5Cal] - added // 装灾厄:噬魂幽花
+[Mods.CalamityEntropy.TSU6Cal] - added // 装灾厄:神明吞噬者
+[Mods.CalamityEntropy.TSU7Cal] - added // 装灾厄:犽狨
+[Mods.CalamityEntropy.TSU9Cal] - added // 装灾厄:至尊灾厄
+[Mods.CalamityEntropy.TlipocasScytheLegend.Downed.TScytheU1BCal] - added // Alt 页与上列 Shift 键对齐
+[Mods.CalamityEntropy.TlipocasScytheLegend.Downed.TScytheU2BCal] - added
+[Mods.CalamityEntropy.TlipocasScytheLegend.Downed.TScytheU5Cal] - added
+[Mods.CalamityEntropy.TlipocasScytheLegend.Downed.TScytheU6Cal] - added
+[Mods.CalamityEntropy.TlipocasScytheLegend.Downed.TScytheU7Cal] - added
+[Mods.CalamityEntropy.TlipocasScytheLegend.Downed.TScytheU9Cal] - added
+[Mods.CalamityEntropy.BCU2Own] - added // 苍郁之锋:无灾厄第二技能锁定改写原版邪恶 Boss 名
+[Mods.CalamityEntropy.EvilFishing] - added // 贪婪卡:无灾厄 MOT 来源写腐化/猩红之地钓鱼,有灾厄仍用 AstralFishing

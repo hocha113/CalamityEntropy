@@ -77,6 +77,8 @@ namespace CalamityEntropy.Common
         public bool rCtrlLast = false;
         public bool eowLast = false;
         public int eowMaxLife = 0;
+        public bool slimeGodLast = false;
+        public int slimeGodMaxLife = 0;
         public Vector2 LastPlayerPos;
         public Vector2 LastPlayerVel;
         public static int AcropolisDontSpawn = 0;
@@ -839,12 +841,19 @@ namespace CalamityEntropy.Common
             }
             bool eow = false;
             int maxlifeEows = 0;
+            bool sg = false;
+            int maxlifeSg = 0;
             foreach (NPC n in Main.ActiveNPCs)
             {
                 if (n.type == NPCID.EaterofWorldsHead || n.type == NPCID.EaterofWorldsBody || n.type == NPCID.EaterofWorldsTail)
                 {
                     eow = true;
                     maxlifeEows += n.lifeMax;
+                }
+                if (EntropyModeGNPC.IsSlimeGodSlime(n.type))
+                {
+                    sg = true;
+                    maxlifeSg += n.lifeMax;
                 }
             }
             if (eow && !eowLast)
@@ -853,8 +862,12 @@ namespace CalamityEntropy.Common
             }
             eowLast = eow;
 
-            // 原灾厄史莱姆之神分裂体血量统计已随脱钩移除；EntropyBossbar 特判块删除后
-            // slimeGodLast / slimeGodMaxLife 字段零消费，已一并删除
+            //史莱姆之神四体合计血条分母:开战首帧快照 lifeMax。无灾厄时集合空,与 4.0 一样不进
+            if (sg && !slimeGodLast)
+            {
+                slimeGodMaxLife = maxlifeSg;
+            }
+            slimeGodLast = sg;
         }
 
         public static void RemoveItemInARecipe(Recipe recipe, int type)

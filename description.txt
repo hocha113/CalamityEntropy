@@ -1,7 +1,7 @@
 ﻿Mod Content
 
 Mod Wiki: https://callofvoid.wiki/
-This mod is a progression expansion mod, featuring cross-mod crossover content when played with Calamity Mod.
+This mod is a progression expansion mod
 
 Fully supports multiplayer play!
 

@@ -33,10 +33,16 @@ namespace CalamityEntropy.Core.Dash
 
         /// <summary>进行中的冲刺(本地为完整模拟,远端为视觉复现),空表示空闲。</summary>
         public CEDashState State { get; private set; }
+        /// <summary>冲刺结束后锁定帧倍率。1 为原时长,小于 1 缩短间隔。每帧 ResetEffects 归 1。</summary>
+        public float CooldownMult = 1f;
         private int lockout;
         private int blockedFrames;
         private Vector2 preMovePosition;
         private bool hasPreMove;
+        /// <summary>上一帧原版 dashDelay 是否为负(冲刺中),用来只在进入冷却的那一帧乘一次倍率。</summary>
+        private bool vanillaDashWasRunning;
+        /// <summary>上一帧是否为本引擎自管冲刺,避免结束时 dashDelay 残留再被乘一次。</summary>
+        private bool ceOwnedDashWasRunning;
 
         private bool heldLeft, heldRight, heldUp, heldDown;
         private bool justLeft, justRight, justUp, justDown;
@@ -70,6 +76,7 @@ namespace CalamityEntropy.Core.Dash
         {
             offered.Clear();
             offeredEnhancer = null;
+            CooldownMult = 1f;
         }
 
         public override void PostUpdateEquips()
@@ -159,6 +166,10 @@ namespace CalamityEntropy.Core.Dash
 
         public override void PostUpdate()
         {
+            if (Player.whoAmI == Main.myPlayer)
+            {
+                TryScaleVanillaDashDelay();
+            }
             if (State == null)
                 return;
 
@@ -466,10 +477,43 @@ namespace CalamityEntropy.Core.Dash
             {
                 Player.eocDash = 0;
                 if (startLockout)
-                    lockout = Math.Max(lockout, state.Effect.Cooldown);
+                    lockout = Math.Max(lockout, ApplyCooldownMult(state.Effect.Cooldown));
             }
             state.Effect.OnEnd(Player, state);
             state.Enhancer?.OnEnd(Player, state);
+        }
+
+        /// <summary>按 CooldownMult 缩短帧数,对齐 3.33 的 (int)(dashDelay * DashCD) 截断。</summary>
+        private int ApplyCooldownMult(int frames)
+        {
+            if (frames <= 0)
+            {
+                return frames;
+            }
+            return Math.Max(0, (int)(frames * CooldownMult));
+        }
+
+        /// <summary>
+        /// 原版冲刺(克盾等)仍走 dashDelay。只在 dashDelay 从负变正的那一帧乘倍率,
+        /// 且跳过本引擎自管冲刺,避免和 lockout 叠乘。
+        /// </summary>
+        private void TryScaleVanillaDashDelay()
+        {
+            bool ceOwned = State != null && !State.Remote && !State.Effect.ExternalMotion;
+            if (Player.dashDelay < 0)
+            {
+                vanillaDashWasRunning = true;
+            }
+            else if (Player.dashDelay > 0 && vanillaDashWasRunning && !ceOwned && !ceOwnedDashWasRunning)
+            {
+                Player.dashDelay = ApplyCooldownMult(Player.dashDelay);
+                vanillaDashWasRunning = false;
+            }
+            else if (Player.dashDelay <= 0)
+            {
+                vanillaDashWasRunning = false;
+            }
+            ceOwnedDashWasRunning = ceOwned;
         }
 
         private bool ShouldAbort()

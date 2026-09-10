@@ -251,6 +251,12 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         }
         public override void AI()
         {
+            // 天顶分身与本体同类型,必须每帧清掉 boss 标记,否则每只各顶一根血条
+            // 联机不单独同步该位:realLife 是原版字段,中途加入的客户端进 AI 后也会落到 false
+            if (NPC.realLife >= 0)
+            {
+                NPC.boss = false;
+            }
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 if (SpawnCell)

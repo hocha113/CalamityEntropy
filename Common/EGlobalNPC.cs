@@ -1012,10 +1012,17 @@ namespace CalamityEntropy.Common
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<LavaPancake>(), 2));
             }
+            if (CEID.NPC_BrimstoneElemental > 0 && npc.type == CEID.NPC_BrimstoneElemental)
+            {
+                //普通模式对齐袋期望 1/2,专家/大师走袋避免双掉
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BookMarkBrimstone>(), 2));
+            }
             if (CEID.NPC_Providence > 0 && npc.type == CEID.NPC_Providence)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<HellBohea>(), 2));
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacredStone>(), 3));
+                //普通模式对齐袋期望 3/5,专家/大师走袋避免双掉
+                npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BookMarkProfaned>(), 5, 1, 1, 3));
             }
             if (CEID.NPC_CeaselessVoid > 0 && npc.type == CEID.NPC_CeaselessVoid)
             {

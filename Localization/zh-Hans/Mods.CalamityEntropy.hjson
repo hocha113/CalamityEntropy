@@ -4918,11 +4918,12 @@ PrefixitemDesc:
 MariviniumSet:
 	'''
 	提供大范围的照明，并使你能在深渊看清
-	在水中行动如履平地，且拥有无限飞行时间
-	+4/s 生命再生，受到的接触伤害降低20%，并免疫绝大多数减益
+	在水中无视水的阻力，飞行时间不再消耗
+	在水中按住下加速下沉，同时按住跳跃与下可悬停
+	+4/s 生命再生，受到的接触伤害降低20%
 	+3 最大仆从栏位，+20% 近战攻速
-	获得2层可以各抵挡一次伤害的渊海护盾，第一层恢复需要36秒，第二层需要18秒
-	护盾只会抵挡高于50点伤害的攻击
+	获得2层渊海护盾，各抵挡一次高于50点的伤害
+	第一层恢复需要36秒，第二层需要18秒
 	护盾破损时获得10秒“深渊狂怒”增益
 	'''
 DeathMode: 大师模式
@@ -7182,7 +7183,7 @@ VoidDeath4: "{0}回归了虚无"
 VoidDeath5: "{0}的载体被抹除了"
 LoreKingSlimeDesc: 提升跳跃高度
 LoreDesertScourgeDesc: 增加憋气时间
-LoreEyeofCthulhuDesc: 当前版本没有附加效果
+LoreEyeofCthulhuDesc: 减少{1}%冲刺间隔
 LoreCrabulonDesc: 受伤后获得{1}秒的与菇共生增益
 LoreBrainofCthulhuDesc: 使你免疫流血减益
 LoreEaterofWorldsDesc: 使你免疫诅咒烈焰减益
@@ -7218,12 +7219,29 @@ LoreAstrumDeusDesc: +{1}% 飞行速度
 LoreCrimsonDesc: +{1}最大生命值
 LoreCorruptionDesc: 所受伤害减少{1}%
 LoreUnderworldDesc: 进入岩浆的前{1}秒不会受到伤害
-LoreBloodMoonDesc: 当前版本没有附加效果
+LoreBloodMoonDesc: +{1}%光照
 LoreAwakeningDesc: 小幅增加移动速度和跳跃高度
 PassedBossRush: 通关 Boss Rush 后
 VitalfeatherObt: 由月亮领主掉落
 VitalfeatherObtCal: 由犽戎掉落
 BookMarkBrimstoneObt: 由红恶魔掉落
-BookMarkBrimstoneObtCal: 由硫磺火元素的宝藏袋掉落
+BookMarkBrimstoneObtCal: 由硫磺火元素掉落
 BookMarkProfanedObt: 由拜月邪教徒掉落
-BookMarkProfanedObtCal: 由亵渎天神的宝藏袋掉落
+BookMarkProfanedObtCal: 由亵渎天神掉落
+OdinsRefugeCal:
+	'''
+	拥有神圣屏障的格挡效果
+	免疫击退
+	双击方向键或按冲刺键进行一次长冲刺，距离20格
+	冲刺时穿过敌怪并造成1000点基础伤害，撞中敌怪后获得12帧无敌
+	撞击点产生300点基础伤害的爆炸，并施加5秒弑神怒焰
+	冲刺结束后0.5秒内不能再次冲刺
+	延长受击后的无敌时间
+	生命值越低，受击后额外获得的无敌帧越多，最多30帧
+	单次受到超过200点伤害时再获得30帧无敌
+	受击后短时间内加快移动速度
+	受击时获得5秒蜂蜜增益
+	受击时落下12颗基础伤害130的坠星
+	生命值低于50%时获得冰霜屏障
+	拥有圣骑士盾，分摊队友受到的伤害
+	'''

@@ -1096,3 +1096,26 @@
 
 // L-3
 [Mods.CalamityEntropy.PassedBossRush] - added // 城镇飞龙(妖龙酱)货架条件文案,原为裸键。装灾厄且通过 Boss Rush 后上架灾厄的石头。句形对齐同类货架条件键(DownedBoss2 / HaveOracleDeck)
+
+// [Lore-LEEOC-BloodMoon]
+[Mods.CalamityEntropy.LoreEyeofCthulhuDesc] - changed // 克眼 Lore 已接 CEDashPlayer.CooldownMult,文案改回 3.33「减少{1}%冲刺间隔」
+[Mods.CalamityEntropy.LoreBloodMoonDesc] - changed // 血月 Lore 接 Entropy().light,与序章同量级 5% 光照;文案改为带 {1} 的诚实光照句
+
+// [Bookmark-normal-drop]
+[Mods.CalamityEntropy.BookMarkBrimstoneObtCal] - changed // 装灾厄+普通也可得:硫磺火元素 NPC 1/2 + 袋 1/2,文案从「宝藏袋掉落」改为「由硫磺火元素掉落」
+[Mods.CalamityEntropy.BookMarkProfanedObtCal] - changed // 同上,亵渎天神 NPC 3/5 + 袋 3/5,改为「由亵渎天神掉落」
+
+[Copy-align-2026-09-10]
+[Mods.CalamityEntropy.LoreSkeletronDesc] - changed // ru-RU:补回丢失的 {1}(堆叠阈值),对齐 zh-Hans canon
+[Mods.CalamityEntropy.LoreBrainofCthulhuDesc] - changed // ru-RU:原误译成蜂后暴击/伤害且裸占位符;LEBoc 无 ModifyTooltip,改为「免疫流血」且不带占位符
+[Mods.CalamityEntropy.LoreQueenBeeDesc] - changed // ru-RU:{1}/{2} 语义对调,按代码 {1}=伤害 {2}=暴击改回
+[Mods.CalamityEntropy.LoreCrabulonDesc] - changed // ru-RU:原「受伤后变脆弱」改为获得与菇共生(Грибное родство) {1} 秒
+[Mods.CalamityEntropy.LoreAstrumAureusDesc] - changed // ru-RU:去掉 HTML 实体垃圾,改为加速幻星感染减益流逝
+[Mods.CalamityEntropy.Items.WorshipRelic.Tooltip] - changed // ru-RU:整块仍是 3.33 潜行文案,按现行 zh/en 重写并补诱饵充能行(приманка,不是钓鱼 наживка)
+[Mods.CalamityEntropy.Items.Lore.LoreAcropolis.DisplayName] - added // ru-RU:活键缺失,从 zh-Hans 译 DisplayName
+[Mods.CalamityEntropy.Items.Lore.LoreAcropolis.Lore] - added // ru-RU:从 zh-Hans Lore 译正文,未新增 Items.LoreAcropolis 死键
+[Mods.CalamityEntropy.Items.SusiesBracelet.Tooltip] - changed // en-US/ru-RU:仍是 3.33 通用加成且 [DEF]/[LIFE]/[MANA] 代码从不替换;按 4.0 zh 与现行 ModifyTooltips 的 [DMG]/[CRIT] 对齐。zh-Hans 4.0 原文未改
+[Mods.CalamityEntropy.LegendaryAbility.SusiesBracelet.Trials.t0] - changed // ru-RU 试炼名仍是 3.33 灾厄 Boss,按 4.0 zh/en(原版+先知+月总)对齐;t1-t10 同批
+[Mods.CalamityEntropy.MariviniumSet] - changed // 删「免疫绝大多数减益」(Y-3 有意削弱已删代码);水中飞行拆行并补回下沉/悬停;en/ru 从过时 3.33 套装表整段按现行套装效果重写。无灾厄与装灾厄效果相同,不双键
+[Mods.CalamityEntropy.Items.OdinsRefuge.Tooltip] - changed // 仅 ru-RU:原整块仍是 3.33 冲刺文案,无灾厄玩家会读到不存在的效果;改成 4.0 zh 的俄译。zh-Hans/en-US 的 4.0 六行逐字未动
+[Mods.CalamityEntropy.OdinsRefugeCal] - added // 上神之佑装灾厄 Tooltip,按现行 CERef.Has 支真实效果;OdinsRefuge.ModifyTooltips 分发

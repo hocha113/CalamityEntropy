@@ -3531,11 +3531,10 @@ Items: {
 		DisplayName: Susie's Bracelet
 		Tooltip:
 			'''
-			This accessory grows stronger as you progress...
-			[DEF] defense
-			[DMG]% increased damage
-			+[LIFE] max life
-			Maximum mana increased by [MANA]
+			Grows stronger as you progress
+			Grants immunity to knockback
+			+[DMG]% melee damage
+			+[CRIT]% melee critical strike chance
 			'''
 	}
 
@@ -4860,14 +4859,14 @@ BCC4:
 PrefixitemDesc: Right Click on a piece of armor with this to grant it a prefix
 MariviniumSet:
 	'''
-	Increases your max number of minions by 10
-	75% increased summon Damage
-	13.5% increased weapon ultimate charge rate
-	Increased life regeneration when standing still
-	Immunity to most debuffs
-	When holding a true melee weapon, gain 10% increased damage reduction and 15 defense
-	Obtain 2 layers of shields, which will take 36 seconds to recover after being shattered
-	After shields shatter, consume 100 life for 50% increased damage for 10 seconds
+	Provides a large area of light and improves visibility in the abyss
+	Ignore water resistance while submerged, and flight time no longer drains
+	Hold Down in water to sink faster; hold Jump and Down together to hover
+	+4/s life regen, 20% reduced contact damage
+	+3 max minions, +20% melee speed
+	Gain 2 layers of abyssal shields that each block one hit over 50 damage
+	The first layer takes 36 seconds to recover, the second takes 18 seconds
+	Breaking a shield grants 10 seconds of Abyssal Wrath
 	'''
 DeathMode: Master Mode
 ChargeReady: Ultimate Ready
@@ -7090,7 +7089,7 @@ VoidDeath4: "{0} has returned to nothingness"
 VoidDeath5: "{0}'s carrier has been erased"
 LoreKingSlimeDesc: Increases jump height
 LoreDesertScourgeDesc: Increases breath time
-LoreEyeofCthulhuDesc: No additional effect in the current version
+LoreEyeofCthulhuDesc: Reduce dash cooldown by {1}%
 LoreCrabulonDesc: Obtain the Mushy buff for {1} seconds after injury
 LoreBrainofCthulhuDesc: Immunity to [cbuff:Bleeding]
 LoreEaterofWorldsDesc: Immunity to [cbuff:CursedInferno]
@@ -7126,12 +7125,29 @@ LoreAstrumDeusDesc: Grants {1}% increased flight speed
 LoreCrimsonDesc: +{1} max life
 LoreCorruptionDesc: Gain {1}% increased damage reduction
 LoreUnderworldDesc: Grants {1} seconds of immunity to lava
-LoreBloodMoonDesc: No additional effect in the current version
+LoreBloodMoonDesc: Grants {1}% increased light
 LoreAwakeningDesc: Slightly increase movement speed and jump height
 PassedBossRush: After clearing Boss Rush
 VitalfeatherObt: Dropped by the Moon Lord
 VitalfeatherObtCal: Dropped by Yharon
 BookMarkBrimstoneObt: Dropped by Red Devils
-BookMarkBrimstoneObtCal: Dropped by the Brimstone Elemental's treasure bag
+BookMarkBrimstoneObtCal: Dropped by the Brimstone Elemental
 BookMarkProfanedObt: Dropped by the Lunatic Cultist
-BookMarkProfanedObtCal: Dropped by Providence's treasure bag
+BookMarkProfanedObtCal: Dropped by Providence
+OdinsRefugeCal:
+	'''
+	Grants the Holy Mantle's blocking effect
+	Grants immunity to knockback
+	Double tap a direction or press the dash key to perform a long dash of 20 tiles
+	The dash passes through enemies, dealing 1000 base damage and granting 12 frames of invincibility on impact
+	The impact creates a 300 base damage explosion and inflicts God Slayer Inferno for 5 seconds
+	Dashing again takes 0.5 seconds after the dash ends
+	Increases invincibility time after taking a hit
+	The lower your health, the more extra invincibility frames you gain on hit, up to 30
+	Taking more than 200 damage in one hit grants 30 additional invincibility frames
+	Taking a hit briefly increases your movement speed
+	Taking a hit grants the Honey buff for 5 seconds
+	Taking a hit rains 12 falling stars that deal 130 base damage
+	Below 50% life, gain an Ice Barrier
+	Grants a Paladin's Shield that shares damage taken by teammates
+	'''

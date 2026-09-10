@@ -49,6 +49,16 @@ namespace CalamityEntropy.Common.LoreReworks
     public class LEBloodMoon : LoreEffect
     {
         public override int ItemType => CEID.Item_LoreBloodMoon;
+        /// <summary>与 LEPrelude 同量级的光照加成。3.33 文案承诺夜视但类体为零消费者。</summary>
+        public static float Light = 0.05f;
+        public override void UpdateEffects(Player player)
+        {
+            player.Entropy().light += Light;
+        }
+        public override void ModifyTooltip(TooltipLine tooltip)
+        {
+            tooltip.Text = tooltip.Text.Replace("{1}", Light.ToPercent().ToString());
+        }
     }
 
     public class LEAwaken : LoreEffect

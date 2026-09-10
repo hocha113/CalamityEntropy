@@ -1,4 +1,5 @@
 using CalamityEntropy.Core.CalamityRef;
+using CalamityEntropy.Core.Dash;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -29,11 +30,8 @@ namespace CalamityEntropy.Common.LoreReworks
         public static float Value = 0.04f;
         public override void UpdateEffects(Player player)
         {
-            if (player == null)
-            {
-                return;
-            }
-            //3.33 实效只有 DashCD;字段已随自研冲刺删除,无其它可复原效果,维持空壳待办
+            // 3.33 是 DashCD -= 0.04;该字段已删,改写自研冲刺锁定帧倍率
+            player.GetModPlayer<CEDashPlayer>().CooldownMult -= Value;
         }
         public override void ModifyTooltip(TooltipLine tooltip)
         {

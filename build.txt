@@ -1,6 +1,6 @@
 ﻿displayName = Call of Void
 author = Serrat Antler, HoCha113
-version = 4.1
+version = 4.2
 modReferences = InnoVault
 weakReferences = AlchemistNPCLite, CalamityMod
 sortAfter = CalamityMod

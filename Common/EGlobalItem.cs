@@ -239,8 +239,14 @@ namespace CalamityEntropy.Common
             if(item.ModItem != null && item.ModItem is IBaitItem && Main.LocalPlayer.HeldItem.type == item.type)
             {
                 scale = 1;
-                float charge = float.Clamp(Main.LocalPlayer.Entropy().BaitCharge, 0, 1);
-                CEUtils.DrawChargeBar(scale, position + new Vector2(0, 16 * scale), ((float)charge / 1f), Color.Yellow);
+                EModPlayer ep = Main.LocalPlayer.Entropy();
+                // 充能上限可被日祀圣物抬到 2 格,条按上限归一。原先硬 clamp 到 1,
+                // 第二格的累积过程屏幕上零反馈。上限为 1 时与原写法逐像素相同。
+                float maxCharge = float.Max(1f, ep.MaxBaitCharge);
+                float charge = float.Clamp(ep.BaitCharge, 0, maxCharge);
+                // 多格时用颜色标出"已存满至少一格、可以投出"的分界,与阿扎弗充能盾同一惯例
+                Color barColor = (maxCharge > 1f && !ep.BaitUsable) ? Color.DarkGoldenrod : Color.Yellow;
+                CEUtils.DrawChargeBar(scale, position + new Vector2(0, 16 * scale), charge / maxCharge, barColor);
             }
         }
 

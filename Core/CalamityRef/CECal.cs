@@ -242,6 +242,21 @@ namespace CalamityEntropy.Core.CalamityRef
 
         #endregion
 
+        #region 灾厄表现层注册
+
+        /// <summary>把自有 Boss 的从属部件登记进灾厄血条排除表。灾厄只看 npc.boss 不看 realLife,
+        /// 不登记就一个部件一根条。走的是灾厄自己对第三方公开的 ModCall,无灾厄时空操作</summary>
+        public static void ExcludeFromCalBossBar(int npcType)
+        {
+            if (!CERef.Has || npcType <= 0)
+            {
+                return;
+            }
+            CERef.Call("ExcludeBossFromHealthBar", npcType);
+        }
+
+        #endregion
+
         /// <summary>整链双注册的守卫:灾厄在场,且这一链需要的全部灾厄内容都解析到了,才走 3.33 链</summary>
         public static bool CalChainReady(params int[] calTypes)
         {

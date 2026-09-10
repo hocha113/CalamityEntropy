@@ -1269,7 +1269,7 @@ Items: {
 			召唤物集中击打命中的敌人
 			{$CommonItemTooltip.SummonTagDamage}
 			{$CommonItemTooltip.Whips}
-			由月亮领主掉落
+			[OBT]
 			“重生”
 			'''
 	}
@@ -1440,7 +1440,7 @@ Items: {
 			'''
 			攻击时概率在附近召唤硫磺火漩涡，向鼠标位置发射鲜血激光柱
 			攻击造成硫磺火减益
-			由红恶魔掉落
+			[OBT]
 			'''
 	}
 
@@ -1532,7 +1532,7 @@ Items: {
 			'''
 			攻击时召唤2发追踪火球辅助攻击
 			同时从身后发射2发暗影火球
-			由拜月邪教徒掉落
+			[OBT]
 			'''
 	}
 
@@ -2600,7 +2600,7 @@ Items: {
 			'''
 			命中敌人时有1/4概率天降圣光箭，基础伤害为180点
 			该效果有0.5秒内置冷却
-			鱼饵充能上限+1
+			诱饵充能上限提升到2格，可以连续投出两枚诱饵
 			你无法暴击
 			'''
 	}
@@ -7020,7 +7020,7 @@ TSU6: 需击败巡游者
 TSU6Cal: 需击败神明吞噬者
 TSA7: 抵挡一次致命伤害并将你的生命值回复至最大生命值的一半，此效果有5分钟的冷却
 TSU7: 需击败巡游者
-TSU7Cal: 需击败犽狨
+TSU7Cal: 需击败犽戎
 TSA8: 攻击造成虚空之触
 TSU8: 需击败巡游者
 TSA9: 与目标之间的距离越近，造成的伤害越高，最高额外造成25%伤害
@@ -7180,44 +7180,50 @@ VoidDeath2: "{0}化为了纯粹的能量"
 VoidDeath3: "{0}无法回归物质循环"
 VoidDeath4: "{0}回归了虚无"
 VoidDeath5: "{0}的载体被抹除了"
-// LoreKingSlimeDesc: Mods.CalamityEntropy.LoreKingSlimeDesc
-// LoreDesertScourgeDesc: Mods.CalamityEntropy.LoreDesertScourgeDesc
-// LoreEyeofCthulhuDesc: Mods.CalamityEntropy.LoreEyeofCthulhuDesc
-// LoreCrabulonDesc: Mods.CalamityEntropy.LoreCrabulonDesc
-// LoreBrainofCthulhuDesc: Mods.CalamityEntropy.LoreBrainofCthulhuDesc
-// LoreEaterofWorldsDesc: Mods.CalamityEntropy.LoreEaterofWorldsDesc
-// LorePerforatorsDesc: Mods.CalamityEntropy.LorePerforatorsDesc
-// LoreHiveMindDesc: Mods.CalamityEntropy.LoreHiveMindDesc
-// LoreQueenBeeDesc: Mods.CalamityEntropy.LoreQueenBeeDesc
-// LoreSkeletronDesc: Mods.CalamityEntropy.LoreSkeletronDesc
-// LoreSlimeGodDesc: Mods.CalamityEntropy.LoreSlimeGodDesc
-// LoreWallofFleshDesc: Mods.CalamityEntropy.LoreWallofFleshDesc
-// LoreQueenSlimeDesc: Mods.CalamityEntropy.LoreQueenSlimeDesc
-// LoreArchmageDesc: Mods.CalamityEntropy.LoreArchmageDesc
-// LoreMechsDesc: Mods.CalamityEntropy.LoreMechsDesc
-// LoreTwinsDesc: Mods.CalamityEntropy.LoreTwinsDesc
-// LoreDestroyerDesc: Mods.CalamityEntropy.LoreDestroyerDesc
-// LoreSkeletronPrimeDesc: Mods.CalamityEntropy.LoreSkeletronPrimeDesc
-// LoreSulphurSeaDesc: Mods.CalamityEntropy.LoreSulphurSeaDesc
-// LoreAzafureDesc: Mods.CalamityEntropy.LoreAzafureDesc
-// LoreCalamitasCloneDesc: Mods.CalamityEntropy.LoreCalamitasCloneDesc
-// LorePlanteraDesc: Mods.CalamityEntropy.LorePlanteraDesc
-// LoreAquaticScourgeDesc: Mods.CalamityEntropy.LoreAquaticScourgeDesc
-// LoreAbyssDesc: Mods.CalamityEntropy.LoreAbyssDesc
-// LoreLeviathanAnahitaDesc: Mods.CalamityEntropy.LoreLeviathanAnahitaDesc
-// LoreAstrumAureusDesc: Mods.CalamityEntropy.LoreAstrumAureusDesc
-// LoreBrimstoneElementalDesc: Mods.CalamityEntropy.LoreBrimstoneElementalDesc
-// LoreGolemDesc: Mods.CalamityEntropy.LoreGolemDesc
-// LorePlaguebringerGoliathDesc: Mods.CalamityEntropy.LorePlaguebringerGoliathDesc
-// LoreEmpressofLightDesc: Mods.CalamityEntropy.LoreEmpressofLightDesc
-// LoreDukeFishronDesc: Mods.CalamityEntropy.LoreDukeFishronDesc
-// LoreRavagerDesc: Mods.CalamityEntropy.LoreRavagerDesc
-// LorePreludeDesc: Mods.CalamityEntropy.LorePreludeDesc
-// LoreAstralInfectionDesc: Mods.CalamityEntropy.LoreAstralInfectionDesc
-// LoreAstrumDeusDesc: Mods.CalamityEntropy.LoreAstrumDeusDesc
-// LoreCrimsonDesc: Mods.CalamityEntropy.LoreCrimsonDesc
-// LoreCorruptionDesc: Mods.CalamityEntropy.LoreCorruptionDesc
-// LoreUnderworldDesc: Mods.CalamityEntropy.LoreUnderworldDesc
-// LoreBloodMoonDesc: Mods.CalamityEntropy.LoreBloodMoonDesc
-// LoreAwakeningDesc: Mods.CalamityEntropy.LoreAwakeningDesc
-// PassedBossRush: Mods.CalamityEntropy.PassedBossRush
+LoreKingSlimeDesc: 提升跳跃高度
+LoreDesertScourgeDesc: 增加憋气时间
+LoreEyeofCthulhuDesc: 当前版本没有附加效果
+LoreCrabulonDesc: 受伤后获得{1}秒的与菇共生增益
+LoreBrainofCthulhuDesc: 使你免疫流血减益
+LoreEaterofWorldsDesc: 使你免疫诅咒烈焰减益
+LorePerforatorsDesc: 受伤后有{1}%的概率回复{2}点血量
+LoreHiveMindDesc: 在受伤后的{1}秒内，增加{2}%伤害
+LoreQueenBeeDesc: +{1}%伤害, 但是-{2}%暴击率
+LoreSkeletronDesc: 堆叠数量大于等于{1}的弹药有{2}%的概率不被消耗
+LoreSlimeGodDesc: 增加些许跳跃高度
+LoreWallofFleshDesc: 将受到的伤害减伤{1}%，冷却时间{2}秒
+LoreQueenSlimeDesc: +{1}%下落速度
+LoreArchmageDesc: 增加冷系减益流逝速度
+LoreMechsDesc: +{1}防御
+LoreTwinsDesc: +{1}防御
+LoreDestroyerDesc: +{1}防御
+LoreSkeletronPrimeDesc: +{1}% 伤害减免
+LoreSulphurSeaDesc: 对酸性毒液免疫
+LoreAzafureDesc: +{1}% 暴击率
+LoreCalamitasCloneDesc: +{1}% 近战攻速
+LorePlanteraDesc: +0.5/s 生命再生
+LoreAquaticScourgeDesc: 增加憋气时间
+LoreAbyssDesc: 增加在深渊中的可见性
+LoreLeviathanAnahitaDesc: 在水中增加1/s生命再生
+LoreAstrumAureusDesc: 增加幻星感染减益的流逝速度
+LoreBrimstoneElementalDesc: +1% 伤害减免
+LoreGolemDesc: +{1}% 伤害减免
+LorePlaguebringerGoliathDesc: 瘟疫减益流逝速度更快
+LoreEmpressofLightDesc: 在白天增加{1}点防御
+LoreDukeFishronDesc: 移动无视水阻力
+LoreRavagerDesc: 增加2%移动速度
+LorePreludeDesc: +5%光照
+LoreAstralInfectionDesc: +{1}% 飞行时间
+LoreAstrumDeusDesc: +{1}% 飞行速度
+LoreCrimsonDesc: +{1}最大生命值
+LoreCorruptionDesc: 所受伤害减少{1}%
+LoreUnderworldDesc: 进入岩浆的前{1}秒不会受到伤害
+LoreBloodMoonDesc: 当前版本没有附加效果
+LoreAwakeningDesc: 小幅增加移动速度和跳跃高度
+PassedBossRush: 通关 Boss Rush 后
+VitalfeatherObt: 由月亮领主掉落
+VitalfeatherObtCal: 由犽戎掉落
+BookMarkBrimstoneObt: 由红恶魔掉落
+BookMarkBrimstoneObtCal: 由硫磺火元素的宝藏袋掉落
+BookMarkProfanedObt: 由拜月邪教徒掉落
+BookMarkProfanedObtCal: 由亵渎天神的宝藏袋掉落

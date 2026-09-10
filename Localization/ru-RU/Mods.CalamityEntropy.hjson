@@ -6832,44 +6832,50 @@ PrefixEnchantedDesc: +4% к увеличению маны
 // VoidDeath3: "{0} cannot return to the material cycle"
 // VoidDeath4: "{0} has returned to nothingness"
 // VoidDeath5: "{0}'s carrier has been erased"
-// LoreKingSlimeDesc: Mods.CalamityEntropy.LoreKingSlimeDesc
-// LoreDesertScourgeDesc: Mods.CalamityEntropy.LoreDesertScourgeDesc
-// LoreEyeofCthulhuDesc: Mods.CalamityEntropy.LoreEyeofCthulhuDesc
-// LoreCrabulonDesc: Mods.CalamityEntropy.LoreCrabulonDesc
-// LoreBrainofCthulhuDesc: Mods.CalamityEntropy.LoreBrainofCthulhuDesc
-// LoreEaterofWorldsDesc: Mods.CalamityEntropy.LoreEaterofWorldsDesc
-// LorePerforatorsDesc: Mods.CalamityEntropy.LorePerforatorsDesc
-// LoreHiveMindDesc: Mods.CalamityEntropy.LoreHiveMindDesc
-// LoreQueenBeeDesc: Mods.CalamityEntropy.LoreQueenBeeDesc
-// LoreSkeletronDesc: Mods.CalamityEntropy.LoreSkeletronDesc
-// LoreSlimeGodDesc: Mods.CalamityEntropy.LoreSlimeGodDesc
-// LoreWallofFleshDesc: Mods.CalamityEntropy.LoreWallofFleshDesc
-// LoreQueenSlimeDesc: Mods.CalamityEntropy.LoreQueenSlimeDesc
-// LoreArchmageDesc: Mods.CalamityEntropy.LoreArchmageDesc
-// LoreMechsDesc: Mods.CalamityEntropy.LoreMechsDesc
-// LoreTwinsDesc: Mods.CalamityEntropy.LoreTwinsDesc
-// LoreDestroyerDesc: Mods.CalamityEntropy.LoreDestroyerDesc
-// LoreSkeletronPrimeDesc: Mods.CalamityEntropy.LoreSkeletronPrimeDesc
-// LoreSulphurSeaDesc: Mods.CalamityEntropy.LoreSulphurSeaDesc
-// LoreAzafureDesc: Mods.CalamityEntropy.LoreAzafureDesc
-// LoreCalamitasCloneDesc: Mods.CalamityEntropy.LoreCalamitasCloneDesc
-// LorePlanteraDesc: Mods.CalamityEntropy.LorePlanteraDesc
-// LoreAquaticScourgeDesc: Mods.CalamityEntropy.LoreAquaticScourgeDesc
-// LoreAbyssDesc: Mods.CalamityEntropy.LoreAbyssDesc
-// LoreLeviathanAnahitaDesc: Mods.CalamityEntropy.LoreLeviathanAnahitaDesc
-// LoreAstrumAureusDesc: Mods.CalamityEntropy.LoreAstrumAureusDesc
-// LoreBrimstoneElementalDesc: Mods.CalamityEntropy.LoreBrimstoneElementalDesc
-// LoreGolemDesc: Mods.CalamityEntropy.LoreGolemDesc
-// LorePlaguebringerGoliathDesc: Mods.CalamityEntropy.LorePlaguebringerGoliathDesc
-// LoreEmpressofLightDesc: Mods.CalamityEntropy.LoreEmpressofLightDesc
-// LoreDukeFishronDesc: Mods.CalamityEntropy.LoreDukeFishronDesc
-// LoreRavagerDesc: Mods.CalamityEntropy.LoreRavagerDesc
-// LorePreludeDesc: Mods.CalamityEntropy.LorePreludeDesc
-// LoreAstralInfectionDesc: Mods.CalamityEntropy.LoreAstralInfectionDesc
-// LoreAstrumDeusDesc: Mods.CalamityEntropy.LoreAstrumDeusDesc
-// LoreCrimsonDesc: Mods.CalamityEntropy.LoreCrimsonDesc
-// LoreCorruptionDesc: Mods.CalamityEntropy.LoreCorruptionDesc
-// LoreUnderworldDesc: Mods.CalamityEntropy.LoreUnderworldDesc
-// LoreBloodMoonDesc: Mods.CalamityEntropy.LoreBloodMoonDesc
-// LoreAwakeningDesc: Mods.CalamityEntropy.LoreAwakeningDesc
-// PassedBossRush: Mods.CalamityEntropy.PassedBossRush
+LoreKingSlimeDesc: Увеличивает высоту прыжка, но снижает скорость передвижения
+LoreDesertScourgeDesc: Увеличивает время задержки дыхания
+LoreEyeofCthulhuDesc: В текущей версии не даёт никаких эффектов
+LoreCrabulonDesc: После получения урона вы становитесь уязвимым на {1} секунду
+LoreBrainofCthulhuDesc: +{1}% критического удара, но -{2}% Урона
+LoreEaterofWorldsDesc: Это избавит тебя от проклятия огня.
+LorePerforatorsDesc: Вероятность восстановления после травмы {1}% {2}
+LoreHiveMindDesc: Увеличить {2}% повреждение в течение {1} секунд после травмы
+LoreQueenBeeDesc: +{2}% Урона, но -{1}% критического удара
+LoreSkeletronDesc: Боеприпасы с количеством укладки более 1% {2}% вероятности не расходуются
+LoreSlimeGodDesc: Добавьте немного высоты прыжка.
+LoreWallofFleshDesc: Уменьшение полученной травмы {1}%, время охлаждения {2} секунд
+LoreQueenSlimeDesc: + {1}% Скорость падения
+LoreArchmageDesc: Увеличить скорость замедления потока в холодной системе
+LoreMechsDesc: + {1} Оборона
+LoreTwinsDesc: + {1} Оборона
+LoreDestroyerDesc: + {1} Оборона
+LoreSkeletronPrimeDesc: + {1}% Уменьшение вреда
+LoreSulphurSeaDesc: Иммунитет против кислотного яда
+LoreAzafureDesc: + {1}% Процент вспышек
+LoreCalamitasCloneDesc: + {1}% скорость ближнего боя
+LorePlanteraDesc: + 0.5 / с Возрождение жизни
+LoreAquaticScourgeDesc: Увеличить время дыхания
+LoreAbyssDesc: Увеличить видимость в пропасти
+LoreLeviathanAnahitaDesc: Увеличение 1 / s регенерации жизни в воде
+LoreAstrumAureusDesc: Увеличить скорость, с которой происходит сокращение числа случаев заражения & lt; & lt; Мирандом & gt; & gt;
+LoreBrimstoneElementalDesc: + 1% Снижение вреда
+LoreGolemDesc: + {1}% Уменьшение вреда
+LorePlaguebringerGoliathDesc: Эпидемия проходит быстрее.
+LoreEmpressofLightDesc: Увеличить {1} защиту в течение дня
+LoreDukeFishronDesc: Движение игнорирует сопротивление воды
+LoreRavagerDesc: Увеличение скорости движения на 2%
+LorePreludeDesc: + 5% Свет
+LoreAstralInfectionDesc: + {1}% Время полёта
+LoreAstrumDeusDesc: + {1}% скорость полёта
+LoreCrimsonDesc: +{1} максимального здоровья
+LoreCorruptionDesc: Даёт {1}% к снижению получаемого урона
+LoreUnderworldDesc: До входа в магму {1} секунд не повредится.
+LoreBloodMoonDesc: В текущей версии не даёт никаких эффектов
+LoreAwakeningDesc: Немного увеличивает скорость передвижения и высоту прыжка
+PassedBossRush: После прохождения Boss Rush
+VitalfeatherObt: Выпадает из Лунного лорда
+VitalfeatherObtCal: Выпадает из Ярона
+BookMarkBrimstoneObt: Выпадает из красных дьяволов
+BookMarkBrimstoneObtCal: Выпадает из сумки с сокровищами Серного элементаля
+BookMarkProfanedObt: Выпадает из Лунного культиста
+BookMarkProfanedObtCal: Выпадает из сумки с сокровищами Провиденс

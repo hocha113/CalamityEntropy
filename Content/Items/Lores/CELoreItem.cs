@@ -18,6 +18,10 @@ namespace CalamityEntropy.Content.Items.Lores
     /// </summary>
     public abstract class CELoreItem : ModItem
     {
+        // 3.33 继承灾厄 LoreItem 时分类就是 Items.Lore，三语文案至今仍挂在该分类下；
+        // 换成自有基类后若落回 ModItem 默认的 Items，六件传记的名字与正文会全部变成孤儿键
+        public override string LocalizationCategory => "Items.Lore";
+
         /// <summary>本物品是否挂有 LoreEffect（即走 LoreReworkSystem 开关通道）。</summary>
         public bool HasLoreEffect => LoreReworkSystem.loreEffects != null && LoreReworkSystem.loreEffects.ContainsKey(Type);
 

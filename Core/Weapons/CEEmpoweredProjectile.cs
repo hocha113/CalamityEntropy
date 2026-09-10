@@ -10,6 +10,9 @@ namespace CalamityEntropy.Core.Weapons
     /// 蓄势强化标志的弹幕侧载体,原灾厄弹幕 stealthStrike 标志的 1:1 平替。
     /// 读:proj.IsEmpowered();写:CEChargeWeapon.Empower(p) 或 proj.SetEmpowered()。
     /// 标志随弹幕生成包与 netUpdate 同步(SendExtraAI/ReceiveExtraAI)。
+    /// <para>同时兼管"这颗弹幕是不是玩家主动使用武器打出来的"这一来源标记
+    /// (读:proj.IsFromWeaponUse()),给需要区分武器命中与饰品常驻光环的效果用。
+    /// 来源链的继承规则与蓄势来源武器共用一套,不另起一个 GlobalProjectile。</para>
     /// </summary>
     public class CEEmpowerGlobalProjectile : GlobalProjectile
     {
@@ -18,18 +21,34 @@ namespace CalamityEntropy.Core.Weapons
         /// <summary>是否为蓄势强化弹(大招弹幕)。</summary>
         public bool Empowered;
 
+        /// <summary>
+        /// 本弹幕出自玩家主动使用的武器(含其衍生弹)。饰品、护甲与常驻伤害光环生成的一律为假。
+        /// 只在生成端算得出,不过网;消费点都在主人端(命中钩子只在主人端跑),因此无需同步。
+        /// </summary>
+        internal bool FromWeaponUse;
+
         /// <summary>发射本弹幕的蓄势武器,仅所有者端有值,用于命中计数回充。</summary>
         internal Item sourceItem;
 
         /// <summary>本弹幕为大招弹幕的衍生弹,不参与命中计数回充(大招及其产物不给自己充能)。</summary>
         internal bool creditBlocked;
 
+        /// <summary>
+        /// 判定生成源是不是"玩家主动使用武器"。注意 Player.GetSource_Accessory 返回的同样是
+        /// EntitySource_ItemUse(上游 Player.cs:52963),只是 Item 换成了那件饰品,
+        /// 所以必须再排掉饰品与不造成伤害的物品,否则地雷盒、虚空核心之类会被误判成武器。
+        /// </summary>
+        private static bool IsWeaponUse(EntitySource_ItemUse itemUse)
+            => itemUse.Item != null && !itemUse.Item.accessory && itemUse.Item.damage > 0;
+
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
-            // 直接由蓄势武器使用生成:记录来源,并按当帧强化窗口打标。
+            // 直接由物品使用生成:先记武器来源标记,再按蓄势武器记来源与当帧强化窗口。
             // (EntitySource_ItemUse 继承自 EntitySource_Parent,须先判)
             if (source is EntitySource_ItemUse itemUse)
             {
+                FromWeaponUse = IsWeaponUse(itemUse);
+
                 if (itemUse.Item?.ModItem is not ICEChargeWeapon)
                     return;
 
@@ -50,7 +69,8 @@ namespace CalamityEntropy.Core.Weapons
             // 每次生成继承一跳,深链由逐级继承自然传递,不做向上遍历,因此不存在环。
             if (source is EntitySource_Parent parentSource && parentSource.Entity is Projectile parentProj)
             {
-                var parentGlobal = parentProj.GetGlobalProjectile<CEEmpowerGlobalProjectile>();
+                CEEmpowerGlobalProjectile parentGlobal = parentProj.GetGlobalProjectile<CEEmpowerGlobalProjectile>();
+                FromWeaponUse = parentGlobal.FromWeaponUse;
                 if (parentGlobal.sourceItem != null)
                 {
                     sourceItem = parentGlobal.sourceItem;
@@ -84,6 +104,13 @@ namespace CalamityEntropy.Core.Weapons
         /// <summary>该弹幕是否为蓄势强化弹。对照原灾厄 stealthStrike 读取点。</summary>
         public static bool IsEmpowered(this Projectile projectile)
             => projectile.GetGlobalProjectile<CEEmpowerGlobalProjectile>().Empowered;
+
+        /// <summary>
+        /// 该弹幕是否出自玩家主动使用的武器(含手持弹幕与仆从的衍生弹)。
+        /// 仅在生成端有效,只应在主人端的命中钩子里读。
+        /// </summary>
+        public static bool IsFromWeaponUse(this Projectile projectile)
+            => projectile.GetGlobalProjectile<CEEmpowerGlobalProjectile>().FromWeaponUse;
 
         /// <summary>
         /// 标记为蓄势强化弹。sync = true 时立即补发同步包

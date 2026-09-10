@@ -135,6 +135,8 @@ namespace CalamityEntropy.Common
         public bool halfManaSick;
         /// <summary>上神之佑团队免伤光环持有者标记(2026-08-31 平衡案)。</summary>
         public bool odinAura;
+        /// <summary>上神之佑走 3.33 灾厄时代形态(装灾厄时的分支),受击侧与冰霜屏障由本类结算。</summary>
+        public bool odinRefugeCalEra;
         /// <summary>莱拉蜂蜜光环持有者标记(2026-08-31 平衡案)。</summary>
         public bool leylaAura;
         /// <summary>蚀之窃贼怀表持有标记(死亡复活,2026-08-31 平衡案)。</summary>
@@ -1194,6 +1196,7 @@ namespace CalamityEntropy.Common
             VFHelmMelee = false;
             halfManaSick = false;
             odinAura = false;
+            odinRefugeCalEra = false;
             leylaAura = false;
             thiefWatch = false;
             SCrown = false;
@@ -2070,12 +2073,16 @@ namespace CalamityEntropy.Common
             {
                 CEUtils.PlaySound("YharonFireball1", 2.2f, Player.Center);
             }
-            // 2026-08-31 平衡案:苍溟护符重做——受击时召唤3个追踪深渊漩涡,5秒效果冷却(原大伤护盾环退役)
-            if (accAzureAbyss && CECooldowns.CheckBMProc("AzureVortexOnHurt", 300))
+            // 2026-08-31 平衡案:苍溟护符重做,受击时召唤3个追踪深渊漩涡,5秒效果冷却(原大伤护盾环退役)。
+            // OnHurt 在远端客户端与专用服务器上同样会跑,缺主人闸门时每一端都会各自生成一批
+            // 不发生成包、不结算伤害的幽灵漩涡,方向还因为 Main.rand 各端不同;
+            // 伤害判定本就只在主人端,所以只在主人端生成并补一次同步。
+            if (Player.whoAmI == Main.myPlayer && accAzureAbyss && CECooldowns.CheckBMProc("AzureVortexOnHurt", 300))
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, CEUtils.randomRot().ToRotationVector2() * 16, ModContent.ProjectileType<AzureVortex>(), (int)(Player.GetBestClassDamage().ApplyTo(TalismanOfTheAzureAbyss.VortexBaseDamage.ApplyAccArmorDamageBonus())), 0, Player.whoAmI);
+                    int hurtVortex = Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, CEUtils.randomRot().ToRotationVector2() * 16, ModContent.ProjectileType<AzureVortex>(), (int)(Player.GetBestClassDamage().ApplyTo(TalismanOfTheAzureAbyss.VortexBaseDamage.ApplyAccArmorDamageBonus())), 0, Player.whoAmI);
+                    CEUtils.SyncProj(hurtVortex);
                 }
             }
             BloodthirstyEffect += (info.Damage / (float)Player.statLifeMax2) * 27;
@@ -2143,6 +2150,50 @@ namespace CalamityEntropy.Common
             }
         }
         public bool JustHit = false;
+        /// <summary>
+        /// 上神之佑灾厄时代形态的受击侧:护身符按缺失血量给的递增无敌帧、对大伤的额外无敌帧、
+        /// 蜂蜜,以及继承自星辰斗篷那条产线的坠星反击。
+        /// <para>无敌帧只能在 PostHurt 里加:原版在 OnHurt 之后才按 longInvince 把
+        /// hurtCooldowns 写死(上游 Terraria/Player.cs:34674-34690),写在 OnHurt 里会被整段覆盖。</para>
+        /// </summary>
+        public override void PostHurt(Player.HurtInfo info)
+        {
+            if (!odinRefugeCalEra)
+                return;
+
+            Player.AddBuff(BuffID.Honey, 300);
+
+            if (Player.whoAmI != Main.myPlayer)
+                return;
+
+            int extraIFrames;
+            if (info.Damage > 1)
+            {
+                // 满血 0 帧,四分之一血及以下拿满,中间线性
+                float lifeRatio = Player.statLife / (float)Player.statLifeMax2;
+                float ratio = float.Clamp((1f - lifeRatio) / 0.75f, 0f, 1f);
+                extraIFrames = (int)(ratio * OdinsRefuge.MaxBonusIFrames);
+            }
+            else
+            {
+                extraIFrames = 5;
+            }
+            if (info.Damage > OdinsRefuge.BigHitDamageThreshold)
+                extraIFrames += OdinsRefuge.BigHitBonusIFrames;
+
+            if (info.CooldownCounter != -1)
+                Player.hurtCooldowns[info.CooldownCounter] += extraIFrames;
+            else
+                Player.immuneTime += extraIFrames;
+
+            int starDamage = (int)Player.GetBestClassDamage().ApplyTo(OdinsRefuge.RetaliationStarDamage.ApplyAccArmorDamageBonus());
+            for (int i = 0; i < OdinsRefuge.RetaliationStarCount; i++)
+            {
+                Vector2 spawnPos = Player.Center + new Vector2(Main.rand.NextFloat(-400, 400), -Main.rand.NextFloat(500, 800));
+                Vector2 vel = (Player.Center - spawnPos).normalize() * 14f;
+                Projectile.NewProjectile(Player.GetSource_FromThis(), spawnPos, vel, ProjectileID.StarCloakStar, starDamage, 4f, Player.whoAmI);
+            }
+        }
         // 瘟疫内燃机命中派生挂在此处;苍溟漩涡改走 OnHitNPCWithItem/WithProj,避免自触发
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
@@ -2174,6 +2225,10 @@ namespace CalamityEntropy.Common
             if (Player.whoAmI != Main.myPlayer)
                 return;
             if (proj.type == ModContent.ProjectileType<AzureVortex>())
+                return;
+            // 文案承诺的是"武器命中"。这个钩子对玩家名下任何友方弹幕都触发,不加来源判据的话
+            // 神性那类常驻伤害光环站着不动就能把节流吃满,等于白送一条常驻 DPS。
+            if (!proj.IsFromWeaponUse())
                 return;
             TrySpawnAzureVortexOnHit(target);
         }
@@ -3879,6 +3934,10 @@ namespace CalamityEntropy.Common
                     }
                 }
             }
+            // 上神之佑灾厄时代形态继承的冰霜屏障:半血以下挂原版冰霜屏障增益。
+            // 放这里而不是 UpdateAccessory,是为了让生命上限加成先结算完再比阈值。
+            if (odinRefugeCalEra && Player.statLife <= Player.statLifeMax2 * 0.5f)
+                Player.AddBuff(BuffID.IceBarrier, 5);
             if (exquisiteCrown && rottenFangs)
                 Player.maxMinions++;
             //脱离灾厄:血神圣杯(chaliceOfTheBloodGod)与月光护盾互斥的灾厄联动已退役

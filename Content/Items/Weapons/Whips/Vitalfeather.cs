@@ -2,6 +2,7 @@
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.ItemDropRules;
@@ -33,6 +34,12 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
         public override bool MeleePrefix()
         {
             return true;
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            //获取途径按灾厄在否分发:装灾厄时改由犽戎与其宝藏袋掉落
+            tooltips.Replace("[OBT]", Mod.GetLocalization(CERef.Has ? "VitalfeatherObtCal" : "VitalfeatherObt").Value);
         }
     }
 

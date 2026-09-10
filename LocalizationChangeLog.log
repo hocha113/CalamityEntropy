@@ -1034,3 +1034,65 @@
 [Mods.CalamityEntropy.TlipocasScytheLegend.Downed.TScytheU9Cal] - added
 [Mods.CalamityEntropy.BCU2Own] - added // 苍郁之锋:无灾厄第二技能锁定改写原版邪恶 Boss 名
 [Mods.CalamityEntropy.EvilFishing] - added // 贪婪卡:无灾厄 MOT 来源写腐化/猩红之地钓鱼,有灾厄仍用 AstralFishing
+
+// 以下为本地化专趟(L-1 灾厄传颂之物 40 条 / L-2 错时代文案 / L-3 Boss Rush 货架条件)
+// L-1:40 条 Lore*Desc 原为注释存根(zh-Hans、ru-RU)或「值 = 键名」垃圾值(en-US),游戏里显示成裸键
+//     除下方标注的两条外,三语全部从 3.33 基线 993e078b 原样回捞,占位符个数与代码 ModifyTooltip 逐条核对
+[Mods.CalamityEntropy.LoreKingSlimeDesc] - added
+[Mods.CalamityEntropy.LoreDesertScourgeDesc] - added
+[Mods.CalamityEntropy.LoreEyeofCthulhuDesc] - added // 不回捞 3.33 原文「减少{1}%冲刺间隔」:该效果随自研冲刺框架删除,LEEOC 现为空壳,回捞即过度承诺,改写成不承诺任何效果
+[Mods.CalamityEntropy.LoreCrabulonDesc] - added
+[Mods.CalamityEntropy.LoreBrainofCthulhuDesc] - added
+[Mods.CalamityEntropy.LoreEaterofWorldsDesc] - added
+[Mods.CalamityEntropy.LorePerforatorsDesc] - added
+[Mods.CalamityEntropy.LoreHiveMindDesc] - added
+[Mods.CalamityEntropy.LoreQueenBeeDesc] - added
+[Mods.CalamityEntropy.LoreSkeletronDesc] - added
+[Mods.CalamityEntropy.LoreSlimeGodDesc] - added
+[Mods.CalamityEntropy.LoreWallofFleshDesc] - added
+[Mods.CalamityEntropy.LoreQueenSlimeDesc] - added
+[Mods.CalamityEntropy.LoreArchmageDesc] - added
+[Mods.CalamityEntropy.LoreMechsDesc] - added
+[Mods.CalamityEntropy.LoreTwinsDesc] - added
+[Mods.CalamityEntropy.LoreDestroyerDesc] - added
+[Mods.CalamityEntropy.LoreSkeletronPrimeDesc] - added
+[Mods.CalamityEntropy.LoreSulphurSeaDesc] - added
+[Mods.CalamityEntropy.LoreAzafureDesc] - added
+[Mods.CalamityEntropy.LoreCalamitasCloneDesc] - added
+[Mods.CalamityEntropy.LorePlanteraDesc] - added
+[Mods.CalamityEntropy.LoreAquaticScourgeDesc] - added
+[Mods.CalamityEntropy.LoreAbyssDesc] - added
+[Mods.CalamityEntropy.LoreLeviathanAnahitaDesc] - added
+[Mods.CalamityEntropy.LoreAstrumAureusDesc] - added // en-US 去掉了 3.33 那个按模组名限定的 cbuff 增益标签,改写增益名纯文本,避免在本仓引入灾厄模组名字符串
+[Mods.CalamityEntropy.LoreBrimstoneElementalDesc] - added
+[Mods.CalamityEntropy.LoreGolemDesc] - added
+[Mods.CalamityEntropy.LorePlaguebringerGoliathDesc] - added // en-US 同上,标签改纯文本
+[Mods.CalamityEntropy.LoreEmpressofLightDesc] - added
+[Mods.CalamityEntropy.LoreDukeFishronDesc] - added
+[Mods.CalamityEntropy.LoreRavagerDesc] - added
+[Mods.CalamityEntropy.LorePreludeDesc] - added
+[Mods.CalamityEntropy.LoreAstralInfectionDesc] - added
+[Mods.CalamityEntropy.LoreAstrumDeusDesc] - added
+[Mods.CalamityEntropy.LoreCrimsonDesc] - added
+[Mods.CalamityEntropy.LoreCorruptionDesc] - added
+[Mods.CalamityEntropy.LoreUnderworldDesc] - added
+[Mods.CalamityEntropy.LoreBloodMoonDesc] - added // 不回捞 3.33 原文「提升夜视能力」:LEBloodMoon 自 3.33 起就是零消费者空壳,同样改写成不承诺任何效果
+[Mods.CalamityEntropy.LoreAwakeningDesc] - added
+// 另:en-US 的 LoreCrabulonDesc 也把按模组名限定的 cbuff 标签改成了纯文本增益名,理由同 LoreAstrumAureusDesc
+
+// L-2:四处硬写获取来源的文案在装了灾厄之后与实际掉落点不符,按 CERef.Has 分发双键(命名沿用既有 *Cal 后缀惯例)
+[Mods.CalamityEntropy.Items.Vitalfeather.Tooltip] - changed // 「由月亮领主掉落」那一行换成 [OBT] 占位,由 Vitalfeather.ModifyTooltips 按灾厄在否填入
+[Mods.CalamityEntropy.VitalfeatherObt] - added // 无灾厄:由月亮领主掉落(与原文案逐字相同)
+[Mods.CalamityEntropy.VitalfeatherObtCal] - added // 装灾厄:由犽戎掉落(犽戎 NPC 1/4 + 犽戎宝藏袋 1/4)
+[Mods.CalamityEntropy.Items.BookMarkBrimstone.Tooltip] - changed // 「由红恶魔掉落」换成 [OBT] 占位,由 BookMark 基类分发
+[Mods.CalamityEntropy.BookMarkBrimstoneObt] - added // 无灾厄:由红恶魔掉落(与原文案逐字相同)
+[Mods.CalamityEntropy.BookMarkBrimstoneObtCal] - added // 装灾厄:红恶魔那行已进 !CERef.Has 门,唯一来源是硫磺火元素宝藏袋 1/2
+[Mods.CalamityEntropy.Items.BookMarkProfaned.Tooltip] - changed // 「由拜月邪教徒掉落」换成 [OBT] 占位,由 BookMark 基类分发
+[Mods.CalamityEntropy.BookMarkProfanedObt] - added // 无灾厄:由拜月邪教徒掉落(与原文案逐字相同)
+[Mods.CalamityEntropy.BookMarkProfanedObtCal] - added // 装灾厄:拜月那行已进 !CERef.Has 门,唯一来源是亵渎天神宝藏袋 3/5
+[Mods.CalamityEntropy.Items.WorshipRelic.Tooltip] - changed // 日祀圣物:「鱼饵充能上限+1」改成「诱饵充能上限提升到2格,可以连续投出两枚诱饵」。「鱼饵」在全文只出现过这一次且是原版钓鱼道具专名,统一改用十二件诱饵武器在用的「诱饵」「充能」
+[Mods.CalamityEntropy.TSU7Cal] - changed // 犽狨 → 犽戎:统一采用灾厄汉化 Yharon.DisplayName「重生之龙,犽戎」的通行译名
+[Mods.CalamityEntropy.TlipocasScytheLegend.Downed.TScytheU7Cal] - changed // 同上
+
+// L-3
+[Mods.CalamityEntropy.PassedBossRush] - added // 城镇飞龙(妖龙酱)货架条件文案,原为裸键。装灾厄且通过 Boss Rush 后上架灾厄的石头。句形对齐同类货架条件键(DownedBoss2 / HaveOracleDeck)

@@ -1,5 +1,6 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.UI.EntropyBookUI;
+using CalamityEntropy.Core.CalamityRef;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -67,6 +68,11 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                     continue;
                 }
                 tooltipLine.OverrideColor = tooltipColor;
+                //获取途径按灾厄在否分发:只有写了 [OBT] 的书签才查键,免得给其余书签注册空键
+                if (tooltipLine.Text.Contains("[OBT]"))
+                {
+                    tooltipLine.Text = tooltipLine.Text.Replace("[OBT]", Mod.GetLocalization(Name + (CERef.Has ? "ObtCal" : "Obt")).Value);
+                }
             }
             tooltips.Add(new TooltipLine(CalamityEntropy.Instance, "BookMarkTooltip", CalamityEntropy.Instance.GetLocalization("TooltipBookMark").Value) { OverrideColor = Color.Yellow });
             if (EBookUI.active)

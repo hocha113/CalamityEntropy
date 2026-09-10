@@ -2494,7 +2494,7 @@ Items: {
 			'''
 			Hits have a 1 in 4 chance to call down a holy arrow dealing 180 base damage
 			This effect has a 0.5 second internal cooldown
-			+1 max bait charge
+			Raises your maximum bait charge to 2, letting you throw two baits back to back
 			You can no longer deal critical hits
 			'''
 	}
@@ -7088,44 +7088,50 @@ VoidDeath2: "{0} transformed into pure energy"
 VoidDeath3: "{0} cannot return to the material cycle"
 VoidDeath4: "{0} has returned to nothingness"
 VoidDeath5: "{0}'s carrier has been erased"
-LoreKingSlimeDesc: Mods.CalamityEntropy.LoreKingSlimeDesc
-LoreDesertScourgeDesc: Mods.CalamityEntropy.LoreDesertScourgeDesc
-LoreEyeofCthulhuDesc: Mods.CalamityEntropy.LoreEyeofCthulhuDesc
-LoreCrabulonDesc: Mods.CalamityEntropy.LoreCrabulonDesc
-LoreBrainofCthulhuDesc: Mods.CalamityEntropy.LoreBrainofCthulhuDesc
-LoreEaterofWorldsDesc: Mods.CalamityEntropy.LoreEaterofWorldsDesc
-LorePerforatorsDesc: Mods.CalamityEntropy.LorePerforatorsDesc
-LoreHiveMindDesc: Mods.CalamityEntropy.LoreHiveMindDesc
-LoreQueenBeeDesc: Mods.CalamityEntropy.LoreQueenBeeDesc
-LoreSkeletronDesc: Mods.CalamityEntropy.LoreSkeletronDesc
-LoreSlimeGodDesc: Mods.CalamityEntropy.LoreSlimeGodDesc
-LoreWallofFleshDesc: Mods.CalamityEntropy.LoreWallofFleshDesc
-LoreQueenSlimeDesc: Mods.CalamityEntropy.LoreQueenSlimeDesc
-LoreArchmageDesc: Mods.CalamityEntropy.LoreArchmageDesc
-LoreMechsDesc: Mods.CalamityEntropy.LoreMechsDesc
-LoreTwinsDesc: Mods.CalamityEntropy.LoreTwinsDesc
-LoreDestroyerDesc: Mods.CalamityEntropy.LoreDestroyerDesc
-LoreSkeletronPrimeDesc: Mods.CalamityEntropy.LoreSkeletronPrimeDesc
-LoreSulphurSeaDesc: Mods.CalamityEntropy.LoreSulphurSeaDesc
-LoreAzafureDesc: Mods.CalamityEntropy.LoreAzafureDesc
-LoreCalamitasCloneDesc: Mods.CalamityEntropy.LoreCalamitasCloneDesc
-LorePlanteraDesc: Mods.CalamityEntropy.LorePlanteraDesc
-LoreAquaticScourgeDesc: Mods.CalamityEntropy.LoreAquaticScourgeDesc
-LoreAbyssDesc: Mods.CalamityEntropy.LoreAbyssDesc
-LoreLeviathanAnahitaDesc: Mods.CalamityEntropy.LoreLeviathanAnahitaDesc
-LoreAstrumAureusDesc: Mods.CalamityEntropy.LoreAstrumAureusDesc
-LoreBrimstoneElementalDesc: Mods.CalamityEntropy.LoreBrimstoneElementalDesc
-LoreGolemDesc: Mods.CalamityEntropy.LoreGolemDesc
-LorePlaguebringerGoliathDesc: Mods.CalamityEntropy.LorePlaguebringerGoliathDesc
-LoreEmpressofLightDesc: Mods.CalamityEntropy.LoreEmpressofLightDesc
-LoreDukeFishronDesc: Mods.CalamityEntropy.LoreDukeFishronDesc
-LoreRavagerDesc: Mods.CalamityEntropy.LoreRavagerDesc
-LorePreludeDesc: Mods.CalamityEntropy.LorePreludeDesc
-LoreAstralInfectionDesc: Mods.CalamityEntropy.LoreAstralInfectionDesc
-LoreAstrumDeusDesc: Mods.CalamityEntropy.LoreAstrumDeusDesc
-LoreCrimsonDesc: Mods.CalamityEntropy.LoreCrimsonDesc
-LoreCorruptionDesc: Mods.CalamityEntropy.LoreCorruptionDesc
-LoreUnderworldDesc: Mods.CalamityEntropy.LoreUnderworldDesc
-LoreBloodMoonDesc: Mods.CalamityEntropy.LoreBloodMoonDesc
-LoreAwakeningDesc: Mods.CalamityEntropy.LoreAwakeningDesc
-PassedBossRush: Mods.CalamityEntropy.PassedBossRush
+LoreKingSlimeDesc: Increases jump height
+LoreDesertScourgeDesc: Increases breath time
+LoreEyeofCthulhuDesc: No additional effect in the current version
+LoreCrabulonDesc: Obtain the Mushy buff for {1} seconds after injury
+LoreBrainofCthulhuDesc: Immunity to [cbuff:Bleeding]
+LoreEaterofWorldsDesc: Immunity to [cbuff:CursedInferno]
+LorePerforatorsDesc: Gain a {1}% chance to heal {2} life after taking damage
+LoreHiveMindDesc: For {1} seconds after taking damage, gain {2}% increased damage
+LoreQueenBeeDesc: Gain {1}% Increased damage, but {2}% reduced critical strike chance
+LoreSkeletronDesc: Ammo with more than {1} held gain a {2}% chance to not be consumed on use
+LoreSlimeGodDesc: Increases jump height
+LoreWallofFleshDesc: Reduces incoming damage by {1}% on a {2} second cooldown
+LoreQueenSlimeDesc: Grants {1}% increased fall speed
+LoreArchmageDesc: Reduces the duration of the [cbuff:Frozen] debuff on the player
+LoreMechsDesc: Grants {1} defense
+LoreTwinsDesc: Grants {1} defense
+LoreDestroyerDesc: Grants {1} defense
+LoreSkeletronPrimeDesc: Gain {1}% increased damage reduction
+LoreSulphurSeaDesc: Immunity to [cbuff:Venom]
+LoreAzafureDesc: Grants {1}% increased critical strike chance
+LoreCalamitasCloneDesc: Grants {1}% increased melee speed
+LorePlanteraDesc: Grants +0.5HP/s life regeneration
+LoreAquaticScourgeDesc: Increase breath time
+LoreAbyssDesc: Increased visibility in the abyss
+LoreLeviathanAnahitaDesc: Grants +1HP/s life regeneration when in water
+LoreAstrumAureusDesc: Reduces the duration of the Astral Infection debuff on the player
+LoreBrimstoneElementalDesc: Grants 1% increased damage reduction
+LoreGolemDesc: Grants {1}% increased damage reduction
+LorePlaguebringerGoliathDesc: Reduces the duration of the Plague debuff on the player
+LoreEmpressofLightDesc: During daytime, grants {1} defense
+LoreDukeFishronDesc: Grants uninhibited water movement
+LoreRavagerDesc: Increased movement speed by 2%
+LorePreludeDesc: Slightly improves vision
+LoreAstralInfectionDesc: Grants {1}% increased flight time
+LoreAstrumDeusDesc: Grants {1}% increased flight speed
+LoreCrimsonDesc: +{1} max life
+LoreCorruptionDesc: Gain {1}% increased damage reduction
+LoreUnderworldDesc: Grants {1} seconds of immunity to lava
+LoreBloodMoonDesc: No additional effect in the current version
+LoreAwakeningDesc: Slightly increase movement speed and jump height
+PassedBossRush: After clearing Boss Rush
+VitalfeatherObt: Dropped by the Moon Lord
+VitalfeatherObtCal: Dropped by Yharon
+BookMarkBrimstoneObt: Dropped by Red Devils
+BookMarkBrimstoneObtCal: Dropped by the Brimstone Elemental's treasure bag
+BookMarkProfanedObt: Dropped by the Lunatic Cultist
+BookMarkProfanedObtCal: Dropped by Providence's treasure bag

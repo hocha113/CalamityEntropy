@@ -1,8 +1,5 @@
-using CalamityEntropy.Content.Buffs;
-using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityEntropy.Core.Weapons;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -44,37 +41,10 @@ namespace CalamityEntropy.Content.Items.Armor.Marivinium
             player.maxMinions += 3;
             player.GetAttackSpeed(DamageClass.Melee) += 0.20f;
         }
-        public static void ApplyBuffImmune(Player player)
-        {
-            player.buffImmune[ModContent.BuffType<VulnerabilityHex>()] = true;
-            player.buffImmune[ModContent.BuffType<MiracleBlight>()] = true;
-            player.buffImmune[ModContent.BuffType<Dragonfire>()] = true;
-            player.buffImmune[ModContent.BuffType<GodSlayerInferno>()] = true;
-            player.buffImmune[ModContent.BuffType<VoidTouch>()] = true;
-            player.buffImmune[ModContent.BuffType<Plague>()] = true;
-            player.buffImmune[ModContent.BuffType<VoidVirus>()] = true;
-            player.buffImmune[ModContent.BuffType<Deceive>()] = true;
-            player.buffImmune[ModContent.BuffType<SulphuricPoisoning>()] = true;
-            player.buffImmune[ModContent.BuffType<MechanicalTrauma>()] = true;
-            player.buffImmune[ModContent.BuffType<Irradiated>()] = true;
-            player.buffImmune[BuffID.Venom] = true;
-            player.buffImmune[ModContent.BuffType<BonePiercingToxin>()] = true;
-            player.buffImmune[ModContent.BuffType<Nightwither>()] = true;
-            player.buffImmune[ModContent.BuffType<HolyFlames>()] = true;
-            player.buffImmune[ModContent.BuffType<GalvanicCorrosion>()] = true;
-            player.buffImmune[BuffID.Frostburn] = true;
-            player.buffImmune[ModContent.BuffType<ArmorCrunch>()] = true;
-            player.buffImmune[BuffID.Electrified] = true;
-            player.buffImmune[ModContent.BuffType<BrimstoneFlames>()] = true;
-            player.buffImmune[BuffID.CursedInferno] = true;
-            player.buffImmune[BuffID.ShadowFlame] = true;
-            player.buffImmune[148] = true;
-            player.buffImmune[BuffID.BrokenArmor] = true;
-            player.buffImmune[BuffID.WitheredArmor] = true;
-            player.buffImmune[ModContent.BuffType<MaliciousCode>()] = true;
-            player.buffImmune[ModContent.BuffType<CrushDepth>()] = true;
-            player.buffImmune[ModContent.BuffType<HadopelagicPressure>()] = true;
-        }
+        // 2026-08-31 平衡案把 ApplyBuffImmune 的调用连同 +10 仆从栏、+75% 召唤伤害、
+        // 静止回血与真近战加成一起从套装奖励里删掉,同笔提交还把三件的防御、暴击、
+        // 生命上限成套下调,是有意削弱而非漏改,故那 30 行减益免疫表在此一并移除。
+        // 套装文案仍写着"免疫绝大多数减益",需由本地化批次删除该承诺。
         public override void UpdateEquip(Player player)
         {
             player.GetDamage(DamageClass.Generic) += 0.2f;

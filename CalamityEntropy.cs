@@ -25,6 +25,7 @@ using CalamityEntropy.Content.NPCs.Cruiser;
 using CalamityEntropy.Content.NPCs.LuminarisMoth;
 using CalamityEntropy.Content.NPCs.NihilityTwin;
 using CalamityEntropy.Content.NPCs.Prophet;
+using CalamityEntropy.Content.NPCs.SpiritFountain;
 using CalamityEntropy.Content.NPCs.VoidInvasion;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
@@ -1471,6 +1472,7 @@ namespace CalamityEntropy
                 NPCID.Sets.SpecificDebuffImmunity[i][ModContent.BuffType<LifeOppress>()] = false;
             }
             RegisterCalamityDebuffImmunityOverrides();
+            RegisterCalamityBossBarExclusions();
             EntropyModeGNPC.FillCalTypes();
 
             string MyGameFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games");
@@ -1879,6 +1881,23 @@ namespace CalamityEntropy
                     }
                 }
             }
+        }
+
+        //灾厄血条只看 npc.boss、完全不看 realLife,自有 Boss 的从属部件不登记排除表就一个部件一根条。
+        //3.33 原有巡游者两条,另两条是同型缺陷:同样置了 boss=true 且血条无意义
+        private static void RegisterCalamityBossBarExclusions()
+        {
+            if (!CERef.Has)
+            {
+                return;
+            }
+            //巡游者段体与尾:每帧镜像头的血量,排除后头那根条显示的就是全蠕虫真血
+            CECal.ExcludeFromCalBossBar(ModContent.NPCType<CruiserBody>());
+            CECal.ExcludeFromCalBossBar(ModContent.NPCType<CruiserTail>());
+            //灵泉环:每帧镜像本体血量,一场至少十条
+            CECal.ExcludeFromCalBossBar(ModContent.NPCType<SpiritRing>());
+            //混沌细胞:伤害经 realLife 全额转给本体,自身 life 从不变动,会挂一根永远满格的死条
+            CECal.ExcludeFromCalBossBar(ModContent.NPCType<ChaoticCell>());
         }
 
         //3.33 手调色表 38 条。未命中的 CEID 经 SetBossbarColor 过滤,不污染 NPCID 0

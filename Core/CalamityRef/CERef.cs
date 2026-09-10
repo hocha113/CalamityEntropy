@@ -27,6 +27,26 @@ namespace CalamityEntropy.Core.CalamityRef
             return Has && mod != null && ReferenceEquals(mod, calamity);
         }
 
+        /// <summary>转调灾厄对第三方公开的 ModCall。未装灾厄返回 null;异常按本类惯例只记一次日志后吞掉。
+        /// 调用点一律走 CECal 的语义方法,不要直接拼灾厄的 case 名</summary>
+        internal static object Call(params object[] args)
+        {
+            if (!Has || calamity == null)
+            {
+                return null;
+            }
+            try
+            {
+                return calamity.Call(args);
+            }
+            catch (Exception ex)
+            {
+                string head = args != null && args.Length > 0 && args[0] != null ? args[0].ToString() : "?";
+                LogFailed("Call", head + " " + ex.GetType().Name);
+                return null;
+            }
+        }
+
         /// <summary>A4 档案馆类型。未装灾厄或反射失败为 null</summary>
         internal static Type DungeonArchiveType => dungeonArchiveType;
 

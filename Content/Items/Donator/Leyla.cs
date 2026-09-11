@@ -63,6 +63,49 @@ namespace CalamityEntropy.Content.Items.Donator
                 .Register();
         }
 
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            // 装灾厄整段换成灾厄时代键,无灾厄不碰,Items.Leyla.Tooltip 保持 4.0 原文。
+            // 4.0 那段是静态文案,没有占位符,所以替换只在灾厄支跑。
+            if (!CERef.Has)
+                return;
+            string cal = Mod.GetLocalization("LeylaCal").Value;
+            int insertAt = -1;
+            for (int i = 0; i < tooltips.Count; i++)
+            {
+                if (tooltips[i].Name.StartsWith("Tooltip"))
+                {
+                    insertAt = i;
+                    break;
+                }
+            }
+            for (int i = tooltips.Count - 1; i >= 0; i--)
+            {
+                if (tooltips[i].Name.StartsWith("Tooltip"))
+                    tooltips.RemoveAt(i);
+            }
+            if (insertAt < 0)
+                insertAt = tooltips.Count;
+            string[] lines = cal.Replace("\r\n", "\n").Split('\n');
+            int offset = 0;
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i].Trim();
+                if (line.Length == 0)
+                    continue;
+                tooltips.Insert(insertAt + offset, new TooltipLine(Mod, "TooltipCal" + offset, line));
+                offset++;
+            }
+            int level = Level();
+            tooltips.Replace("[1]", GetDefense(level));
+            tooltips.Replace("[2]", GetRegen(level).ToString());
+            tooltips.Replace("[3]", GetEndurance(level).ToPercent());
+            tooltips.Replace("[4]", DoTDmgMult(level).ToPercent());
+            tooltips.Replace("[5]", MaxHealthAddition(level));
+            tooltips.Replace("[L]", level);
+            tooltips.Replace("[ML]", 9);
+        }
+
         /// <summary>无灾厄固定三条原版减益;装灾厄按进度解锁 PortsDoT。</summary>
         public static List<int> ApplyBuffType()
         {

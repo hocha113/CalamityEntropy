@@ -6,7 +6,9 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Core.CalamityRef
 {
-    /// <summary>灾厄反射层。只读不写;未装灾厄或反射失败一律返回空值,兜底由 CECal 负责</summary>
+    /// <summary>灾厄反射层。读为主;未装灾厄或反射失败一律返回空值,兜底由 CECal 负责。
+    /// 写只允许一类:灾厄自己每帧在 ResetEffects 归位的、按玩家的装备旗标。
+    /// 进度旗标、世界状态与任何进存档或过网络的灾厄状态一律禁止写入</summary>
     internal static class CERef
     {
         private const string CalName = "CalamityMod";
@@ -76,6 +78,12 @@ namespace CalamityEntropy.Core.CalamityRef
         private static MemberInfo calPlayer_ZoneAstral_M;
         private static MemberInfo calPlayer_ZoneSulphur_M;
         private static MemberInfo calPlayer_ZoneAbyssLayer4_M;
+
+        private static MemberInfo calPlayer_chaliceOfTheBloodGod_M;
+        private static MemberInfo calPlayer_chaliceHeartStyle_M;
+        private static MemberInfo calPlayer_absorber_M;
+        private static MemberInfo calPlayer_purity_M;
+        private static MemberInfo calPlayer_infiniteFlight_M;
 
         private static GlobalNPC calGlobalNPCTemplate;
         private static MemberInfo calNPC_CurrentlyEnraged_M;
@@ -199,6 +207,32 @@ namespace CalamityEntropy.Core.CalamityRef
             return null;
         }
 
+        private static void SetMember(MemberInfo member, object obj, object value)
+        {
+            if (member == null)
+            {
+                return;
+            }
+            try
+            {
+                FieldInfo field = member as FieldInfo;
+                if (field != null)
+                {
+                    field.SetValue(obj, value);
+                    return;
+                }
+                PropertyInfo property = member as PropertyInfo;
+                if (property != null && property.CanWrite)
+                {
+                    property.SetValue(obj, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogFailed("SetValue", (member.DeclaringType != null ? member.DeclaringType.FullName : "?") + "." + member.Name + " " + ex.GetType().Name);
+            }
+        }
+
         private static bool ReadCachedFlag(MemberInfo member, ref FlagCache cache)
         {
             if (member == null)
@@ -293,6 +327,43 @@ namespace CalamityEntropy.Core.CalamityRef
         public static bool GetZoneAbyssLayer4(Player player)
         {
             return GetPlayerFlag(player, calPlayer_ZoneAbyssLayer4_M);
+        }
+
+        //以下五个写入点都是灾厄每帧在 CalamityPlayer.ResetEffects 归位的装备旗标,
+        //写它们等价于灾厄自家饰品在 UpdateAccessory 里做的事,不落存档不过网络
+        private static void SetPlayerFlag(Player player, MemberInfo member, bool value)
+        {
+            ModPlayer calPlayer = GetCalPlayer(player);
+            if (calPlayer == null || member == null)
+            {
+                return;
+            }
+            SetMember(member, calPlayer, value);
+        }
+
+        public static void SetChaliceOfTheBloodGod(Player player, bool value)
+        {
+            SetPlayerFlag(player, calPlayer_chaliceOfTheBloodGod_M, value);
+        }
+
+        public static void SetChaliceHeartStyle(Player player, bool value)
+        {
+            SetPlayerFlag(player, calPlayer_chaliceHeartStyle_M, value);
+        }
+
+        public static void SetAbsorber(Player player, bool value)
+        {
+            SetPlayerFlag(player, calPlayer_absorber_M, value);
+        }
+
+        public static void SetPurity(Player player, bool value)
+        {
+            SetPlayerFlag(player, calPlayer_purity_M, value);
+        }
+
+        public static void SetInfiniteFlight(Player player, bool value)
+        {
+            SetPlayerFlag(player, calPlayer_infiniteFlight_M, value);
         }
 
         private static GlobalNPC GetCalGlobalNPC(NPC npc)
@@ -392,6 +463,11 @@ namespace CalamityEntropy.Core.CalamityRef
                     calPlayer_ZoneAstral_M = GetFieldOrProperty(calPlayerType, "ZoneAstral", PublicInstanceFlags);
                     calPlayer_ZoneSulphur_M = GetFieldOrProperty(calPlayerType, "ZoneSulphur", PublicInstanceFlags);
                     calPlayer_ZoneAbyssLayer4_M = GetFieldOrProperty(calPlayerType, "ZoneAbyssLayer4", PublicInstanceFlags);
+                    calPlayer_chaliceOfTheBloodGod_M = GetFieldOrProperty(calPlayerType, "chaliceOfTheBloodGod", PublicInstanceFlags);
+                    calPlayer_chaliceHeartStyle_M = GetFieldOrProperty(calPlayerType, "chaliceHeartStyle", PublicInstanceFlags);
+                    calPlayer_absorber_M = GetFieldOrProperty(calPlayerType, "absorber", PublicInstanceFlags);
+                    calPlayer_purity_M = GetFieldOrProperty(calPlayerType, "purity", PublicInstanceFlags);
+                    calPlayer_infiniteFlight_M = GetFieldOrProperty(calPlayerType, "infiniteFlight", PublicInstanceFlags);
                 }
 
                 if (!ModContent.TryFind(CalName, "CalamityGlobalNPC", out calGlobalNPCTemplate))
@@ -431,6 +507,11 @@ namespace CalamityEntropy.Core.CalamityRef
             calPlayer_ZoneAstral_M = null;
             calPlayer_ZoneSulphur_M = null;
             calPlayer_ZoneAbyssLayer4_M = null;
+            calPlayer_chaliceOfTheBloodGod_M = null;
+            calPlayer_chaliceHeartStyle_M = null;
+            calPlayer_absorber_M = null;
+            calPlayer_purity_M = null;
+            calPlayer_infiniteFlight_M = null;
 
             calGlobalNPCTemplate = null;
             calNPC_CurrentlyEnraged_M = null;

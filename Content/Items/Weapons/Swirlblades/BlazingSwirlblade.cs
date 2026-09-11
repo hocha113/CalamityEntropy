@@ -62,6 +62,23 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         {
             return true;
         }
+
+        // 2026-08-31 平衡案删掉了 3.33 的配方、改挂拜月邪教徒 1/3,导致装灾厄时稀有度(亵渎后档)
+        // 与获取档位(月总前)对不上,轮刃链中段也断了。装灾厄时还原 3.33 配方并给拜月那行加门;
+        // 无灾厄什么都不注册,保持 4.0 现状
+        public override void AddRecipes()
+        {
+            if (CECal.CalChainReady(CEID.Item_MoltenAmputator, CEID.Item_DivineGeode, CEID.Item_UnholyEssence))
+            {
+                CreateRecipe()
+                    .AddIngredient<ExergySwirlblade>()
+                    .AddIngredient(CEID.Item_MoltenAmputator)
+                    .AddIngredient(CEID.Item_DivineGeode, 12)
+                    .AddIngredient(CEID.Item_UnholyEssence, 8)
+                    .AddTile(TileID.MythrilAnvil)
+                    .Register();
+            }
+        }
     }
     public class BlazingSwirlbladeProj : BaseSwirlblade
     {

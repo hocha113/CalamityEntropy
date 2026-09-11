@@ -308,6 +308,7 @@ namespace CalamityEntropy.Core.CalamityRef
         public static int NPC_Anahita => Get();
         public static int NPC_Apollo => Get();
         public static int NPC_AquaticScourgeHead => Get();
+        public static int NPC_Archmage => Get();
         public static int NPC_AresBody => Get();
         public static int NPC_Artemis => Get();
         public static int NPC_AstrumAureus => Get();
@@ -385,6 +386,9 @@ namespace CalamityEntropy.Core.CalamityRef
 
         #region 减益
         public static int Buff_AstralInjectionBuff => Get();
+        public static int Buff_BurningBlood => Get();
+        public static int Buff_HeavyBleeding => Get();
+        public static int Buff_Laceration => Get();
         public static int Buff_Mushy => Get();
         public static int Buff_Plague => Get();
         #endregion

@@ -6,6 +6,7 @@ using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Items.Weapons.CrystalBalls;
 using CalamityEntropy.Content.Items.Weapons.Whips;
 using CalamityEntropy.Content.NPCs.Prophet;
+using CalamityEntropy.Core.CalamityRef;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
@@ -67,8 +68,11 @@ namespace CalamityEntropy.Content.Items
             itemLoot.Add(new CommonDrop(ModContent.ItemType<ProphecyMasterpiece>(), 5, 1, 1, 3));
             itemLoot.Add(new CommonDrop(ModContent.ItemType<BookMarkForesee>(), 5, 1, 1, 3));
             itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<CursedThread>()));
-            // 自灾厄白金星舰宝袋重挂（bookmark-rehang 增补段）
-            itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<NightProjection>(), 4));
+            // 自灾厄白金星舰宝袋重挂（bookmark-rehang 增补段）。装灾厄时白金星舰自己会出,这里加门消除双来源
+            if (!CERef.Has)
+            {
+                itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<NightProjection>(), 4));
+            }
         }
     }
 }

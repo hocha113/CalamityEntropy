@@ -4,6 +4,7 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -21,12 +22,12 @@ namespace CalamityEntropy.Content.Tiles
 
         public Asset<Texture2D> RelicTexture;
 
-        // 托座上方悬浮部分的贴图路径(50x50)
+        // 托座上方悬浮部分的贴图路径。各 Boss 尺寸不一,按 frame 中心对齐,不要求统一画布
         public abstract string RelicTextureName { get; }
 
         public abstract int AssociatedItem { get; }
 
-        // 所有遗物共用同一张托座贴图
+        // 所有遗物共用同一张托座贴图。这张只是加载期的占位,实际绘制在 PreDraw 里换成原版的托座图
         public override string Texture => "CalamityEntropy/Content/Tiles/RelicPedestal";
 
         public override void Load()
@@ -40,6 +41,7 @@ namespace CalamityEntropy.Content.Tiles
         public override void Unload()
         {
             RelicTexture = null;
+            pedestalTextureBorrowed = false;
         }
 
         public override void SetStaticDefaults()
@@ -68,6 +70,26 @@ namespace CalamityEntropy.Content.Tiles
         public override bool CreateDust(int i, int j, ref int type)
         {
             return false;
+        }
+
+        private bool pedestalTextureBorrowed;
+
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            // 脱灾时自制的 RelicPedestal.png 只是块占位色板,与原版大师遗物底座对不上。
+            // 原版 617 的托座图幅同样是 54x144、同样的 18px 格距,直接把本物块的贴图槽指向它,
+            // 绘制仍由引擎按本类的 TileObjectData 走,不需要手写几何。只换一次。
+            if (!pedestalTextureBorrowed)
+            {
+                Main.instance.LoadTiles(TileID.MasterTrophyBase);
+                Asset<Texture2D> vanillaPedestal = TextureAssets.Tile[TileID.MasterTrophyBase];
+                if (vanillaPedestal != null && vanillaPedestal.IsLoaded)
+                {
+                    TextureAssets.Tile[Type] = vanillaPedestal;
+                    pedestalTextureBorrowed = true;
+                }
+            }
+            return true;
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)

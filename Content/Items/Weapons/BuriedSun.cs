@@ -1,5 +1,6 @@
 using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Particles.CalamityPorts;
+using CalamityEntropy.Core.CalamityRef;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -52,8 +53,17 @@ namespace CalamityEntropy.Content.Items.Weapons
             return false;
         }
 
+        // 2026-08-31 平衡案删掉了 3.33 的配方、改挂拜月邪教徒 1/3。
+        // 装灾厄时还原 3.33 配方,同时拜月那一行进 !CERef.Has 门;无灾厄什么都不注册,保持 4.0 现状
         public override void AddRecipes()
         {
+            if (CECal.CalChainReady(CEID.Item_MeldBlob))
+            {
+                CreateRecipe()
+                    .AddIngredient(CEID.Item_MeldBlob, 18)
+                    .AddTile(TileID.LunarCraftingStation)
+                    .Register();
+            }
         }
     }
 

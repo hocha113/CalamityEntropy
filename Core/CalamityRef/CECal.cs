@@ -257,6 +257,55 @@ namespace CalamityEntropy.Core.CalamityRef
 
         #endregion
 
+        #region 灾厄装备旗标写入
+
+        //这一组写的都是灾厄每帧在 CalamityPlayer.ResetEffects 归位的装备旗标,
+        //调用点必须每帧从 UpdateAccessory 一类的钩子里重新写,不能只写一次。
+        //无灾厄时全部空操作,所以调用点不需要自己判 CERef.Has
+
+        /// <summary>血神圣杯:+25% 生命上限与伤害延迟结算。showHeart 对应灾厄的心形显示</summary>
+        public static void GrantChaliceOfTheBloodGod(Player player, bool showHeart)
+        {
+            if (!CERef.Has)
+            {
+                return;
+            }
+            CERef.SetChaliceOfTheBloodGod(player, true);
+            CERef.SetChaliceHeartStyle(player, showHeart);
+        }
+
+        /// <summary>阴阳吸星石:受击光环、移速跳跃、荆棘与命中回血</summary>
+        public static void GrantAbsorber(Player player)
+        {
+            if (!CERef.Has)
+            {
+                return;
+            }
+            CERef.SetAbsorber(player, true);
+        }
+
+        /// <summary>辐辉:按缺失生命的动态再生与 DoT 削减</summary>
+        public static void GrantRadiance(Player player)
+        {
+            if (!CERef.Has)
+            {
+                return;
+            }
+            CERef.SetPurity(player, true);
+        }
+
+        /// <summary>灾厄的无限飞行旗标。只影响灾厄自家飞行条的显示,翼力本身由调用点自己补</summary>
+        public static void GrantInfiniteFlight(Player player)
+        {
+            if (!CERef.Has)
+            {
+                return;
+            }
+            CERef.SetInfiniteFlight(player, true);
+        }
+
+        #endregion
+
         /// <summary>整链双注册的守卫:灾厄在场,且这一链需要的全部灾厄内容都解析到了,才走 3.33 链</summary>
         public static bool CalChainReady(params int[] calTypes)
         {

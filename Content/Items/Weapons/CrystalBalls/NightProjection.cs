@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -30,9 +31,14 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
         }
         public override void AddRecipes()
         {
+            // 3.33 没有配方,唯一来源是白金星舰的宝藏袋(已在 EGlobalItem 的灾厄宝袋段补回)。
+            // 这条是脱灾期的补偿合成,装灾厄时整条不注册
+            if (CERef.Has)
+            {
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.CrystalBall)
-                .AddIngredient(ItemID.FairyQueenMagicItem)
                 .AddIngredient(ItemID.MartianConduitPlating, 30)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();

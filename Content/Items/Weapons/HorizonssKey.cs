@@ -41,9 +41,10 @@ namespace CalamityEntropy.Content.Items.Weapons
     }
     public class HorizonssKey : ModItem
     {
-        // 装灾厄补回成长曲线(棺体/穿甲/暴击/虚空之触/进度提示),职业定位保持 4.0 召唤+8栏
+        // 装灾厄补回成长曲线(棺体/穿甲/暴击/虚空之触/进度提示),职业定位保持 4.0 召唤。
+        // 栏位占用 2026-09-11 由 8 降到 4,两个时代同值(SamsaraCasketProj 的 minionSlots 读同一个常量)
         public const int BaseDamage = 50;
-        public const float MinionSlotCost = 8f;
+        public const float MinionSlotCost = 4f;
         public override bool AltFunctionUse(Player player) => true;
         public override void SetDefaults()
         {

@@ -759,6 +759,8 @@ Items: {
 		DisplayName: Horizons' Key
 		Tooltip:
 			'''
+			Summons a samsara casket minion whose swords attack nearby enemies (takes up 4 minion slots)
+			Right click an enemy to set the swords' target
 			Sends an array of swords to attack nearby enemies and inflict [cebuff:CalamityEntropy/Nightwither]
 			[c/d9bd1b:The strength of this weapon increases as the game progresses]
 			[c/d9bd1b:Affected by all classes' damage bonuses]
@@ -1298,7 +1300,7 @@ Items: {
 		DisplayName: Marivinium Breastplate
 		Tooltip:
 			'''
-			15% increased damage and critical strike chance
+			+15% damage, +5% critical strike chance
 			Grants the ability to breath within the abyss
 			'''
 	}
@@ -1307,9 +1309,8 @@ Items: {
 		DisplayName: Marivinium Helmet
 		Tooltip:
 			'''
-			20% increased damage
-			10% increased critical strike chance and melee speed
-			Increases maximum life and mana by 200
+			+20% damage, +10% critical strike chance
+			+100 maximum life and mana
 			'''
 	}
 
@@ -1317,9 +1318,9 @@ Items: {
 		DisplayName: Marivinium Greaves
 		Tooltip:
 			'''
-			36% increased movement speed
-			20% reduced mana cost
-			5% increased damage and critical strike chance
+			+5% damage, +5% critical strike chance
+			+30% movement speed
+			+30% jump speed
 			'''
 	}
 
@@ -2495,7 +2496,6 @@ Items: {
 			Hits have a 1 in 4 chance to call down a holy arrow dealing 180 base damage
 			This effect has a 0.5 second internal cooldown
 			Raises your maximum bait charge to 2, letting you throw two baits back to back
-			You can no longer deal critical hits
 			'''
 	}
 
@@ -2631,11 +2631,13 @@ Items: {
 		DisplayName: Celestial Chronometer
 		Tooltip:
 			'''
-			Grants an extra +2 HP/s life regeneration and 5% increased damage reduction
-			Hitting enemies heals you for 1% of your maximum life
-			If visibility is enabled, grows herbs beneath your feet
-			Grants 20% damage reduction and 4 life every second while standing on herbs
-			Grants +4 HP/s life regeneration
+			+75 maximum life
+			Grants the effect of the Charm of Myths, reducing healing potion cooldown by 25%
+			Debuff duration reduced by 33%
+			Greatly increases natural life regeneration (6/s) and directly restores 1 life every second
+			Grows herbs beneath your feet as you walk on grass, shift right click to toggle
+			+20 defense while standing on herbs
+			$A dream of millet over rippling rice, sweet flag wine toasting years of peace
 			'''
 	}
 
@@ -2738,7 +2740,16 @@ Items: {
 			At full stacks of mana mania, each mana depletion grants
 			1% increased magic critical strike chance and 3% increased magic critical strike damage (stacks up to 5 times)
 			'''
-		Tooltip: The ebb and flow of mana itself pulses through your veins...
+		Tooltip:
+			'''
+			10% reduced mana cost
+			+5% magic critical strike chance and magic damage
+			Automatically use mana potions when needed
+			For 2 seconds after drinking a mana potion, slowly restore an extra 20% of its mana
+			Magic critical hits inflict [cebuff:CalamityEntropy/SoulDisorder] for 3 seconds
+			Every 250 mana spent grants a stack of Mana Flow (up to 5)
+			Each stack grants +3% magic critical strike damage
+			'''
 	}
 
 	AzafureDetectionEquipment: {
@@ -3851,14 +3862,12 @@ Items: {
 		DisplayName: Leyla
 		Tooltip:
 			'''
-			She grows stronger alongside you...
-			[1] defense
-			Grants +[2]HP/s life regeneration
-			Reduces damage taken by [3]%
-			+[5] max health
-			[4]% increased debuff damage
-			You have a chance to inflict a random debuff on hit, with the debuff based on your current level
-			Level - [L]/[ML]
+			+6 defense
+			+40 maximum life
+			+2/s life regeneration
+			Grants the Honey buff to you and nearby teammates
+			Increases the debuff damage you deal by 50%
+			Attacks inflict Frostburn, Venom and Cursed Inferno, each with a 10% chance, for 1 to 5 seconds
 			'''
 	}
 
@@ -7150,4 +7159,33 @@ OdinsRefugeCal:
 	Taking a hit rains 12 falling stars that deal 130 base damage
 	Below 50% life, gain an Ice Barrier
 	Grants a Paladin's Shield that shares damage taken by teammates
+	'''
+CelestialChronometerCal:
+	'''
+	Grants the effects of Chalice of the Blood God, The Absorber and Radiance
+	Grows herbs beneath your feet as you walk on grass, shift right click to toggle
+	Grants 20% damage reduction while standing on herbs
+	Directly restores 4 life every second
+	$A dream of millet over rippling rice, sweet flag wine toasting years of peace
+	'''
+LeylaCal:
+	'''
+	She grows stronger alongside you
+	+[1] defense
+	+[2]/s life regeneration
+	+[3]% damage reduction
+	+[5] maximum life
+	Grants the Honey buff to you and nearby teammates
+	Increases the debuff damage you deal by [4]%
+	Attacks inflict a set of debuffs unlocked by progression, each with a 10% chance, for 1 to 5 seconds
+	Level [L]/[ML]
+	'''
+SusiesBraceletCal:
+	'''
+	Grows stronger as you progress
+	Grants immunity to knockback
+	+[DEF] defense
+	+[DMG]% damage
+	+[LIFE] maximum life
+	+[MANA] maximum mana
 	'''

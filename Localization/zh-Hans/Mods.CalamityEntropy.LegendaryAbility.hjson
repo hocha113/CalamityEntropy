@@ -224,16 +224,15 @@ SusiesBracelet: {
 			'''
 		l10:
 			'''
+			此刻已晚，钟声宣示着公正
+			你选择了永恒
+			'''
+		l11:
+			'''
 			不过，有一样东西可以改写黑暗。
 			那就是白色的笔，又名希望。
 			我相信...你手中握着的就是它。
 			'''
-		/* l11:
-			'''
-			But... there is one thing that can overwrite the dark
-			A white pen, known as hope
-			I believe... this is what you hold
-			''' */
 	}
 
 	Trials: {

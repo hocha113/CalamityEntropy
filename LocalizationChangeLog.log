@@ -1119,3 +1119,24 @@
 [Mods.CalamityEntropy.MariviniumSet] - changed // 删「免疫绝大多数减益」(Y-3 有意削弱已删代码);水中飞行拆行并补回下沉/悬停;en/ru 从过时 3.33 套装表整段按现行套装效果重写。无灾厄与装灾厄效果相同,不双键
 [Mods.CalamityEntropy.Items.OdinsRefuge.Tooltip] - changed // 仅 ru-RU:原整块仍是 3.33 冲刺文案,无灾厄玩家会读到不存在的效果;改成 4.0 zh 的俄译。zh-Hans/en-US 的 4.0 六行逐字未动
 [Mods.CalamityEntropy.OdinsRefugeCal] - added // 上神之佑装灾厄 Tooltip,按现行 CERef.Has 支真实效果;OdinsRefuge.ModifyTooltips 分发
+
+[4.2-Changes]
+[Mods.CalamityEntropy.CelestialChronometerCal] - added // 钦天司时装灾厄 Tooltip:转调血神圣杯/阴阳吸星石/辐辉,草药 Shift 右键开关,站草药 20% 免伤,每秒直接回 4 血。CelestialChronometer.ModifyTooltips 分发。4.0 主键 Items.CelestialChronometer.Tooltip 未改
+[Mods.CalamityEntropy.LeylaCal] - added // 莱拉装灾厄 Tooltip:恢复 3.33 的 [1][2][3][4][5][L][ML] 成长模板。Leyla.ModifyTooltips 分发
+[Mods.CalamityEntropy.Items.Leyla.Tooltip] - changed // 4.0 无灾厄文案补上代码里一直有的 +6 防御,以及减益 10% 触发概率
+[Mods.CalamityEntropy.Items.MariviniumHelmet.Tooltip] - changed // 头盔补 +20% 伤害/+10% 暴击(代码 MariviniumHelmet.cs 一直有,文案漏写)
+[Mods.CalamityEntropy.Items.MariviniumLeggings.Tooltip] - changed // 护腿补 +5% 伤害/+5% 暴击(代码 MariviniumLeggings.cs 一直有,文案漏写)
+[Mods.CalamityEntropy.Items.WorshipRelic.Tooltip] - changed // 删「你无法暴击」:对应 DisableCrit 已随盗贼/潜行退役一起删掉,是死文案,不补实现
+[Mods.CalamityEntropy.Items.HorizonssKey.Tooltip] - changed // 「占用8个仆从栏」改「占用4个仆从栏」,跟 HorizonssKey.MinionSlotCost 8→4
+[Mods.CalamityEntropy.SusiesBraceletCal] - added // 苏西腕带装灾厄 Tooltip:防御/通用伤害/生命/魔力四项([DEF]/[DMG]/[LIFE]/[MANA])。无灾厄主键仍是近战 [DMG]/[CRIT]
+[Mods.CalamityEntropy.LegendaryAbility.SusiesBracelet.Lores.l10] - changed // 原 l10 其实是英文 l11(白笔/希望)的译文;改成与 en-US l10 对位的钟声/永恒
+[Mods.CalamityEntropy.LegendaryAbility.SusiesBracelet.Lores.l11] - added // 原注释掉的英文 l11 译回中文(白笔/希望)。装灾厄打完犽戎走到 11 级时不再回落英文
+[Mods.CalamityEntropy.Items.Vast.TooltipBase] - added // 无垠装灾厄成长总述。4.0 解耦时整组注释掉,弱引用后又走 3.33 成长却没有中文
+[Mods.CalamityEntropy.Items.Vast.Level0] - added // 无垠装灾厄 0 档: -8% 魔耗 + 自动喝蓝
+[Mods.CalamityEntropy.Items.Vast.Level1] - added // 无垠装灾厄 1 档:药水多回 10%、魔能下 +4% 魔暴
+[Mods.CalamityEntropy.Items.Vast.Level2] - added // 无垠装灾厄 2 档:75% 即回/25% 缓回,超 80 伤中断
+[Mods.CalamityEntropy.Items.Vast.Level3] - added // 无垠装灾厄 3 档:魔流叠层
+[Mods.CalamityEntropy.Items.Vast.Level4] - added // 无垠装灾厄 4 档:魔力病减半、魔流免伤、回蓝受击回血
+[Mods.CalamityEntropy.Items.Vast.Level5] - added // 无垠装灾厄 5 档:暴击灵魂紊乱、空蓝转回蓝
+[Mods.CalamityEntropy.Items.Vast.Level6] - added // 无垠装灾厄 6 档:满层魔流额外魔暴/暴伤
+[Mods.CalamityEntropy.Buffs.SilentpeakBuff.Description] - changed // 原空串,玩家看 buff 回落英文。补成与物品 Tooltip 同句「召唤铁皇的意志护你左右」

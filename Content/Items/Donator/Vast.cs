@@ -3,9 +3,11 @@ using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Core.CalamityRef;
 using InnoVault.PRT;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Donator
@@ -79,6 +81,54 @@ namespace CalamityEntropy.Content.Items.Donator
                 .AddIngredient(ItemID.LunarBar, 5)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            // 装灾厄叠回 3.33 的 TooltipBase + Level0..LevelN;无灾厄不碰,Items.Vast.Tooltip 保持 4.0
+            if (!CERef.Has)
+                return;
+
+            int insertAt = -1;
+            for (int i = 0; i < tooltips.Count; i++)
+            {
+                if (tooltips[i].Name.StartsWith("Tooltip"))
+                {
+                    insertAt = i;
+                    break;
+                }
+            }
+            for (int i = tooltips.Count - 1; i >= 0; i--)
+            {
+                if (tooltips[i].Name.StartsWith("Tooltip"))
+                    tooltips.RemoveAt(i);
+            }
+            if (insertAt < 0)
+                insertAt = tooltips.Count;
+
+            int offset = 0;
+            void InsertBlock(string keySuffix)
+            {
+                string key = $"Mods.{Mod.Name}.Items.{Name}.{keySuffix}";
+                if (!Language.Exists(key))
+                    return;
+                string[] lines = Language.GetTextValue(key).Replace("\r\n", "\n").Split('\n');
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string line = lines[i].Trim();
+                    if (line.Length == 0)
+                        continue;
+                    tooltips.Insert(insertAt + offset, new TooltipLine(Mod, keySuffix + offset, line));
+                    offset++;
+                }
+            }
+
+            InsertBlock("TooltipBase");
+            int level = Level();
+            for (int i = 0; i <= level; i++)
+            {
+                InsertBlock("Level" + i);
+            }
         }
 
         public static int Level()

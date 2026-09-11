@@ -42,17 +42,23 @@ namespace CalamityEntropy.Content.Items.Accessories.Oath
         {
             player.Entropy().oathBannerVisual = true;
         }
+        // 两条配方档位不对等:昆古尼尔本身要 18 神圣锭,钴蓝薙刀只要 10 钴锭。
+        // 原版微光拆解取的是 CraftingRecipeIndices 里第一条可拆解的配方,也就是昆古尼尔那条,
+        // 于是"薙刀合战旗 → 微光拆出昆古尼尔 → 微光拆出 18 神圣锭"成了刷锭循环。
+        // 两条都禁用拆解即可,合成侧一字不动。
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient(ItemID.Gungnir).
                 AddIngredient(ItemID.SoulofNight, 8).
                 AddIngredient(ItemID.Silk, 12).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient(ItemID.CobaltNaginata).
                 AddIngredient(ItemID.SoulofNight, 8).
                 AddIngredient(ItemID.Silk, 12).
+                DisableDecraft().
                 Register();
         }
     }

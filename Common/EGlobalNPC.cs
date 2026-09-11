@@ -933,10 +933,12 @@ namespace CalamityEntropy.Common
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacrificalMask>()));
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacredStone>(), 3));
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkProfaned>()));
+                    // 这三件 3.33 是配方产物,2026-08-31 平衡案删配方改挂拜月。
+                    // 装灾厄时各自的 3.33 配方会重新注册(见各自的 AddRecipes),这里加门消除双来源
+                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Content.Items.Weapons.BuriedSun>(), 3));
+                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Revelation>(), 3));
+                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BlazingSwirlblade>(), 3));
                 }
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Content.Items.Weapons.BuriedSun>(), 3));
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Revelation>(), 3));
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BlazingSwirlblade>(), 3));
             }
             if (!CERef.Has && npc.type == NPCID.Crab)
             {
@@ -961,9 +963,11 @@ namespace CalamityEntropy.Common
             }
             if (npc.type == ModContent.NPCType<Content.NPCs.Cruiser.CruiserHead>())
             {
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<WyrmTooth>(), 1, 65, 80));
+                // 龙牙 3.33 的原挂点是灾厄始源妖龙,脱灾时改挂巡游者。装灾厄时挂回去(见下方 NPC_PrimordialWyrmHead 分支),
+                // 这里加门消除双来源;无灾厄仍由巡游者出,数量与掉率一字未动
                 if (!CERef.Has)
                 {
+                    npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<WyrmTooth>(), 1, 65, 80));
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkCosmic>(), 2));
                 }
             }
@@ -1050,6 +1054,8 @@ namespace CalamityEntropy.Common
             if (CEID.NPC_PrimordialWyrmHead > 0 && npc.type == CEID.NPC_PrimordialWyrmHead)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkMarivium>()));
+                // 3.33 原挂点,数量与掉率照抄;巡游者那条同时被 !CERef.Has 门住
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<WyrmTooth>(), 1, 65, 80));
             }
             if (CEID.NPC_GiantClam > 0 && npc.type == CEID.NPC_GiantClam)
             {
@@ -1642,11 +1648,20 @@ namespace CalamityEntropy.Common
                 shop.Add(ModContent.ItemType<SoyMilk>(), new Condition(Mod.GetLocalization("DownedBoss2").Value, () => NPC.downedBoss2));
                 shop.Add(ModContent.ItemType<BrillianceCard>());
             }
+            // 大法师手镜 3.33 就挂在灾厄永冻大法师的货架上且无门槛,装灾厄时挂回去
+            if (CEID.NPC_Archmage > 0 && shop.NpcType == CEID.NPC_Archmage)
+            {
+                shop.Add(ModContent.ItemType<ArchmagesHandmirror>());
+            }
             if (shop.NpcType == 108)
             {
                 // 命运之绳与大法师手镜原挂灾厄大法师货架,脱钩时随该 NPC 一并删除,现重挂到原版巫师
                 shop.Add(ModContent.ItemType<ThreadOfFate>());
-                shop.Add(ModContent.ItemType<ArchmagesHandmirror>(), Condition.DownedMoonLord);
+                if (!CERef.Has)
+                {
+                    // 无灾厄时的替代货架。原门槛是月亮领主,与 3.33 的无门槛差得太远,降到肉山后
+                    shop.Add(ModContent.ItemType<ArchmagesHandmirror>(), Condition.Hardmode);
+                }
 
                 shop.Add(ModContent.ItemType<AuraCard>(), new Condition(Mod.GetLocalization("HaveOracleDeck"), () => Main.LocalPlayer.Entropy().oracleDeckInInv));
                 shop.Add(ModContent.ItemType<BrillianceCard>(), new Condition(Mod.GetLocalization("HaveOracleDeck"), () => Main.LocalPlayer.Entropy().oracleDeckInInv));

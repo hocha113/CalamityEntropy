@@ -798,7 +798,7 @@ Items: {
 		DisplayName: 视界之键
 		Tooltip:
 			'''
-			召唤剑匣仆从，剑会自动攻击附近的敌人(占用8个仆从栏)
+			召唤剑匣仆从，剑会自动攻击附近的敌人(占用4个仆从栏)
 			右键敌怪以指定剑的攻击目标
 			'''
 	}
@@ -1408,13 +1408,18 @@ Items: {
 
 	MariviniumHelmet: {
 		DisplayName: 渊洋神迹头盔
-		Tooltip: +100 最大生命值与最大魔力值
+		Tooltip:
+			'''
+			+20% 伤害，+10% 暴击率
+			+100 最大生命值与最大魔力值
+			'''
 	}
 
 	MariviniumLeggings: {
 		DisplayName: 渊洋神迹护腿
 		Tooltip:
 			'''
+			+5% 伤害，+5% 暴击率
 			+30% 移动速度
 			+30% 跳跃速度
 			'''
@@ -2601,7 +2606,6 @@ Items: {
 			命中敌人时有1/4概率天降圣光箭，基础伤害为180点
 			该效果有0.5秒内置冷却
 			诱饵充能上限提升到2格，可以连续投出两枚诱饵
-			你无法暴击
 			'''
 	}
 
@@ -2813,41 +2817,45 @@ Items: {
 
 	Vast: {
 		DisplayName: 无垠
-		// TooltipBase: The strength and effects of this accessory increase with progression
-		/* Level0:
+		TooltipBase:
 			'''
-			8% reduced mana cost
-			Automatically use mana potions when needed
-			''' */
-		/* Level1:
+			该饰品的强度和效果随进度增加
+			当前效果:
 			'''
-			Mana potions restore 10% more mana
-			While under the effects of [cebuff:CalamityEntropy/ManaVein], gain 4% increased magic critical strike chance
-			''' */
-		/* Level2:
+		Level0:
 			'''
-			Automatically uses mana potions, with 75% of the restoration applied instantly
-			The remaining 25% is recovered over 5 seconds
-			If you take damage exceeding 80 life during this period, the restoration is interrupted, extending invincibility frames and briefly accelerating life regeneration
-			''' */
-		// Level3: After consuming mana equivalent to 50% of your maximum mana, gain a stack of mana mania, which increases enhanced mana by 4% (stacks up to 5 times)
-		/* Level4:
+			魔力消耗降低8%
+			必要时自动使用魔力药水
 			'''
-			Effects of [cebuff:ManaSickness] are halved
-			Every 2 stacks of mana mania grant 0.03% damage reduction
-			Increases life regeneration when hit while restoring mana
-			''' */
-		/* Level5:
+		Level1:
 			'''
-			Critical hits inflict the [cebuff:CalamityEntropy/SoulDisorder] debuff on the target
-			Upon mana depletion, attacks switch from consuming mana to restoring mana for 6 seconds
-			Taking damage during this period extends invincibility frames
-			''' */
-		/* Level6:
+			魔力药水额外回复10%魔力
+			处于[cebuff:CalamityEntropy/ManaVein]时，魔法暴击率提高4%
 			'''
-			At full stacks of mana mania, each mana depletion grants
-			1% increased magic critical strike chance and 3% increased magic critical strike damage (stacks up to 5 times)
-			''' */
+		Level2:
+			'''
+			自动使用魔力药水时，75%的回复立即生效
+			其余25%在5秒内逐步恢复
+			期间受到超过80点伤害会中断回复，延长本次无敌帧并短暂加快生命再生
+			'''
+		Level3: 每消耗相当于最大魔力50%的魔力后，获得一层魔流，每层使强化魔力提高4%(最多5层)
+		Level4:
+			'''
+			[cebuff:ManaSickness]的效果减半
+			每2层魔流提供0.03%伤害减免
+			回复魔力期间受击会加快生命再生
+			'''
+		Level5:
+			'''
+			暴击对目标施加[cebuff:CalamityEntropy/SoulDisorder]减益
+			魔力耗尽后，攻击在6秒内改为回复魔力而非消耗
+			此期间受击会延长无敌帧
+			'''
+		Level6:
+			'''
+			魔流叠满时，每次魔力耗尽获得
+			1%魔法暴击率与3%魔法暴击伤害(最多叠加5次)
+			'''
 		Tooltip:
 			'''
 			-10% 魔力消耗
@@ -3940,11 +3948,12 @@ Items: {
 		DisplayName: 莱拉
 		Tooltip:
 			'''
+			+6 防御
 			+40 最大生命值
 			+2/s 生命再生
 			给予你和附近队友蜂蜜增益
 			你造成的减益伤害增加50%
-			攻击造成霜冻、酸性毒液和咒火减益
+			攻击时施加霜冻、酸性毒液与咒火，每种各有10%概率，持续1到5秒
 			'''
 	}
 
@@ -6133,7 +6142,7 @@ Buffs: {
 
 	SilentpeakBuff: {
 		DisplayName: 静岳之剑
-		Description: ""
+		Description: 召唤铁皇的意志护你左右
 	}
 
 	TectonicChainBladeWhipDebuff: {
@@ -7244,4 +7253,33 @@ OdinsRefugeCal:
 	受击时落下12颗基础伤害130的坠星
 	生命值低于50%时获得冰霜屏障
 	拥有圣骑士盾，分摊队友受到的伤害
+	'''
+CelestialChronometerCal:
+	'''
+	获得血神圣杯、阴阳吸星石与辐辉的效果
+	走过草地时长出草药，按住Shift右键开关
+	站在草药上提升20%伤害减免
+	每秒直接回复4点生命
+	$黍梦连稻浪，蒲酒话升平
+	'''
+LeylaCal:
+	'''
+	随着游戏进度提供越来越强的加成
+	+[1] 防御
+	+[2]/s 生命再生
+	+[3]% 伤害减免
+	+[5] 最大生命值
+	给予你和附近队友蜂蜜增益
+	你造成的减益伤害增加[4]%
+	攻击时施加一组随进度解锁的减益，每种各有10%概率，持续1到5秒
+	等级 [L]/[ML]
+	'''
+SusiesBraceletCal:
+	'''
+	随着游戏进度提供越来越多的属性加成
+	免疫击退
+	+[DEF] 防御
+	+[DMG]% 伤害
+	+[LIFE] 最大生命值
+	+[MANA] 最大魔力值
 	'''

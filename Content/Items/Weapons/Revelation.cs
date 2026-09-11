@@ -5,6 +5,7 @@ using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
@@ -66,6 +67,20 @@ namespace CalamityEntropy.Content.Items.Weapons
                 Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
             }
             return false;
+        }
+
+        // 2026-08-31 平衡案删掉了 3.33 的配方、改挂拜月邪教徒 1/3。
+        // 装灾厄时还原 3.33 配方,同时拜月那一行进 !CERef.Has 门;无灾厄什么都不注册,保持 4.0 现状
+        public override void AddRecipes()
+        {
+            if (CECal.CalChainReady(CEID.Item_SubductionSlicer, CEID.Item_MeldBlob))
+            {
+                CreateRecipe()
+                    .AddIngredient(CEID.Item_SubductionSlicer)
+                    .AddIngredient(CEID.Item_MeldBlob, 12)
+                    .AddTile(TileID.LunarCraftingStation)
+                    .Register();
+            }
         }
     }
     public class RevelationThrown : ModProjectile

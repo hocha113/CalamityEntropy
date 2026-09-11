@@ -11,8 +11,8 @@ using Terraria.ModLoader.IO;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
-        // 装灾厄走 3.33 的 11 档通用加成,无灾厄保持 4.0 近战成长;Tooltip 保持 4.0
-    // 全程免疫击退,近战伤害/暴击随击败Boss成长(终阶18%伤害/5%暴击)。
+        // 装灾厄走 3.33 的 11 档通用加成,无灾厄保持 4.0 近战成长。
+    // 文案随时代走:无灾厄读 Items.SusiesBracelet.Tooltip([DMG]/[CRIT]),装灾厄换成 SusiesBraceletCal。
     public class SusiesBracelet : ModItem
     {
         public override void SetDefaults()
@@ -103,6 +103,37 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
+            if (CERef.Has)
+            {
+                string cal = Mod.GetLocalization("SusiesBraceletCal").Value;
+                int insertAt = -1;
+                for (int i = 0; i < tooltips.Count; i++)
+                {
+                    if (tooltips[i].Name.StartsWith("Tooltip"))
+                    {
+                        insertAt = i;
+                        break;
+                    }
+                }
+                for (int i = tooltips.Count - 1; i >= 0; i--)
+                {
+                    if (tooltips[i].Name.StartsWith("Tooltip"))
+                        tooltips.RemoveAt(i);
+                }
+                if (insertAt < 0)
+                    insertAt = tooltips.Count;
+                string[] lines = cal.Replace("\r\n", "\n").Split('\n');
+                int offset = 0;
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string line = lines[i].Trim();
+                    if (line.Length == 0)
+                        continue;
+                    tooltips.Insert(insertAt + offset, new TooltipLine(Mod, "TooltipCal" + offset, line));
+                    offset++;
+                }
+            }
+
             int index = 0;
             for (int i = 0; i < tooltips.Count; i++)
             {
@@ -123,8 +154,18 @@ namespace CalamityEntropy.Content.Items.Accessories
 
             tooltips.Add(new TooltipLine(Mod, $"Tooltip{index}", GetLt($"l{GetLevel()}").Value) { OverrideColor = Color.Pink });
 
-            tooltips.Replace("[DMG]", AddMeleeDamage.ToPercent().ToString());
-            tooltips.Replace("[CRIT]", AddMeleeCrit.ToString());
+            if (CERef.Has)
+            {
+                tooltips.Replace("[DEF]", AddDef);
+                tooltips.Replace("[DMG]", AddDamage.ToPercent().ToString());
+                tooltips.Replace("[LIFE]", AddHP);
+                tooltips.Replace("[MANA]", AddMana);
+            }
+            else
+            {
+                tooltips.Replace("[DMG]", AddMeleeDamage.ToPercent().ToString());
+                tooltips.Replace("[CRIT]", AddMeleeCrit.ToString());
+            }
         }
         public float AddDamage => GetLevel() switch
         {

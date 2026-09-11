@@ -1,4 +1,5 @@
 using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Core.CalamityRef;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -30,6 +31,12 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override void AddRecipes()
         {
+            // 3.33 没有配方,唯一来源是瘟疫使者歌利亚的宝藏袋 1/4(已在 EGlobalItem 的灾厄宝袋段补回)。
+            // 这条是脱灾期的补偿合成,装灾厄时整条不注册,把获取方式还原成 3.33 的样子
+            if (CERef.Has)
+            {
+                return;
+            }
             CreateRecipe()
                 .AddIngredient(ItemID.Hive)
                 .AddIngredient(ItemID.VialofVenom, 20)

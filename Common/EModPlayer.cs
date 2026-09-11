@@ -2752,6 +2752,16 @@ namespace CalamityEntropy.Common
                     }
                 }
             }
+            // 渊洋神迹的水中不耗翼力。原来只写在 CalamityEntropy 的 On_Player.WaterCollision 钩子里,
+            // 而原版在 shimmerWet / honeyWet / merman / ignoreWater / trident 任一成立时压根不走
+            // WaterCollision(Player.cs 的碰撞分派),鲨鱼翅膀、尼普顿贝壳、公爵鱼龙 Lore 都会让它整段失效。
+            // 放这里每帧都跑,不依赖碰撞走哪条分支。
+            if (MariviniumSet && Player.wet)
+            {
+                if (Player.wingTime < Player.wingTimeMax)
+                    Player.wingTime = Player.wingTimeMax;
+                CECal.GrantInfiniteFlight(Player);
+            }
             if (AbyssalLight + MariviumLight > 0.02f)
             {
                 //脱离灾厄:灾厄深渊黑暗系统(EnhancedDarknessSystem)光源登记随灾厄移除,保留自有发光

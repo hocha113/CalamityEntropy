@@ -47,12 +47,12 @@ namespace CalamityEntropy.Content.Items.Books
         }
     }
 
-    /// <summary>灰烬笔录掉落:拜月邪教徒 50%。</summary>
+    /// <summary>灰烬笔录掉落:拜月邪教徒 50%。装灾厄时改由上面那条 3.33 配方产出,这里让位</summary>
     public class AshTranscriptDropGNPC : GlobalNPC
     {
         public override void ModifyNPCLoot(NPC npc, NPCLoot npcLoot)
         {
-            if (npc.type == NPCID.CultistBoss)
+            if (!CERef.Has && npc.type == NPCID.CultistBoss)
             {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<AshTranscript>(), 2));
             }

@@ -7,6 +7,17 @@ using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
 {
+    /// <summary>虚渺套装的护甲面板文案。共通段 vfb 加各职业头盔专属段。
+    /// 五顶头盔原先一顶都没写 player.setBonus,面板的"套装奖励"一栏因此恒为空</summary>
+    internal static class VoidFaquirSet
+    {
+        public static string BonusText(Mod mod, string helmKey)
+        {
+            string text = mod.GetLocalization("vfb").Value + "\n" + mod.GetLocalization(helmKey).Value;
+            return text.Replace("[KEY]", Common.EModPlayer.ArmorSetBonusHotKey.TooltipKeyHint());
+        }
+    }
+
     [AutoloadEquip(EquipType.Body)]
     public class VoidFaquirBodyArmor : ModItem
     {

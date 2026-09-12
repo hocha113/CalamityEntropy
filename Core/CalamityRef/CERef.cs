@@ -55,6 +55,9 @@ namespace CalamityEntropy.Core.CalamityRef
         /// <summary>A4 读档回填用的世界系统类型。未装灾厄或反射失败为 null</summary>
         internal static Type WorldgenManagementSystemType => worldgenManagementSystemType;
 
+        /// <summary>灾厄传记物品基类。它恒 CanUseItem => false,本模组的传记效果开关要绕过它。未装灾厄或反射失败为 null</summary>
+        internal static Type LoreItemType => loreItemType;
+
         private static bool? has;
         private static Mod calamity;
 
@@ -84,6 +87,9 @@ namespace CalamityEntropy.Core.CalamityRef
         private static MemberInfo calPlayer_absorber_M;
         private static MemberInfo calPlayer_purity_M;
         private static MemberInfo calPlayer_infiniteFlight_M;
+        private static MemberInfo calPlayer_abyssDarkness_M;
+        private static MemberInfo calPlayer_abyssPlayerGlowMultiplier_M;
+        private static MemberInfo calPlayer_abyssFlashlightWidthMultiplier_M;
 
         private static GlobalNPC calGlobalNPCTemplate;
         private static MemberInfo calNPC_CurrentlyEnraged_M;
@@ -92,6 +98,7 @@ namespace CalamityEntropy.Core.CalamityRef
 
         private static Type dungeonArchiveType;
         private static Type worldgenManagementSystemType;
+        private static Type loreItemType;
 
         private struct FlagCache
         {
@@ -366,6 +373,40 @@ namespace CalamityEntropy.Core.CalamityRef
             SetPlayerFlag(player, calPlayer_infiniteFlight_M, value);
         }
 
+        //深渊三项也是 ResetEffects 每帧归位的装备量,但类型是 float,要读改写
+        private static void AddPlayerFloat(Player player, MemberInfo member, float delta)
+        {
+            ModPlayer calPlayer = GetCalPlayer(player);
+            if (calPlayer == null || member == null)
+            {
+                return;
+            }
+            object raw = GetMember(member, calPlayer);
+            if (raw is not float current)
+            {
+                return;
+            }
+            SetMember(member, calPlayer, current + delta);
+        }
+
+        /// <summary>加深渊黑暗强度。传负值即减黑暗,等价灾厄对外开放的 AddAbyssLightStrength</summary>
+        public static void AddAbyssDarkness(Player player, float delta)
+        {
+            AddPlayerFloat(player, calPlayer_abyssDarkness_M, delta);
+        }
+
+        /// <summary>加玩家在深渊的主光环半径倍率。灾厄按 4 * 该倍率算光斑</summary>
+        public static void AddAbyssGlowMultiplier(Player player, float delta)
+        {
+            AddPlayerFloat(player, calPlayer_abyssPlayerGlowMultiplier_M, delta);
+        }
+
+        /// <summary>加深渊手电筒光束宽度倍率</summary>
+        public static void AddAbyssFlashlightWidthMultiplier(Player player, float delta)
+        {
+            AddPlayerFloat(player, calPlayer_abyssFlashlightWidthMultiplier_M, delta);
+        }
+
         private static GlobalNPC GetCalGlobalNPC(NPC npc)
         {
             if (calGlobalNPCTemplate == null || npc == null)
@@ -443,6 +484,7 @@ namespace CalamityEntropy.Core.CalamityRef
 
             dungeonArchiveType = GetModType("CalamityMod.World.DungeonArchive");
             worldgenManagementSystemType = GetModType("CalamityMod.Systems.WorldgenManagementSystem");
+            loreItemType = GetModType("CalamityMod.Items.LoreItems.LoreItem");
 
             revengeCache.Frame = uint.MaxValue;
             deathCache.Frame = uint.MaxValue;
@@ -468,6 +510,9 @@ namespace CalamityEntropy.Core.CalamityRef
                     calPlayer_absorber_M = GetFieldOrProperty(calPlayerType, "absorber", PublicInstanceFlags);
                     calPlayer_purity_M = GetFieldOrProperty(calPlayerType, "purity", PublicInstanceFlags);
                     calPlayer_infiniteFlight_M = GetFieldOrProperty(calPlayerType, "infiniteFlight", PublicInstanceFlags);
+                    calPlayer_abyssDarkness_M = GetFieldOrProperty(calPlayerType, "abyssDarkness", PublicInstanceFlags);
+                    calPlayer_abyssPlayerGlowMultiplier_M = GetFieldOrProperty(calPlayerType, "abyssPlayerGlowMultiplier", PublicInstanceFlags);
+                    calPlayer_abyssFlashlightWidthMultiplier_M = GetFieldOrProperty(calPlayerType, "abyssFlashlightWidthMultiplier", PublicInstanceFlags);
                 }
 
                 if (!ModContent.TryFind(CalName, "CalamityGlobalNPC", out calGlobalNPCTemplate))
@@ -512,6 +557,9 @@ namespace CalamityEntropy.Core.CalamityRef
             calPlayer_absorber_M = null;
             calPlayer_purity_M = null;
             calPlayer_infiniteFlight_M = null;
+            calPlayer_abyssDarkness_M = null;
+            calPlayer_abyssPlayerGlowMultiplier_M = null;
+            calPlayer_abyssFlashlightWidthMultiplier_M = null;
 
             calGlobalNPCTemplate = null;
             calNPC_CurrentlyEnraged_M = null;
@@ -520,6 +568,7 @@ namespace CalamityEntropy.Core.CalamityRef
 
             dungeonArchiveType = null;
             worldgenManagementSystemType = null;
+            loreItemType = null;
 
             CEID.UnLoadData();
         }

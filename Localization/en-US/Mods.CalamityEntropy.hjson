@@ -2687,7 +2687,6 @@ Items: {
 			Every 5 swings the sword lets out an extra powerful slash
 			Right Click to
 			This sword's power grows with progression
-			Current Level: [LV] / 15
 			When her power is sufficient, you can use the following skills:  
 			@[C1][U1]  
 			#[C2][U2]  
@@ -4841,6 +4840,7 @@ NihArmorConnet:
 	When connected, both parties will acquire the ability of nihility shield and chaotic cells
 	'''
 LOCKED: " [LOCKED]:"
+BCLevel: Current Level: [LV] / 15
 BCU1: Requires defeating King Slime
 BCU2: Requires defeating Perforator or Hive Mind
 BCU2Own: Requires defeating Eater of Worlds or Brain of Cthulhu
@@ -4872,7 +4872,7 @@ MariviniumSet:
 	Ignore water resistance while submerged, and flight time no longer drains
 	Hold Down in water to sink faster; hold Jump and Down together to hover
 	+4/s life regen, 20% reduced contact damage
-	+3 max minions, +20% melee speed
+	+[MINION] max minions, +20% melee speed
 	Gain 2 layers of abyssal shields that each block one hit over 50 damage
 	The first layer takes 36 seconds to recover, the second takes 18 seconds
 	Breaking a shield grants 10 seconds of Abyssal Wrath
@@ -6576,35 +6576,38 @@ Configs: {
 
 vfb:
 	'''
-	Set Bonus: Gain a void charge bar
-	Damaging enemies will fill the void charge bar
-	Increases movement and flight speed based on the amount of void charge in the bar
-	Press the Armor Set Bonus key when void charge is full to consume void charge and summon a Void Wraith to assist in battle
-	The Void Wraith's damage type depends on the weapon in hand and grants indefinite flight for 10 seconds on spawn
-	Increases armor penetration by 20
+	12% increased movement speed
+	Damaging enemies fills the void charge bar; more charge means more movement and flight speed
+	Press [KEY] at full charge to spend all of it and summon a Void Wraith to fight for you
+	The Wraith lasts 10 seconds, during which you can fly indefinitely
+	The Wraith's damage type depends on the weapon in your hand
 	'''
 helmvfc:
 	'''
-	25% reduced mana cost
-	Magic projectiles hits reduce [cebuff:ManaSickness] time by half a second
+	Mana Sickness duration halved
+	Greatly increased life regeneration (5/s) for 5 seconds after hitting an enemy
 	'''
 helmvfd:
 	'''
-	24% increased attack speed
-	10% increased damage reduction
-	Generates additional void charge when damaging targets
+	20% increased melee attack speed
+	15% reduced contact damage taken
 	'''
-helmvfs: Projectile damage increases over time
+helmvfs:
+	'''
+	15% increased ranged damage
+	50% increased ranged projectile speed
+	'''
 helmvfl:
 	'''
+	20 increased armor penetration
 	15% increased movement speed
 	13.5% increased weapon ultimate charge rate
 	'''
 helmvfe:
 	'''
-	Increases your max amount of minions by 7
-	80% increased summon damage
-	Summon a Void Symbiote to fight for you
+	32% increased summon damage
+	Increases your max amount of minions by 4
+	Summons a miniature Void Devourer to fight for you
 	'''
 Reforge: Reforge
 ArmorPrefixHardName: Dense
@@ -7189,3 +7192,266 @@ SusiesBraceletCal:
 	+[LIFE] maximum life
 	+[MANA] maximum mana
 	'''
+
+CWRQuest: {
+	AcropolisMachine: {
+		Title: Groan of Rusted Iron
+		Summary: Defeat the Azafure Acropolis Machine that wanders the Underworld
+		Objective: Defeat the Azafure Acropolis Machine
+		Detail:
+			'''
+			It spawns naturally in the Underworld and will not attack you on its own
+			Bring it below 98% life and the fight begins
+			There is no summoning item for this one, you have to go find it
+			'''
+	}
+
+	Apsychos: {
+		Title: Beneath the Cinder Shell
+		Summary: Defeat the last gatekeeper before the Wall of Flesh
+		Objective: Defeat Apsychos
+		Detail:
+			'''
+			Craft a Cursed Runestone at an Anvil from Hellstone Bars, evil ore bars, a Fallen Star and bone dust
+			Use it in the Underworld
+			'''
+	}
+
+	Luminaris: {
+		Title: Fire That Draws the Moth
+		Summary: Defeat the Luminaris that the night light draws in
+		Objective: Defeat the Luminaris
+		Detail:
+			'''
+			Craft Illusionary Dew and use it at night, anywhere works
+			This entry only opens up after any one of the three mechanical bosses falls
+			'''
+	}
+
+	TheProphet: {
+		Title: Price of Prophecy
+		Summary: Defeat the Prophet waiting deep in the Dungeon
+		Objective: Defeat the Prophet
+		Detail:
+			'''
+			Craft a Prophecy Token at a Mythril Anvil from Books, Souls of Light and Ectoplasm
+			It only works inside the Dungeon
+			'''
+	}
+
+	NihilityTwin: {
+		Title: Twin Nothing
+		Summary: Defeat the Nihility Acteriophage that appears after the Moon Lord
+		Objective: Defeat the Nihility Acteriophage
+		Detail:
+			'''
+			Craft a Nihility Horn at an Ancient Manipulator, usable anywhere
+			It keeps splitting off Chaotic Cells, so clearing them matters more than raw damage
+			'''
+	}
+
+	Cruiser: {
+		Title: The Cruiser
+		Summary: Defeat the Cruiser at the end of the void
+		Objective: Defeat the Cruiser
+		Detail:
+			'''
+			The Void Bottle needs Nihility Fragments, so the Nihility Acteriophage comes first
+			You can also place an Abyssal Altar and right click it while holding a Wyrm Tooth
+			'''
+	}
+
+	Chronicle: {
+		Title: Entropy Codex
+		Summary: Get your first Entropy Codex
+		Objective: Obtain an Entropy Codex
+		Detail:
+			'''
+			The earliest one is Ancient Scriptures, made at a Work Bench from 10 Silk and 3 Mana Crystals
+			Hold it and right click to open the bookmark interface
+			'''
+	}
+
+	BookmarkFirst: {
+		Title: First Bookmark
+		Summary: Slot a bookmark into the codex
+		Objective: Insert one bookmark into an Entropy Codex
+		Detail:
+			'''
+			Hold the codex, right click to open the bookmark interface, then drag a bookmark into an empty slot
+			Bookmark effects trigger from the codex's own projectiles and have a 1 second internal cooldown
+			'''
+	}
+
+	BookmarkLoadout: {
+		Title: Loaded Spine
+		Summary: Run three bookmarks at once so their effects stack
+		Objective: Have 3 bookmarks slotted at the same time
+		Detail:
+			'''
+			Slot count depends on the codex itself and on bookmark holder accessories
+			Some bookmarks conflict with each other, so swap one out if it will not go in
+			'''
+	}
+
+	Zodiac: {
+		Title: Twelve Houses
+		Summary: Collect all twelve zodiac bookmarks
+		Objective: Collect 12 zodiac bookmarks
+		Detail:
+			'''
+			The twelve sources are spread across the whole run, from Skeletron all the way past the Moon Lord
+			Copies in your inventory, worn on you, or already slotted in a codex all count
+			'''
+	}
+
+	CodexShelf: {
+		Title: Full Shelf
+		Summary: Gather five different Entropy Codices
+		Objective: Collect 5 different Entropy Codices
+		Detail:
+			'''
+			Every codex has its own firing pattern and its own source, whether crafted, dropped or found in crates
+			Duplicates of the same codex only count once
+			'''
+	}
+
+	OracleComplete: {
+		Title: Nine Oracles
+		Summary: Collect all nine Oracle cards
+		Objective: Collect all 9 Oracle cards
+		Detail:
+			'''
+			They come from the Wizard's stock, crates and fishing, and the Wizard stocks several of them once you own the deck
+			Crafting the deck consumes all nine cards, so already owning the deck counts as complete
+			'''
+	}
+
+	OracleDeck: {
+		Title: Oracle Deck
+		Summary: Combine the nine cards into the Oracle Deck
+		Objective: Obtain the Oracle Deck
+		Detail:
+			'''
+			Made at a Bookcase from all nine Oracle cards plus a Thread of Fate
+			The three decks cannot be equipped together, but they can sit in your inventory side by side
+			'''
+	}
+
+	ShadowDecks: {
+		Title: Tainted and Soul
+		Summary: Bring in the other two decks as well
+		Objective: Hold the Tainted Deck and the Soul Deck at the same time
+		Detail:
+			'''
+			Each deck has its own cards and its own route, phantom cards lean on fishing and evil biomes, soul cards on underground undead
+			Both only need to be in your inventory, not equipped
+			'''
+	}
+
+	ArmorPrefix: {
+		Title: Inscribed Plate
+		Summary: Stamp an entropy prefix onto a piece of armor
+		Objective: Apply an entropy prefix to a piece of armor
+		Detail:
+			'''
+			Prefix items such as runestones and scrolls can be used directly on armor, or reforge it at the Armor Forging Station
+			The prefix system can be turned off in the config, and this entry stays closed while it is off
+			'''
+	}
+
+	ChargeReady: {
+		Title: Charged
+		Summary: Fill a weapon's charge meter
+		Objective: Hold a weapon whose charge is ready
+		Detail:
+			'''
+			Some weapons carry a charge meter that fills as you land hits
+			Once it is full the interface says charge ready, and holding that weapon completes this entry
+			'''
+	}
+
+	AzafureMiner: {
+		Title: Automated Vein
+		Summary: Let a machine do the mining
+		Objective: Place an Azafure Digital Mining Machine in the world
+		Detail:
+			'''
+			Crafted at a Heavy Work Bench or a Mythril Anvil, the recipe needs Hell Industrial Components
+			Right click it once placed to open its interface and set filters so it only keeps the ores and gems you want
+			'''
+	}
+
+	Lottery: {
+		Title: Press Your Luck
+		Summary: Call out the lottery machine and take a spin
+		Objective: Summon the Lottery Machine with a Lottery Box
+		Detail:
+			'''
+			Using a Lottery Box spawns the Lottery Machine on the spot, then interact with it to draw
+			The prize pool shifts with your progress
+			'''
+	}
+
+	SoulEssence: {
+		Title: Wraith Soul Essence
+		Summary: Bank thirty Wraith Soul Essence
+		Objective: Hold 30 Wraith Soul Essence
+		Detail:
+			'''
+			Dropped by the Nihility Acteriophage
+			It is the entry material for several endgame recipes, including some prefix items
+			'''
+	}
+
+	WyrmGuest: {
+		Title: The Wyrm Moves In
+		Summary: Get the Primordial Wyrm to move into your town
+		Objective: Have the Primordial Wyrm move in
+		Detail: Once the Cruiser is down, leave her an empty house and she will come find you
+	}
+
+	MariviniumSet: {
+		Title: Marivinium Miracle
+		Summary: Complete the three piece Marivinium set
+		Objective: Collect all 3 Marivinium set pieces
+		Detail:
+			'''
+			Head, chest and legs all take Wyrm Teeth, which the Cruiser drops
+			Pieces you are wearing count too
+			'''
+	}
+
+	VoidAltar: {
+		Title: Abyssal Altar
+		Summary: Build the altar that calls the Cruiser back
+		Objective: Craft an Abyssal Altar
+		Detail:
+			'''
+			Made at a Void Well from 10 Wyrm Teeth
+			Once placed, right click it while holding a Wyrm Tooth to summon the Cruiser again
+			'''
+	}
+
+	FinalArms: {
+		Title: Shape of the End
+		Summary: Hold all three endgame weapons at once
+		Objective: Collect the Final Fractal, the Apeirokyklos and the Void Relics
+		Detail:
+			'''
+			All three only come together after the Cruiser falls
+			This entry completes when all three are in your inventory or on you at the same time
+			'''
+	}
+
+	EntropyModeRun: {
+		Title: Under Entropy
+		Summary: Finish the Cruiser in an Entropy world
+		Objective: Defeat the Cruiser in a world with Entropy Mode on
+		Detail:
+			'''
+			The Entropy Core toggles Entropy Mode, which sits outside the official balance
+			With it on you take more damage and your critical strike chance is capped lower
+			'''
+	}
+}

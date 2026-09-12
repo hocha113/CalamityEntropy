@@ -581,39 +581,9 @@ namespace CalamityEntropy.Common
                     }
                 }
             }
-            if (item.type == ModContent.ItemType<VoidFaquirBodyArmor>() || item.type == ModContent.ItemType<VoidFaquirCuises>() || item.type == ModContent.ItemType<VoidFaquirCosmosHood>() || item.type == ModContent.ItemType<VoidFaquirDevourerHelm>() || item.type == ModContent.ItemType<VoidFaquirEvokerHelm>() || item.type == ModContent.ItemType<VoidFaquirLurkerMask>() || item.type == ModContent.ItemType<VoidFaquirShadowHelm>())
-            {
-                if (Main.LocalPlayer.Entropy().VFSet)
-                {
-                    TooltipLine t = new TooltipLine(CalamityEntropy.Instance, "Armor Bonus", Language.GetOrRegister("Mods.CalamityEntropy.vfb").Value);
-                    tooltips.Add(t);
-                }
-                if (Main.LocalPlayer.Entropy().VFHelmMagic)
-                {
-                    TooltipLine t = new TooltipLine(CalamityEntropy.Instance, "Armor Bonus", Language.GetOrRegister("Mods.CalamityEntropy.helmvfc").Value);
-                    tooltips.Add(t);
-                }
-                if (Main.LocalPlayer.Entropy().VFHelmMelee)
-                {
-                    TooltipLine t = new TooltipLine(CalamityEntropy.Instance, "Armor Bonus", Language.GetOrRegister("Mods.CalamityEntropy.helmvfd").Value);
-                    tooltips.Add(t);
-                }
-                if (Main.LocalPlayer.Entropy().VFHelmRanged)
-                {
-                    TooltipLine t = new TooltipLine(CalamityEntropy.Instance, "Armor Bonus", Language.GetOrRegister("Mods.CalamityEntropy.helmvfs").Value);
-                    tooltips.Add(t);
-                }
-                if (Main.LocalPlayer.Entropy().VFHelmRogue)
-                {
-                    TooltipLine t = new TooltipLine(CalamityEntropy.Instance, "Armor Bonus", Language.GetOrRegister("Mods.CalamityEntropy.helmvfl").Value);
-                    tooltips.Add(t);
-                }
-                if (Main.LocalPlayer.Entropy().VFHelmSummoner)
-                {
-                    TooltipLine t = new TooltipLine(CalamityEntropy.Instance, "Armor Bonus", Language.GetOrRegister("Mods.CalamityEntropy.helmvfe").Value);
-                    tooltips.Add(t);
-                }
-            }
+            // 虚渺套装的套装奖励文案原来在这里按 VFHelm* 旗标逐条注入。现在五顶头盔都写了 player.setBonus,
+            // 而原版本来就会把 setBonus 连同"套装奖励:"前缀加进穿戴中护甲的提示里(Main.cs 的 Lang.tip[48]),
+            // 两条通道同时开着会把同一段文案打印两遍,所以这里整段撤掉,只留 setBonus 一个出口
             if (armorPrefix != null)
             {
                 tooltips.Add(armorPrefix.getDescTooltipLine());

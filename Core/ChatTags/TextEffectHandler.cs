@@ -20,8 +20,11 @@ namespace CalamityEntropy.Core.ChatTags
 
         public override TextSnippet Parse(string text, Color baseColor = new(), string options = null)
         {
-            // 特效开关走自有客户端配置 Config.TextEffects（重构时补的开关接线）
-            if (Common.Config.Instance.TextEffects && options.Equals("cruiser", StringComparison.OrdinalIgnoreCase))
+            // 特效开关走自有客户端配置 Config.TextEffects（重构时补的开关接线）。
+            // options 在写成 [ceeffect:文本] 不带斜杠选项时是 null,直接 .Equals 会抛,
+            // 而 Parse 是在 ChatManager.ParseMessage 里被调的,一抛整个提示框都画不出来
+            if (options != null && Common.Config.Instance.TextEffects
+                && options.Equals("cruiser", StringComparison.OrdinalIgnoreCase))
                 return new CruiserSnippet(text);
             return new TextSnippet(text);
         }

@@ -37,6 +37,7 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
         // 2026-08-31 平衡案:职业专属奖励=+20%近战攻速、接触伤害降低15%
         public override void UpdateArmorSet(Player player)
         {
+            player.setBonus = VoidFaquirSet.BonusText(Mod, "helmvfd");
             player.GetAttackSpeed(DamageClass.Melee) += 0.20f;
             player.Entropy().meleeDamageReduce += 0.15f;
             player.Entropy().VFSet = true;

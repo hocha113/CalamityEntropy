@@ -15,19 +15,13 @@ namespace CalamityEntropy.Core.Weapons
         public override bool AppliesToEntity(Item entity, bool lateInstantiation)
             => lateInstantiation && entity.ModItem is ICEChargeWeapon;
 
+        // 两种触发都只在手持时推进。周期就绪原本挂在 UpdateInventory 上"在背包也计时",
+        // 但 UpdateInventory 对背包里每一个物品每帧都跑,而充能是按物品实例存的,
+        // 于是带 N 把同款就有 N 根独立的条一起涨,攒满能连放 N 次大招。
         public override void HoldItem(Item item, Player player)
         {
-            // 充能条:仅武器持有期间蓄能,待机与攻击均蓄能
             var profile = ((ICEChargeWeapon)item.ModItem).ChargeProfile;
-            if (profile.Trigger == CEChargeTrigger.ChargeBar)
-                CEChargeWeapon.Gain(player, item, profile, 1f);
-        }
-
-        public override void UpdateInventory(Item item, Player player)
-        {
-            // 周期就绪:冷却回复不要求手持,在背包即计时
-            var profile = ((ICEChargeWeapon)item.ModItem).ChargeProfile;
-            if (profile.Trigger == CEChargeTrigger.Periodic)
+            if (profile.Trigger == CEChargeTrigger.ChargeBar || profile.Trigger == CEChargeTrigger.Periodic)
                 CEChargeWeapon.Gain(player, item, profile, 1f);
         }
 

@@ -36,6 +36,7 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
 
         public override void UpdateArmorSet(Player player)
         {
+            player.setBonus = VoidFaquirSet.BonusText(Mod, "helmvfl");
             player.GetArmorPenetration(DamageClass.Generic) += 20;
             // 潜行体系退役:原潜行条(上限1.35)按容量×10%换算为大招充能速度
             player.GetModPlayer<CEChargePlayer>().ChargeRateMult += 0.135f;

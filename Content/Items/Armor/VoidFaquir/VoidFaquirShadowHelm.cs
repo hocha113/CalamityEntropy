@@ -37,6 +37,7 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
         // 2026-08-31 平衡案:职业专属奖励=远程伤害加成额外×1.15、+50%射弹速度
         public override void UpdateArmorSet(Player player)
         {
+            player.setBonus = VoidFaquirSet.BonusText(Mod, "helmvfs");
             player.GetDamage(DamageClass.Ranged) *= 1.15f;
             player.Entropy().shootSpeed += 0.5f;
             player.Entropy().VFSet = true;

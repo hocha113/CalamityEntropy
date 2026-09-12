@@ -2618,6 +2618,9 @@ namespace CalamityEntropy.Common
         }
         public int FallSpeedUP = 0;
         public float MariviumLight = 0;
+        /// <summary>上一帧算出的深渊照明强度 0..1。灾厄的深渊黑暗在 PostUpdateMiscEffects 就结算完了,
+        /// 而这个强度要等 PostUpdate 里的 MariviumLight 与 AbyssalLight 齐了才知道,只能隔一帧用</summary>
+        public float AbyssVisionStrength = 0;
         public int AzureShield = 0;
         public List<int> smolderingSets;
         public bool smdVisual = false;
@@ -2762,9 +2765,10 @@ namespace CalamityEntropy.Common
                     Player.wingTime = Player.wingTimeMax;
                 CECal.GrantInfiniteFlight(Player);
             }
+            //自有发光只吃原版 Lighting,灾厄深渊里看不见;真正的深渊照明在 PostUpdateEquips 里另写灾厄的三个深渊量
+            AbyssVisionStrength = Math.Clamp(Math.Max(AbyssalLight, MariviumLight), 0f, 1f);
             if (AbyssalLight + MariviumLight > 0.02f)
             {
-                //脱离灾厄:灾厄深渊黑暗系统(EnhancedDarknessSystem)光源登记随灾厄移除,保留自有发光
                 if (MariviniumSet || accAzureAbyss)
                 {
                     CEUtils.AddLight(Player.Center, Color.LightBlue * MariviumLight, 12f);
@@ -3908,6 +3912,10 @@ namespace CalamityEntropy.Common
         }
         public override void PostUpdateEquips()
         {
+            // 渊洋神迹套、沧溟护符与深渊传记的照明。灾厄在自己的 PostUpdateMiscEffects 里就把
+            // darknessIntensity 算完了,写晚一步就完全不生效,所以放这里而不是 PostUpdate
+            CECal.GrantAbyssVision(Player, AbyssVisionStrength);
+
             // 护盾吸收/受击生成细胞的开关必须在受伤结算前就绪。
             // 只在 PostUpdate 里推导会晚一步:ResetEffects 每帧清 false,受击发生在 PostUpdate 之前,
             // 结算时开关恒为 false(历史 bug:噬虚者护盾能生成但无法生效)。联结伙伴同理。

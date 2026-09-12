@@ -245,6 +245,7 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
+            InsertLevelLine(tooltips);
             tooltips.Replace("[LV]", GetLevel());
             tooltips.Replace("[C1]", Mod.GetLocalization("BCC1").Value);
             tooltips.Replace("[C2]", Mod.GetLocalization("BCC2").Value);
@@ -281,6 +282,34 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
                     tt.OverrideColor = AllowSpin() ? Color.Yellow : Color.Gray;
                 }
             }
+        }
+
+        /// <summary>等级行只在装灾厄时给:无灾厄 GetLevel 恒等于 10,写成"10 / 15"只会误导</summary>
+        private void InsertLevelLine(List<TooltipLine> tooltips)
+        {
+            if (!CERef.Has)
+            {
+                return;
+            }
+            int insertAt = -1;
+            for (int i = 0; i < tooltips.Count; i++)
+            {
+                //技能清单那四行以 @#$% 开头,等级行插在它们前面
+                if (tooltips[i].Text != null && tooltips[i].Text.StartsWith("@"))
+                {
+                    insertAt = i;
+                    break;
+                }
+                if (tooltips[i].Name.StartsWith("Tooltip"))
+                {
+                    insertAt = i + 1;
+                }
+            }
+            if (insertAt < 0)
+            {
+                return;
+            }
+            tooltips.Insert(insertAt, new TooltipLine(Mod, "TooltipBCLevel", Mod.GetLocalization("BCLevel").Value));
         }
     }
     public class BramblecleaveHeld : ModProjectile

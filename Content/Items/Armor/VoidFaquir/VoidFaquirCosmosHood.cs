@@ -36,6 +36,7 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
         // 2026-08-31 平衡案:职业专属奖励=魔力病持续减半、攻击敌人大幅提升自然生命再生(5hp/s,5秒)
         public override void UpdateArmorSet(Player player)
         {
+            player.setBonus = VoidFaquirSet.BonusText(Mod, "helmvfc");
             player.Entropy().VFSet = true;
             player.Entropy().VFHelmMagic = true;
             player.Entropy().halfManaSick = true;

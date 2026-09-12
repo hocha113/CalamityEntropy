@@ -30,6 +30,8 @@ namespace CalamityEntropy.Core.Dash
         public Vector2 Direction;
         /// <summary>已进行帧数,首帧为 0。</summary>
         public int Timer;
+        /// <summary>起手前一刻的玩家速度。收尾时按此把竖直动量还回去一部分,免得冲刺完凭空失速。</summary>
+        public Vector2 EntryVelocity;
         public int Duration;
         /// <summary>每帧位移(像素),由引擎按距离与曲线生成。</summary>
         public float[] Speeds = Array.Empty<float>();
@@ -100,6 +102,13 @@ namespace CalamityEntropy.Core.Dash
 
         /// <summary>水平冲刺期间衰减竖直速度(不按跳跃时),让冲刺"接住"下落。</summary>
         public virtual bool DampVertical => true;
+
+        /// <summary>水平冲刺全程结束时,竖直速度相对起手时保留的比例。
+        /// 原来是每帧乘 0.85 连乘到底,20 帧下来只剩 4%,等于把竖直动量抹平,收尾接不上跳跃与下落。</summary>
+        public virtual float VerticalRetain => 0.35f;
+
+        /// <summary>收尾时把起手前的竖直速度还回去的比例。0 表示不还。</summary>
+        public virtual float ExitVerticalCarry => 0.6f;
 
         /// <summary>冲刺全程无敌,可穿过敌方弹幕。</summary>
         public virtual bool Invincible => false;

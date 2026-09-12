@@ -1021,12 +1021,21 @@ namespace CalamityEntropy
         {
             return (float)(Math.Round(f, 3) * 100f);
         }
+        //占位符替换。原实现只认 Mod == "Terraria" 的行,而 hjson 自动加载的本模组 Tooltip 挂的是 "CalamityEntropy",
+        //于是全模组的 tooltips.Replace 从脱灾起一直空转。这里不再挑行,同一个占位符也允许跨多行出现
         public static void FindAndReplace(this List<TooltipLine> tooltips, string replacedKey, string newKey)
         {
-            TooltipLine tooltipLine = tooltips.FirstOrDefault((TooltipLine x) => x.Mod == "Terraria" && x.Text.Contains(replacedKey));
-            if (tooltipLine != null)
+            if (tooltips == null || string.IsNullOrEmpty(replacedKey))
             {
-                tooltipLine.Text = tooltipLine.Text.Replace(replacedKey, newKey);
+                return;
+            }
+            newKey ??= string.Empty;
+            foreach (TooltipLine line in tooltips)
+            {
+                if (line?.Text != null && line.Text.Contains(replacedKey))
+                {
+                    line.Text = line.Text.Replace(replacedKey, newKey);
+                }
             }
         }
         public static Vector2 GetFrameOrigin(this PlayerDrawSet drawInfo)

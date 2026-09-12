@@ -37,6 +37,7 @@ namespace CalamityEntropy.Content.Items.Armor.VoidFaquir
         // 2026-08-31 平衡案:职业专属奖励=+32%召唤伤害、+4仆从栏、召唤迷你虚空吞噬者(VFHelmSummoner 驱动)
         public override void UpdateArmorSet(Player player)
         {
+            player.setBonus = VoidFaquirSet.BonusText(Mod, "helmvfe");
             player.GetDamage(DamageClass.Summon) += 0.32f;
             player.maxMinions += 4;
             player.Entropy().VFSet = true;

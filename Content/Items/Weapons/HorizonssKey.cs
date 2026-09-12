@@ -45,6 +45,10 @@ namespace CalamityEntropy.Content.Items.Weapons
         // 栏位占用 2026-09-11 由 8 降到 4,两个时代同值(SamsaraCasketProj 的 minionSlots 读同一个常量)
         public const int BaseDamage = 50;
         public const float MinionSlotCost = 4f;
+        // 联动灾厄时全阶段翻倍。所有剑与派生弹幕的伤害都从 GetWeaponDamage(HeldItem) 或 Item.damage 长出来,
+        // 所以只翻面板这一个源头就够,不需要在 setDamage 和各处 spawn 里各乘一遍
+        public const float CalDamageMult = 2f;
+        public static int CurrentBaseDamage => CERef.Has ? (int)(BaseDamage * CalDamageMult) : BaseDamage;
         public override bool AltFunctionUse(Player player) => true;
         public override void SetDefaults()
         {
@@ -53,7 +57,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useTime = 30;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.RaiseLamp;
-            Item.damage = BaseDamage;
+            Item.damage = CurrentBaseDamage;
             Item.DamageType = DamageClass.Summon;
             Item.noMelee = true;
             Item.value = Item.buyPrice(silver: 1);

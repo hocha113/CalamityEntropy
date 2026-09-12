@@ -106,6 +106,40 @@ namespace CalamityEntropy.Common
             }
             return true;
         }
+        // 外来 Lore(灾厄的 LoreItem 基类)恒 CanUseItem => false,而 tML 的 CanUseItem 是与合并,
+        // GlobalItem 盖不过 ModItem 的 false;CanRightClick 是或合并、ConsumeItem 是与合并,
+        // 所以外来 Lore 的开关另开右键这条路。本模组自己的 CELoreItem 已经在 ModItem 上实现了
+        // 同一条通道,这里必须让开,否则一次右键会切两下等于没切
+        private static bool HandlesRightClick(Item item)
+        {
+            return LoreEffect.Enabled
+                && item.ModItem is not Content.Items.Lores.CELoreItem
+                && LoreReworkSystem.loreEffects != null
+                && LoreReworkSystem.loreEffects.ContainsKey(item.type);
+        }
+
+        public override bool CanRightClick(Item item)
+        {
+            return HandlesRightClick(item);
+        }
+
+        public override bool ConsumeItem(Item item, Player player)
+        {
+            return !HandlesRightClick(item);
+        }
+
+        public override void RightClick(Item item, Player player)
+        {
+            if (!HandlesRightClick(item))
+                return;
+            LoreReworkSystem.ToggleLore(item);
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+                Main.LocalPlayer.Entropy().SyncPlayer(-1, Main.myPlayer, false);
+            LoreEffect effect = LoreReworkSystem.loreEffects[item.type];
+            if (effect.useSound.HasValue)
+                SoundEngine.PlaySound(LoreReworkSystem.Enabled(item.type) ? effect.useSound.Value : CEUtils.GetSound("AscendantOff"), player.Center);
+        }
+
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
             if (!LoreEffect.Enabled || !LoreReworkSystem.loreEffects.ContainsKey(item.type))

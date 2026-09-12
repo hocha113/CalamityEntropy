@@ -1,4 +1,5 @@
 using CalamityEntropy.Common;
+using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -302,6 +303,23 @@ namespace CalamityEntropy.Core.CalamityRef
                 return;
             }
             CERef.SetInfiniteFlight(player, true);
+        }
+
+        /// <summary>深渊视野。灾厄的深渊黑暗是自己一套渲染,不看原版 Lighting,所以本模组的发光饰品
+        /// 必须另外写灾厄的三个深渊量才能真正看清。strength 取 0..1,1 表示这件装备给满档照明</summary>
+        public static void GrantAbyssVision(Player player, float strength)
+        {
+            if (!CERef.Has || strength <= 0f)
+            {
+                return;
+            }
+            strength = Math.Clamp(strength, 0f, 1f);
+            //减黑暗强度,口径对齐灾厄对外开放的 AddAbyssLightStrength(它就是 abyssDarkness -= add)
+            CERef.AddAbyssDarkness(player, -1.5f * strength);
+            //主光环半径倍率,灾厄按 4 * 倍率画光斑,满档约等于三倍视野
+            CERef.AddAbyssGlowMultiplier(player, 2f * strength);
+            //手电筒光束一并加宽,免得光环变大反衬得前方光束细
+            CERef.AddAbyssFlashlightWidthMultiplier(player, 0.5f * strength);
         }
 
         #endregion

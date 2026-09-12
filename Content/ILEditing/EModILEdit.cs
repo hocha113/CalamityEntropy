@@ -37,6 +37,7 @@ namespace CalamityEntropy.Content.ILEditing
             if (CERef.Has)
             {
                 StoreForbiddenArchivePositionHook.LoadHook();
+                LoreItemCanUseHook.LoadHook();
             }
 
             CalamityEntropy.Instance.Logger.Info("CalamityEntropy's Hook Loaded");
@@ -122,6 +123,42 @@ namespace CalamityEntropy.Content.ILEditing
             {
                 EDownedBosses.ForbiddenArchiveCenter = pos;
             }
+        }
+    }
+
+    //灾厄的 LoreItem 基类恒 CanUseItem => false,把所有灾厄/原版 Boss 的传记锁死在"不可使用";
+    //而 tML 的 CanUseItem 是与合并,GlobalItem 盖不过去,只能像 3.33 那样绕到原方法上放行。
+    //基类只此一处声明 CanUseItem,54 个子类都没重写,挂基类即可全覆盖
+    public static class LoreItemCanUseHook
+    {
+        private delegate bool CanUseItemOrig(ModItem self, Player player);
+
+        public static void LoadHook()
+        {
+            Type loreType = CERef.LoreItemType;
+            if (loreType == null)
+            {
+                return;
+            }
+            MethodInfo method = loreType.GetMethod("CanUseItem", BindingFlags.Public | BindingFlags.Instance);
+            if (method == null)
+            {
+                CalamityEntropy.Instance.Logger.Warn("[CERef] 反射失败 Method: LoreItem.CanUseItem");
+                return;
+            }
+            EModHooks.Add(method, On_CanUseItem);
+        }
+
+        private static bool On_CanUseItem(CanUseItemOrig orig, ModItem self, Player player)
+        {
+            //只放行本模组真正挂了 LoreEffect 的那些,其余维持灾厄原样
+            if (LoreEffect.Enabled && self != null
+                && LoreReworkSystem.loreEffects != null
+                && LoreReworkSystem.loreEffects.ContainsKey(self.Type))
+            {
+                return true;
+            }
+            return orig(self, player);
         }
     }
 

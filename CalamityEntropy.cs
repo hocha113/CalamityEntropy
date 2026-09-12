@@ -488,6 +488,7 @@ namespace CalamityEntropy
             LoopSoundManager.unload();
             ealaserSound = null;
             ealaserSound2 = null;
+            CWRQuestSupport.Unload();
             ArmorPrefix.instances = null;
             Poop.instances = null;
             WallpaperHelper.wallpaper = null;
@@ -1754,6 +1755,9 @@ namespace CalamityEntropy
                 Logger.Warn("CalamityEntropy: Other mods' bossbar color failed to setup");
             }
             #endregion
+
+            //向 CWR 任务书注入本模组节点，没装 CWR 时整段静默跳过
+            CWRQuestSupport.Register();
 
             //Custom titles
             if (!Main.dedServ && Main.rand.NextBool(9))

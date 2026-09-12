@@ -12,6 +12,8 @@ namespace CalamityEntropy.Content.Items.Armor.Marivinium
     {
         public static int ShieldCd = 36 * 60;
         public static int MaxShield = 2;
+        public static int MinionSlotsOwn = 3;
+        public static int MinionSlotsCal = 8;
         public override void SetDefaults()
         {
             Item.width = 48;
@@ -31,14 +33,15 @@ namespace CalamityEntropy.Content.Items.Armor.Marivinium
         // 渊海护盾(两层/36s/第二层减半/破盾给深渊狂怒)走 EModPlayer 的既有护盾计时。
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = Mod.GetLocalization("MariviniumSet").Value;
+            player.setBonus = Mod.GetLocalization("MariviniumSet").Value
+                .Replace("[MINION]", (CERef.Has ? MinionSlotsCal : MinionSlotsOwn).ToString());
             player.Entropy().MariviniumSet = true;
             // 降低20%敌怪接触伤害
             player.Entropy().meleeDamageReduce += 0.20f;
             // 大幅提升自然生命再生(4hp/s)
             player.lifeRegen += 8;
-            // +3仆从栏与+20%近战攻速
-            player.maxMinions += 3;
+            // 仆从栏与+20%近战攻速。联动灾厄时对手的是灾厄末期召唤流,+3 撑不住,给 +8
+            player.maxMinions += CERef.Has ? MinionSlotsCal : MinionSlotsOwn;
             player.GetAttackSpeed(DamageClass.Melee) += 0.20f;
         }
         // 2026-08-31 平衡案把 ApplyBuffImmune 的调用连同 +10 仆从栏、+75% 召唤伤害、

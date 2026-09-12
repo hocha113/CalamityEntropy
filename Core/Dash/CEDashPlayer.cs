@@ -25,9 +25,6 @@ namespace CalamityEntropy.Core.Dash
         public const int InputBuffer = 8;
         /// <summary>连续几帧位移被物块吃掉才判定撞墙,留一帧给门被撞开。</summary>
         private const int WallFramesToStop = 2;
-        /// <summary>水平冲刺期间竖直速度每帧衰减系数。</summary>
-        private const float VerticalDamping = 0.85f;
-
         private readonly List<CEDashEffect> offered = new();
         private CEDashEnhancer offeredEnhancer;
 
@@ -182,7 +179,9 @@ namespace CalamityEntropy.Core.Dash
                 }
                 if (!State.Effect.ExternalMotion && hasPreMove && WallBlocked())
                 {
-                    End();
+                    //撞墙也交棒:真撞上墙的话物块碰撞下一帧就吃掉了,而 WallBlocked 误判斜坡/台阶时
+                    //不交棒就等于把玩家原地钉住,这正是"冲刺完速度被重置"最刺眼的一种
+                    End(carryMomentum: true);
                     return;
                 }
             }
@@ -197,7 +196,7 @@ namespace CalamityEntropy.Core.Dash
             else
                 finished = State.Timer >= State.Duration;
             if (finished)
-                End();
+                End(carryMomentum: true);
         }
 
         public override void UpdateDead()
@@ -406,6 +405,7 @@ namespace CalamityEntropy.Core.Dash
                 Effect = effect,
                 Direction = direction,
                 Duration = Math.Max(1, effect.Duration),
+                EntryVelocity = Player.velocity,
             };
 
             float distance = effect.Distance;
@@ -465,7 +465,7 @@ namespace CalamityEntropy.Core.Dash
             SendStart(state);
         }
 
-        private void End(bool startLockout = true)
+        private void End(bool startLockout = true, bool carryMomentum = false)
         {
             CEDashState state = State;
             if (state == null)
@@ -475,6 +475,9 @@ namespace CalamityEntropy.Core.Dash
             blockedFrames = 0;
             if (!state.Remote)
             {
+                //死亡、上坐骑、被控与被新冲刺打断的路径不交棒:那几种情况本来就该丢速度
+                if (carryMomentum && !state.Effect.ExternalMotion)
+                    ApplyExitMomentum(state);
                 Player.eocDash = 0;
                 if (startLockout)
                     lockout = Math.Max(lockout, ApplyCooldownMult(state.Effect.Cooldown));
@@ -556,7 +559,7 @@ namespace CalamityEntropy.Core.Dash
             {
                 Player.velocity.X = State.Direction.X * speed;
                 if (State.Effect.DampVertical && !Player.controlJump)
-                    Player.velocity.Y *= VerticalDamping;
+                    Player.velocity.Y *= VerticalDampingPerFrame();
                 Player.ChangeDir(State.HorizontalSign(Player));
             }
             else
@@ -564,6 +567,36 @@ namespace CalamityEntropy.Core.Dash
                 Player.velocity = State.Direction * speed;
                 if (State.Direction.X != 0f)
                     Player.ChangeDir(State.HorizontalSign(Player));
+            }
+        }
+
+        /// <summary>把"全程保留 VerticalRetain"摊成每帧系数,免得阻尼强度随冲刺帧数漂移:
+        /// 同一个 0.85 在 20 帧的冲刺上剩 4%,在 30 帧的上只剩 0.8%。</summary>
+        private float VerticalDampingPerFrame()
+        {
+            float retain = MathHelper.Clamp(State.Effect.VerticalRetain, 0.01f, 1f);
+            return MathF.Pow(retain, 1f / Math.Max(1, State.Duration));
+        }
+
+        /// <summary>收尾交棒。不写这一步的话,自然结束只剩速度表最后一帧的 EndSpeed、
+        /// 撞墙结束更是直接留着物块碰撞压到零的速度,玩家会觉得冲刺完速度被凭空重置。
+        /// 口径对齐原版克盾:横向吸附到跑速档且方向不变,再把起手时的竖直动量还回去一部分。</summary>
+        private void ApplyExitMomentum(CEDashState state)
+        {
+            float floor = Math.Max(Player.accRunSpeed, Player.maxRunSpeed);
+            float exit = Math.Max(state.Effect.EndSpeed(Player, state.Direction), floor);
+            if (state.Horizontal)
+            {
+                int sign = Math.Sign(state.Direction.X);
+                if (sign != 0 && Player.velocity.X * sign < exit)
+                    Player.velocity.X = sign * exit;
+                float carry = state.EntryVelocity.Y * state.Effect.ExitVerticalCarry;
+                if (Math.Abs(carry) > Math.Abs(Player.velocity.Y))
+                    Player.velocity.Y = carry;
+            }
+            else if (Player.velocity.LengthSquared() < exit * exit)
+            {
+                Player.velocity = state.Direction * exit;
             }
         }
 

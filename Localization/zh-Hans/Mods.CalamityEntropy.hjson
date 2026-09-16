@@ -74,10 +74,12 @@ Items: {
 
 	VoidHealingPotion: {
 		DisplayName: 虚空治疗药水
+		// Tooltip: ""
 	}
 
 	VoidManaPotion: {
 		DisplayName: 虚空魔力药水
+		// Tooltip: ""
 	}
 
 	VoidBottle: {
@@ -5739,6 +5741,12 @@ Projectiles: {
 	ZyphrosPhantomArrow.DisplayName: 幻影箭
 	MiniVoidDevourer.DisplayName: 迷你虚空吞噬者
 	VitalfeatherBurst.DisplayName: 破晓爆炸
+	// VDAnnihilationBeam.DisplayName: V D Annihilation Beam
+	// VDPhantomShip.DisplayName: V D Phantom Ship
+	// VDRiftSeam.DisplayName: V D Rift Seam
+	// VDSingularity.DisplayName: V D Singularity
+	// VDTargetReticle.DisplayName: V D Target Reticle
+	// VDVoidPillar.DisplayName: V D Void Pillar
 }
 
 LegendTooltip: - 传奇物品 -
@@ -6405,7 +6413,6 @@ NPCs: {
 	}
 
 	VoidVanguardCultist.DisplayName: 虚空前卫教徒
-
 	CruiserBody.DisplayName: 巡游者
 	VoidCultistAssassin.DisplayName: 虚空邪教徒
 	VoidPope.DisplayName: 虚空教主

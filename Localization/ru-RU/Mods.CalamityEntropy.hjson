@@ -77,10 +77,12 @@ Items: {
 
 	VoidHealingPotion: {
 		DisplayName: Зелье лечения пустоты
+		// Tooltip: ""
 	}
 
 	VoidManaPotion: {
 		DisplayName: Зелье маны пустоты
+		// Tooltip: ""
 	}
 
 	VoidBottle: {
@@ -5368,6 +5370,12 @@ Projectiles: {
 	// ZyphrosPhantomArrow.DisplayName: Zyphros Phantom Arrow
 	// MiniVoidDevourer.DisplayName: Mini Void Devourer
 	// VitalfeatherBurst.DisplayName: Vitalfeather Burst
+	// VDAnnihilationBeam.DisplayName: V D Annihilation Beam
+	// VDPhantomShip.DisplayName: V D Phantom Ship
+	// VDRiftSeam.DisplayName: V D Rift Seam
+	// VDSingularity.DisplayName: V D Singularity
+	// VDTargetReticle.DisplayName: V D Target Reticle
+	// VDVoidPillar.DisplayName: V D Void Pillar
 }
 
 LegendTooltip: - Легенда -
@@ -6040,7 +6048,6 @@ NPCs: {
 	}
 
 	VoidVanguardCultist.DisplayName: Культист-авангард Пустоты
-
 	CruiserBody.DisplayName: Крейсер
 	VoidCultistAssassin.DisplayName: Ассассин культистов Пустоты
 	VoidPope.DisplayName: Патриарх Пустоты

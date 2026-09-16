@@ -87,10 +87,12 @@ Items: {
 
 	VoidHealingPotion: {
 		DisplayName: Void Healing Potion
+		Tooltip: ""
 	}
 
 	VoidManaPotion: {
 		DisplayName: Void Mana Potion
+		Tooltip: ""
 	}
 
 	VoidBottle: {
@@ -5680,6 +5682,12 @@ Projectiles: {
 	ZyphrosPhantomArrow.DisplayName: Zyphros Phantom Arrow
 	MiniVoidDevourer.DisplayName: Mini Void Devourer
 	VitalfeatherBurst.DisplayName: Vitalfeather Burst
+	VDAnnihilationBeam.DisplayName: V D Annihilation Beam
+	VDPhantomShip.DisplayName: V D Phantom Ship
+	VDRiftSeam.DisplayName: V D Rift Seam
+	VDSingularity.DisplayName: V D Singularity
+	VDTargetReticle.DisplayName: V D Target Reticle
+	VDVoidPillar.DisplayName: V D Void Pillar
 }
 
 LegendTooltip: - Legend -
@@ -6352,7 +6360,6 @@ NPCs: {
 	}
 
 	VoidVanguardCultist.DisplayName: Void Vanguard Cultist
-
 	CruiserBody.DisplayName: Cruiser
 	VoidCultistAssassin.DisplayName: Void Cultist Assassin
 	VoidPope.DisplayName: Void Pope

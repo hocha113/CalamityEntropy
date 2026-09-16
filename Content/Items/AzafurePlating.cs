@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Rarities;
+﻿using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
@@ -12,14 +12,12 @@ namespace CalamityEntropy.Content.Items
     /// </summary>
     public class AzafurePlating : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.ResearchUnlockCount = 25;
             ItemID.Sets.SortingPriorityMaterials[Type] = 17;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 30;
             Item.height = 24;
             Item.maxStack = 9999;
@@ -27,10 +25,8 @@ namespace CalamityEntropy.Content.Items
             Item.rare = ModContent.RarityType<AzafureOrange>();
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_DubiousPlating))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_DubiousPlating)) {
                 CreateRecipe()
                     .AddIngredient(CEID.Item_DubiousPlating)
                     .Register();

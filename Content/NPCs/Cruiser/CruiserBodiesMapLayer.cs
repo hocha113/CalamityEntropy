@@ -24,8 +24,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         private static Asset<Texture2D> crHead2IconTex;
         public static bool drawOutline = false;
         public override Position GetDefaultPosition() => new Before(IMapLayer.Spawn);
-        public override void Draw(ref MapOverlayDrawContext context, ref string text)
-        {
+        public override void Draw(ref MapOverlayDrawContext context, ref string text) {
             Texture2D crBody = crBodyIconTex.Value;
             Texture2D crTail = crTailIconTex.Value;
 
@@ -33,25 +32,20 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             Texture2D crHead2 = crHead2IconTex.Value;
 
             bool anythingToDraw = true;
-            if (anythingToDraw)
-            {
-                foreach (NPC npc in Main.ActiveNPCs)
-                {
+            if (anythingToDraw) {
+                foreach (NPC npc in Main.ActiveNPCs) {
                     Texture2D tex = null;
                     float drawRot = 0;
                     bool needDraw = false;
                     Vector2 drawPos = npc.Center / 16;
                     float scale = 1;
-                    if (npc.ModNPC != null)
-                    {
-                        if (npc.ModNPC is CruiserBody cb && !cb.Phase2)
-                        {
+                    if (npc.ModNPC != null) {
+                        if (npc.ModNPC is CruiserBody cb && !cb.Phase2) {
                             needDraw = true;
                             tex = crBody;
                             drawRot = npc.rotation;
                         }
-                        if (npc.ModNPC is CruiserTail ct && !ct.Phase2)
-                        {
+                        if (npc.ModNPC is CruiserTail ct && !ct.Phase2) {
                             needDraw = true;
                             tex = crTail;
                             drawRot = npc.rotation;
@@ -68,8 +62,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                 }
             }
         }
-        public DrawResult Draw(MapOverlayDrawContext context, Texture2D texture, Vector2 position, Color color, SpriteFrame frame, float scaleIfNotSelected, float scaleIfSelected, float rotation, Alignment alignment, SpriteEffects spriteEffects)
-        {
+        public DrawResult Draw(MapOverlayDrawContext context, Texture2D texture, Vector2 position, Color color, SpriteFrame frame, float scaleIfNotSelected, float scaleIfSelected, float rotation, Alignment alignment, SpriteEffects spriteEffects) {
             Vector2 _mapPosition = (Vector2)typeof(MapOverlayDrawContext).GetField("_mapPosition", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(context);
             Vector2 _mapOffset = (Vector2)typeof(MapOverlayDrawContext).GetField("_mapOffset", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(context);
             float _mapScale = (float)typeof(MapOverlayDrawContext).GetField("_mapScale", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(context);

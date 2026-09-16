@@ -1,4 +1,4 @@
-using InnoVault.PRT;
+﻿using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -18,8 +18,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         //Assets/Particles/PlasmaExplosion → PRTSharedAssets,Texture指白图占位
         public override string Texture => CEUtils.WhiteTexPath;
 
-        public PRT_PlasmaExplosionCal Configure(Vector2 squish, float rotation, float finalScale, int lifetime)
-        {
+        public PRT_PlasmaExplosionCal Configure(Vector2 squish, float rotation, float finalScale, int lifetime) {
             Squish = squish;
             Rotation = rotation;
             OriginalScale = Scale;
@@ -31,15 +30,13 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 30;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             float pulseProgress = 1f - MathF.Pow(1f - LifetimeCompletion, 4f);   //1-Pow(1-Completion,4),Calamity脉冲爆炸通用曲线
             Scale = MathHelper.Lerp(OriginalScale, FinalScale, pulseProgress);
             opacity = (float)Math.Sin(MathHelper.PiOver2 + LifetimeCompletion * MathHelper.PiOver2);
@@ -48,8 +45,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             Velocity *= 0.95f;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch) {
             Texture2D tex = PRTSharedAssets.PlasmaExplosion.Value;   //PlasmaExplosion贴图走SharedAssets
             spriteBatch.Draw(tex, Position - Main.screenPosition, null, Color * opacity, Rotation, tex.Size() / 2f,
                 Scale * Squish, SpriteEffects.None, 0);

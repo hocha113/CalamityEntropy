@@ -21,22 +21,18 @@ namespace CalamityEntropy.Content.Projectiles
         internal static Asset<Texture2D> StreamTex;
         int frame = 0;
         public float Rot = 0;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
         public float rp = 0;
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(rp);
         }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             rp = reader.ReadSingle();
         }
         public bool sspl = false;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Magic;
             Projectile.width = 64;
             Projectile.height = 64;
@@ -49,44 +45,34 @@ namespace CalamityEntropy.Content.Projectiles
         public float back = -36;
         public int up = 0;
 
-        public override void AI()
-        {
+        public override void AI() {
             back *= 0.9f;
-            if (frame > 8)
-            {
+            if (frame > 8) {
                 up -= 6;
             }
-            if (Projectile.ai[0] > 0 && Projectile.ai[0] % 3 == 0)
-            {
-                if (frame < 8)
-                {
+            if (Projectile.ai[0] > 0 && Projectile.ai[0] % 3 == 0) {
+                if (frame < 8) {
                     frame++;
                 }
 
-                if (Projectile.ai[0] > 200)
-                {
+                if (Projectile.ai[0] > 200) {
                     frame++;
                     if (frame > 9)
                         if (cl < 1)
                             cl += 0.2f;
-                    if (frame > 11)
-                    {
+                    if (frame > 11) {
                         Projectile.Kill();
                         SoundEngine.PlaySound(new("CalamityEntropy/Assets/Sounds/vbdisapear"), Projectile.Center);
                     }
                 }
             }
-            if (!sspl)
-            {
+            if (!sspl) {
                 SoundEngine.PlaySound(new("CalamityEntropy/Assets/Sounds/vbapear"), Projectile.Center);
                 sspl = true;
             }
-            if (Projectile.ai[0] == 14)
-            {
-                if (Projectile.owner == Main.myPlayer)
-                {
-                    if (up == 0)
-                    {
+            if (Projectile.ai[0] == 14) {
+                if (Projectile.owner == Main.myPlayer) {
+                    if (up == 0) {
                         int p = Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + Projectile.rotation.ToRotationVector2() * 60, Vector2.Zero, ModContent.ProjectileType<VoidLaser>(), Projectile.damage, 0, Projectile.owner, 0, 0, Projectile.identity);
                         p.ToProj().rotation = Projectile.rotation;
                         p.ToProj().scale = Projectile.scale;
@@ -94,51 +80,41 @@ namespace CalamityEntropy.Content.Projectiles
                     }
                 }
 
-                if (!Main.dedServ && Projectile.owner == Main.myPlayer)
-                {
+                if (!Main.dedServ && Projectile.owner == Main.myPlayer) {
                     SoundEngine.PlaySound(new("CalamityEntropy/Assets/Sounds/laser"), Projectile.Center);
                 }
 
             }
-            if (Projectile.ai[0] != 13 || !Projectile.owner.ToPlayer().channel)
-            {
+            if (Projectile.ai[0] != 13 || !Projectile.owner.ToPlayer().channel) {
                 Projectile.ai[0]++;
             }
-            if (Projectile.ai[0] >= 14 && Projectile.ai[0] < 180)
-            {
+            if (Projectile.ai[0] >= 14 && Projectile.ai[0] < 180) {
                 Rot = float.Lerp(Rot, 1.4f, 0.2f);
             }
-            else
-            {
+            else {
                 Rot *= 0.92f;
             }
             Vector2 c = Projectile.owner.ToPlayer().Center;
-            if (Projectile.Entropy().OnProj != -1)
-            {
+            if (Projectile.Entropy().OnProj != -1) {
                 c = Projectile.Entropy().OnProj.ToProj().Center;
             }
-            if (Projectile.owner == Main.myPlayer)
-            {
+            if (Projectile.owner == Main.myPlayer) {
                 Projectile.rotation = (Main.MouseWorld - Projectile.Center).ToRotation();
                 Projectile.netUpdate = true;
                 rp = Projectile.rotation;
 
             }
-            else
-            {
+            else {
                 Projectile.rotation = rp;
             }
-            if (Projectile.ai[0] < 13 && !Projectile.owner.ToPlayer().channel)
-            {
+            if (Projectile.ai[0] < 13 && !Projectile.owner.ToPlayer().channel) {
                 Projectile.Kill();
             }
-            if (frame <= 4 || true)
-            {
+            if (frame <= 4 || true) {
                 Projectile.Center = Projectile.Center + (Projectile.owner.ToPlayer().Center + new Vector2(Projectile.ai[1], Projectile.ai[2]) - Projectile.Center) * 0.1f;
             }
             ct++;
-            if (frame <= 4)
-            {
+            if (frame <= 4) {
                 Projectile.timeLeft = 1000;
             }
             lw *= 0.9f;
@@ -146,16 +122,14 @@ namespace CalamityEntropy.Content.Projectiles
             if (lw < 0)
                 lw = 0;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return false;
         }
         public int ct = 0;
         public float cl = 0;
         public float LX = -1;
         public float lw = 1;
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             if (LX == -1)
                 LX = Projectile.Center.X;
             LX = float.Lerp(LX, Projectile.Center.X, 0.4f);
@@ -170,8 +144,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.EntitySpriteDraw(t3, Projectile.Center - Main.screenPosition, null, clr, new Vector2(LX - Projectile.Center.X, 12).ToRotation() - MathHelper.PiOver2, new Vector2(t3.Width / 2f, 0), Projectile.scale * 2, SpriteEffects.None);
 
             Main.spriteBatch.UseBlendState(CEUtils.ColorInverse);
-            if (lw > 0.001f)
-            {
+            if (lw > 0.001f) {
                 CEUtils.drawLine(Projectile.Center + new Vector2(0, -2000), Projectile.Center + new Vector2(0, 2000), Color.White, lw * 110);
             }
             Main.spriteBatch.ExitShaderRegion();

@@ -1,5 +1,4 @@
-﻿using CalamityEntropy.Common;
-using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -10,8 +9,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 {
     public class BookMarkAquarius : BookMark
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.rare = ItemRarityID.Orange;
             Item.Entropy().stroke = true;
@@ -22,8 +20,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Aquarius");
         public override Color tooltipColor => Color.LightBlue;
-        public override EBookProjectileEffect getEffect()
-        {
+        public override EBookProjectileEffect getEffect() {
             return new AquariusBMEffect();
         }
     }
@@ -32,10 +29,8 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     /// 而是飞向玩家,接触时消失并回复1生命值与3魔力值。</summary>
     public class AquariusBMEffect : EBookProjectileEffect
     {
-        public override void OnHitNPC(Projectile projectile, NPC target, int damageDone)
-        {
-            for (int i = 0; i < 5; i++)
-            {
+        public override void OnHitNPC(Projectile projectile, NPC target, int damageDone) {
+            for (int i = 0; i < 5; i++) {
                 Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center,
                     CEUtils.randomRot().ToRotationVector2() * 8, ModContent.ProjectileType<AquariusWaterBolt>(), 0, 0, projectile.owner);
             }
@@ -46,8 +41,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     public class AquariusWaterBolt : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = Projectile.height = 12;
             Projectile.friendly = false;
             Projectile.hostile = false;
@@ -55,29 +49,22 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             Projectile.tileCollide = false;
             Projectile.timeLeft = 300;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.rotation = Projectile.velocity.ToRotation();
             Lighting.AddLight(Projectile.Center, Color.DeepSkyBlue.ToVector3() * 0.2f);
             Player owner = Projectile.GetOwner();
-            if (owner == null || !owner.active || owner.dead)
-            {
+            if (owner == null || !owner.active || owner.dead) {
                 Projectile.Kill();
                 return;
             }
-            if (Projectile.localAI[0]++ > 15)
-            {
+            if (Projectile.localAI[0]++ > 15) {
                 Projectile.velocity = (Projectile.velocity + (owner.Center - Projectile.Center).SafeNormalize(Vector2.Zero) * 1.6f);
-                if (Projectile.velocity.Length() > 16)
-                {
+                if (Projectile.velocity.Length() > 16) {
                     Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 16;
                 }
-                if (CEUtils.getDistance(owner.Center, Projectile.Center) < 32)
-                {
-                    if (Projectile.owner == Main.myPlayer)
-                    {
-                        if (owner.statLife < owner.statLifeMax2)
-                        {
+                if (CEUtils.getDistance(owner.Center, Projectile.Center) < 32) {
+                    if (Projectile.owner == Main.myPlayer) {
+                        if (owner.statLife < owner.statLifeMax2) {
                             owner.Heal(1);
                         }
                         owner.statMana = int.Min(owner.statManaMax2, owner.statMana + 3);
@@ -87,28 +74,23 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                     return;
                 }
             }
-            else
-            {
+            else {
                 Projectile.velocity *= 0.94f;
             }
-            for (float i = 0; i < 1; i += 0.5f)
-            {
+            for (float i = 0; i < 1; i += 0.5f) {
                 var p = PRTLoader.NewParticle<PRT_GlowLightParticle>(Projectile.Center - Projectile.velocity * i, CEUtils.randomPointInCircle(1), Color.DeepSkyBlue, Main.rand.NextFloat(0.4f, 0.7f));
                 p.lightColor = Color.DeepSkyBlue * 0.1f;
                 p.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 12);
             }
         }
-        public override void OnKill(int timeLeft)
-        {
-            for (int i = 0; i < 6; i++)
-            {
+        public override void OnKill(int timeLeft) {
+            for (int i = 0; i < 6; i++) {
                 Dust d = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Water);
                 d.noGravity = true;
                 d.velocity = CEUtils.randomPointInCircle(3);
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             return false;
         }
     }

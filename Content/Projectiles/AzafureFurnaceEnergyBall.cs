@@ -14,12 +14,10 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class AzafureFurnaceEnergyBall : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Magic;
             Projectile.width = 16;
             Projectile.height = 16;
@@ -28,8 +26,7 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.light = 1f;
             Projectile.timeLeft = 1024;
             Projectile.penetrate = 1;
-            if (Main.zenithWorld)
-            {
+            if (Main.zenithWorld) {
                 Projectile.usesLocalNPCImmunity = true;
                 Projectile.localNPCHitCooldown = 12;
                 Projectile.penetrate = 5;
@@ -42,18 +39,14 @@ namespace CalamityEntropy.Content.Projectiles
         public PRT_TrailParticle t3;
         public PRT_TrailParticle t4;
         public List<PRT_TrailParticle> ts = new List<PRT_TrailParticle>();
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff<MechanicalTrauma>(340);
-            if (Main.zenithWorld)
-            {
+            if (Main.zenithWorld) {
                 OnKill(Projectile.timeLeft);
             }
         }
-        public override void AI()
-        {
-            if (Projectile.localAI[1] == 0)
-            {
+        public override void AI() {
+            if (Projectile.localAI[1] == 0) {
                 var trailColor = Projectile.ai[1] == 1 ? Color.Red : Color.White;
                 //TrailParticle不开CanPool,odp轨迹List池化会闪上一条
                 t1 = PRTLoader.NewParticle<PRT_TrailParticle>(Projectile.Center, Vector2.Zero, trailColor, Projectile.scale * 0.5f).Configure(1, true, PRTDrawModeEnum.NonPremultiplied, 0);
@@ -76,39 +69,33 @@ namespace CalamityEntropy.Content.Projectiles
             t4.AddPoint(Projectile.Center + Projectile.velocity.RotatedBy(Projectile.localAI[1] * 0.1f - MathHelper.PiOver2).normalize() * (16 * Projectile.scale));
             Main.dust[Dust.NewDust(Projectile.Center + CEUtils.randomPointInCircle(12), 0, 0, DustID.GemRuby, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f)].noGravity = true;
             NPC target = CEUtils.FindTarget_HomingProj(Projectile, Projectile.Center, 800);
-            if (target != null && Projectile.localAI[1] > 60)
-            {
+            if (target != null && Projectile.localAI[1] > 60) {
                 Projectile.velocity += (target.Center - Projectile.Center).normalize() * 0.08f;
                 Projectile.velocity *= 0.99f;
             }
         }
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             CEUtils.PlaySound("ofhit", 1, Projectile.Center);
-            for (int i = 0; i < 16; i++)
-            {
+            for (int i = 0; i < 16; i++) {
                 //TrailSparkParticle跟TrailParticle成对spawn,旧trail+spark一套
                 PRTLoader.NewParticle<PRT_TrailSparkParticle>(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(2, 16), (Projectile.ai[1] == 1 ? Color.Red : Color.White), Projectile.scale * 1.4f).Configure(1, true, PRTDrawModeEnum.NonPremultiplied, 0, 36);
             }
             PRTLoader.NewParticle<PRT_DirectionalPulseRing>(Projectile.Center, Vector2.Zero, (Projectile.ai[1] == 1 ? Color.Red : Color.White), 0.1f).Configure(new Vector2(2f, 2f), 0, 0.3f, 32);
             PRTLoader.NewParticle<PRT_DirectionalPulseRing>(Projectile.Center, Vector2.Zero, (Projectile.ai[1] == 1 ? Color.Red : Color.White), 0.1f).Configure(new Vector2(2f, 2f), 0, 0.4f, 36);
             PRTLoader.NewParticle<PRT_DirectionalPulseRing>(Projectile.Center, Vector2.Zero, (Projectile.ai[1] == 1 ? Color.Red : Color.White), 0.1f).Configure(new Vector2(2f, 2f), 0, 0.5f, 40);
-            if (Main.myPlayer == Projectile.owner)
-            {
+            if (Main.myPlayer == Projectile.owner) {
                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<FurnaceBlast>(), 0, 0, Projectile.owner, Projectile.ai[1]);
                 CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromAI(), Projectile.GetOwner(), Projectile.Center, Projectile.damage * 2, 240, Projectile.DamageType);
             }
             SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/ExoTwinsEject"), Projectile.Center);
-            if (CEUtils.getDistance(Projectile.Center, Projectile.GetOwner().Center) < 1200)
-            {
+            if (CEUtils.getDistance(Projectile.Center, Projectile.GetOwner().Center) < 1200) {
                 CEUtils.SetShake(Projectile.Center, 7, 1200);
             }
         }
 
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 

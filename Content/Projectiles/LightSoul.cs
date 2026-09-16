@@ -1,6 +1,5 @@
-using CalamityEntropy.Content.Items.Books;
+﻿using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Particles;
-using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,12 +19,10 @@ namespace CalamityEntropy.Content.Projectiles
         public List<Vector2> odp = new List<Vector2>();
         public List<float> odr = new List<float>();
         public Vector2 dscp = Vector2.Zero;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 90;
@@ -42,46 +39,36 @@ namespace CalamityEntropy.Content.Projectiles
         public float l = 0;
 
         // 2026-08-31 平衡案:光明能量不再回血/消除弹幕,改为直接飞向玩家并回复5点魔力
-        public override void AI()
-        {
+        public override void AI() {
             base.AI();
-            if (Projectile.timeLeft < 3)
-            {
+            if (Projectile.timeLeft < 3) {
                 return;
             }
             counter++;
             Projectile.rotation = Projectile.velocity.ToRotation();
             Player owner = Projectile.GetOwner();
-            if (owner == null || !owner.active || owner.dead)
-            {
+            if (owner == null || !owner.active || owner.dead) {
                 Projectile.Kill();
                 return;
             }
-            if (counter < 24)
-            {
+            if (counter < 24) {
                 Projectile.velocity *= 0.95f;
             }
-            else
-            {
-                if (l < 6)
-                {
+            else {
+                if (l < 6) {
                     l += 0.06f;
                 }
                 Projectile.velocity += (owner.Center - Projectile.Center).SafeNormalize(Vector2.Zero) * (1.2f + l * 0.4f);
-                if (Projectile.velocity.Length() > 22)
-                {
+                if (Projectile.velocity.Length() > 22) {
                     Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 22;
                 }
-                if (Projectile.getRect().Intersects(owner.getRect()))
-                {
-                    for (int i = 0; i < 12; i++)
-                    {
+                if (Projectile.getRect().Intersects(owner.getRect())) {
+                    for (int i = 0; i < 12; i++) {
                         //GlowSpark旧PRT/EParticle,Configure尾参统一签名那套
                         PRTLoader.NewParticle<PRT_GlowSpark>(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(2, 7), Color.White, Main.rand.NextFloat(0.08f, 0.12f)).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);
                     }
                     CEUtils.PlaySound("soulexplode", 1.2f, Projectile.Center, maxIns: 2, volume: 0.4f);
-                    if (Projectile.owner == Main.myPlayer)
-                    {
+                    if (Projectile.owner == Main.myPlayer) {
                         owner.statMana = Math.Min(owner.statManaMax2, owner.statMana + 5);
                         owner.ManaEffect(5);
                     }
@@ -91,59 +78,48 @@ namespace CalamityEntropy.Content.Projectiles
             }
         }
 
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             return false;
         }
-        public override void PostAI()
-        {
+        public override void PostAI() {
             base.PostAI();
             odp.Add(Projectile.Center);
             odr.Add(Projectile.rotation);
-            if (odp.Count > 12)
-            {
+            if (odp.Count > 12) {
                 odp.RemoveAt(0);
                 odr.RemoveAt(0);
             }
         }
         public int tofs;
-        public Color TrailColor(float completionRatio, Vector2 vertex)
-        {
+        public Color TrailColor(float completionRatio, Vector2 vertex) {
             Color result = new Color(255, 255, 255) * completionRatio;
             return result;
         }
 
-        public float TrailWidth(float completionRatio, Vector2 vertex)
-        {
+        public float TrailWidth(float completionRatio, Vector2 vertex) {
             return MathHelper.Lerp(0, 12 * Projectile.scale, completionRatio);
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             drawT();
             return false;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             base.OnHitNPC(target, hit, damageDone);
         }
         public override Color baseColor => new Color(255, 255, 255);
-        public void drawT()
-        {
-            if (Projectile.timeLeft < 3)
-            {
+        public void drawT() {
+            if (Projectile.timeLeft < 3) {
                 return;
             }
             var mp = this;
-            if (mp.odp.Count > 1)
-            {
+            if (mp.odp.Count > 1) {
                 Main.spriteBatch.UseBlendState(BlendState.AlphaBlend);
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = this.color;
                 float a = 0;
                 float lr = 0;
-                for (int i = 1; i < mp.odp.Count; i++)
-                {
+                for (int i = 1; i < mp.odp.Count; i++) {
                     a += 1f / (float)mp.odp.Count;
 
                     ve.Add(new ColoredVertex(mp.odp[i] - Main.screenPosition + (mp.odp[i] - mp.odp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 9 * Projectile.scale,
@@ -156,8 +132,7 @@ namespace CalamityEntropy.Content.Projectiles
                 }
                 a = 1;
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     Texture2D tx = TrailTex.Value;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);

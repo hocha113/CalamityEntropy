@@ -9,12 +9,10 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
 {
     public class ProphetRuneAlt : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 40;
             Projectile.height = 40;
@@ -31,30 +29,25 @@ namespace CalamityEntropy.Content.Projectiles.Prophet
         public Vector2 lastPos;
         public float counter = 0;
         public Vector2 dC;
-        public override void AI()
-        {
+        public override void AI() {
             NPC owner = ((int)Projectile.ai[0]).ToNPC();
             counter += 1;
 
             float dist = 5 * (counter > 20 ? 20 : counter);
             float rotJ = Projectile.ai[1];
-            if (counter < 150)
-            {
+            if (counter < 150) {
                 Projectile.Center = owner.Center + (Main.GameUpdateCount * 0.12f + rotJ).ToRotationVector2() * dist;
                 dC = owner.Center;
             }
-            else
-            {
+            else {
                 dist = 100 + (counter - 150) * 18f;
                 Projectile.Center = dC + (Main.GameUpdateCount * 0.025f + rotJ).ToRotationVector2() * dist;
             }
         }
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) {
             target.AddBuff(ModContent.BuffType<SoulDisorder>(), 8 * 60);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
 

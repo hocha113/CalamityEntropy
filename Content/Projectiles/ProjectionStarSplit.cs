@@ -8,12 +8,10 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class ProjectionStarSplit : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Magic;
             Projectile.width = 20;
             Projectile.height = 20;
@@ -24,12 +22,10 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.timeLeft = 120;
             Projectile.extraUpdates = 2;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.rotation += 0.16f;
             NPC target = Projectile.FindTargetWithinRange(2000, false);
-            if (target != null)
-            {
+            if (target != null) {
                 Projectile.velocity *= 0.95f;
                 Vector2 v = target.Center - Projectile.Center;
                 v.Normalize();
@@ -40,10 +36,8 @@ namespace CalamityEntropy.Content.Projectiles
         }
 
 
-        public override bool PreDraw(ref Color lightColor)
-        {
-            if (Projectile.timeLeft < 30)
-            {
+        public override bool PreDraw(ref Color lightColor) {
+            if (Projectile.timeLeft < 30) {
                 lightColor *= ((float)Projectile.timeLeft / 30f);
             }
             Texture2D tx = TextureAssets.Projectile[Projectile.type].Value;

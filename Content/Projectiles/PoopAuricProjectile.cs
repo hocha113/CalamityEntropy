@@ -6,15 +6,12 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class PoopAuricProjectile : PoopProj
     {
-        public override void PushNPC(NPC npc)
-        {
-            if (npc.velocity.Length() > 0.1f && npc.type != NPCID.WallofFlesh)
-            {
+        public override void PushNPC(NPC npc) {
+            if (npc.velocity.Length() > 0.1f && npc.type != NPCID.WallofFlesh) {
                 Vector2 v = (npc.Center - Projectile.Center).SafeNormalize(Vector2.UnitX) * 16;
                 npc.velocity += v;
             }
-            if (Main.myPlayer == Projectile.owner)
-            {
+            if (Main.myPlayer == Projectile.owner) {
                 NPC.HitInfo hit = npc.CalculateHitInfo(Projectile.damage, 0, false, 0, Projectile.DamageType);
                 npc.StrikeNPC(hit);
             }

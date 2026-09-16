@@ -10,13 +10,11 @@ namespace CalamityEntropy.Content.Items.Ammo
 {
     public class AnnihilateArrow : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.ResearchUnlockCount = 99;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 14;
             Item.height = 36;
 
@@ -32,8 +30,7 @@ namespace CalamityEntropy.Content.Items.Ammo
             Item.ammo = AmmoID.Arrow;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe(999)
                 .AddIngredient<VoidBar>()
                 .AddTile(ModContent.TileType<VoidWellTile>())

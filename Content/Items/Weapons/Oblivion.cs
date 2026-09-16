@@ -1,18 +1,16 @@
-﻿using CalamityEntropy.Content.Items;
-using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class Oblivion : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 80;
             Item.height = 80;
             Item.damage = 64;
@@ -34,25 +32,20 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.crit = 8;
         }
         public bool cs = false;
-        public override bool RangedPrefix()
-        {
+        public override bool RangedPrefix() {
             return true;
         }
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
+        public override bool CanConsumeAmmo(Item ammo, Player player) {
             return Main.rand.NextBool(12);
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             type = ModContent.ProjectileType<OblivionArrow>();
             Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.32f), type, damage, knockback, player.whoAmI);
             return false;
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_Voidstone))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_Voidstone)) {
                 CreateRecipe()
                 .AddIngredient(ModContent.ItemType<Kinanition>())
                 .AddIngredient(CEID.Item_Voidstone, 6)

@@ -1,7 +1,5 @@
 ﻿using CalamityEntropy.Assets.Register;
-using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -12,16 +10,14 @@ namespace CalamityEntropy.Content.Projectiles
 
     public class HolyBeam : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 3000;
 
         }
         public float counter = 0;
         public int drawcount = 0;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 30;
             Projectile.height = 30;
             Projectile.friendly = true;
@@ -38,12 +34,10 @@ namespace CalamityEntropy.Content.Projectiles
         float opc = 1;
         public float rotSpeed = 0;
         public float num = -1;
-        public override void AI()
-        {
+        public override void AI() {
             if (num == -1)
                 num = Main.GameUpdateCount / 16;
-            if (counter == 0)
-            {
+            if (counter == 0) {
                 SoundEngine.PlaySound(new("CalamityEntropy/Assets/Sounds/angel_blast1"), Projectile.Center);
             }
             counter++;
@@ -51,22 +45,18 @@ namespace CalamityEntropy.Content.Projectiles
             rotSpeed *= 0.996f;
             Projectile.velocity = Projectile.velocity.RotatedBy(rotSpeed);
             Projectile.rotation = Projectile.velocity.ToRotation();
-            if (counter > 400)
-            {
+            if (counter > 400) {
                 opc -= 1f / 80f;
             }
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.velocity.normalize() * 900, targetHitbox, 100);
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             drawcount++;
 
             SpriteBatch spriteBatch = Main.spriteBatch;

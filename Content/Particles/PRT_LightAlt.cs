@@ -13,8 +13,7 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             Glow = true;
             ScaleAdd = Vector2.Zero;
@@ -24,8 +23,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/PRT_Light2";
 
         public PRT_LightAlt Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -35,20 +33,17 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 20;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             NowScale += ScaleAdd;   //每tick累加,旧EParticle没框架位移就靠这个鼓起来
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             float remaining = 1f - LifetimeCompletion;
             Texture2D tex = PRTSharedAssets.PRT_Light2.Value;   //bloom贴图VaultLoaden,跟PRT_Light.BloomTex同一张
             sb.Draw(tex, Position - Main.screenPosition, null, Color * Opacity * remaining, Rotation,

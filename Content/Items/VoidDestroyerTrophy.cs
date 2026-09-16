@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Tiles;
+﻿using CalamityEntropy.Content.Tiles;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -6,8 +6,7 @@ namespace CalamityEntropy.Content.Items
 {
     public class VoidDestroyerTrophy : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 30;
             Item.height = 30;
             Item.maxStack = 9999;

@@ -1,4 +1,4 @@
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Accessories.SoulCards;
@@ -79,13 +79,11 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             public int timeLeft = ProphetDirector.TailPointLife;
             public Vector2 position;
             public Vector2 velocity;
-            public TailPoint(Vector2 pos, Vector2 vel)
-            {
+            public TailPoint(Vector2 pos, Vector2 vel) {
                 position = pos;
                 velocity = vel;
             }
-            public void update()
-            {
+            public void update() {
                 position += velocity;
                 velocity *= ProphetDirector.TailPointDrag;
                 timeLeft--;
@@ -100,13 +98,10 @@ namespace CalamityEntropy.Content.NPCs.Prophet
         /// <summary>原 <c>phase</c> 字段:映射 <c>ai[2]</c>。天顶世界不建上下文,恒为 1(与原代码一致)</summary>
         public int phase => Context?.Phase ?? 1;
         /// <summary>原 <c>spawnAnm</c> 字段:出生演出倒计时,绘制层要读</summary>
-        public int spawnAnm
-        {
+        public int spawnAnm {
             get => Context?.SpawnAnim ?? ProphetDirector.SpawnAnimFrames;
-            set
-            {
-                if (Context != null)
-                {
+            set {
+                if (Context != null) {
                     Context.SpawnAnim = value;
                 }
             }
@@ -117,13 +112,11 @@ namespace CalamityEntropy.Content.NPCs.Prophet
         #endregion
 
         #region 定义
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.npcFrameCount[NPC.type] = 1;
             NPCID.Sets.MustAlwaysDraw[NPC.type] = true;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
-            {
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers() {
                 Scale = 0.48f,
                 PortraitScale = 0.56f,
                 CustomTexturePath = "CalamityEntropy/Assets/BCL/Prophet",
@@ -136,8 +129,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             NPCID.Sets.NoMultiplayerSmoothingByType[Type] = true;
         }
 
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
-        {
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry) {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheDungeon,
@@ -145,8 +137,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             });
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             NPC.boss = true;
             //状态机把状态号写进 ai[3],原版 AI 不许占这个槽。模组 NPC 的默认值本来就是 -1,这里写明
             NPC.aiStyle = -1;
@@ -156,12 +147,10 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             DamageReduction = ProphetDirector.BaseDamageReduction;
             NPC.lifeMax = 48000;
             //装灾厄读死亡/复仇,缺席仍走大师/专家兜底
-            if (CECal.IsDeathMode)
-            {
+            if (CECal.IsDeathMode) {
                 NPC.damage += 4;
             }
-            else if (CECal.IsRevengeance)
-            {
+            else if (CECal.IsRevengeance) {
                 NPC.damage += 2;
             }
             var snd = CEUtils.GetSound("prophet_hurt", maxIns: 1);
@@ -174,47 +163,38 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             NPC.noGravity = true;
             NPC.Entropy().VoidTouchDR = 0.25f;
             NPC.dontCountMe = true;
-            if (!Main.dedServ)
-            {
+            if (!Main.dedServ) {
                 Music = MusicLoader.GetMusicSlot(Mod, "Assets/Sounds/Music/SpectralForesight");
             }
         }
 
-        public override bool CheckActive()
-        {
+        public override bool CheckActive() {
             return false;
         }
 
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
-        {
-            if (Main.zenithWorld)
-            {
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) {
+            if (Main.zenithWorld) {
                 return zenithAI.aitype != 3f;
             }
             //只有两支冲锋招带接触伤害
             return CurrentStateIndex == ProphetStateIndex.Dash || CurrentStateIndex == ProphetStateIndex.AltRuneCharge;
         }
 
-        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers) {
             modifiers.FinalDamage *= 1f - DamageReduction;
-            if (CurrentStateIndex == ProphetStateIndex.GrandLaser)
-            {
+            if (CurrentStateIndex == ProphetStateIndex.GrandLaser) {
                 modifiers.FinalDamage *= 0.5f;
             }
         }
 
-        public override void DrawBehind(int index)
-        {
+        public override void DrawBehind(int index) {
             Main.instance.DrawCacheNPCsOverPlayers.Add(index);
         }
         #endregion
 
         #region 状态机装配
-        private void EnsureContext()
-        {
-            Context ??= new ProphetStateContext
-            {
+        private void EnsureContext() {
+            Context ??= new ProphetStateContext {
                 Npc = NPC,
                 Owner = this,
             };
@@ -222,11 +202,9 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             Context.Owner = this;
         }
 
-        private void InitializeStateMachine()
-        {
+        private void InitializeStateMachine() {
             EnsureContext();
-            if (NPC.ai[2] < 1f)
-            {
+            if (NPC.ai[2] < 1f) {
                 NPC.ai[2] = 1f;
             }
             stateMachine = new NpcStateMachine<ProphetStateContext>(Context);
@@ -234,8 +212,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
 
             //中途加入的客户端从 ai[3] 重建当前招,而不是默认回第一招
             IVaultState<ProphetStateContext> initial = null;
-            if (VaultUtils.isClient)
-            {
+            if (VaultUtils.isClient) {
                 initial = VaultStateRegistry<ProphetStateContext>.Create((int)NPC.ai[3]);
             }
             //原代码 AIStyle 初值 0、AIChangeDelay 初值 0,所以首帧就会立刻选招并落到 0 号槽
@@ -243,69 +220,57 @@ namespace CalamityEntropy.Content.NPCs.Prophet
         }
         #endregion
 
-        public override void AI()
-        {
+        public override void AI() {
             rl = CEUtils.RotateTowardsAngle(rl, NPC.rotation, ProphetDirector.DrawRotateRate, false);
             UpdateFins();
-            if (!Main.dedServ)
-            {
-                if (phase == 2 && !music2)
-                {
+            if (!Main.dedServ) {
+                if (phase == 2 && !music2) {
                     music2 = true;
                     Music = MusicLoader.GetMusicSlot(Mod, "Assets/Sounds/Music/Prophet2");
                 }
             }
 
             //天顶世界:整条 AI 交给旧巡洋舰彩蛋,状态机不启动也不推进(与原代码逐字一致)
-            if (Main.zenithWorld)
-            {
+            if (Main.zenithWorld) {
                 zenithAI.PreAI(NPC);
                 UpdateTails();
                 return;
             }
 
             EnsureContext();
-            if (stateMachine == null)
-            {
+            if (stateMachine == null) {
                 InitializeStateMachine();
             }
 
             bool client = VaultUtils.isClient;
-            if (client)
-            {
+            if (client) {
                 netMotion.BeginFrame(NPC);
                 CEBossHost.AdoptTimingAtFrameStart(netMotion, stateMachine);
             }
 
-            if (Context.DrRamp > 0)
-            {
+            if (Context.DrRamp > 0) {
                 Context.DrRamp -= ProphetDirector.DrRampDecayPerFrame;
             }
             // 原灾厄该条减伤上升提示位随灾厄退场,DR 改本地字段结算
             DamageReduction = ProphetDirector.DamageReductionFor(CurrentStateIndex, Context.DrRamp);
 
-            if (Context.SpawnAnim > 0)
-            {
+            if (Context.SpawnAnim > 0) {
                 NPC.dontTakeDamage = true;
                 NPC.rotation = ProphetDirector.SpawnAnimRotation;
             }
             //原代码写的是 == 0。倒计时会一路穿过 0 往负数走,所以在原时间轴上两者等价;
             //改成 <= 0 是因为这个计数现在会被客户端从包里收养,可能一步跨过 0 而永远解不开免伤
-            if (Context.SpawnAnim <= 0)
-            {
+            if (Context.SpawnAnim <= 0) {
                 NPC.dontTakeDamage = false;
             }
             Context.SpawnAnim--;
 
-            if (!NPC.HasValidTarget)
-            {
+            if (!NPC.HasValidTarget) {
                 NPC.TargetClosest();
             }
 
-            if (Context.SpawnAnim <= 0)
-            {
-                if (!NPC.HasValidTarget)
-                {
+            if (Context.SpawnAnim <= 0) {
+                if (!NPC.HasValidTarget) {
                     //脱战:上浮离场。原代码在各端都置 active = false,这里收归权威端
                     //(原代码紧跟着就写 netUpdate,本意就是服务端驱动)
                     Context.Target = null;
@@ -314,14 +279,12 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                     NPC.velocity.Y -= ProphetDirector.NoTargetRiseAccel;
                     NPC.velocity *= ProphetDirector.NoTargetDrag;
                     NPC.rotation = NPC.velocity.ToRotation();
-                    if (NPC.localAI[0] > ProphetDirector.NoTargetDespawnFrames && !client)
-                    {
+                    if (NPC.localAI[0] > ProphetDirector.NoTargetDespawnFrames && !client) {
                         NPC.active = false;
                         NPC.netUpdate = true;
                     }
                 }
-                else
-                {
+                else {
                     NPC.localAI[0] = 0;
                     targetPlayer = NPC.target.ToPlayer();
                     RunAttackFrame(targetPlayer);
@@ -330,12 +293,10 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             }
 
             lastSeenCenter = NPC.Center;
-            if (client)
-            {
+            if (client) {
                 netMotion.EndFrame(NPC);
             }
-            else
-            {
+            else {
                 CEBossHost.Heartbeat(NPC);
             }
         }
@@ -345,20 +306,16 @@ namespace CalamityEntropy.Content.NPCs.Prophet
         /// 地牢重置残留量 → 自减 → 阶段判定 → 重算难度系数 → 倒计时耗尽就选招(同帧跑新招)→
         /// 状态体 → 续尾焰点 → 倒计时自减 → 服务端解节流
         /// </summary>
-        private void RunAttackFrame(Player target)
-        {
-            if (target.ZoneDungeon)
-            {
+        private void RunAttackFrame(Player target) {
+            if (target.ZoneDungeon) {
                 NoEnrange = ProphetDirector.NoEnrageDungeon;
             }
             NoEnrange--;
 
             // 原灾厄该条狂怒提示位(CurrentlyEnraged)随灾厄退场,狂怒数值逻辑本就在下方自持
-            if (NPC.life < NPC.lifeMax / ProphetDirector.Phase2LifeDivisor && Context.Phase < 2)
-            {
+            if (NPC.life < NPC.lifeMax / ProphetDirector.Phase2LifeDivisor && Context.Phase < 2) {
                 Context.Phase = 2;
-                if (!VaultUtils.isClient)
-                {
+                if (!VaultUtils.isClient) {
                     NPC.netUpdate = true;
                 }
             }
@@ -368,11 +325,9 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             Context.Difficult = ProphetDirector.Difficult(NPC);
 
             //选招只在权威端。原代码在客户端也会自己掷骰选招,于是两端的出招序列直接分叉
-            if (Context.Countdown <= 0 && !VaultUtils.isClient)
-            {
+            if (Context.Countdown <= 0 && !VaultUtils.isClient) {
                 IVaultState<ProphetStateContext> next = ProphetRotation.Pick(Context);
-                if (next != null)
-                {
+                if (next != null) {
                     stateMachine.ChangeState(next);
                 }
             }
@@ -384,34 +339,27 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                 * (NPC.velocity.Length() + ProphetDirector.TrailPointForward));
             Context.Countdown--;
             //原代码每帧清节流位。保留:本 Boss 的瞬移密度需要决策点当帧就发出去
-            if (Main.netMode == NetmodeID.Server)
-            {
+            if (Main.netMode == NetmodeID.Server) {
                 NPC.netSpam = 0;
             }
         }
 
         #region 表现:鳍与尾迹
-        public void UpdateFins()
-        {
+        public void UpdateFins() {
             finRotCounter += NPC.velocity.Length() * ProphetDirector.FinPhaseSpeedFactor + ProphetDirector.FinPhaseBase;
-            if (finRotCounter > 1)
-            {
+            if (finRotCounter > 1) {
                 finRotCounter--;
             }
             //原代码自增但全仓库无人读,残留量,照搬
             NPC.localAI[1]++;
         }
 
-        public void UpdateTails()
-        {
-            foreach (TailPoint p in tail)
-            {
+        public void UpdateTails() {
+            foreach (TailPoint p in tail) {
                 p.update();
             }
-            if (tail.Count > 0)
-            {
-                if (tail[0].timeLeft <= 0)
-                {
+            if (tail.Count > 0) {
+                if (tail[0].timeLeft <= 0) {
                     tail.RemoveAt(0);
                 }
             }
@@ -428,8 +376,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
         /// 原 <c>TeleportTo</c>:清速度、进出各两枚火花、落位、清尾迹。
         /// <b>只由权威端调用</b>(入口在 <c>ProphetStateBase.Teleport</c>),落点随包过线
         /// </summary>
-        public void TeleportTo(Vector2 pos)
-        {
+        public void TeleportTo(Vector2 pos) {
             NPC.velocity *= 0;
             Color impactColor = Main.rand.NextBool(3) ? Color.SkyBlue : Color.White;
 
@@ -444,8 +391,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
         }
 
         /// <summary>客户端补演:包里的位置已经是落点,这里只补两端火花、清尾迹、复位预测</summary>
-        private void ReplayTeleport(Vector2 pos)
-        {
+        private void ReplayTeleport(Vector2 pos) {
             Color impactColor = Main.rand.NextBool(3) ? Color.SkyBlue : Color.White;
             TeleportSparkles(lastSeenCenter, impactColor);
             TeleportSparkles(pos, impactColor);
@@ -455,8 +401,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
         }
 
         //TeleportTo 进出各 2 枚 SparkleCal,落点清空 tail 的 GP 点
-        private static void TeleportSparkles(Vector2 at, Color impactColor)
-        {
+        private static void TeleportSparkles(Vector2 at, Color impactColor) {
             float impactParticleScale = ProphetDirector.TeleportSparkleScale;
             PRTLoader.NewParticle<PRT_SparkleCal>(at, Vector2.Zero, Color.White, impactParticleScale * 1.2f)
                 .Configure(Color.SkyBlue, 12, 0, 4.5f);
@@ -473,14 +418,12 @@ namespace CalamityEntropy.Content.NPCs.Prophet
         /// 两端同真同假,所以它不会让读写流错位。除此之外没有任何运行时条件决定写不写字段
         /// </para>
         /// </summary>
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             EnsureContext();
             int stateId = (int)NPC.ai[3];
             int timer = 0;
             int counter = 0;
-            if (stateMachine?.CurrentState is ProphetStateBase state)
-            {
+            if (stateMachine?.CurrentState is ProphetStateBase state) {
                 stateId = state.StateId;
                 timer = state.Timer;
                 counter = state.Counter;
@@ -498,20 +441,17 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             writer.Write(Context.TeleportSeq);
             writer.WriteVector2(Context.TeleportPos);
 
-            if (Main.zenithWorld)
-            {
+            if (Main.zenithWorld) {
                 zenithAI.SendExtraAI(NPC, writer);
             }
         }
 
         /// <summary>客户端收包:position/velocity/ai 已是服务端值,先据计时差纠偏,再读事实</summary>
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             EnsureContext();
             int localStateId = -1;
             int localTimer = 0;
-            if (stateMachine?.CurrentState is ProphetStateBase state)
-            {
+            if (stateMachine?.CurrentState is ProphetStateBase state) {
                 localStateId = state.StateId;
                 localTimer = state.Timer;
             }
@@ -519,8 +459,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
 
             //天顶路径自己每帧算朝向,不在本轮范围内,读出来但不落盘(定长块仍然对齐)
             float syncedRotation = reader.ReadSingle();
-            if (!Main.zenithWorld)
-            {
+            if (!Main.zenithWorld) {
                 NPC.rotation = syncedRotation;
             }
 
@@ -532,18 +471,15 @@ namespace CalamityEntropy.Content.NPCs.Prophet
 
             int seq = reader.ReadInt32();
             Vector2 pos = reader.ReadVector2();
-            if (seq != Context.TeleportSeq)
-            {
+            if (seq != Context.TeleportSeq) {
                 Context.TeleportSeq = seq;
                 Context.TeleportPos = pos;
-                if (VaultUtils.isClient)
-                {
+                if (VaultUtils.isClient) {
                     ReplayTeleport(pos);
                 }
             }
 
-            if (Main.zenithWorld)
-            {
+            if (Main.zenithWorld) {
                 zenithAI.ReceiveExtraAI(NPC, reader);
             }
 
@@ -553,13 +489,11 @@ namespace CalamityEntropy.Content.NPCs.Prophet
         #endregion
 
         #region 掉落
-        public override void BossLoot(ref int potionType)
-        {
+        public override void BossLoot(ref int potionType) {
             potionType = ItemID.GreaterHealingPotion;
         }
 
-        public override void ModifyNPCLoot(NPCLoot npcLoot)
-        {
+        public override void ModifyNPCLoot(NPCLoot npcLoot) {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<ProphetBag>()));
 
             // 治疗药水按人 5-15 瓶,隐藏图鉴条目(承接原灾厄 PerPlayer 语义)
@@ -604,8 +538,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             public string GetConditionDescription() => null;
         }
 
-        public override void OnKill()
-        {
+        public override void OnKill() {
             NPC.SetEventFlagCleared(ref EDownedBosses.downedProphet, -1);
         }
         #endregion

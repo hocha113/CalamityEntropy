@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
+﻿using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using CalamityEntropy.Content.Projectiles.VoidDestroyer;
 using InnoVault.StateMachines;
 using System;
@@ -21,21 +21,17 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         private Beat beat;
         private int volleys;
 
-        public override void OnEnter(VDStateContext ctx)
-        {
+        public override void OnEnter(VDStateContext ctx) {
             base.OnEnter(ctx);
             beat = Beat.Approach;
             volleys = 0;
         }
 
-        public override IVDState OnUpdate(VDStateContext ctx)
-        {
+        public override IVDState OnUpdate(VDStateContext ctx) {
             Timer++;
-            if (beat == Beat.Approach)
-            {
+            if (beat == Beat.Approach) {
                 DeclareHoverTo(ctx, ctx.Target.Center + VDDirector.FlameOffset, VDDirector.FlameApproachSpeed, VDDirector.FlameApproachAccel, VDDirector.FlameApproachSlow);
-                if (Timer >= VDDirector.FlameApproachFrames || (Timer > 8 && ctx.Npc.Distance(ctx.Target.Center + VDDirector.FlameOffset) < 80f))
-                {
+                if (Timer >= VDDirector.FlameApproachFrames || (Timer > 8 && ctx.Npc.Distance(ctx.Target.Center + VDDirector.FlameOffset) < 80f)) {
                     beat = Beat.Fire;
                     ResetTimer();
                     MarkNetUpdate(ctx);
@@ -47,27 +43,21 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             Vector2 core = ctx.Owner.CorePos;
             //第 k 轮在 Timer = Telegraph + Interval*k 出手,之前 20 帧是向下锥形预告
             int fireAt = VDDirector.FlameTelegraph + VDDirector.FlameVolleyInterval * volleys;
-            if (volleys < VDDirector.FlameVolleys)
-            {
+            if (volleys < VDDirector.FlameVolleys) {
                 int untilFire = fireAt - Timer;
-                if (untilFire > 0 && untilFire <= VDDirector.FlameTelegraph)
-                {
+                if (untilFire > 0 && untilFire <= VDDirector.FlameTelegraph) {
                     float p = 1f - untilFire / (float)VDDirector.FlameTelegraph;
                     ctx.CoreGlow = Math.Max(ctx.CoreGlow, p);
-                    if (!Main.dedServ && Timer % 2 == 0)
-                    {
+                    if (!Main.dedServ && Timer % 2 == 0) {
                         Vector2 v = (MathHelper.PiOver2 + Main.rand.NextFloat(-VDDirector.FlameSpread, VDDirector.FlameSpread)).ToRotationVector2() * Main.rand.NextFloat(3f, 7f) * (0.5f + p);
                         VDVfx.SparkBurst(core, VDVfx.VoidPink, 1, v.Length(), v.Length(), 14, 0.4f, 0.7f);
                     }
                 }
-                if (Timer == fireAt)
-                {
+                if (Timer == fireAt) {
                     MuzzleCue(ctx, Vector2.UnitY, 4f, "CruiserSpit", 0.8f);
-                    if (IsServer)
-                    {
+                    if (IsServer) {
                         ctx.RandCount = Main.rand.Next(VDDirector.FlameCountMin, VDDirector.FlameCountMax);
-                        for (int i = 0; i < ctx.RandCount; i++)
-                        {
+                        for (int i = 0; i < ctx.RandCount; i++) {
                             Vector2 vel = (MathHelper.PiOver2 + Main.rand.NextFloat(-VDDirector.FlameSpread, VDDirector.FlameSpread)).ToRotationVector2() * Main.rand.NextFloat(VDDirector.FlameSpeedMin, VDDirector.FlameSpeedMax);
                             Shoot<VDVoidBolt>(ctx, core, vel, VDDirector.DmgVoidBolt, VDVoidBolt.ModeFanRise, VDDirector.FlameRiseDelay);
                         }
@@ -76,8 +66,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     volleys++;
                 }
             }
-            if (volleys >= VDDirector.FlameVolleys && Timer >= fireAt - VDDirector.FlameVolleyInterval + VDDirector.FlameTail)
-            {
+            if (volleys >= VDDirector.FlameVolleys && Timer >= fireAt - VDDirector.FlameVolleyInterval + VDDirector.FlameTail) {
                 return EndAttack(ctx);
             }
             return null;

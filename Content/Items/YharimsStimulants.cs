@@ -9,8 +9,7 @@ public class YharimsStimulants : ModItem
 {
 
 
-    public override void SetDefaults()
-    {
+    public override void SetDefaults() {
         Item.width = 40;
         Item.height = 40;
         Item.useTurn = true;

@@ -1,9 +1,8 @@
-using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 {
@@ -20,24 +19,20 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public override int DebuffType => BuffID.Electrified;
         public override int DefaultTimeLeft => 90;
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.TrailCacheLength[Type] = 6;
             ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
-        public override void SetExtraDefaults()
-        {
+        public override void SetExtraDefaults() {
             Projectile.width = 12;
             Projectile.height = 12;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.rotation = Projectile.velocity.ToRotation();
             Lighting.AddLight(Projectile.Center, GlowColor.ToVector3() * 0.4f);
-            if (!Main.dedServ && Main.rand.NextBool(3))
-            {
+            if (!Main.dedServ && Main.rand.NextBool(3)) {
                 Vector2 v = CEUtils.randomPointInCircle(1.2f);
                 var s = PRTLoader.NewParticle<PRT_GlowSpark>(Projectile.Center, v, GlowColor, Main.rand.NextFloat(0.3f, 0.6f))
                     .Configure(0.8f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), 14);
@@ -48,14 +43,12 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         /// <summary>FTW 种子下所有激光类加粗 50%</summary>
         public static float WidthMult => Main.getGoodWorld ? 1.5f : 1f;
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             Vector2 dir = Projectile.velocity.SafeNormalize(Vector2.UnitX);
             return CEUtils.LineThroughRect(Projectile.Center - dir * BeamLength, Projectile.Center + dir * 6f, targetHitbox, (int)(10 * WidthMult));
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D beam = CEUtils.getExtraTex("BasicTrail");
             Vector2 dir = Projectile.velocity.SafeNormalize(Vector2.UnitX);
             Vector2 center = Projectile.Center - dir * BeamLength * 0.5f - Main.screenPosition;

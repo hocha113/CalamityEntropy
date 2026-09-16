@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
+﻿using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -17,8 +17,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         public override bool RunsDuringBlink => true;
         public override int TimeoutFrames => int.MaxValue;
 
-        public override void OnEnter(VDStateContext ctx)
-        {
+        public override void OnEnter(VDStateContext ctx) {
             base.OnEnter(ctx);
             ctx.BlinkTimer = 0;
             ctx.QueuedChainState = -1;
@@ -27,8 +26,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             MarkNetUpdate(ctx);
         }
 
-        public override IVDState OnUpdate(VDStateContext ctx)
-        {
+        public override IVDState OnUpdate(VDStateContext ctx) {
             Timer++;
             NPC npc = ctx.Npc;
             DeclareDirect(ctx);
@@ -41,20 +39,16 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             ctx.ShakeStrength = System.Math.Max(ctx.ShakeStrength, progress * progress * 0.8f);
             ctx.CoreGlow = System.Math.Max(ctx.CoreGlow, progress);
 
-            if (!Main.dedServ)
-            {
-                if (Timer == 8)
-                {
+            if (!Main.dedServ) {
+                if (Timer == 8) {
                     VDVfx.Sound("VoidAnticipation", 0.9f, npc.Center, 2);
                 }
-                if (Timer % 4 == 0 && Timer < VDDirector.TransformBurstFrame)
-                {
+                if (Timer % 4 == 0 && Timer < VDDirector.TransformBurstFrame) {
                     Vector2 v = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(2f, 6f);
                     VDVfx.VoidPuff(npc.Center + CEUtils.randomPointInCircle(70f), v, 1.3f, 0.8f);
                     ConvergeSparks(ctx, VDVfx.VoidPurple, 90f, 200f, 0.08f);
                 }
-                if (Timer == VDDirector.TransformBurstFrame)
-                {
+                if (Timer == VDDirector.TransformBurstFrame) {
                     VDVfx.Sound("VoidAttack", 1f, npc.Center, 2);
                     VDVfx.Shake(npc.Center, 12f);
                     VDVfx.SparkBurst(npc.Center, VDVfx.VoidPurple, 60, 5f, 18f, 36);
@@ -62,8 +56,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 }
             }
 
-            if (Timer >= VDDirector.TransformDuration)
-            {
+            if (Timer >= VDDirector.TransformDuration) {
                 ctx.Phase = 2;
                 //签名首招:轨道轰炸;表指针跳过 0 号槽(那正是轨道轰炸,历史闸也会拦,这里只是把意图写明)
                 ctx.ForcedNextState = (int)VDStateIndex.OrbitalStrike;

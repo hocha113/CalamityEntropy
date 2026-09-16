@@ -1,6 +1,5 @@
-using CalamityEntropy.Core.AI;
+﻿using CalamityEntropy.Core.AI;
 using InnoVault.StateMachines;
-using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.NPCs.Acropolis.Core

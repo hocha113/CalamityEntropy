@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.CalamityRef;
+﻿using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,14 +11,12 @@ namespace CalamityEntropy.Content.Items
     /// </summary>
     public class StarlitScaleDust : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.ResearchUnlockCount = 99;
             ItemID.Sets.SortingPriorityMaterials[Type] = 58;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 46;
             Item.height = 30;
             Item.maxStack = 9999;
@@ -29,10 +27,8 @@ namespace CalamityEntropy.Content.Items
             Item.consumable = true;
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_StarblightSoot))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_StarblightSoot)) {
                 CreateRecipe()
                     .AddIngredient(CEID.Item_StarblightSoot)
                     .Register();

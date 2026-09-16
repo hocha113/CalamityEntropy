@@ -7,13 +7,11 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
     public class OsseousRemains : ModItem, IDonatorItem
     {
         public string DonatorName => "Ovasa";
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.ResearchUnlockCount = 25;
             ItemID.Sets.SortingPriorityMaterials[Type] = 12;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 28;
             Item.height = 22;
             Item.maxStack = 9999;

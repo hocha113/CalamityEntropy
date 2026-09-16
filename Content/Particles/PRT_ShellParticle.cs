@@ -1,4 +1,4 @@
-using InnoVault.PRT;
+﻿using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 
@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/Shell";
 
         public PRT_ShellParticle Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -25,15 +24,13 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 70;   //旧ShellParticle的OnSpawn默认
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             //Position+=Velocity框架做
             Velocity.Y += Gravity;
             Rotation += Velocity.X * 0.05f;
@@ -43,8 +40,7 @@ namespace CalamityEntropy.Content.Particles
                 Opacity -= 1f / Fade;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             //旧EParticle基类默认Draw的逐行等价
             Color clr = Color;
             if (!Glow)

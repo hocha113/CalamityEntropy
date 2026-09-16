@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -7,8 +7,7 @@ namespace CalamityEntropy.Content.Items.Accessories
     public class MawOfTheVoid : ModItem
     {
         public static int Damage = 100;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 40;
             Item.height = 40;
             Item.value = Item.buyPrice(platinum: 1);
@@ -17,13 +16,11 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.Entropy().mawOfVoid = true;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
         }
     }
 }

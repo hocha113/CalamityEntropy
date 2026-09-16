@@ -1,10 +1,11 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using CalamityEntropy.Utilities;
 using InnoVault;
@@ -18,7 +19,6 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator.BreakStar
 {
@@ -26,8 +26,7 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
     {
         public string DevName => "锯角";
 
-        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
-        {
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI) {
             Texture2D tex = TextureAssets.Item[Type].Value;
             Vector2 position = Item.position - Main.screenPosition + tex.Size() / 2;
             Rectangle iFrame = tex.Frame();
@@ -38,8 +37,7 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
             Lighting.AddLight(position, TorchID.Blue);
             return false;
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             // 灾厄原料按 material-map.md 表外兜底：Nadir（原犽戎档终局近战）→自有巡游者掉落近战 VoidAnnihilate
             CreateRecipe()
                 .AddCalOrOwn(CEID.Item_Nadir, ModContent.ItemType<VoidAnnihilate>())
@@ -52,8 +50,7 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
                 .Register();
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 256;
             Item.height = 256;
             Item.damage = 3600;
@@ -73,17 +70,14 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
             Item.crit = 12;
         }
 
-        public override void HoldItem(Player player)
-        {
-            if (player.ownedProjectileCounts[Item.shoot] < 1)
-            {
+        public override void HoldItem(Player player) {
+            if (player.ownedProjectileCounts[Item.shoot] < 1) {
                 var p = Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.Center, (Main.MouseWorld - player.Center).normalize() * Item.shootSpeed, Item.shoot, player.GetWeaponDamage(Item), player.GetWeaponKnockback(Item), player.whoAmI).ToProj();
                 p.originalDamage = Item.damage;
 
             }
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             return false;
         }
     }
@@ -94,21 +88,18 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
         internal static Texture2D SpearArrowTex;
         [VaultLoaden("CalamityEntropy/Assets/Extra/SpearArrowGlow")]
         internal static Texture2D SpearArrowGlowTex;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
             Projectile.timeLeft = 60;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             if (AttackType == 1 && AttackCount2 == 2 && AttackTime <= 0.2f)
                 return false;
             return CEUtils.LineThroughRect(Projectile.Center + Projectile.rotation.ToRotationVector2() * 480 * Projectile.scale * ((AttackType == 1 && AttackCount2 < 2) ? 1.06f : 1f), Projectile.Center, targetHitbox, 200);
         }
-        public override void CutTiles()
-        {
+        public override void CutTiles() {
             if (Projectile.GetOwner().channel)
                 Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * 480 * Projectile.scale, 128, DelegateMethods.CutTiles);
         }
@@ -123,15 +114,12 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
         public float num = 0;
         public float Atk2Counter = 0;
         public bool SndFlag = true;
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             return (Projectile.GetOwner().channel) ? null : false;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Player player = Projectile.GetOwner();
-            if (player.HeldItem.ModItem is StarBreaker)
-            {
+            if (player.HeldItem.ModItem is StarBreaker) {
                 Projectile.damage = (int)player.GetTotalDamage(Projectile.DamageType).ApplyTo(Projectile.originalDamage);
                 Projectile.CritChance = player.GetWeaponCrit(player.HeldItem);
             }
@@ -146,21 +134,16 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
             if (BaseScale == 0)
                 BaseScale = Projectile.scale;
 
-            if (Main.myPlayer == Projectile.owner)
-            {
-                if (Main.mouseLeft && !Main.LocalPlayer.mouseInterface)
-                {
+            if (Main.myPlayer == Projectile.owner) {
+                if (Main.mouseLeft && !Main.LocalPlayer.mouseInterface) {
                     player.channel = true;
-                    if (Atk2Counter <= 0)
-                    {
+                    if (Atk2Counter <= 0) {
                         AttackType = 0;
                     }
                 }
-                if (Main.mouseRight && !Main.LocalPlayer.mouseInterface)
-                {
+                if (Main.mouseRight && !Main.LocalPlayer.mouseInterface) {
                     player.channel = true;
-                    if (AttackDelay <= 0 && Atk2Counter <= 0)
-                    {
+                    if (AttackDelay <= 0 && Atk2Counter <= 0) {
                         PlaySound = false;
                         SndFlag = true;
                         AttackType = 1;
@@ -169,16 +152,13 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
                     }
                 }
             }
-            if (!player.dead && player.HeldItem.ModItem is StarBreaker)
-            {
+            if (!player.dead && player.HeldItem.ModItem is StarBreaker) {
                 Projectile.timeLeft = 2;
             }
-            if (AttackType == 0 && AttackCount % 4 == 3 && AttackDelay <= 0)
-            {
+            if (AttackType == 0 && AttackCount % 4 == 3 && AttackDelay <= 0) {
                 Projectile.scale = BaseScale * 1.5f;
             }
-            else
-            {
+            else {
                 Projectile.scale = BaseScale;
             }
             if (Atk2Counter <= 0)
@@ -186,18 +166,14 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
             if (Atk2Counter > 0 || AttackTime > 0)
                 player.channel = true;
             Projectile.Center += Projectile.rotation.ToRotationVector2() * -160 * Projectile.scale;
-            if (player.channel)
-            {
+            if (player.channel) {
                 int ItemTime = player.HeldItem.useTime;
-                if (AttackType == 0)
-                {
+                if (AttackType == 0) {
                     player.itemTime = player.itemAnimation = 3;
                     AttackDelay--;
-                    if (AttackDelay < 0 || AttackTime > 0)
-                    {
+                    if (AttackDelay < 0 || AttackTime > 0) {
                         float add = player.GetTotalAttackSpeed(Projectile.DamageType) * (1f / ItemTime) * (AttackCount % 4 == 3 ? 2 : 3f);
-                        if (AttackTime == 0)
-                        {
+                        if (AttackTime == 0) {
                             for (int i = 0; i < 4; i++)
                                 SoundEngine.PlaySound(SoundID.Item1 with { MaxInstances = 10 }, Projectile.Center);
                             if (!(AttackCount % 4 == 3))
@@ -215,8 +191,7 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
                             AttackTime = 1;
                         Projectile.Center += Projectile.rotation.ToRotationVector2() * 150 * Projectile.scale * CEUtils.Parabola(AttackTime, 1);//(AttackTime > 0.5f ? (1 - (AttackTime - 0.5f) * 2) : AttackTime * 2);
 
-                        if (AttackTime >= 1)
-                        {
+                        if (AttackTime >= 1) {
                             AttackTime = 0;
                             AttackCount++;
                             if (AttackCount % 4 == 3 || AttackCount % 4 == 0)
@@ -225,45 +200,36 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
                     }
                     else { RotP = 0; }
                 }
-                else
-                {
+                else {
                     float p = 1 - Atk2Counter;
                     AttackTime = p;
                     RotP = 0;
-                    if (AttackCount2 == 2)
-                    {
+                    if (AttackCount2 == 2) {
                         float ofs = 0;
-                        if (p >= 0.2f && SndFlag)
-                        {
+                        if (p >= 0.2f && SndFlag) {
                             CEUtils.PlaySound("HellkiteSwing" + Main.rand.Next(1, 3), Main.rand.NextFloat(1f, 1.2f), Projectile.Center, 12, 0.76f * CEUtils.WeapSound);
                             SndFlag = false;
                         }
-                        if (p < 0.2f)
-                        {
+                        if (p < 0.2f) {
                             ofs = CEUtils.Parabola(p / 0.2f, -40);
                         }
-                        else
-                        {
+                        else {
                             ofs = CEUtils.Parabola((p - 0.2f) / 0.6f, 60);
                         }
-                        if(p > 0.2f && p < 0.7f)
-                        {
+                        if (p > 0.2f && p < 0.7f) {
                             RotP = Main.rand.NextFloat(-0.12f, 0.12f);
                             player.Entropy().immune = 12;
                             player.position += Projectile.velocity.normalize() * 80;
                             player.velocity *= 0;
-                            if(CEUtils.CheckSolidTile(player.getRect()))
-                            {
+                            if (CEUtils.CheckSolidTile(player.getRect())) {
                                 player.position -= Projectile.velocity.normalize() * 80;
                             }
                         }
                         Projectile.position += Projectile.velocity.normalize() * ofs;
                         Atk2Counter -= player.GetTotalAttackSpeed(Projectile.DamageType) * (1f / ItemTime) * 0.5f;
                     }
-                    else
-                    {
-                        if (Atk2Counter <= 0.7f && SndFlag)
-                        {
+                    else {
+                        if (Atk2Counter <= 0.7f && SndFlag) {
                             CEUtils.PlaySound("HellkiteSwing" + Main.rand.Next(1, 3), Main.rand.NextFloat(1f, 1.2f), Projectile.Center, 12, 0.66f * CEUtils.WeapSound);
                             SndFlag = false;
                         }
@@ -273,8 +239,7 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
                         Projectile.Center += Projectile.rotation.ToRotationVector2() * -120 * Projectile.scale;
                         Atk2Counter -= player.GetTotalAttackSpeed(Projectile.DamageType) * (1f / ItemTime) * 1f;
                     }
-                    if(Atk2Counter <= 0)
-                    {
+                    if (Atk2Counter <= 0) {
                         AttackCount2++;
                         AttackDelay = 8;
                         if (AttackCount2 > 2)
@@ -286,8 +251,7 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
                     oldPos.Add(Projectile.Center);
                 }
             }
-            else
-            {
+            else {
                 RotP = 0;
                 AttackDelay = 0;
                 AttackCount = 0;
@@ -295,38 +259,31 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
             }
 
             Vector2 ropePoint = Projectile.Center + Projectile.rotation.ToRotationVector2() * 234 * Projectile.scale;
-            if (rope == null)
-            {
+            if (rope == null) {
                 rope = new Rope(ropePoint, 10, 11f * Projectile.scale, new Vector2(0, 0.5f), 0.2f, 64);
             }
             Vector2 lst = rope.Start;
             rope.gravity = (Vector2.Lerp(Vector2.UnitY, -Projectile.rotation.ToRotationVector2(), 0.56f)).RotatedBy((float)Math.Sin(Main.GameUpdateCount * 0.028f) * 0.3f) * 0.6f;
-            for (float r = 0.5f; r <= 1; r += 0.5f)
-            {
+            for (float r = 0.5f; r <= 1; r += 0.5f) {
                 rope.Start = Vector2.Lerp(lst, ropePoint, r);
                 rope.Update();
             }
             var points = rope.GetPoints();
             odp.Clear();
             odp.Add(points[0]);
-            for (int i = 1; i < points.Count; i++)
-            {
-                for (float j = 0.25f; j <= 1f; j += 0.25f)
-                {
+            for (int i = 1; i < points.Count; i++) {
+                for (float j = 0.25f; j <= 1f; j += 0.25f) {
                     odp.Add(Vector2.Lerp(points[i - 1], points[i], j));
                 }
             }
 
-            if(oldRots.Count > 12)
-            {
-                if (oldRots.Count > 0)
-                {
+            if (oldRots.Count > 12) {
+                if (oldRots.Count > 0) {
                     oldRots.RemoveAt(0);
                     oldPos.RemoveAt(0);
                 }
             }
-            if(AttackType == 0)
-            {
+            if (AttackType == 0) {
                 oldRots.Clear();
                 oldPos.Clear();
             }
@@ -335,66 +292,53 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
         public List<float> oldRots = new();
         public List<Vector2> oldPos = new();
         public bool PlaySound = false;
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
             modifiers.ArmorPenetration += 80 + target.defense / 2;
-            if (AttackType == 0 && AttackCount % 4 == 3)
-            {
+            if (AttackType == 0 && AttackCount % 4 == 3) {
                 modifiers.SetCrit();
                 modifiers.SourceDamage *= 3;
                 modifiers.ArmorPenetration += 200;
             }
-            if(AttackType == 1)
-            {
-                if(AttackCount2 == 2)
-                {
+            if (AttackType == 1) {
+                if (AttackCount2 == 2) {
                     modifiers.SourceDamage *= 4;
                 }
-                else
-                {
+                else {
 
                     modifiers.SourceDamage *= 1.2f;
                 }
             }
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff<MarkedforDeath>(180);
 
-            if(AttackType == 1)
-            {
+            if (AttackType == 1) {
                 if (AttackCount2 == 0)
                     Projectile.GetOwner().AddBuff(BuffID.ParryDamageBuff, 180);
                 if (AttackCount2 == 1)
                     target.AddBuff<SoulDisorder>(180);
             }
 
-            if (!PlaySound)
-            {
+            if (!PlaySound) {
                 ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Projectile.velocity.normalize() * -4, 3));
                 PlaySound = true;
                 CEUtils.PlaySound("spearImpact", Main.rand.NextFloat(0.8f, 1.4f), target.Center);
             }
-            for (int i = 0; i < 24; i++)
-            {
+            for (int i = 0; i < 24; i++) {
                 float sparkScale2 = Main.rand.NextFloat(1.4f, 2.4f);
                 Vector2 sparkVelocity2 = Projectile.rotation.ToRotationVector2().RotatedByRandom(0.2f) * 64 * Main.rand.NextFloat(0.2f, 1);
-                if (Main.rand.NextBool(3))
-                {
+                if (Main.rand.NextBool(3)) {
                     //master改的蓝色系配色;AfterPlayers层对应旧GeneralDrawLayer.AfterPlayers,RenderLayer绘制期每帧读取,spawn后设置有效
                     var spark = PRTLoader.NewParticle<PRT_AltSpark>(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f), sparkVelocity2 * (1f), new Color(60, 60, 255), sparkScale2 * (1.4f)).Configure(false, 12);
                     spark.RenderLayer = PRTRenderLayer.AfterPlayers;
                 }
-                else
-                {
+                else {
                     PRTLoader.NewParticle<PRT_LineCal>(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f), sparkVelocity2, Main.rand.NextBool() ? Color.Blue : new Color(140, 140, 255), sparkScale2 * (Projectile.frame == 7 ? 1.4f : 1f)).Configure(false, 8);
                 }
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            if (odp != null)
-            {
+        public override bool PreDraw(ref Color lightColor) {
+            if (odp != null) {
                 float w = 7 * Projectile.scale;
                 int xp = 0;
                 List<ColoredVertex> ve = new List<ColoredVertex>();
@@ -405,8 +349,7 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
                 ve.Add(new ColoredVertex(new Vector2(xp, 0) + odp[0] - Main.screenPosition + (odp[1] - odp[0]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * w,
                       new Vector3((float)0, 0, 1),
                       b));
-                for (int i = 1; i < odp.Count; i++)
-                {
+                for (int i = 1; i < odp.Count; i++) {
                     b = Lighting.GetColor((odp[i] / 16).ToPoint());
                     ve.Add(new ColoredVertex(new Vector2(xp, 0) + odp[i] - Main.screenPosition + (odp[i] - odp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * w,
                           new Vector3((float)(i + 1) / odp.Count, 1, 1),
@@ -433,22 +376,18 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
             arrowAlpha *= 0.7f;
             bool dflag = false;
             float ap = 1;
-            Color applyAlpha(Color bc)
-            {
+            Color applyAlpha(Color bc) {
                 return new Color(bc.R, bc.G, bc.B, (int)(255 * arrowAlpha * (dflag ? ap : 1)));
             }
 
-            for (int i = 0; i < 2; i++)
-            {
+            for (int i = 0; i < 2; i++) {
                 Main.spriteBatch.Draw(arrow, Projectile.Center - Main.screenPosition + Projectile.rotation.ToRotationVector2() * 330 + CEUtils.randomPointInCircle(24), null, applyAlpha(Color.Blue), Projectile.rotation + Main.rand.NextFloat(-0.22f, 0.22f), arrow.Size() / 2f, new Vector2(2f, 1) * Projectile.scale * 0.4f, SpriteEffects.None, 0);
             }
 
-            if(oldRots.Count > 0)
-            {
+            if (oldRots.Count > 0) {
                 Vector2 oCenter = Projectile.Center;
                 dflag = true;
-                for(int i = 0; i < oldRots.Count; i++)
-                {
+                for (int i = 0; i < oldRots.Count; i++) {
                     Projectile.Center = oldPos[i];
                     ap = 0.4f * (i + 1f) / oldRots.Count;
                     float rotation = oldRots[i];
@@ -473,8 +412,7 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
             ;
             Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition + Projectile.rotation.ToRotationVector2() * 440, null, Color.White * arrowAlpha * 0.5f, Projectile.rotation, arrow.Size() / 2f, new Vector2(1.8f, 1f) * Projectile.scale * 0.24f * Projectile.scale, SpriteEffects.None, 0);
 
-            if(AttackType == 1 && AttackCount2 < 2)
-            {
+            if (AttackType == 1 && AttackCount2 < 2) {
                 int dir = AttackCount2 == 0 ? 1 : -1;
                 dir *= Projectile.velocity.X > 0 ? 1 : -1;
                 Texture2D smr = CEExtraAssets.CircularSmear;
@@ -489,8 +427,7 @@ namespace CalamityEntropy.Content.Items.Donator.BreakStar
             }
             Main.spriteBatch.ExitShaderRegion();
             List<Vector2> points = new();
-            for (int i = AttackCount % 4 == 3 ? 100 : 250; i <= 450; i += AttackCount % 4 == 3 ? 50 : 25)
-            {
+            for (int i = AttackCount % 4 == 3 ? 100 : 250; i <= 450; i += AttackCount % 4 == 3 ? 50 : 25) {
                 points.Add(Projectile.Center + Projectile.rotation.ToRotationVector2() * i * Projectile.scale + Projectile.rotation.ToRotationVector2().RotatedBy(MathHelper.PiOver2) * Main.rand.Next(-60, 61) * ((450 - i) / (AttackCount % 4 != 3 ? 200f : 350f)));
             }
             Main.spriteBatch.UseAdditiveClamp();

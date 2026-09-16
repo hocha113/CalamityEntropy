@@ -7,12 +7,10 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class BlueFlies : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Summon;
             Projectile.width = 16;
             Projectile.height = 16;
@@ -24,30 +22,23 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.localNPCHitCooldown = 0;
 
         }
-        public override void AI()
-        {
+        public override void AI() {
             Player player = Projectile.owner.ToPlayer();
             NPC target = CEUtils.findTarget(player, Projectile, 800, false);
-            if (target != null)
-            {
+            if (target != null) {
                 Projectile.velocity += (target.Center - Projectile.Center).SafeNormalize(Vector2.Zero) * 0.6f;
             }
-            else
-            {
+            else {
                 Vector2 targetPosp;
                 int index = 0;
                 int maxFlies = 0;
                 bool flag = true;
-                foreach (Projectile proj in Main.ActiveProjectiles)
-                {
-                    if (proj.type == Projectile.type)
-                    {
-                        if (proj.whoAmI == Projectile.whoAmI)
-                        {
+                foreach (Projectile proj in Main.ActiveProjectiles) {
+                    if (proj.type == Projectile.type) {
+                        if (proj.whoAmI == Projectile.whoAmI) {
                             flag = false;
                         }
-                        if (flag)
-                        {
+                        if (flag) {
                             index++;
                         }
                         maxFlies++;
@@ -62,8 +53,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
 
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, CEUtils.GetCutTexRect(tex, 2, ((Projectile.timeLeft / 4) % 2 == 0 ? 0 : 1)), lightColor, Projectile.rotation, new Vector2(32, 32), Projectile.scale, SpriteEffects.None, 0);
             return false;

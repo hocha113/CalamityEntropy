@@ -1,25 +1,21 @@
 ﻿using CalamityEntropy.Common;
+using CalamityEntropy.Core.CalamityRef;
 using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Vanity
 {
     public class DustyStar : ModItem, IDevItem, IVanitySkin
     {
         public string DevName => "Polaris";
-        public override void Load()
-        {
-            if (Main.netMode != NetmodeID.Server)
-            {
-                if (DateTime.Now.Month == 12)
-                {
+        public override void Load() {
+            if (Main.netMode != NetmodeID.Server) {
+                if (DateTime.Now.Month == 12) {
                     EquipLoader.AddEquipTexture(Mod, "CalamityEntropy/Content/Items/Vanity/polaris_Head_s", EquipType.Head, this);
                 }
-                else
-                {
+                else {
                     EquipLoader.AddEquipTexture(Mod, "CalamityEntropy/Content/Items/Vanity/polaris_Head", EquipType.Head, this);
                 }
 
@@ -28,8 +24,7 @@ namespace CalamityEntropy.Content.Items.Vanity
             }
         }
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
 
             if (Main.netMode == NetmodeID.Server)
                 return;
@@ -45,8 +40,7 @@ namespace CalamityEntropy.Content.Items.Vanity
             ArmorIDs.Legs.Sets.HidesBottomSkin[equipSlotLegs] = true;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 22;
             Item.height = 30;
             Item.accessory = true;
@@ -55,20 +49,16 @@ namespace CalamityEntropy.Content.Items.Vanity
             Item.vanity = true;
         }
 
-        public override void UpdateVanity(Player player)
-        {
+        public override void UpdateVanity(Player player) {
             player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            if (!hideVisual)
-            {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
+            if (!hideVisual) {
                 player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             }
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe().AddCalOrOwn(CEID.Item_AncientBoneDust, ItemID.Bone, 1)
                 .AddIngredient(ItemID.FallenStar, 5)
                 .AddTile(TileID.WorkBenches).Register();

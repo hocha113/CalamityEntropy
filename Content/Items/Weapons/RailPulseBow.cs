@@ -1,15 +1,14 @@
-﻿using Terraria;
+﻿using CalamityEntropy.Core.CalamityRef;
+using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class RailPulseBow : ModItem, IPriceFromRecipe
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 50;
             Item.height = 50;
             Item.damage = 21;
@@ -29,23 +28,18 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.noUseGraphic = true;
         }
         public bool cs = false;
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
+        public override bool CanConsumeAmmo(Item ammo, Player player) {
             return cs;
         }
         public override Vector2? HoldoutOffset() => new Vector2(-28, 0);
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             return false;
         }
-        public override bool RangedPrefix()
-        {
+        public override bool RangedPrefix() {
             return true;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_DubiousPlating, CEID.Item_MysteriousCircuitry))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_DubiousPlating, CEID.Item_MysteriousCircuitry)) {
                 CreateRecipe().
                 AddIngredient(CEID.Item_DubiousPlating, 6).
                 AddIngredient(CEID.Item_MysteriousCircuitry, 8).

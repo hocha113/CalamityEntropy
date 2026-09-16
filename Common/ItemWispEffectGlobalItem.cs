@@ -9,14 +9,11 @@ namespace CalamityEntropy.Common
     public class ItemWispEffectGlobalItem : GlobalItem
     {
         public override bool InstancePerEntity => true;
-        public bool shouldApply()
-        {
+        public bool shouldApply() {
             return false;
         }
-        public override bool PreDrawInInventory(Item item, SpriteBatch sb, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
-            if (!shouldApply())
-            {
+        public override bool PreDrawInInventory(Item item, SpriteBatch sb, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale) {
+            if (!shouldApply()) {
                 return true;
             }
             checkItemColor(item);
@@ -32,20 +29,16 @@ namespace CalamityEntropy.Common
             return true;
         }
 
-        public override void PostDrawInInventory(Item item, SpriteBatch sb, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
-            if (!shouldApply())
-            {
+        public override void PostDrawInInventory(Item item, SpriteBatch sb, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale) {
+            if (!shouldApply()) {
                 return;
             }
             sb.End();
             sb.Begin(0, sb.GraphicsDevice.BlendState, sb.GraphicsDevice.SamplerStates[0], sb.GraphicsDevice.DepthStencilState, sb.GraphicsDevice.RasterizerState, null, Main.UIScaleMatrix);
         }
 
-        public override bool PreDrawInWorld(Item item, SpriteBatch sb, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
-        {
-            if (!shouldApply())
-            {
+        public override bool PreDrawInWorld(Item item, SpriteBatch sb, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI) {
+            if (!shouldApply()) {
                 return true;
             }
             checkItemColor(item);
@@ -60,15 +53,12 @@ namespace CalamityEntropy.Common
             sb.Begin(0, Main.spriteBatch.GraphicsDevice.BlendState, sb.GraphicsDevice.SamplerStates[0], Main.spriteBatch.GraphicsDevice.DepthStencilState, sb.GraphicsDevice.RasterizerState, shader, Main.GameViewMatrix.TransformationMatrix);
             return true;
         }
-        public static void checkItemColor(Item item)
-        {
-            if (item.Entropy().wispColor == null)
-            {
+        public static void checkItemColor(Item item) {
+            if (item.Entropy().wispColor == null) {
                 float min = 3;
                 float max = 0;
                 Texture2D tex = TextureAssets.Item[item.type].Value;
-                if (tex.Width <= 1 || tex.Height <= 1)
-                {
+                if (tex.Width <= 1 || tex.Height <= 1) {
                     item.Entropy().wispColor = new float[2];
                     item.Entropy().wispColor[0] = 0;
                     item.Entropy().wispColor[1] = 3;
@@ -76,10 +66,8 @@ namespace CalamityEntropy.Common
                 }
                 Color[] colors = new Color[tex.Width * tex.Height];
                 tex.GetData(colors);
-                foreach (Color cl in colors)
-                {
-                    if (cl.A == 0)
-                    {
+                foreach (Color cl in colors) {
+                    if (cl.A == 0) {
                         continue;
                     }
                     float m = (float)(cl.R + cl.G + cl.B) / (255f);
@@ -92,10 +80,8 @@ namespace CalamityEntropy.Common
             }
         }
 
-        public override void PostDrawInWorld(Item item, SpriteBatch sb, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
-        {
-            if (!shouldApply())
-            {
+        public override void PostDrawInWorld(Item item, SpriteBatch sb, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI) {
+            if (!shouldApply()) {
                 return;
             }
             sb.End();

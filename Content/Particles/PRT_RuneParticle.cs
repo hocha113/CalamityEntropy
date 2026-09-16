@@ -11,8 +11,7 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             frame = 0;   //池化复用,frame忘了清下一颗符文贴图就错了
             Glow = true;
@@ -22,8 +21,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/Runes/r0";
 
         public PRT_RuneParticle Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -33,22 +31,19 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             frame = Main.rand.Next(0, 14);
             if (Lifetime <= 0)
                 Lifetime = 42;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Opacity = 1f - LifetimeCompletion;   //旧剩余比例1→0,新LifetimeCompletion 0→1,别反了
             Color = Color.Lerp(new Color(110, 120, 255), Color.White, Opacity);
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Texture2D tex = PRTFrameTextures.Rune(frame);
             Color clr = Color;
             if (!Glow)
@@ -74,8 +69,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/Runes/r0";
 
         public PRT_RuneParticleHoming Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -85,16 +79,13 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             Lifetime = -1;
         }
 
-        public override void AI()
-        {
-            if (homingTarget == null)
-            {
+        public override void AI() {
+            if (homingTarget == null) {
                 Kill();
                 return;
             }
@@ -107,8 +98,7 @@ namespace CalamityEntropy.Content.Particles
                 Kill();
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Texture2D tex = PRTFrameTextures.Rune(frame);
             Color clr = Color;
             if (!Glow)

@@ -7,12 +7,10 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class LMSpawner : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -21,14 +19,10 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.timeLeft = 10;
         }
 
-        public override void AI()
-        {
-            if (Main.netMode == NetmodeID.Server || Main.netMode == NetmodeID.SinglePlayer)
-            {
-                foreach (NPC nc in Main.npc)
-                {
-                    if (nc.type == ModContent.NPCType<LotteryMachine>())
-                    {
+        public override void AI() {
+            if (Main.netMode == NetmodeID.Server || Main.netMode == NetmodeID.SinglePlayer) {
+                foreach (NPC nc in Main.npc) {
+                    if (nc.type == ModContent.NPCType<LotteryMachine>()) {
                         nc.active = false;
 
                     }

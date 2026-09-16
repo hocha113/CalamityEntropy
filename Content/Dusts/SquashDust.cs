@@ -1,5 +1,4 @@
-using InnoVault;
-using Microsoft.Xna.Framework;
+﻿using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
@@ -20,20 +19,17 @@ namespace CalamityEntropy.Content.Dusts
         [VaultLoaden("CalamityEntropy/Assets/Particles/BloomCircle")]
         public static Asset<Texture2D> BloomCircle;
 
-        public override void OnSpawn(Dust dust)
-        {
+        public override void OnSpawn(Dust dust) {
             dust.scale *= Main.rand.NextFloat(0.8f, 1f);
         }
 
-        public override bool Update(Dust dust)
-        {
+        public override bool Update(Dust dust) {
             float fadeSpeed = (dust.fadeIn + 1);
             dust.rotation = dust.velocity.ToRotation() + MathHelper.PiOver2;
             dust.velocity *= 0.96f;
             if (dust.noGravity)
                 dust.scale -= 0.045f * fadeSpeed;
-            else
-            {
+            else {
                 dust.scale -= 0.03f * fadeSpeed;
                 dust.velocity.Y += Main.rand.NextFloat(0.1f, 0.35f) * fadeSpeed;
             }
@@ -50,8 +46,7 @@ namespace CalamityEntropy.Content.Dusts
             return false;
         }
 
-        public override bool PreDraw(Dust dust)
-        {
+        public override bool PreDraw(Dust dust) {
             Vector2 baseSize = Vector2.One;
             if (dust.customData != null && dust.customData is Vector2)
                 baseSize = (Vector2)dust.customData;
@@ -62,8 +57,7 @@ namespace CalamityEntropy.Content.Dusts
             Main.spriteBatch.Draw(BloomCircle.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, BloomCircle.Size() * 0.5f, squash * dust.scale * 0.1f, SpriteEffects.None, 0);
             if (dust.alpha < 1)
                 Main.spriteBatch.Draw(BloomCircle.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, BloomCircle.Size() * 0.5f, squash * dust.scale * 0.04f, SpriteEffects.None, 0);
-            if (!dust.noLight)
-            {
+            if (!dust.noLight) {
                 Main.spriteBatch.Draw(SolidCircle.Value, dust.position - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, SolidCircle.Size() * 0.5f, squash * dust.scale * 0.075f, SpriteEffects.None, 0);
             }
             return false;

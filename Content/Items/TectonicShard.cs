@@ -6,14 +6,12 @@ namespace CalamityEntropy.Content.Items
 {
     public class TectonicShard : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.ResearchUnlockCount = 99;
             ItemID.Sets.SortingPriorityMaterials[Type] = 56;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 34;
             Item.height = 38;
             Item.maxStack = 9999;

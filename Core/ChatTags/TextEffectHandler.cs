@@ -1,15 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.GameContent;
-using Terraria.GameInput;
-using Terraria.ID;
-using Terraria.Localization;
-using Terraria.ModLoader;
 using Terraria.UI.Chat;
 
 namespace CalamityEntropy.Core.ChatTags
@@ -18,8 +12,7 @@ namespace CalamityEntropy.Core.ChatTags
     {
         protected override string[] TagNames { get; } = ["ceeffect"];
 
-        public override TextSnippet Parse(string text, Color baseColor = new(), string options = null)
-        {
+        public override TextSnippet Parse(string text, Color baseColor = new(), string options = null) {
             // 特效开关走自有客户端配置 Config.TextEffects（重构时补的开关接线）。
             // options 在写成 [ceeffect:文本] 不带斜杠选项时是 null,直接 .Equals 会抛,
             // 而 Parse 是在 ChatManager.ParseMessage 里被调的,一抛整个提示框都画不出来
@@ -31,8 +24,7 @@ namespace CalamityEntropy.Core.ChatTags
     }
     public sealed class CruiserSnippet(string text) : TextSnippet
     {
-        public override bool UniqueDraw(bool justCheckingString, out Vector2 size, SpriteBatch spriteBatch, Vector2 position = new Vector2(), Color color = new Color(), float scale = 1)
-        {
+        public override bool UniqueDraw(bool justCheckingString, out Vector2 size, SpriteBatch spriteBatch, Vector2 position = new Vector2(), Color color = new Color(), float scale = 1) {
             size = new Vector2(GetStringLength(FontAssets.MouseText.Value), FontAssets.MouseText.Value.MeasureString(" ").Y * scale);
             if (position == Vector2.Zero)
                 return true;
@@ -43,8 +35,7 @@ namespace CalamityEntropy.Core.ChatTags
             List<float> scales = new List<float>() { 0, 0.5f };
             Vector2 ms = font.MeasureString(text);
             ms.Y *= 0.7f;
-            for (int i_ = 0; i_ < scales.Count; i_++)
-            {
+            for (int i_ = 0; i_ < scales.Count; i_++) {
                 scales[i_] = CEUtils.Frac(scales[i_] + Main.GlobalTimeWrappedHourly);
                 float sc = scales[i_] * 12f;
                 Main.spriteBatch.DrawString(font, text, new Vector2(-sc, 0) + new Vector2(line.X, line.Y) + ms * 0.5f, Color.Lerp(new Color(190, 50, 190), new Color(160, 0, 180) * 0.4f, scales[i_]) * (1 - scales[i_]), 0, ms * 0.5f, 1, SpriteEffects.None, 0);
@@ -52,8 +43,7 @@ namespace CalamityEntropy.Core.ChatTags
                 Main.spriteBatch.DrawString(font, text, new Vector2(0, sc) + new Vector2(line.X, line.Y) + ms * 0.5f, Color.Lerp(new Color(190, 50, 190), new Color(160, 0, 180) * 0.4f, scales[i_]) * (1 - scales[i_]), 0, ms * 0.5f, 1, SpriteEffects.None, 0);
                 Main.spriteBatch.DrawString(font, text, new Vector2(0, -sc) + new Vector2(line.X, line.Y) + ms * 0.5f, Color.Lerp(new Color(190, 50, 190), new Color(160, 0, 180) * 0.4f, scales[i_]) * (1 - scales[i_]), 0, ms * 0.5f, 1, SpriteEffects.None, 0);
             }
-            for (int i = 0; i < text.Length; i++)
-            {
+            for (int i = 0; i < text.Length; i++) {
                 string chr = text[i].ToString();
                 Vector2 sizez = font.MeasureString(chr);
                 float yofs;
@@ -63,8 +53,7 @@ namespace CalamityEntropy.Core.ChatTags
                 yofs = 0;
 
                 float sof = 0.4f;
-                for (float ir = 0; ir < MathHelper.TwoPi; ir += MathHelper.PiOver4)
-                {
+                for (float ir = 0; ir < MathHelper.TwoPi; ir += MathHelper.PiOver4) {
                     Main.spriteBatch.DrawString(font, chr, new Vector2(line.X + xa, line.Y + yofs) + ir.ToRotationVector2() * sof, strokeColord, 0, Vector2.Zero, 1f, SpriteEffects.None, 0);
                 }
                 Main.spriteBatch.DrawString(font, chr, new Vector2(line.X + xa, line.Y + yofs), colord, 0, Vector2.Zero, 1f, SpriteEffects.None, 0);
@@ -72,8 +61,7 @@ namespace CalamityEntropy.Core.ChatTags
             }
             return true;
         }
-        public override float GetStringLength(DynamicSpriteFont font)
-        {
+        public override float GetStringLength(DynamicSpriteFont font) {
             float size = font.MeasureString(text).X + 4;
             return size * Scale;
         }

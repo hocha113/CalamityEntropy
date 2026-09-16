@@ -21,8 +21,7 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             //CanPool,setColor/scaleStart得清,不然复用粒子颜色插值从脏startColor起跑
             base.Reset();
             Glow = true;
@@ -43,22 +42,19 @@ namespace CalamityEntropy.Content.Particles
             : "CalamityEntropy/Assets/Extra/Circle";
 
         public PRT_Smoke Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
             Rotation = rotation;
-            if (lifetime > 0)
-            {
+            if (lifetime > 0) {
                 Lifetime = lifetime;
                 timeleftmax = lifetime;
             }
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = timeleftmax;
@@ -66,12 +62,10 @@ namespace CalamityEntropy.Content.Particles
             scaleStart = -1;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             float remaining = (Lifetime - Time) / (float)timeleftmax;   //旧进度1→0剩余比例,没用LifetimeCompletion
 
-            if (setColor)
-            {
+            if (setColor) {
                 setColor = false;
                 startColor = Color;
             }
@@ -87,8 +81,7 @@ namespace CalamityEntropy.Content.Particles
                 Opacity = remaining;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Color clr = Color;
             if (!Glow)
                 clr = Lighting.GetColor((int)(Position.X / 16), (int)(Position.Y / 16), clr);

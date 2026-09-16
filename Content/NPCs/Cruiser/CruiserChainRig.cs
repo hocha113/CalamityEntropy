@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Cruiser.Core;
+﻿using CalamityEntropy.Content.NPCs.Cruiser.Core;
 using CalamityEntropy.Content.Projectiles.Cruiser;
 using InnoVault;
 using System;
@@ -20,27 +20,21 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         /// 迁移时合成一处,两个调用点保持原来的位置
         /// </para>
         /// </summary>
-        public void UpdateChain()
-        {
-            for (int i = 0; i < bodies.Count; i++)
-            {
+        public void UpdateChain() {
+            for (int i = 0; i < bodies.Count; i++) {
                 Vector2 oPos;
                 float oRot;
 
-                if (i == 0)
-                {
+                if (i == 0) {
                     oPos = NPC.Center;
                     oRot = NPC.rotation;
                 }
-                else
-                {
+                else {
                     oPos = bodies[i - 1];
-                    if (i == 1)
-                    {
+                    if (i == 1) {
                         oRot = (NPC.Center - bodies[0]).ToRotation();
                     }
-                    else
-                    {
+                    else {
                         oRot = (bodies[i - 2] - bodies[i - 1]).ToRotation();
                     }
                 }
@@ -59,23 +53,18 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         /// </para>
         /// <para>非鞭击期张角按速度推出静息值再一阶逼近,越快张得越窄</para>
         /// </summary>
-        public void UpdateFlagellum()
-        {
-            if (Context.TailWhipCue)
-            {
+        public void UpdateFlagellum() {
+            if (Context.TailWhipCue) {
                 whipActive = true;
-                if (flagellumAngle < 0)
-                {
+                if (flagellumAngle < 0) {
                     flagellumAngle = 1;
                 }
                 whipSpeed = CruiserDirector.WhipLaunchSpeed;
             }
-            if (whipActive)
-            {
+            if (whipActive) {
                 flagellumAngle += whipSpeed;
                 whipSpeed -= CruiserDirector.WhipDecel;
-                if (flagellumAngle < 0)
-                {
+                if (flagellumAngle < 0) {
                     flagellumAngle = 0;
                     whipSpeed = 0;
                     whipActive = false;
@@ -84,12 +73,10 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                     FireTailNova();
                 }
             }
-            else
-            {
+            else {
                 flagellumRest = CruiserDirector.FlagellumRestNumerator
                     / (NPC.velocity.Length() * CruiserDirector.FlagellumRestSpeedFactor) * CruiserDirector.FlagellumRestScale;
-                if (flagellumRest < 0)
-                {
+                if (flagellumRest < 0) {
                     flagellumRest = 0;
                 }
                 flagellumAngle += (flagellumRest - flagellumAngle) * CruiserDirector.FlagellumLerp;
@@ -105,30 +92,25 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         /// 另外环与环之间还额外转了 <c>一周 / num / counts</c> 的相位,所以各环星点是错开的
         /// </para>
         /// </summary>
-        private void FireTailNova()
-        {
+        private void FireTailNova() {
             int num = CruiserDirector.NovaNum;
             int counts = CruiserDirector.NovaCounts;
             float speed = CruiserDirector.NovaSpeed;
             //装灾厄读复仇/死亡,缺席仍走专家/大师兜底。原版专家/大师层叠在其上,顺序不动
             CruiserDirector.NovaScale(ref num, ref counts, ref speed);
-            if (CurrentState == CruiserStateIndex.AroundPlayerAndShootVoidStar)
-            {
+            if (CurrentState == CruiserStateIndex.AroundPlayerAndShootVoidStar) {
                 counts += CruiserDirector.NovaAroundCountsDelta;
                 num /= 2;
                 speed *= CruiserDirector.NovaAroundSpeedFactor;
             }
 
-            if (!VaultUtils.isClient && bodies.Count >= 2)
-            {
+            if (!VaultUtils.isClient && bodies.Count >= 2) {
                 Vector2 origin = bodies[bodies.Count - 1]
                     - (bodies[bodies.Count - 2] - bodies[bodies.Count - 1]).SafeNormalize(Vector2.Zero) * CruiserDirector.NovaTailOffset * NPC.scale;
                 int starType = ModContent.ProjectileType<VoidStar>();
                 float angle = 0;
-                for (int i = 0; i < counts; i++)
-                {
-                    for (int j = 0; j < num; j++)
-                    {
+                for (int i = 0; i < counts; i++) {
+                    for (int j = 0; j < num; j++) {
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), origin, angle.ToRotationVector2() * speed,
                             starType, (int)(NPC.damage / CruiserDirector.NovaStarDamageDivisor), CruiserDirector.NovaStarKnockback);
                         angle += (float)Math.PI * 2 / num;
@@ -139,12 +121,9 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                 Projectile.NewProjectile(NPC.GetSource_FromAI(), origin, Vector2.Zero,
                     ModContent.ProjectileType<VoidExplode>(), (int)(NPC.damage / CruiserDirector.NovaExplodeDamageDivisor), CruiserDirector.NovaExplodeKnockback);
 
-                if (Main.zenithWorld)
-                {
-                    for (int i = 1; i < bodies.Count; i++)
-                    {
-                        for (int _ = 0; _ < Main.rand.Next(CruiserDirector.NovaZenithCountMin, CruiserDirector.NovaZenithCountMax); _++)
-                        {
+                if (Main.zenithWorld) {
+                    for (int i = 1; i < bodies.Count; i++) {
+                        for (int _ = 0; _ < Main.rand.Next(CruiserDirector.NovaZenithCountMin, CruiserDirector.NovaZenithCountMax); _++) {
                             Projectile.NewProjectile(NPC.GetSource_FromAI(),
                                 bodies[i] - (bodies[i - 1] - bodies[i]).SafeNormalize(Vector2.Zero) * CruiserDirector.NovaTailOffset * NPC.scale,
                                 CEUtils.randomRot().ToRotationVector2() * speed * CruiserDirector.NovaZenithSpeedFactor,
@@ -155,8 +134,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                 //新星是决策点
                 NPC.netUpdate = true;
             }
-            if (Main.netMode != NetmodeID.Server)
-            {
+            if (Main.netMode != NetmodeID.Server) {
                 SoundStyle sound = new SoundStyle("CalamityEntropy/Assets/Sounds/clap");
                 sound.Pitch = CruiserDirector.NovaClapPitch;
                 SoundEngine.PlaySound(sound);

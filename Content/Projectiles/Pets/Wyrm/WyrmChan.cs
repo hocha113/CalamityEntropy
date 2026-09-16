@@ -21,24 +21,20 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Wyrm
         [VaultLoaden("CalamityEntropy/Content/Projectiles/Pets/Wyrm/Eye", 2, 3, AssetMode = AssetMode.TextureValueArray)]
         internal static Texture2D[] EyeFramesRest;
         public int counter = 0;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             Main.projPet[Projectile.type] = true;
             base.SetStaticDefaults();
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.CloneDefaults(ProjectileID.ZephyrFish);
             Projectile.aiStyle = -1;
             Projectile.tileCollide = false;
             Projectile.width = 92;
             Projectile.height = 92;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            if (Main.gameMenu)
-            {
+        public override bool PreDraw(ref Color lightColor) {
+            if (Main.gameMenu) {
                 Texture2D txd = BodyFrame1.Value;
                 Main.EntitySpriteDraw(txd, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, new Vector2(txd.Width, txd.Height) / 2, Projectile.scale, SpriteEffects.FlipHorizontally, 0);
 
@@ -48,31 +44,24 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Wyrm
             int frame = (counter / 6) % (BodyFramesRest.Length + 1);
             Texture2D tx = frame == 0 ? BodyFrame1.Value : BodyFramesRest[frame - 1];
             Texture2D tx2 = frame == 0 ? EyeFrame1.Value : EyeFramesRest[frame - 1];
-            if (Projectile.velocity.X > -2 && Projectile.velocity.X < 2f)
-            {
-                if (Main.player[Projectile.owner].Center.X > Projectile.Center.X)
-                {
+            if (Projectile.velocity.X > -2 && Projectile.velocity.X < 2f) {
+                if (Main.player[Projectile.owner].Center.X > Projectile.Center.X) {
                     Projectile.direction = 1;
                 }
-                else
-                {
+                else {
                     Projectile.direction = -1;
                 }
             }
-            if (Projectile.direction == 1)
-            {
+            if (Projectile.direction == 1) {
                 Main.EntitySpriteDraw(tx, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, new Vector2(tx.Width, tx.Height) / 2, Projectile.scale, SpriteEffects.FlipHorizontally, 0);
-                if (lightColor.R + lightColor.G + lightColor.B < 255)
-                {
+                if (lightColor.R + lightColor.G + lightColor.B < 255) {
                     int gr = (255 - (lightColor.R + lightColor.G + lightColor.B));
                     Main.EntitySpriteDraw(tx2, Projectile.Center - Main.screenPosition, null, new Color(255, 255, 255) * ((float)gr / 255), Projectile.rotation, new Vector2(tx.Width, tx.Height) / 2, Projectile.scale, SpriteEffects.FlipHorizontally, 0);
                 }
             }
-            else
-            {
+            else {
                 Main.EntitySpriteDraw(tx, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, new Vector2(tx.Width, tx.Height) / 2, Projectile.scale, SpriteEffects.None, 0);
-                if (lightColor.R + lightColor.G + lightColor.B < 255)
-                {
+                if (lightColor.R + lightColor.G + lightColor.B < 255) {
                     int gr = (255 - (lightColor.R + lightColor.G + lightColor.B));
                     Main.EntitySpriteDraw(tx2, Projectile.Center - Main.screenPosition, null, new Color(255, 255, 255) * ((float)gr / 255), Projectile.rotation, new Vector2(tx.Width, tx.Height) / 2, Projectile.scale, SpriteEffects.None, 0);
                 }
@@ -83,15 +72,12 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Wyrm
             return false;
 
         }
-        void MoveToTarget(Vector2 targetPos)
-        {
-            if (CEUtils.getDistance(Projectile.Center, targetPos) > 1400)
-            {
+        void MoveToTarget(Vector2 targetPos) {
+            if (CEUtils.getDistance(Projectile.Center, targetPos) > 1400) {
                 Projectile.Center = Main.player[Projectile.owner].Center;
             }
             Projectile.rotation = MathHelper.ToRadians((Projectile.velocity.X * 1.4f));
-            if (CEUtils.getDistance(Projectile.Center, targetPos) > 34)
-            {
+            if (CEUtils.getDistance(Projectile.Center, targetPos) > 34) {
                 Vector2 px = targetPos - Projectile.Center;
                 px.Normalize();
                 Projectile.velocity += px * 0.6f;
@@ -99,23 +85,19 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Wyrm
                 Projectile.velocity *= 0.98f;
 
             }
-            else
-            {
+            else {
                 Projectile.velocity *= 0.8f;
 
             }
-            if (Projectile.velocity.X > 0)
-            {
+            if (Projectile.velocity.X > 0) {
                 Projectile.direction = 1;
             }
-            else
-            {
+            else {
                 Projectile.direction = -1;
             }
 
         }
-        public override bool PreAI()
-        {
+        public override bool PreAI() {
             Player player = Main.player[Projectile.owner];
 
             player.zephyrfish = false;
@@ -123,21 +105,17 @@ namespace CalamityEntropy.Content.Projectiles.Pets.Wyrm
             return true;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             counter++;
             Player player = Main.player[Projectile.owner];
             MoveToTarget(player.Center + new Vector2(0, -60) + new Vector2(-80 * player.direction, 0));
-            if (!player.dead && player.HasBuff(ModContent.BuffType<WyrmChanBuff>()))
-            {
+            if (!player.dead && player.HasBuff(ModContent.BuffType<WyrmChanBuff>())) {
                 Projectile.timeLeft = 2;
             }
-            if (Projectile.wet)
-            {
+            if (Projectile.wet) {
                 Projectile.extraUpdates = 1;
             }
-            else
-            {
+            else {
                 Projectile.extraUpdates = 0;
             }
         }

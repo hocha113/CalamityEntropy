@@ -1,11 +1,10 @@
-using CalamityEntropy;
+﻿using CalamityEntropy;
 using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
-using CalamityEntropy.Content.Items;
-using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Particles;
-using CalamityEntropy.Content.Tiles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
+using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using InnoVault;
 using InnoVault.PRT;
@@ -29,28 +28,22 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
     public class DustCarver : ModItem
     {
         public int LevelNow = 0;
-        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
-        {
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI) {
             Item.QuickDrawItemWithBloomToWorld(spriteBatch, Color.Red, ref scale, rotation);
             return false;
         }
         /// <summary>装灾厄走 3.33 的 16 段细档阶梯,无灾厄保持 4.0 常数 6 级</summary>
-        public static int GetLevel()
-        {
-            if (!CERef.Has)
-            {
+        public static int GetLevel() {
+            if (!CERef.Has) {
                 return 6;
             }
             int Level = 0;
             bool flag = true;
-            void Check(bool f)
-            {
-                if (f && flag)
-                {
+            void Check(bool f) {
+                if (f && flag) {
                     Level++;
                 }
-                else
-                {
+                else {
                     flag = false;
                 }
             }
@@ -72,45 +65,35 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
             Check(CECal.DownedPrimordialWyrm);
             return Level;
         }
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
+        public override bool CanConsumeAmmo(Item ammo, Player player) {
             return false;
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            string Get(string path)
-            {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
+            string Get(string path) {
                 return Mod.GetLocalization($"LegendaryAbility.{path}").Value;
             }
             tooltips.Replace("[LV]", LevelNow.ToString());
-            foreach (var line in tooltips)
-            {
-                if (line.Text.StartsWith("$"))
-                {
+            foreach (var line in tooltips) {
+                if (line.Text.StartsWith("$")) {
                     line.Text = line.Text.Replace("$", "");
                     line.OverrideColor = LevelNow > 1 ? Color.Yellow : Color.Gray;
-                    if (LevelNow < 2 && line.Text.StartsWith("^"))
-                    {
+                    if (LevelNow < 2 && line.Text.StartsWith("^")) {
                         line.Text += $" {Get("General.Locked")} {Get("TlipocasScytheLegend.Downed.TLevel2")}";
                     }
                     line.Text = line.Text.Replace("^", "");
                 }
-                if (line.Text.StartsWith("%"))
-                {
+                if (line.Text.StartsWith("%")) {
                     line.Text = line.Text.Replace("%", "");
                     line.OverrideColor = Main.hardMode ? Color.Yellow : Color.Gray;
-                    if (!Main.hardMode)
-                    {
+                    if (!Main.hardMode) {
                         line.Text += $" {Get("General.Locked")} {Get("TlipocasScytheLegend.Downed.TWOF")}";
                     }
                 }
-                if (line.Text.StartsWith("&"))
-                {
+                if (line.Text.StartsWith("&")) {
                     bool flag = NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3;
                     line.Text = line.Text.Replace("&", "");
                     line.OverrideColor = (flag) ? Color.Yellow : Color.Gray;
-                    if (!flag)
-                    {
+                    if (!flag) {
                         line.Text += $" {Get("General.Locked")} {Get("TlipocasScytheLegend.Downed.TALLMECHBOSS")}";
                     }
                 }
@@ -119,8 +102,7 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
             tooltips.Add(new TooltipLine(Mod, "Lore", Language.GetOrRegister("Mods.CalamityEntropy.LegendaryAbility.DCarverDia" + LevelNow.ToString()).Value) { OverrideColor = Color.Crimson });
         }
         public int SpiritCount => CERef.Has ? int.Min(6, GetLevel() / 2) : 4;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 80;
             Item.height = 150;
             Item.damage = 25;
@@ -144,31 +126,24 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
             RecheckStats = true;
             CheckLevel(GetLevel());
         }
-        public override void HoldItem(Player player)
-        {
-            if (player.ownedProjectileCounts[Item.shoot] < 1 && Main.myPlayer == player.whoAmI)
-            {
+        public override void HoldItem(Player player) {
+            if (player.ownedProjectileCounts[Item.shoot] < 1 && Main.myPlayer == player.whoAmI) {
                 Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.Center, (Main.MouseWorld - player.Center).normalize() * Item.shootSpeed, Item.shoot, 0, 0, player.whoAmI);
             }
             int spirit = ModContent.ProjectileType<CarverSpirit>();
-            if (player.ownedProjectileCounts[spirit] < SpiritCount)
-            {
+            if (player.ownedProjectileCounts[spirit] < SpiritCount) {
                 Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.Center, (Main.MouseWorld - player.Center).normalize() * Item.shootSpeed, spirit, player.GetWeaponDamage(Item) / 8, 0, player.whoAmI);
             }
         }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             return false;
         }
-        public override void UpdateInventory(Player player)
-        {
+        public override void UpdateInventory(Player player) {
             CheckLevel(GetLevel());
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_BloodOrb))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_BloodOrb)) {
                 CreateRecipe()
                     .AddIngredient(CEID.Item_BloodOrb, 5)
                     .AddRecipeGroup(CERecipeGroups.evilBar, 4)
@@ -185,15 +160,12 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
                 .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();
         }
-        public void CheckLevel(int lv)
-        {
-            if (LevelNow != lv || RecheckStats)
-            {
+        public void CheckLevel(int lv) {
+            if (LevelNow != lv || RecheckStats) {
                 RecheckStats = false;
                 LevelNow = lv;
                 int dmg = 25;
-                switch (lv)
-                {
+                switch (lv) {
                     case 0: dmg = 25; break;
                     case 1: dmg = 32; break;
                     case 2: dmg = 42; break;
@@ -223,11 +195,9 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
 
         }
         public bool RecheckStats = true;
-        public int GetUseTime(Player player)
-        {
+        public int GetUseTime(Player player) {
             int ret = 14;
-            switch (LevelNow)
-            {
+            switch (LevelNow) {
                 case 0: ret = 30; break;
                 case 1: ret = 29; break;
                 case 2: ret = 28; break;
@@ -250,8 +220,7 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
             return ret;
         }
 
-        public override bool RangedPrefix()
-        {
+        public override bool RangedPrefix() {
             return true;
         }
         public int PenetAddition => LevelNow / 4 + 1;
@@ -265,68 +234,53 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
         public int SpikeTimer = 0;
         public int BoltTimer = 60;
         public bool RMBLast = false;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.width = Projectile.height = 12;
         }
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             return false;
         }
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(active);
         }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             active = reader.ReadBoolean();
         }
-        public override void AI()
-        {
+        public override void AI() {
             Player player = Projectile.GetOwner();
             Projectile.StickToPlayer();
             player.SetHandRot(Projectile.rotation);
 
-            if (!(player.HeldItem.ModItem is DustCarver) || player.dead)
-            {
+            if (!(player.HeldItem.ModItem is DustCarver) || player.dead) {
                 Projectile.Kill();
                 return;
             }
             int sprType = ModContent.ProjectileType<CarverSpirit>();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.LeftShift))
-            {
+            if (Keyboard.GetState().IsKeyDown(Keys.LeftShift)) {
                 player.itemTime = player.itemAnimation = 3;
                 Projectile clost_ = null;
                 float dist_ = 99999;
-                foreach (var proj in Main.ActiveProjectiles)
-                {
-                    if (proj.owner == player.whoAmI && proj.type == sprType)
-                    {
-                        if (clost_ == null || CEUtils.getDistance(proj.Center, Main.MouseWorld) < dist_)
-                        {
+                foreach (var proj in Main.ActiveProjectiles) {
+                    if (proj.owner == player.whoAmI && proj.type == sprType) {
+                        if (clost_ == null || CEUtils.getDistance(proj.Center, Main.MouseWorld) < dist_) {
                             dist_ = CEUtils.getDistance(proj.Center, Main.MouseWorld);
                             clost_ = proj;
                         }
                     }
                 }
                 if (clost_ != null)
-                    if (clost_.ModProjectile is CarverSpirit spirit)
-                    {
+                    if (clost_.ModProjectile is CarverSpirit spirit) {
                         spirit.white = 3;
                     }
             }
-            if (Main.myPlayer == Projectile.owner && !RMBLast && Main.mouseRight && !player.mouseInterface)
-            {
-                if (player.ownedProjectileCounts[sprType] > 0)
-                {
+            if (Main.myPlayer == Projectile.owner && !RMBLast && Main.mouseRight && !player.mouseInterface) {
+                if (player.ownedProjectileCounts[sprType] > 0) {
 
-                    void Toggle(Projectile proj)
-                    {
+                    void Toggle(Projectile proj) {
                         proj.ai[0] += 1;
-                        if (proj.ai[0] > 2)
-                        {
+                        if (proj.ai[0] > 2) {
                             proj.ai[0] = 0;
                         }
                         //旧Blend既不是Additive也不是AlphaBlend,Configure传NonPremultipliedBlend落第三桶
@@ -339,12 +293,9 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
                     List<Projectile> SetList = new();
                     Projectile clost = null;
                     float dist = 99999;
-                    foreach (var proj in Main.ActiveProjectiles)
-                    {
-                        if (proj.owner == player.whoAmI && proj.type == sprType)
-                        {
-                            if (clost == null || CEUtils.getDistance(proj.Center, Main.MouseWorld) < dist)
-                            {
+                    foreach (var proj in Main.ActiveProjectiles) {
+                        if (proj.owner == player.whoAmI && proj.type == sprType) {
+                            if (clost == null || CEUtils.getDistance(proj.Center, Main.MouseWorld) < dist) {
                                 dist = CEUtils.getDistance(proj.Center, Main.MouseWorld);
                                 clost = proj;
                             }
@@ -352,13 +303,11 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
                             SetList.Add(proj);
                         }
                     }
-                    if (Keyboard.GetState().IsKeyDown(Keys.LeftShift))
-                    {
+                    if (Keyboard.GetState().IsKeyDown(Keys.LeftShift)) {
                         if (clost != null)
                             Toggle(clost);
                     }
-                    else
-                    {
+                    else {
                         foreach (var proj in SetList)
                             Toggle(proj);
                     }
@@ -366,22 +315,18 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
             }
             RMBLast = Main.mouseRight;
             Vector2 particlePos = Projectile.Center + Projectile.rotation.ToRotationVector2() * 32;
-            if (sParticle != null)
-            {
+            if (sParticle != null) {
                 sParticle.Position = particlePos;
                 sParticle.Rotation = Projectile.rotation;
             }
-            if (sParticle2 != null)
-            {
+            if (sParticle2 != null) {
                 sParticle2.Position = particlePos;
                 sParticle2.Rotation = Projectile.rotation;
             }
-            if (Main.myPlayer == Projectile.owner)
-            {
+            if (Main.myPlayer == Projectile.owner) {
                 bool fl = active;
                 active = Main.mouseLeft && !player.mouseInterface;
-                if (active != fl)
-                {
+                if (active != fl) {
                     Projectile.netSpam = 0;
                     Projectile.netUpdate = true;
                 }
@@ -392,27 +337,20 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
             var dc = ((DustCarver)player.HeldItem.ModItem);
             int useTime = dc.GetUseTime(player);
             float chargeAdd = 1f / useTime;
-            if (Charging > 0)
-            {
+            if (Charging > 0) {
                 player.itemTime = player.itemAnimation = 3;
                 Charging += chargeAdd;
             }
-            else
-            {
-                if (active)
-                {
+            else {
+                if (active) {
                     Charging += chargeAdd;
                 }
             }
-            if (active)
-            {
-                if (Main.hardMode)
-                {
+            if (active) {
+                if (Main.hardMode) {
                     SpikeTimer--;
-                    if (SpikeTimer <= 10 && SpikeTimer % 2 == 0)
-                    {
-                        if (Main.myPlayer == Projectile.owner)
-                        {
+                    if (SpikeTimer <= 10 && SpikeTimer % 2 == 0) {
+                        if (Main.myPlayer == Projectile.owner) {
                             var vec = new Vector2(0, 900);
                             player.PickAmmo(player.HeldItem, out int projID, out float shootSpeed, out int damage, out float kb, out var ammoID, false);
                             var shoot = Projectile.Center + vec + CEUtils.randomPointInCircle(400);
@@ -423,31 +361,25 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
                             Projectile.NewProjectile(Projectile.GetSource_FromAI(), shoot, (targetPos - shoot).normalize() * 16, type, damage / 14, kb / 10, Projectile.owner);
                         }
                     }
-                    if (SpikeTimer <= 0)
-                    {
+                    if (SpikeTimer <= 0) {
                         SpikeTimer = 32 - dc.LevelNow;
                     }
                 }
-                if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
-                {
-                    if (BoltTimer-- == 1)
-                    {
-                        if (Main.myPlayer == Projectile.owner)
-                        {
+                if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3) {
+                    if (BoltTimer-- == 1) {
+                        if (Main.myPlayer == Projectile.owner) {
                             int type = ModContent.ProjectileType<CarverBolt>();
 
                             player.PickAmmo(player.HeldItem, out int projID, out float shootSpeed, out int damage, out float kb, out var ammoID, true);
                             Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + Projectile.rotation.ToRotationVector2() * 18, CEUtils.randomPointInCircle(16), type, damage / 2, kb, Projectile.owner);
                         }
                     }
-                    if (BoltTimer <= 0)
-                    {
+                    if (BoltTimer <= 0) {
                         BoltTimer = 72 - dc.LevelNow * 4;
                     }
                 }
             }
-            if (Charging >= 1)
-            {
+            if (Charging >= 1) {
                 Charging = 0;
                 ShootDelay = useTime / 4;
                 sParticle = PRTLoader.NewParticle<PRT_HeavenfallStar2>(particlePos, Vector2.Zero, new Color(255, 40, 40), 4f);
@@ -459,13 +391,11 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
                 CEUtils.PlaySound("DustCarverShoot", Main.rand.NextFloat(1.6f, 2f), Projectile.Center, 6, 0.6f);
                 CEUtils.PlaySound("CarverShoot2", Main.rand.NextFloat(1.4f, 1.8f), Projectile.Center, 6, 0.6f);
 
-                if (Main.myPlayer == Projectile.owner)
-                {
+                if (Main.myPlayer == Projectile.owner) {
                     player.PickAmmo(player.HeldItem, out int projID, out float shootSpeed, out int damage, out float kb, out var ammoID, false);
                     int p = Projectile.NewProjectile(player.GetSource_ItemUse(player.HeldItem), Projectile.Center, Projectile.rotation.ToRotationVector2() * shootSpeed, projID, damage, kb, Projectile.owner);
                     Projectile projectile = p.ToProj();
-                    if (!projectile.usesLocalNPCImmunity)
-                    {
+                    if (!projectile.usesLocalNPCImmunity) {
                         projectile.usesLocalNPCImmunity = true;
 
                     }
@@ -482,8 +412,7 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
             Vector2 p1 = Projectile.Center - Projectile.rotation.ToRotationVector2() * 30 * Projectile.scale + Projectile.rotation.ToRotationVector2().RotatedBy(MathHelper.PiOver2) * 66 * Projectile.scale;
             Vector2 p2 = Projectile.Center - Projectile.rotation.ToRotationVector2() * 30 * Projectile.scale - Projectile.rotation.ToRotationVector2().RotatedBy(MathHelper.PiOver2) * 66 * Projectile.scale;
 
-            if (trail1 == null)
-            {
+            if (trail1 == null) {
                 //轨迹类maxLength/SameAlpha字段Configure前先赋,PRTDrawMode只能走Configure
                 trail1 = PRTLoader.NewParticle<PRT_TrailParticle>(p1, Vector2.Zero, new Color(180, 0, 0), 0.6f);
                 trail1.maxLength = 19;
@@ -502,8 +431,7 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
         public PRT_HeavenfallStar2 sParticle2;
         public PRT_TrailParticle trail1;
         public PRT_TrailParticle trail2;
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Projectile.GetTexture();
             Texture2D eye = this.getTextureGlow();
             SpriteEffects effect = Projectile.velocity.X > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically;
@@ -514,8 +442,7 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
             Main.spriteBatch.Draw(eye, Projectile.Center - Main.screenPosition, null, eyeColor, Projectile.rotation, origin, Projectile.scale, effect, 0);
             Main.spriteBatch.UseBlendState(BlendState.NonPremultiplied);
             float stringOffset = 0;
-            if (Charging > 0.5f)
-            {
+            if (Charging > 0.5f) {
                 stringOffset -= CEUtils.Parabola((Charging - 0.5f), 1) * 70 * Projectile.scale;
             }
             Vector2 p1 = Projectile.Center - Projectile.rotation.ToRotationVector2() * 24 + new Vector2(0, Projectile.velocity.X > 0 ? 64 : 64).RotatedBy(Projectile.rotation);
@@ -524,8 +451,7 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
             CEUtils.drawLine(p1, pc, Color.Crimson, 2, 2);
             CEUtils.drawLine(p2, pc, Color.Crimson, 2, 2);
 
-            if (Charging > 0)
-            {
+            if (Charging > 0) {
                 Texture2D star = CEExtraAssets.StarTexture_White;
                 Vector2 sScale = Charging < 0.5f ? new Vector2(1, 0.8f) : new Vector2(1.8f, 0.7f);
                 float sOffset = Charging < 0.5f ? 2 * (0.5f - Charging) : 0;
@@ -555,35 +481,28 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
         internal static Asset<Texture2D> DustArrowTex;
         public override bool InstancePerEntity => true;
         public bool active = false;
-        public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter writer)
-        {
+        public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter writer) {
             writer.Write(active);
             writer.Write(HomingRange);
         }
-        public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader reader) {
             active = reader.ReadBoolean();
             HomingRange = reader.ReadInt32();
         }
         public List<Vector2> oldPos = new();
-        public Color ColorFunction(float completionRatio, Vector2 vertex)
-        {
+        public Color ColorFunction(float completionRatio, Vector2 vertex) {
             return Color.Lerp(Color.Crimson, Color.DarkRed, MathHelper.Clamp(completionRatio * 0.8f, 0f, 1f)) * projectile.Opacity;
         }
         public Projectile projectile;
-        public float WidthFunction(float completionRatio, Vector2 vertex)
-        {
+        public float WidthFunction(float completionRatio, Vector2 vertex) {
             float num = 22;
             float num2 = ((!(completionRatio < 0.1f)) ? MathHelper.Lerp(num, 0f, Utils.GetLerpValue(0.1f, 1f, completionRatio, clamped: true)) : ((float)Math.Sin(completionRatio / 0.1f * (MathF.PI / 2f)) * num + 0.1f));
             return num2 * projectile.Opacity * projectile.scale;
         }
         public bool init = true;
-        public override bool PreAI(Projectile projectile)
-        {
-            if (active)
-            {
-                if (init)
-                {
+        public override bool PreAI(Projectile projectile) {
+            if (active) {
+                if (init) {
                     init = false;
                     projectile.MaxUpdates *= 4;
                 }
@@ -591,13 +510,11 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
                 if (oldPos.Count > 24)
                     oldPos.RemoveAt(oldPos.Count - 1);
 
-                if (NPC.downedBoss3 && HomingRange > 0)
-                {
+                if (NPC.downedBoss3 && HomingRange > 0) {
                     Homing = float.Lerp(Homing, 12, 0.01f);
                     NPC target = CEUtils.FindTarget_HomingProj(projectile, projectile.Center, HomingRange, (npc) => (projectile.localNPCImmunity[npc] == 0) && CEUtils.GetAngleBetweenVectors(projectile.velocity, (npc.ToNPC().Center - projectile.Center)) < MathHelper.ToRadians(112));
 
-                    if (target != null)
-                    {
+                    if (target != null) {
                         projectile.velocity = projectile.velocity.RotatedBy(CEUtils.getRotateAngle(projectile.velocity.ToRotation(), (target.Center - projectile.Center).ToRotation(), 0.5f * Homing));
                     }
                 }
@@ -607,11 +524,9 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
         }
         public int HomingRange = 0;
         public float Homing = 0;
-        public override bool PreDraw(Projectile projectile, ref Color lightColor)
-        {
+        public override bool PreDraw(Projectile projectile, ref Color lightColor) {
             this.projectile = projectile;
-            if (!active)
-            {
+            if (!active) {
                 return true;
             }
             Main.spriteBatch.EnterShaderRegion();
@@ -632,15 +547,12 @@ namespace CalamityEntropy.Content.Items.Weapons.DustCarverBow
             Main.spriteBatch.ExitShaderRegion();
             return false;
         }
-        public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (active)
-            {
+        public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone) {
+            if (active) {
                 CEUtils.PlaySound("CarverHit", Main.rand.NextFloat(1.4f, 1.6f), target.Center, 6, 0.2f);
                 CEUtils.PlaySound("GrassSwordHit0", Main.rand.NextFloat(1.4f, 1.8f), target.Center, 6, 0.25f);
                 CEUtils.PlaySound("bne_hit", Main.rand.NextFloat(1.2f, 1.4f), target.Center, 4, 0.8f);
-                for (int i = 0; i < 12; i++)
-                {
+                for (int i = 0; i < 12; i++) {
                     float prog = Main.rand.NextFloat();
                     Color clr = new Color(255, 24, 24);
                     var vel = projectile.velocity.normalize().RotatedBy(0.25f * prog * (Main.rand.NextBool() ? 1 : -1)) * 64 * (1.2f - prog) * Main.rand.NextFloat(0.2f, 1);

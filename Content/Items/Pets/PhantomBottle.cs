@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Content.Particles;
 using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,17 +12,14 @@ namespace CalamityEntropy.Content.Items.Pets
 {
     public class PhantomBottle : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.CloneDefaults(ItemID.ZephyrFish);
             Item.shoot = ModContent.ProjectileType<CruiserPhantomPet>();
             Item.buffType = ModContent.BuffType<PhantomOfCruiser>();
         }
 
-        public override bool? UseItem(Player player)
-        {
-            if (player.whoAmI == Main.myPlayer)
-            {
+        public override bool? UseItem(Player player) {
+            if (player.whoAmI == Main.myPlayer) {
                 player.AddBuff(Item.buffType, 3600);
             }
             return true;
@@ -31,13 +28,11 @@ namespace CalamityEntropy.Content.Items.Pets
     }
     public class PhantomOfCruiser : ModBuff
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.buffNoTimeDisplay[Type] = true;
             Main.vanityPet[Type] = true;
         }
-        public override void Update(Player player, ref int buffIndex)
-        {
+        public override void Update(Player player, ref int buffIndex) {
             bool unused = false;
             player.BuffHandle_SpawnPetIfNeededAndSetTime(buffIndex, ref unused, ModContent.ProjectileType<CruiserPhantomPet>());
         }
@@ -53,14 +48,12 @@ namespace CalamityEntropy.Content.Items.Pets
         internal static Asset<Texture2D> JawUpTex;
         [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawDown2")]
         internal static Asset<Texture2D> JawDownTex;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
         float mouthRot = 0;
         public bool bite = false;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 156;
             Projectile.height = 156;
             Projectile.friendly = true;
@@ -73,12 +66,9 @@ namespace CalamityEntropy.Content.Items.Pets
         public float spawnRot = 0;
         public List<Vector2> bodies = new List<Vector2>();
         float counter = 0;
-        public override void AI()
-        {
-            if (counter == 0)
-            {
-                for (int i = 0; i < 27; i++)
-                {
+        public override void AI() {
+            if (counter == 0) {
+                for (int i = 0; i < 27; i++) {
                     bodies.Add(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.Zero) * -20);
                 }
                 Projectile.Center += Projectile.velocity * 16;
@@ -90,16 +80,13 @@ namespace CalamityEntropy.Content.Items.Pets
             counter++;
             Player player = Projectile.owner.ToPlayer();
             updateBodies();
-            if (bite)
-            {
+            if (bite) {
                 mouthRot -= 12;
-                if (mouthRot < -48)
-                {
+                if (mouthRot < -48) {
                     bite = false;
                 }
             }
-            else
-            {
+            else {
                 mouthRot *= 0.9f;
             }
             spawnParticles();
@@ -116,8 +103,7 @@ namespace CalamityEntropy.Content.Items.Pets
                 Projectile.velocity *= 1.006f;
             else
                 Projectile.velocity *= 0.95f;
-            if (Projectile.GetOwner().HasBuff<PhantomOfCruiser>())
-            {
+            if (Projectile.GetOwner().HasBuff<PhantomOfCruiser>()) {
                 Projectile.timeLeft = 5;
             }
             if (Projectile.Distance(Projectile.GetOwner().Center) > 6000)
@@ -127,27 +113,21 @@ namespace CalamityEntropy.Content.Items.Pets
         public int noChase = 0;
         Vector2 targetPos;
         public int f = 0;
-        public void updateBodies()
-        {
-            for (int i = 0; i < bodies.Count; i++)
-            {
+        public void updateBodies() {
+            for (int i = 0; i < bodies.Count; i++) {
                 Vector2 oPos;
                 float oRot;
 
-                if (i == 0)
-                {
+                if (i == 0) {
                     oPos = Projectile.Center;
                     oRot = Projectile.rotation;
                 }
-                else
-                {
+                else {
                     oPos = bodies[i - 1];
-                    if (i == 1)
-                    {
+                    if (i == 1) {
                         oRot = (Projectile.Center - bodies[0]).ToRotation();
                     }
-                    else
-                    {
+                    else {
                         oRot = (bodies[i - 2] - bodies[i - 1]).ToRotation();
                     }
                 }
@@ -158,19 +138,16 @@ namespace CalamityEntropy.Content.Items.Pets
             }
         }
 
-        public void spawnParticles()
-        {
+        public void spawnParticles() {
             var r = Main.rand;
-            for (int i = 0; i < 4; i++)
-            {
+            for (int i = 0; i < 4; i++) {
                 //PRT_Void Opacity/vd spawn后赋,旧VoidParticles原值
                 var p = PRTLoader.NewParticle<PRT_Void>(Projectile.Center - Projectile.rotation.ToRotationVector2() * 60 + Projectile.velocity, new Vector2((float)((r.NextDouble() - 0.5) * .3), (float)((r.NextDouble() - 0.5) * 1.3)), Color.White, 1f);
                 p.shape = 4;
                 p.Opacity = 1.6f;
                 p.ad = 0.013f;
             }
-            for (int i = 0; i < 4; i++)
-            {
+            for (int i = 0; i < 4; i++) {
                 var p = PRTLoader.NewParticle<PRT_Void>(Projectile.Center - Projectile.rotation.ToRotationVector2() * 60 - Projectile.velocity * 0.5f + Projectile.velocity, new Vector2((float)((r.NextDouble() - 0.5) * .3), (float)((r.NextDouble() - 0.5) * 1.3)), Color.White, 1f);
                 p.shape = 4;
                 p.Opacity = 1.6f;
@@ -178,32 +155,25 @@ namespace CalamityEntropy.Content.Items.Pets
             }
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
 
             return false;
         }
-        public void draw()
-        {
+        public void draw() {
             int bd = 0;
             Vector2 vtodraw = Projectile.Center;
             SpriteBatch spriteBatch = Main.spriteBatch;
             float alpha = 1;
-            for (int d = 0; d < 9; d++)
-            {
-                if (d < bodies.Count)
-                {
-                    if (d == 0 || d == 2)
-                    {
+            for (int d = 0; d < 9; d++) {
+                if (d < bodies.Count) {
+                    if (d == 0 || d == 2) {
                         continue;
                     }
                     float rot = 0;
-                    if (bd == 0)
-                    {
+                    if (bd == 0) {
                         rot = (vtodraw - bodies[d]).ToRotation();
                     }
-                    else
-                    {
+                    else {
                         rot = (bodies[d - 1] - bodies[d]).ToRotation();
                     }
                     Vector2 pos = bodies[d];

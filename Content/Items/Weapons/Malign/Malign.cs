@@ -1,5 +1,6 @@
 ﻿using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using InnoVault;
 using InnoVault.PRT;
@@ -10,18 +11,15 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Malign
 {
     public class Malign : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.staff[Item.type] = true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 62;
             Item.height = 62;
             Item.damage = 23;
@@ -41,22 +39,17 @@ namespace CalamityEntropy.Content.Items.Weapons.Malign
             Item.useTurn = true;
             Item.noUseGraphic = true;
         }
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
-        public override void HoldItem(Player player)
-        {
+        public override void HoldItem(Player player) {
             player.CheckAndSpawnHeldProj(Item.shoot);
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             return false;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_AshesofCalamity))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_AshesofCalamity)) {
                 CreateRecipe()
                 .AddIngredient(ItemID.CrystalSerpent)
                 .AddIngredient(ItemID.Ectoplasm, 6)
@@ -77,16 +70,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Malign
         //咬合贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
         [VaultLoaden("CalamityEntropy/Assets/Particles/Jaws")]
         internal static Asset<Texture2D> JawsTex;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Magic, false, -1);
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return false;
         }
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             return false;
         }
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/Malign/Malign";
@@ -96,75 +86,59 @@ namespace CalamityEntropy.Content.Items.Weapons.Malign
         public Texture2D tPart2 => this.getTextureAlt("P2");
         public float ActiveProgress = 0;
         public bool MousePressed = false;
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(MousePressed);
         }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             MousePressed = reader.ReadBoolean();
         }
-        public override void AI()
-        {
+        public override void AI() {
             Player player = Projectile.GetOwner();
             Projectile.ai[1]--;
-            if (player.HeldItem.ModItem is Malign && !player.dead)
-            {
+            if (player.HeldItem.ModItem is Malign && !player.dead) {
                 Projectile.timeLeft = 2;
                 Projectile.StickToPlayer();
                 player.SetHandRot(Projectile.rotation);
-                if (Main.myPlayer == Projectile.owner)
-                {
-                    if ((!player.mouseInterface && Main.mouseLeft) != MousePressed)
-                    {
+                if (Main.myPlayer == Projectile.owner) {
+                    if ((!player.mouseInterface && Main.mouseLeft) != MousePressed) {
                         CEUtils.SyncProj(Projectile.whoAmI);
                     }
                     MousePressed = !player.mouseInterface && Main.mouseLeft;
-                    if (MousePressed && ActiveProgress > 0.8f)
-                    {
+                    if (MousePressed && ActiveProgress > 0.8f) {
                         int cMana = int.Max(1, (int)(player.HeldItem.mana * player.manaCost));
                         player.channel = true;
                         if (player.manaRegenDelay < 16 && player.CheckMana(cMana, false))
                             player.manaRegenDelay = 16;
-                        if (Projectile.ai[1] <= 0)
-                        {
+                        if (Projectile.ai[1] <= 0) {
                             Projectile.ai[1] = player.HeldItem.useTime;
-                            if (player.CheckMana(cMana, true))
-                            {
+                            if (player.CheckMana(cMana, true)) {
                                 PlayerLoader.OnConsumeMana(player, player.HeldItem, cMana);
                                 Projectile.NewProjectile(player.GetSource_ItemUse(player.HeldItem), Projectile.Center + Projectile.rotation.ToRotationVector2() * 90, Projectile.velocity.RotatedByRandom(0.4f) * 2, ModContent.ProjectileType<MalignBullet>(), player.GetWeaponDamage(player.HeldItem), player.GetWeaponKnockback(player.HeldItem), player.whoAmI);
                             }
                         }
                     }
                 }
-                if (MousePressed)
-                {
-                    if (ActiveProgress < 1)
-                    {
+                if (MousePressed) {
+                    if (ActiveProgress < 1) {
                         ActiveProgress = float.Lerp(ActiveProgress, 1, 0.1f);
                     }
 
                 }
-                else
-                {
-                    if (ActiveProgress > 0)
-                    {
+                else {
+                    if (ActiveProgress > 0) {
                         ActiveProgress = float.Lerp(ActiveProgress, 0, 0.1f);
                     }
                 }
-                if (MousePressed || ActiveProgress > 0.3)
-                {
+                if (MousePressed || ActiveProgress > 0.3) {
                     player.itemTime = player.itemAnimation = 3;
                 }
             }
-            else
-            {
+            else {
                 Projectile.Kill();
             }
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Projectile.GetTexture();
 
             Vector2 top = Projectile.Center + Projectile.rotation.ToRotationVector2() * (56 + 10 * ActiveProgress) * Projectile.scale;
@@ -187,13 +161,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Malign
     }
     public class MalignLaser : ModProjectile
     {
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
             modifiers.ArmorPenetration += 8;
         }
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Magic, false, -1);
             Projectile.width = Projectile.height = 16;
             Projectile.timeLeft = 16;
@@ -201,24 +173,19 @@ namespace CalamityEntropy.Content.Items.Weapons.Malign
             Projectile.localNPCHitCooldown = -1;
             Projectile.light = 2;
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
-        public override void AI()
-        {
-            if (Projectile.localAI[2]++ == 0)
-            {
-                for (float i = 0; i <= 1; i += 0.005f)
-                {
+        public override void AI() {
+            if (Projectile.localAI[2]++ == 0) {
+                for (float i = 0; i <= 1; i += 0.005f) {
                     //轨迹类maxLength/SameAlpha字段Configure前先赋,PRTDrawMode只能走Configure
                     var hs = PRTLoader.NewParticle<PRT_HeavenfallStar2>(Projectile.Center + Projectile.velocity * i, Vector2.Zero, new Color(255, 40, 255), CEUtils.CustomLerp2(1 - i) * 0.7f + 0.1f);
                     hs.drawScale = new Vector2(0.2f, 1f);
                     hs.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, Projectile.velocity.ToRotation(), 16);
                 }
                 PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, new Color(255, 200, 255), 0.6f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 16);
-                for (int i = 0; i < 3; i++)
-                {
+                for (int i = 0; i < 3; i++) {
                     Vector2 v = Projectile.velocity.RotateRandom(0.4f);
                     var hs = PRTLoader.NewParticle<PRT_HeavenfallStar2>(Projectile.Center, v * -0.0002f, new Color(255, 200, 255), 1.2f);
                     hs.drawScale = new Vector2(0.4f, 1.5f);
@@ -230,42 +197,34 @@ namespace CalamityEntropy.Content.Items.Weapons.Malign
                 }
             }
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.velocity, targetHitbox, 32);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             return false;
         }
     }
     public class MalignBullet : ModProjectile
     {
         public PRT_TrailParticle trail;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Magic, true, 1);
             Projectile.width = Projectile.height = 16;
             Projectile.timeLeft = 24;
             Projectile.light = 1;
         }
-        public override void AI()
-        {
-            if (Projectile.localAI[2]++ == 0)
-            {
+        public override void AI() {
+            if (Projectile.localAI[2]++ == 0) {
                 //旧对象初始化器拆成字段直赋+Configure,顺序别反
                 PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center + Projectile.velocity, Vector2.Zero, new Color(255, 190, 255), 0.4f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 5);
                 CEUtils.PlaySound("malignShoot", Main.rand.NextFloat(0.8f, 1.4f), Projectile.Center, volume: 0.68f);
             }
-            if (Main.myPlayer == Projectile.owner)
-            {
-                if (Projectile.timeLeft == 23 || Projectile.timeLeft == 13)
-                {
+            if (Main.myPlayer == Projectile.owner) {
+                if (Projectile.timeLeft == 23 || Projectile.timeLeft == 13) {
                     Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity, ModContent.ProjectileType<MalignLightning>(), Projectile.damage / 2, Projectile.knockBack / 4, Projectile.owner);
                 }
             }
-            if (trail == null)
-            {
+            if (trail == null) {
                 //轨迹类maxLength/SameAlpha字段Configure前先赋,PRTDrawMode只能走Configure
                 trail = PRTLoader.NewParticle<PRT_TrailParticle>(Projectile.Center, Vector2.Zero, new Color(255, 100, 255), 1.2f);
                 trail.maxLength = 12;
@@ -276,11 +235,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Malign
             trail.AddPoint(Projectile.Center + Projectile.velocity);
             trail.Lifetime = 13;
             Projectile.rotation = Projectile.velocity.ToRotation();
-            if (Projectile.timeLeft < 22)
-            {
+            if (Projectile.timeLeft < 22) {
                 NPC target = CEUtils.FindTarget_HomingProj(Projectile, Projectile.Center, 340);
-                if (target != null)
-                {
+                if (target != null) {
                     Projectile.velocity = CEUtils.RotateTowardsAngle(Projectile.velocity.ToRotation(), (target.Center - Projectile.Center).ToRotation(), 0.12f, true).ToRotationVector2() * Projectile.velocity.Length();
                 }
             }
@@ -291,8 +248,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Malign
             lp.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, Projectile.velocity.ToRotation(), 6);
 
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Projectile.GetTexture();
             Texture2D glow = this.getTextureGlow();
             Main.spriteBatch.UseBlendState(BlendState.Additive);
@@ -301,12 +257,10 @@ namespace CalamityEntropy.Content.Items.Weapons.Malign
             Main.spriteBatch.ExitShaderRegion();
             return false;
         }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
             modifiers.ArmorPenetration += 15;
         }
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             if (Main.myPlayer == Projectile.owner)
                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity.normalize() * 500, ModContent.ProjectileType<MalignLaser>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
             PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, new Color(255, 190, 255), 1).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 12);

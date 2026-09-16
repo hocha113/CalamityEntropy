@@ -7,12 +7,10 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class CellBullet : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 34;
             Projectile.height = 34;
             Projectile.friendly = false;
@@ -23,25 +21,20 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.timeLeft = 300;
         }
         public bool setRot = true;
-        public override void AI()
-        {
-            if (trailAlpha < 1)
-            {
+        public override void AI() {
+            if (trailAlpha < 1) {
                 trailAlpha += 0.05f;
             }
-            if (setRot)
-            {
+            if (setRot) {
                 Projectile.rotation = CEUtils.randomRot();
             }
             Projectile.rotation += 0.001f;
-            if (Projectile.velocity.Length() < 50)
-            {
+            if (Projectile.velocity.Length() < 50) {
                 Projectile.velocity *= 1.01f;
             }
         }
         float trailAlpha = 0;
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D t = CEUtils.getExtraTex("slash3");
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
@@ -53,13 +46,11 @@ namespace CalamityEntropy.Content.Projectiles
             return base.PreDraw(ref lightColor);
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) {
             target.AddBuff(ModContent.BuffType<VoidVirus>(), 160);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff(ModContent.BuffType<VoidVirus>(), 160);
         }
     }

@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Core.CalamityRef;
 using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,14 +8,12 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Books
 {
     public class BurntLostClassics : EntropyBook
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.damage = 33;
             Item.useAnimation = Item.useTime = 22;
@@ -29,10 +28,8 @@ namespace CalamityEntropy.Content.Items.Books
         public override int HeldProjectileType => ModContent.ProjectileType<BurntLostClassicsHeld>();
         public override int SlotCount => 3;
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_AshesofCalamity))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_AshesofCalamity)) {
                 CreateRecipe().AddIngredient<DarkScripture>()
                 .AddIngredient(CEID.Item_AshesofCalamity, 6)
                 .AddTile(TileID.MythrilAnvil)
@@ -55,18 +52,15 @@ namespace CalamityEntropy.Content.Items.Books
 
         public override float randomShootRotMax => 0.16f;
         public override int baseProjectileType => ModContent.ProjectileType<BurntBrimShot>();
-        public override bool Shoot()
-        {
+        public override bool Shoot() {
             base.Shoot();
             base.Shoot();
             return base.Shoot();
         }
-        public override EBookProjectileEffect getEffect()
-        {
+        public override EBookProjectileEffect getEffect() {
             return new BLCBookBaseEffect();
         }
-        public override EBookStatModifer getBaseModifer()
-        {
+        public override EBookStatModifer getBaseModifer() {
             var m = base.getBaseModifer();
             m.Size += 0.25f;
             return m;
@@ -75,8 +69,7 @@ namespace CalamityEntropy.Content.Items.Books
 
     public class BLCBookBaseEffect : EBookProjectileEffect
     {
-        public override void OnHitNPC(Projectile projectile, NPC target, int damageDone)
-        {
+        public override void OnHitNPC(Projectile projectile, NPC target, int damageDone) {
             //完整限定名会被入口类同名遮蔽(CalamityEntropy 先解析为类),改经 global:: 前缀
             target.AddBuff(ModContent.BuffType<global::CalamityEntropy.Content.Buffs.PortsDoT.BrimstoneFlames>(), 320);
         }
@@ -84,8 +77,7 @@ namespace CalamityEntropy.Content.Items.Books
 
     public class BurntBrimShot : EBookBaseProjectile
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Projectile.Resize(18, 18);
             Projectile.ignoreWater = true;
@@ -93,25 +85,20 @@ namespace CalamityEntropy.Content.Items.Books
             Projectile.tileCollide = true;
             Projectile.extraUpdates = 1;
         }
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            if (oldVelocity.X != 0 && Projectile.velocity.X == 0)
-            {
+        public override bool OnTileCollide(Vector2 oldVelocity) {
+            if (oldVelocity.X != 0 && Projectile.velocity.X == 0) {
                 Projectile.velocity.X = oldVelocity.X * -1;
             }
-            if (oldVelocity.Y != 0 && Projectile.velocity.Y == 0)
-            {
+            if (oldVelocity.Y != 0 && Projectile.velocity.Y == 0) {
                 Projectile.velocity.Y = oldVelocity.Y * -1f;
             }
-            if (Main.rand.NextBool(3))
-            {
+            if (Main.rand.NextBool(3)) {
                 Projectile.penetrate -= 1;
             }
             SoundEngine.PlaySound(SoundID.Dig, Projectile.Center);
             return false;
         }
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
@@ -123,15 +110,13 @@ namespace CalamityEntropy.Content.Items.Books
         [VaultLoaden("CalamityEntropy/Assets/Extra/Ports/DrizzlefishFire2")]
         internal static Asset<Texture2D> FireTex2;
         public int Time;
-        public override void AI()
-        {
+        public override void AI() {
             base.AI();
             Time++;
             Player player = Main.player[base.Projectile.owner];
 
             //每帧5颗尾烟,位置沿速度随机分布;timeleftmax/Lifetime跟旧Smoke初始化器一致
-            for (float i = 0; i <= 1; i += 0.2f)
-            {
+            for (float i = 0; i <= 1; i += 0.2f) {
                 var p = PRTLoader.NewParticle<PRT_Smoke>(Projectile.Center + Projectile.velocity * Main.rand.NextFloat(), CEUtils.randomPointInCircle(0.5f), Color.OrangeRed, Main.rand.NextFloat(0.02f, 0.04f));
                 p.timeleftmax = 26;
                 p.Lifetime = 26;
@@ -142,23 +127,18 @@ namespace CalamityEntropy.Content.Items.Books
             Projectile.rotation += 0.5f * (float)Projectile.direction;
             Projectile.velocity.Y += float.Min(0.6f, Time * 0.004f);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            if (Time < 7)
-            {
+        public override bool PreDraw(ref Color lightColor) {
+            if (Time < 7) {
                 CEUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1, InvisibleTex.Value);
             }
-            else if (Projectile.ai[1] == 1f)
-            {
+            else if (Projectile.ai[1] == 1f) {
                 CEUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1, FireTex2.Value);
             }
-            else
-            {
+            else {
                 CEUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1, FireTex.Value);
             }
 
-            if (Projectile.ai[1] == 1f)
-            {
+            if (Projectile.ai[1] == 1f) {
                 Texture2D value = FireTex2.Value;
                 Main.spriteBatch.Draw(value, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, 16, 16), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)value.Width / 2f, 10f), Projectile.scale, SpriteEffects.None, 0f);
                 return false;

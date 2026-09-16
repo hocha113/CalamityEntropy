@@ -1,4 +1,4 @@
-
+﻿
 using CalamityEntropy.Content.ArmorPrefixes;
 using Terraria;
 using Terraria.ID;
@@ -8,19 +8,15 @@ namespace CalamityEntropy.Content.Items.PrefixItem
 {
     public class PrefixClearKnife : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = Item.height = 46;
             Item.rare = ItemRarityID.Yellow;
         }
-        public override bool ConsumeItem(Player player)
-        {
+        public override bool ConsumeItem(Player player) {
             return false;
         }
-        public override void AddRecipes()
-        {
-            if (ArmorPrefix.Enabled)
-            {
+        public override void AddRecipes() {
+            if (ArmorPrefix.Enabled) {
                 CreateRecipe().AddIngredient(ItemID.GoldBar, 2)
                     .AddIngredient(ItemID.Ruby)
                     .Register();

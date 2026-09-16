@@ -8,12 +8,10 @@ namespace CalamityEntropy.Content.Items.Weapons
 {
     public class VoidPathology : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.staff[Item.type] = true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 104;
             Item.height = 104;
             Item.damage = 225;
@@ -32,8 +30,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.channel = true;
             Item.useTurn = false;
         }
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
     }

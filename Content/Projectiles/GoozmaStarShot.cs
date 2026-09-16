@@ -13,8 +13,7 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class GoozmaStarShot : EBookBaseProjectile
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Projectile.DamageType = DamageClass.Magic;
             Projectile.width = 16;
@@ -26,13 +25,10 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.light = 1;
             Projectile.extraUpdates = 1;
         }
-        public override void AI()
-        {
+        public override void AI() {
             base.AI();
-            if (Projectile.owner == Main.myPlayer && Projectile.timeLeft == 2)
-            {
-                if (this.ShooterModProjectile is EntropyBookHeldProjectile mp)
-                {
+            if (Projectile.owner == Main.myPlayer && Projectile.timeLeft == 2) {
+                if (this.ShooterModProjectile is EntropyBookHeldProjectile mp) {
                     NPC target = Projectile.FindTargetWithinRange(2400);
                     mp.ShootSingleProjectile(mp.getShootProjectileType(), Projectile.Center, (target == null ? Projectile.velocity : (target.Center - Projectile.Center)), 1);
                 }
@@ -44,12 +40,10 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.velocity *= 0.95f;
             Projectile.rotation = Projectile.velocity.ToRotation();
         }
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             return false;
         }
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             base.OnKill(timeLeft);
             float r = CEUtils.randomRot();
             //AbyssalLine带lifetime的Configure是CalamityPorts签名
@@ -59,14 +53,12 @@ namespace CalamityEntropy.Content.Projectiles
             var __prt2 = PRTLoader.NewParticle<PRT_AbyssalLine>(Projectile.Center, Vector2.Zero, Color.LightBlue, 1).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, r + MathHelper.PiOver2);
             __prt2.lx = 1.4f;
             __prt2.xadd = 0.6f;
-            for (int i = 0; i < Main.rand.Next(1, 3); i++)
-            {
+            for (int i = 0; i < Main.rand.Next(1, 3); i++) {
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, CEUtils.randomVec(24), ModContent.ProjectileType<GRainbowRocket>(), Projectile.damage / 3, Projectile.knockBack, Projectile.owner);
             }
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, CEUtils.randomVec(24), ModContent.ProjectileType<PartySparkle>(), (int)(Projectile.damage * 0.8f), Projectile.knockBack, Projectile.owner);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = CEExtraAssets.StarTexture;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, Main.DiscoColor, 4 * Main.GlobalTimeWrappedHourly, tex.Size() / 2, Projectile.scale * 0.5f, SpriteEffects.None, 0);
@@ -97,13 +89,11 @@ namespace CalamityEntropy.Content.Projectiles
             new Color(236, 168, 247),
         };
 
-        public float Time
-        {
+        public float Time {
             get => Projectile.ai[0];
             set => Projectile.ai[0] = value;
         }
-        public float ColorSpectrumHue
-        {
+        public float ColorSpectrumHue {
             get => Projectile.ai[1];
             set => Projectile.ai[1] = value;
         }
@@ -111,8 +101,7 @@ namespace CalamityEntropy.Content.Projectiles
         public const int FadeinTime = 18;
         public const int FadeoutTime = 18;
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 72;
             Projectile.height = 72;
             Projectile.friendly = true;
@@ -125,10 +114,8 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.scale = 0.001f;
         }
 
-        public override void AI()
-        {
-            if (Time == 1f)
-            {
+        public override void AI() {
+            if (Time == 1f) {
                 Projectile.scale = Main.rand.NextFloat(0.4f, 1.1f);
                 int size = (int)(72 * Projectile.scale);
                 Projectile.Resize(size, size);
@@ -149,8 +136,7 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.velocity = Projectile.velocity.RotatedBy(Math.Sin(Time / 30f) * 0.0125f);
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D sparkleTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             Color sparkleColor = CEUtils.MulticolorLerp(ColorSpectrumHue, ColorSet) * Projectile.Opacity * 0.5f;

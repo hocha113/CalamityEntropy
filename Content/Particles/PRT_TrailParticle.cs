@@ -19,8 +19,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/Trail";
 
         public PRT_TrailParticle Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -30,24 +29,21 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             //Lifetime 13是旧TrailParticle默认,到点Kill是框架的事,这里只管兜底
             if (Lifetime <= 0)
                 Lifetime = 13;
         }
 
-        public void AddPoint(Vector2 pos)
-        {
+        public void AddPoint(Vector2 pos) {
             //没AI采样,调用点每帧推Position;Insert(0)新点在头,跟旧drawAll外部AddPoint一致
             odp.Insert(0, pos);
             if (odp.Count > maxLength)
                 odp.RemoveAt(odp.Count - 1);
         }
 
-        public void DrawTrail(SpriteBatch sb)
-        {
+        public void DrawTrail(SpriteBatch sb) {
             if (odp.Count < 3)
                 return;
             GraphicsDevice gd = Main.graphics.GraphicsDevice;
@@ -64,36 +60,31 @@ namespace CalamityEntropy.Content.Particles
                     new Vector3(0f / odp.Count, 1, 1), b));
                 ve.Add(new ColoredVertex(odp[0] - Main.screenPosition + (odp[1] - odp[0]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 12 * Scale,
                     new Vector3(0f / odp.Count, 0, 1), b));
-                for (int i = 1; i < odp.Count; i++)
-                {
+                for (int i = 1; i < odp.Count; i++) {
                     ve.Add(new ColoredVertex(odp[i] - Main.screenPosition + (odp[i] - odp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 12 * Scale,
                         new Vector3((i / (odp.Count - 1f)) * 0.998f, 1, 1), b * (SameAlpha ? 1 : ((odp.Count - i - 1) / (float)odp.Count))));
                     ve.Add(new ColoredVertex(odp[i] - Main.screenPosition + (odp[i] - odp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 12 * Scale,
                         new Vector3((i / (odp.Count - 1f)) * 0.998f, 0, 1), b * (SameAlpha ? 1 : ((odp.Count - i - 1) / (float)odp.Count))));
                 }
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     gd.Textures[0] = tex;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
             }
-            if (ExtraLight)
-            {
+            if (ExtraLight) {
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = Color.White * (remaining / 12f);
                 ve.Add(new ColoredVertex(odp[0] - Main.screenPosition + (odp[1] - odp[0]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 12 * Scale,
                     new Vector3(0f / odp.Count, 1, 1), b));
                 ve.Add(new ColoredVertex(odp[0] - Main.screenPosition + (odp[1] - odp[0]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 12 * Scale,
                     new Vector3(0f / odp.Count, 0, 1), b));
-                for (int i = 1; i < odp.Count; i++)
-                {
+                for (int i = 1; i < odp.Count; i++) {
                     ve.Add(new ColoredVertex(odp[i] - Main.screenPosition + (odp[i] - odp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 8 * Scale,
                         new Vector3(i / (odp.Count - 1f), 1, 1), b * (SameAlpha ? 1 : ((odp.Count - i - 1) / (float)odp.Count))));
                     ve.Add(new ColoredVertex(odp[i] - Main.screenPosition + (odp[i] - odp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 8 * Scale,
                         new Vector3(i / (odp.Count - 1f), 0, 1), b * (SameAlpha ? 1 : ((odp.Count - i - 1) / (float)odp.Count))));
                 }
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     gd.Textures[0] = tex;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
@@ -103,8 +94,7 @@ namespace CalamityEntropy.Content.Particles
             PRTLoader.BeginDrawingWithMode(PRTDrawMode, sb, SpriteSortMode.Deferred);
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             if (!ShouldDraw)
                 return false;
             DrawTrail(sb);
@@ -124,8 +114,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/Trail";
 
         public PRT_TrailGunShot Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -135,37 +124,32 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 200;
         }
 
-        internal Color ColorFunction(float completionRatio, Vector2 vertex)
-        {
+        internal Color ColorFunction(float completionRatio, Vector2 vertex) {
             //PrimitiveRenderer的completion是0→1已过,旧色带要剩余比例,得1减一下
             completionRatio = 1 - completionRatio;
             float fadeOpacity = Math.Min((Lifetime - Time) / (float)trailLength, 1f);
             return Color.PaleGoldenrod * fadeOpacity;
         }
 
-        internal float WidthFunction(float completionRatio, Vector2 vertex)
-        {
+        internal float WidthFunction(float completionRatio, Vector2 vertex) {
             float width = completionRatio * 8f;
             return width > 0 ? width : 0;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             //尾追加序列,index 0是最老点,跟上面odp Insert(0)那套方向相反,别混用
             trailPositions.Add(Position);
             if (trailPositions.Count > trailLength)
                 trailPositions.RemoveAt(0);
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             //原先走灾厄PrimitiveRenderer+TrailStreak shader,脱离灾厄后换成自有BasicTrail贴图的三角带,同为渐隐流光
             if (trailPositions is null || trailPositions.Count < 3)
                 return false;
@@ -177,8 +161,7 @@ namespace CalamityEntropy.Content.Particles
             //旧RenderTrail的offset函数是每点加Vector2.One*Scale*0.5f,保持这个常量位移
             Vector2 posOffset = Vector2.One * Scale * 0.5f;
             List<ColoredVertex> ve = new List<ColoredVertex>();
-            for (int i = 1; i < trailPositions.Count; i++)
-            {
+            for (int i = 1; i < trailPositions.Count; i++) {
                 float c = i / (trailPositions.Count - 1f);
                 float width = WidthFunction(c, Vector2.Zero);
                 Color col = ColorFunction(c, Vector2.Zero);
@@ -187,8 +170,7 @@ namespace CalamityEntropy.Content.Particles
                 ve.Add(new ColoredVertex(basePos + normal * width, new Vector3(c, 1, 1), col));
                 ve.Add(new ColoredVertex(basePos - normal * width, new Vector3(c, 0, 1), col));
             }
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 gd.Textures[0] = tex;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
             }

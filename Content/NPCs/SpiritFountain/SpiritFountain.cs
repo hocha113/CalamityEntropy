@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Potions;
 using CalamityEntropy.Content.NPCs.SpiritFountain.Core;
 using CalamityEntropy.Content.NPCs.SpiritFountain.States;
@@ -30,12 +30,10 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
         public float scale = 1;
         public float Num = 0;
         public int id = 0;
-        public FountainColumn(float a)
-        {
+        public FountainColumn(float a) {
             alpha = a;
         }
-        public Vector2 GetPointAtMe(float poffset)
-        {
+        public Vector2 GetPointAtMe(float poffset) {
             return offset + rotation.ToRotationVector2() * poffset;
         }
     }
@@ -112,10 +110,8 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
         /// 生成敌对弹幕。伤害是 <c>NPC.damage / 6</c> 的<b>整数除法</b>再乘倍率,击退 3,owner 传 -1。
         /// 守卫留在这一处,与原代码同一位置,魂环也从这里出手
         /// </summary>
-        public void Shoot(int type, Vector2 pos, Vector2 velo, float damageMult = 1, float ai0 = 0, float ai1 = 0, float ai2 = 0)
-        {
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
+        public void Shoot(int type, Vector2 pos, Vector2 velo, float damageMult = 1, float ai0 = 0, float ai1 = 0, float ai2 = 0) {
+            if (Main.netMode != NetmodeID.MultiplayerClient) {
                 Projectile.NewProjectile(NPC.GetSource_FromAI(), pos, velo, type,
                     (int)(NPC.damage / SpiritFountainDirector.ProjDamageDivisor * damageMult),
                     SpiritFountainDirector.ProjKnockback, -1, ai0, ai1, ai2);
@@ -124,8 +120,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
         #endregion
 
         #region 定义
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.npcFrameCount[NPC.type] = 1;
             NPCID.Sets.MustAlwaysDraw[NPC.type] = true;
             // 图鉴隐藏:原灾厄隐藏扩展的原版等价写法
@@ -134,24 +129,20 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             NPCID.Sets.NoMultiplayerSmoothingByType[NPC.type] = true;
         }
 
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
-        {
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry) {
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             NPC.boss = true;
             //状态机把状态号写在 ai[3],原版 AI 必须让位
             NPC.aiStyle = -1;
             NPC.width = SpiritFountainDirector.BodySize;
             NPC.height = SpiritFountainDirector.BodySize;
             NPC.damage = SpiritFountainDirector.BaseDamage;
-            if (Main.expertMode)
-            {
+            if (Main.expertMode) {
                 NPC.damage += SpiritFountainDirector.DamageExpertBonus;
             }
-            if (Main.masterMode)
-            {
+            if (Main.masterMode) {
                 NPC.damage += SpiritFountainDirector.DamageMasterBonus;
             }
             SpiritCount = SpiritFountainDirector.SpiritCount();
@@ -168,27 +159,23 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             NPC.dontCountMe = true;
             NPC.scale = 1f;
             NPC.timeLeft *= SpiritFountainDirector.TimeLeftMul;
-            if (Main.masterMode)
-            {
+            if (Main.masterMode) {
                 NPC.scale = SpiritFountainDirector.MasterScale;
             }
             NPC.netAlways = true;
             NPC.Entropy().damageMul = SpiritFountainDirector.DamageMul;
-            if (!Main.dedServ)
-            {
+            if (!Main.dedServ) {
                 Music = MusicID.OtherworldlyTowers;
             }
         }
         #endregion
 
         #region 掉落
-        public override void BossLoot(ref int potionType)
-        {
+        public override void BossLoot(ref int potionType) {
             potionType = ModContent.ItemType<VoidHealingPotion>();
         }
 
-        public override void ModifyNPCLoot(NPCLoot npcLoot)
-        {
+        public override void ModifyNPCLoot(NPCLoot npcLoot) {
             // 月后虚空治疗药水,数量沿用原欧米茄档 8-23;隐藏图鉴条目
             npcLoot.Add(new DropPerPlayerOnThePlayer(ModContent.ItemType<VoidHealingPotion>(), 1, 8, 23, new HiddenDropCondition()));
         }
@@ -201,8 +188,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             public string GetConditionDescription() => null;
         }
 
-        public override void OnKill()
-        {
+        public override void OnKill() {
             //NPC.SetEventFlagCleared(ref EDownedBosses.downedCruiser, -1);
         }
         #endregion
@@ -228,10 +214,8 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
         #endregion
 
         #region 状态机装配
-        private void EnsureContext()
-        {
-            Context ??= new SpiritFountainStateContext
-            {
+        private void EnsureContext() {
+            Context ??= new SpiritFountainStateContext {
                 Npc = NPC,
                 Owner = this,
             };
@@ -239,19 +223,16 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             Context.Owner = this;
         }
 
-        private void InitializeStateMachine()
-        {
+        private void InitializeStateMachine() {
             EnsureContext();
-            if (NPC.ai[2] < 1f)
-            {
+            if (NPC.ai[2] < 1f) {
                 NPC.ai[2] = 1f;
             }
             stateMachine = new NpcStateMachine<SpiritFountainStateContext>(Context);
             CEBossHost.HookStateSwapAdoption(netMotion, stateMachine);
 
             IVaultState<SpiritFountainStateContext> initial = null;
-            if (VaultUtils.isClient)
-            {
+            if (VaultUtils.isClient) {
                 //中途加入的客户端从 ai[3] 重建当前状态,不要默认回出场演出
                 initial = VaultStateRegistry<SpiritFountainStateContext>.Create((int)NPC.ai[3]);
             }
@@ -264,18 +245,14 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
         /// 放出一整圈魂环。<paramref name="columnId"/> 决定它们挂在哪根柱子上(写进魂环的 ai[2])。
         /// 只在权威端生成,并逐个补 SyncNPC——原代码就是这样写的
         /// </summary>
-        public void SpawnRingSet(int columnId)
-        {
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
+        public void SpawnRingSet(int columnId) {
+            if (Main.netMode == NetmodeID.MultiplayerClient) {
                 return;
             }
-            for (int i = 0; i < SpiritCount; i++)
-            {
+            for (int i = 0; i < SpiritCount; i++) {
                 int idx = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y,
                     ModContent.NPCType<SpiritRing>(), 0, NPC.whoAmI, float.Lerp(-1, 1, i / (float)(SpiritCount - 1)), columnId);
-                if (Main.netMode == NetmodeID.Server)
-                {
+                if (Main.netMode == NetmodeID.Server) {
                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, idx);
                     Main.npc[idx].netUpdate = true;
                 }
@@ -283,11 +260,9 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
         }
         #endregion
 
-        public override void AI()
-        {
+        public override void AI() {
             EnsureContext();
-            if (stateMachine == null)
-            {
+            if (stateMachine == null) {
                 InitializeStateMachine();
             }
 
@@ -295,8 +270,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             //本体不做速度积分,所以不进 CEBossNetMotion 的预测纠偏器,只清原版平滑:
             //本体与魂环这样才读同一个(清零的)平滑层级,贴图不会错位
             CEBossHost.RunAnchoredPartFrame(NPC);
-            if (client)
-            {
+            if (client) {
                 CEBossHost.AdoptTimingAtFrameStart(netMotion, stateMachine);
             }
 
@@ -305,15 +279,13 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             RunStateChain();
             RunEpilogue();
 
-            if (!client)
-            {
+            if (!client) {
                 CEBossHost.Heartbeat(NPC);
             }
         }
 
         /// <summary>原 AI() 开头那一段全局账,顺序逐行对齐</summary>
-        private void RunPrologue()
-        {
+        private void RunPrologue() {
             //阶段每帧按血量比例重算,是确定性推导量:血量本身走原版同步,各端同值
             Context.Phase = SpiritFountainDirector.PhaseFor(NPC);
             ClearMyProjs--;
@@ -330,8 +302,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             SpawnColumnParticles();
         }
 
-        private void UpdateContextFacts()
-        {
+        private void UpdateContextFacts() {
             Context.Npc = NPC;
             Context.Owner = this;
             Player target = NPC.HasValidTarget ? Main.player[NPC.target] : null;
@@ -340,69 +311,55 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
         }
 
         /// <summary>柱子是一条贯穿全屏的判定线,站上去就持续挂魂乱。原代码只在非专用服务端判定</summary>
-        private void ApplyColumnSoulDisorder()
-        {
-            if (Main.netMode == NetmodeID.Server)
-            {
+        private void ApplyColumnSoulDisorder() {
+            if (Main.netMode == NetmodeID.Server) {
                 return;
             }
             int width = (int)(SpiritFountainDirector.ColumnBuffLineWidth * NPC.scale);
-            foreach (Player plr in Main.ActivePlayers)
-            {
+            foreach (Player plr in Main.ActivePlayers) {
                 if (column1.alpha > SpiritFountainDirector.ColumnBuffAlphaGate
                     && CEUtils.LineThroughRect(NPC.Center + column1.GetPointAtMe(-SpiritFountainDirector.ColumnBuffLineHalfLength),
-                        NPC.Center + column1.GetPointAtMe(SpiritFountainDirector.ColumnBuffLineHalfLength), plr.getRect(), width))
-                {
+                        NPC.Center + column1.GetPointAtMe(SpiritFountainDirector.ColumnBuffLineHalfLength), plr.getRect(), width)) {
                     plr.AddBuff(ModContent.BuffType<SoulDisorder>(), SpiritFountainDirector.ColumnBuffDuration);
                 }
                 if (column2.alpha > SpiritFountainDirector.ColumnBuffAlphaGate
                     && CEUtils.LineThroughRect(NPC.Center + column2.GetPointAtMe(-SpiritFountainDirector.ColumnBuffLineHalfLength),
-                        NPC.Center + column2.GetPointAtMe(SpiritFountainDirector.ColumnBuffLineHalfLength), plr.getRect(), width))
-                {
+                        NPC.Center + column2.GetPointAtMe(SpiritFountainDirector.ColumnBuffLineHalfLength), plr.getRect(), width)) {
                     plr.AddBuff(ModContent.BuffType<SoulDisorder>(), SpiritFountainDirector.ColumnBuffDuration);
                 }
             }
         }
 
         /// <summary>双柱烟雾。90× 双柱密度很高,3200px 屏心裁剪 + 50% 随机省一半 spawn</summary>
-        private void SpawnColumnParticles()
-        {
-            if (Main.dedServ)
-            {
+        private void SpawnColumnParticles() {
+            if (Main.dedServ) {
                 return;
             }
             Vector2 screenCenter = Main.screenPosition + new Vector2(Main.screenWidth, Main.screenHeight).Half();
-            for (int i = 0; i < SpiritFountainDirector.ColumnSmokeLoop; i++)
-            {
-                if (column1.alpha > 0)
-                {
+            for (int i = 0; i < SpiritFountainDirector.ColumnSmokeLoop; i++) {
+                if (column1.alpha > 0) {
                     SpawnOneColumnParticle(column1, SpiritFountainDirector.ColumnSmokeAcross1, screenCenter);
                 }
-                if (column2.alpha > 0)
-                {
+                if (column2.alpha > 0) {
                     SpawnOneColumnParticle(column2, SpiritFountainDirector.ColumnSmokeAcross2, screenCenter);
                 }
             }
         }
 
-        private void SpawnOneColumnParticle(FountainColumn column, float across, Vector2 screenCenter)
-        {
+        private void SpawnOneColumnParticle(FountainColumn column, float across, Vector2 screenCenter) {
             Vector2 pos = NPC.Center + column.offset
                 + column.rotation.ToRotationVector2() * Main.rand.NextFloat(-SpiritFountainDirector.ColumnSmokeAlong, SpiritFountainDirector.ColumnSmokeAlong)
                 + column.rotation.ToRotationVector2().RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-across, across) * column.scale;
-            if (Vector2.Distance(pos, screenCenter) >= SpiritFountainDirector.ColumnSmokeCullRadius)
-            {
+            if (Vector2.Distance(pos, screenCenter) >= SpiritFountainDirector.ColumnSmokeCullRadius) {
                 return;
             }
-            if (Main.rand.NextBool())
-            {
+            if (Main.rand.NextBool()) {
                 PRT_Smoke smoke = PRTLoader.NewParticle<PRT_Smoke>(pos, Vector2.Zero,
                     Color.AliceBlue * column.alpha * SpiritFountainDirector.ColumnSmokeColorMul,
                     Main.rand.NextFloat(SpiritFountainDirector.ColumnSmokeScaleMin, SpiritFountainDirector.ColumnSmokeScaleMax));
                 smoke.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, CEUtils.randomRot(), SpiritFountainDirector.ColumnSmokeLife);
             }
-            else
-            {
+            else {
                 PRTLoader.NewParticle<PRT_GlowLightParticle>(pos, CEUtils.randomPointInCircle(SpiritFountainDirector.ColumnGlowVelRadius),
                     Color.AliceBlue * column.alpha * SpiritFountainDirector.ColumnGlowColorMul,
                     Main.rand.NextFloat(SpiritFountainDirector.ColumnGlowScaleMin, SpiritFountainDirector.ColumnGlowScaleMax))
@@ -418,17 +375,14 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
         /// </para>
         /// <para>一次性闸与柱子归位各端都做(只是记账与已过线量的本地推导),换态与魂环生成只在权威端。</para>
         /// </summary>
-        private void EvaluatePhaseTransition()
-        {
-            if (Context.Phase <= SpiritFountainDirector.PhaseTransThreshold || !Context.SpawnSpirits2)
-            {
+        private void EvaluatePhaseTransition() {
+            if (Context.Phase <= SpiritFountainDirector.PhaseTransThreshold || !Context.SpawnSpirits2) {
                 return;
             }
             Context.SpawnSpirits2 = false;
             Context.CenterRing = (int)Math.Ceiling(SpiritCount / 2f);
             column2.rotation = 0;
-            if (VaultUtils.isClient)
-            {
+            if (VaultUtils.isClient) {
                 return;
             }
             SpawnRingSet(1);
@@ -450,29 +404,23 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
         /// 在被动换态之后本来就会立刻跑一次新状态体,再续跑一次就成了一帧双跑。
         /// </para>
         /// </summary>
-        private void RunStateChain()
-        {
-            if (VaultUtils.isClient)
-            {
+        private void RunStateChain() {
+            if (VaultUtils.isClient) {
                 stateMachine.Update();
                 return;
             }
-            for (int step = 0; step <= SpiritFountainDirector.MaxChainStepsPerFrame; step++)
-            {
+            for (int step = 0; step <= SpiritFountainDirector.MaxChainStepsPerFrame; step++) {
                 IVaultState<SpiritFountainStateContext> before = stateMachine.CurrentState;
                 int beforeOrder = SpiritFountainRotation.ChainOrder(before);
                 stateMachine.Update();
                 IVaultState<SpiritFountainStateContext> after = stateMachine.CurrentState;
-                if (ReferenceEquals(before, after))
-                {
+                if (ReferenceEquals(before, after)) {
                     return;
                 }
-                if (SpiritFountainRotation.ChainOrder(after) > beforeOrder)
-                {
+                if (SpiritFountainRotation.ChainOrder(after) > beforeOrder) {
                     continue;
                 }
-                if (after is SpiritFountainStateBase deferred)
-                {
+                if (after is SpiritFountainStateBase deferred) {
                     deferred.AdoptDeferredEntry();
                 }
                 return;
@@ -483,18 +431,14 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
         /// 原 AI() 末尾那一段:挂在横扫块上的摇摆清零、脱战判定、眼睛插值。
         /// 聚魂期间原代码在这之前就 <c>return</c> 了,所以这三样都要一起跳过
         /// </summary>
-        private void RunEpilogue()
-        {
-            if (Context.StareAtLocalPlayer)
-            {
+        private void RunEpilogue() {
+            if (Context.StareAtLocalPlayer) {
                 Context.StarePoint = Main.LocalPlayer.Center;
             }
-            if (Context.HaltFrame)
-            {
+            if (Context.HaltFrame) {
                 return;
             }
-            if (!Context.KeepMovingSway)
-            {
+            if (!Context.KeepMovingSway) {
                 Context.MCounter = 0;
                 Context.MAmp = 0;
             }
@@ -503,12 +447,10 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             if (NPC.localAI[2] > SpiritFountainDirector.DeactiveFrames
                 || (NPC.HasValidTarget && !NPC.target.ToPlayer().Center
                         .getRectCentered(SpiritFountainDirector.DespawnPlayerBox, SpiritFountainDirector.DespawnPlayerBox)
-                        .Intersects(NPC.Center.getRectCentered(SpiritFountainDirector.DespawnBoxTiles * 16, SpiritFountainDirector.DespawnBoxTiles * 16))))
-            {
+                        .Intersects(NPC.Center.getRectCentered(SpiritFountainDirector.DespawnBoxTiles * 16, SpiritFountainDirector.DespawnBoxTiles * 16)))) {
                 //消失是世界写入:只在权威端做并立刻发包。原代码各端各自 active = false,
                 //客户端那一份会把 Boss 从自己屏幕上抹掉却没人告诉服务端
-                if (!VaultUtils.isClient)
-                {
+                if (!VaultUtils.isClient) {
                     NPC.active = false;
                     NPC.netUpdate = true;
                 }
@@ -525,14 +467,12 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
         /// 真正要过线的是<b>柱子的</b> rotation
         /// </para>
         /// </summary>
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             EnsureContext();
             int stateId = (int)NPC.ai[3];
             int timer = 0;
             int counter = 0;
-            if (stateMachine?.CurrentState is SpiritFountainStateBase state)
-            {
+            if (stateMachine?.CurrentState is SpiritFountainStateBase state) {
                 stateId = state.StateId;
                 timer = state.Timer;
                 counter = state.Counter;
@@ -559,13 +499,11 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             writer.Write(Context.SpawnSpirits2);
         }
 
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             EnsureContext();
             int localStateId = -1;
             int localTimer = 0;
-            if (stateMachine?.CurrentState is SpiritFountainStateBase state)
-            {
+            if (stateMachine?.CurrentState is SpiritFountainStateBase state) {
                 localStateId = state.StateId;
                 localTimer = state.Timer;
             }
@@ -594,8 +532,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
         }
 
         /// <summary>标量当帧计数用:容差内不动,对齐 AdoptTimer 的口径</summary>
-        private static float AdoptScalar(float local, float synced)
-        {
+        private static float AdoptScalar(float local, float synced) {
             return Math.Abs(synced - local) > CEBossNetMotion.TimerTolerance ? synced : local;
         }
         #endregion

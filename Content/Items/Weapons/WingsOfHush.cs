@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -10,8 +10,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 {
     public class WingsOfHush : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 30;
             Item.height = 44;
             Item.damage = 800;
@@ -32,8 +31,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public override Vector2? HoldoutOffset() => new Vector2(-28, 0);
         public bool flag = false;
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             CEUtils.PlaySound("WingOfHushShoot", Main.rand.NextFloat(0.7f, 1.1f), position, 8, 0.7f);
             flag = true;
             int p = Projectile.NewProjectile(source, position + velocity.normalize() * 32, velocity, ModContent.ProjectileType<WohLaser>(), damage, knockback, player.whoAmI);
@@ -44,47 +42,38 @@ namespace CalamityEntropy.Content.Items.Weapons
             Projectile.NewProjectile(source, position + velocity.normalize() * Item.shootSpeed + velocity.normalize().RotatedBy(MathHelper.PiOver2) * -18, velocity.RotatedBy(MathHelper.ToRadians(-6)) + player.velocity * 0.2f, ModContent.ProjectileType<WohShot>(), (int)(damage * 0.3f), knockback, player.whoAmI, 0, Main.MouseWorld.X, Main.MouseWorld.Y);
             return false;
         }
-        public override void HoldItem(Player player)
-        {
+        public override void HoldItem(Player player) {
             int type = ModContent.ProjectileType<WOHHeld>();
             if (Main.myPlayer == player.whoAmI)
                 if (player.ownedProjectileCounts[type] < 1)
                     Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.MountedCenter, (Main.MouseWorld - player.MountedCenter).normalize() * 12, type, 0, 0, player.whoAmI);
         }
-        public override bool RangedPrefix()
-        {
+        public override bool RangedPrefix() {
             return true;
         }
     }
     public class WOHHeld : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/WingsOfHush";
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             return false;
         }
-        public override bool? CanCutTiles()
-        {
+        public override bool? CanCutTiles() {
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return false;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.friendly = true;
             Projectile.timeLeft = 2;
         }
         public float ofs = 0;
-        public override void AI()
-        {
+        public override void AI() {
             Player player = Projectile.GetOwner();
-            if (player.HeldItem.ModItem != null && player.HeldItem.ModItem is WingsOfHush wh)
-            {
-                if (wh.flag)
-                {
+            if (player.HeldItem.ModItem != null && player.HeldItem.ModItem is WingsOfHush wh) {
+                if (wh.flag) {
                     wh.flag = false;
                     ofs = -16;
                 }
@@ -96,14 +85,12 @@ namespace CalamityEntropy.Content.Items.Weapons
 
             Projectile.Center += Projectile.rotation.ToRotationVector2() * ofs;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Projectile.GetTexture();
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None);
             return false;
         }
-        public void DrawVoid()
-        {
+        public void DrawVoid() {
             Texture2D tex = this.getTextureGlow();
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None);
         }

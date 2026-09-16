@@ -15,8 +15,7 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             Glow = true;
             b = default;
@@ -31,8 +30,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/LifeLeaf";
 
         public PRT_ELineParticle Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -42,16 +40,14 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             b = Position;   //尾端锚在spawn点,每帧向当前Position收拢画拖尾
             if (Lifetime <= 0)
                 Lifetime = 200;   //旧默认很长,真正死亡看头尾距离+counter
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             counter++;
             Velocity *= r;   //r调用点传的速度衰减,默认0就不动
             b = Vector2.Lerp(Position, b, c);   //c是尾端追随系数
@@ -62,8 +58,7 @@ namespace CalamityEntropy.Content.Particles
             w *= 0.97f;   //线宽衰减,老值别改
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             //旧overload硬打Main.spriteBatch,跟传进来的sb是同一个,不用自己End/Begin
             CEUtils.drawLine(Position, b, Color, width * w);
             return false;

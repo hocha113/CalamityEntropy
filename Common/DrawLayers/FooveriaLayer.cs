@@ -1,5 +1,4 @@
-﻿using CalamityEntropy.Content.Items.Accessories;
-using CalamityEntropy.Content.Items.Donator;
+﻿using CalamityEntropy.Content.Items.Donator;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -17,26 +16,22 @@ namespace CalamityEntropy.Common.DrawLayers
         [VaultLoaden("CalamityEntropy/Content/Items/Donator/FooveriaGlow")]
         internal static Asset<Texture2D> FooveriaGlowTex;
 
-        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
-        {
+        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) {
             if (drawInfo.shadow != 0f || drawInfo.drawPlayer.dead)
                 return false;
             return drawInfo.drawPlayer.HeldItem.ModItem != null && drawInfo.drawPlayer.HeldItem.ModItem is Fooveria && drawInfo.drawPlayer.itemAnimation == 0;
         }
 
-        public override Position GetDefaultPosition()
-        {
+        public override Position GetDefaultPosition() {
             return new BeforeParent(PlayerDrawLayers.Wings);
         }
 
-        protected override void Draw(ref PlayerDrawSet drawInfo)
-        {
+        protected override void Draw(ref PlayerDrawSet drawInfo) {
             Player player = drawInfo.drawPlayer;
             Texture2D tex = FooveriaTex.Value;
             Texture2D tex2 = FooveriaGlowTex.Value;
             float GlowAlpha = 0;
-            if(player.Entropy().noItemTime >= 15 && player.Entropy().noItemTime <= 26)
-            {
+            if (player.Entropy().noItemTime >= 15 && player.Entropy().noItemTime <= 26) {
                 GlowAlpha = Utils.Remap(player.Entropy().noItemTime, 15, 26, 0, 1);
             }
             if (player.Entropy().noItemTime > 26)

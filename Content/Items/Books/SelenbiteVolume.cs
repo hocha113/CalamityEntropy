@@ -1,7 +1,8 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.UI.EntropyBookUI;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using InnoVault;
 using InnoVault.PRT;
@@ -11,14 +12,12 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Books
 {
     public class SelenbiteVolume : EntropyBook
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.width = 40;
             Item.height = 52;
@@ -36,10 +35,8 @@ namespace CalamityEntropy.Content.Items.Books
         public override int HeldProjectileType => ModContent.ProjectileType<SelenbiteVolumeHeld>();
         public override int SlotCount => 4;
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_ExodiumCluster, CEID.Item_Necroplasm))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_ExodiumCluster, CEID.Item_Necroplasm)) {
                 CreateRecipe()
                 .AddIngredient<DarkScripture>()
                 .AddIngredient(CEID.Item_ExodiumCluster, 12)
@@ -63,39 +60,32 @@ namespace CalamityEntropy.Content.Items.Books
         public override string PageAnimationPath => $"{EntropyBook.BaseFolder}/Textures/SelenbiteVolume/Page";
         public override string UIOpenAnimationPath => $"{EntropyBook.BaseFolder}/Textures/SelenbiteVolume/UI";
 
-        public override EBookStatModifer getBaseModifer()
-        {
+        public override EBookStatModifer getBaseModifer() {
             var m = base.getBaseModifer();
             m.Homing = 1f;
             m.HomingRange = 0.8f;
             return m;
         }
-        public override bool Shoot()
-        {
+        public override bool Shoot() {
             int type = getShootProjectileType();
-            for (int i = 0; i < Math.Min(EBookUI.getMaxSlots(Main.LocalPlayer, bookItem), Projectile.GetOwner().Entropy().EBookStackItems.Count); i++)
-            {
+            for (int i = 0; i < Math.Min(EBookUI.getMaxSlots(Main.LocalPlayer, bookItem), Projectile.GetOwner().Entropy().EBookStackItems.Count); i++) {
                 var bm = Projectile.owner.ToPlayer().Entropy().EBookStackItems[i];
-                if (BookMarkLoader.IsABookMark(bm))
-                {
+                if (BookMarkLoader.IsABookMark(bm)) {
                     int pn = BookMarkLoader.ModifyProjectile(bm, type);
-                    if (pn >= 0)
-                    {
+                    if (pn >= 0) {
                         type = pn;
                     }
                 }
             }
             Player player = Projectile.GetOwner();
-            for (int i = 0; i < Main.rand.Next(6, 10); i++)
-            {
+            for (int i = 0; i < Main.rand.Next(6, 10); i++) {
                 ShootSingleProjectile(type, Projectile.Center, Projectile.velocity, 1, 1, Main.rand.NextFloat(0.2f, 1), MainProjectile: true);
 
                 //PRT_GlowLightParticle lightColor spawn后赋,Configure只管Additive和lifetime
                 var glow = PRTLoader.NewParticle<PRT_GlowLightParticle>(player.MountedCenter, Projectile.rotation.ToRotationVector2().RotatedByRandom(randomShootRotMax) * Main.rand.NextFloat(4, 20) * 2.5f, Color.YellowGreen, Main.rand.NextFloat(0.4f, 0.8f));
                 glow.lightColor = Color.YellowGreen * 0.25f;
                 glow.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 30);
-                for (int s = 0; s < 3; s++)
-                {
+                for (int s = 0; s < 3; s++) {
                     var smoke = PRTLoader.NewParticle<PRT_Smoke>(player.MountedCenter, Projectile.rotation.ToRotationVector2().RotatedByRandom(randomShootRotMax) * Main.rand.NextFloat(4, 20) * 1f, Color.YellowGreen, 0.5f);
                     smoke.timeleftmax = 30;
                     smoke.Lifetime = 30;
@@ -113,8 +103,7 @@ namespace CalamityEntropy.Content.Items.Books
     public class SelenbiteStar : EBookBaseProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Projectile.width = 40;
             Projectile.height = 40;
@@ -123,16 +112,13 @@ namespace CalamityEntropy.Content.Items.Books
             Projectile.timeLeft = 400;
             Projectile.penetrate = 1;
         }
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             base.OnKill(timeLeft);
             CEUtils.PlaySound("LunarStar", Main.rand.NextFloat(1f, 1.3f), Projectile.Center, volume: 1);
             PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, color, 0.5f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 12);
         }
-        public override void AI()
-        {
-            if (Projectile.localAI[0]++ == 0)
-            {
+        public override void AI() {
+            if (Projectile.localAI[0]++ == 0) {
                 Projectile.localAI[1] = Main.rand.NextFloat(MathHelper.TwoPi);
                 Projectile.Opacity = 0;
             }
@@ -145,8 +131,7 @@ namespace CalamityEntropy.Content.Items.Books
             Projectile.velocity *= 0.97f;
         }
         public override Color baseColor => Color.YellowGreen;
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             Texture2D tex = CEExtraAssets.StarTexture;

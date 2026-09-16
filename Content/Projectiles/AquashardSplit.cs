@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,8 +12,7 @@ namespace CalamityEntropy.Content.Projectiles
 
         public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 10;
             Projectile.height = 10;
             Projectile.friendly = true;
@@ -26,13 +25,11 @@ namespace CalamityEntropy.Content.Projectiles
 
         public override bool? CanHitNPC(NPC target) => Projectile.timeLeft < 280 && target.CanBeChasedBy(Projectile);
 
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.velocity.X *= 0.9995f;
             Projectile.velocity.Y += 0.01f;
 
-            if (Projectile.timeLeft < 280)
-            {
+            if (Projectile.timeLeft < 280) {
                 //原灾厄HomeInOnNPC(450,6/8,20),tileCollide=true时带视线过滤
                 NPC target = CEUtils.FindTarget_HomingProj(Projectile, Projectile.Center, 450f,
                     Projectile.tileCollide ? CEUtils.HomingWithTileBlockingFilter : null);
@@ -41,11 +38,9 @@ namespace CalamityEntropy.Content.Projectiles
             }
         }
 
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
-            for (int k = 0; k < 5; k++)
-            {
+            for (int k = 0; k < 5; k++) {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Rain, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
         }

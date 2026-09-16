@@ -1,25 +1,22 @@
 ﻿using CalamityEntropy.Common;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Vanity
 {
     public class AbyssLantern : ModItem, IVanitySkin
     {
-        public override void Load()
-        {
-            if (Main.netMode != NetmodeID.Server)
-            {
+        public override void Load() {
+            if (Main.netMode != NetmodeID.Server) {
                 EquipLoader.AddEquipTexture(Mod, "CalamityEntropy/Content/Items/Vanity/wyrm_Head", EquipType.Head, this);
                 EquipLoader.AddEquipTexture(Mod, "CalamityEntropy/Content/Items/Vanity/wyrm_Body", EquipType.Body, this);
                 EquipLoader.AddEquipTexture(Mod, "CalamityEntropy/Content/Items/Vanity/wyrm_Legs", EquipType.Legs, this);
             }
         }
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
 
             if (Main.netMode == NetmodeID.Server)
                 return;
@@ -35,8 +32,7 @@ namespace CalamityEntropy.Content.Items.Vanity
             ArmorIDs.Legs.Sets.HidesBottomSkin[equipSlotLegs] = true;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 22;
             Item.height = 30;
             Item.accessory = true;
@@ -45,21 +41,17 @@ namespace CalamityEntropy.Content.Items.Vanity
             Item.vanity = true;
         }
 
-        public override void UpdateVanity(Player player)
-        {
+        public override void UpdateVanity(Player player) {
             player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            if (!hideVisual)
-            {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
+            if (!hideVisual) {
                 player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             }
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             // 灾厄虚空石/虚空火把按 bookmark-rehang §六 裁决换黑曜石与微光火把
             CreateRecipe().AddCalOrOwn(CEID.Item_Voidstone, ItemID.Obsidian, 4)
                 .AddCalOrOwn(CEID.Item_VoidTorch, ItemID.ShimmerTorch, 1)

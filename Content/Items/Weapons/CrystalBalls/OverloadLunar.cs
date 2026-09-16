@@ -7,8 +7,7 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
 {
     public class OverloadLunar : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 44;
             Item.height = 44;
             Item.damage = 75;
@@ -27,16 +26,14 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
             Item.mana = 2;
             Item.DamageType = DamageClass.Magic;
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ItemID.CrystalBall)
                 .AddIngredient(ItemID.LunarBar, 10)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
     }

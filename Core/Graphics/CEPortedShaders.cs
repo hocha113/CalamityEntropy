@@ -1,5 +1,4 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
@@ -24,8 +23,7 @@ namespace CalamityEntropy.Core.Graphics
         internal static Asset<Effect> RoverDriveShieldShader;
         internal static Asset<Effect> StandardPrimitiveShader;
 
-        public override void PostSetupContent()
-        {
+        public override void PostSetupContent() {
             static Asset<Effect> LoadShader(string name) =>
                 ModContent.Request<Effect>($"{EffectPath}{name}", AssetRequestMode.ImmediateLoad);
 
@@ -58,8 +56,7 @@ namespace CalamityEntropy.Core.Graphics
             RegisterMiscShader(StandardPrimitiveShader, "PrimitivePass", "StandardPrimitiveShader");
         }
 
-        public override void Unload()
-        {
+        public override void Unload() {
             ArtAttackShader = null;
             TrailStreakShader = null;
             ExobladePierceShader = null;
@@ -69,20 +66,17 @@ namespace CalamityEntropy.Core.Graphics
             StandardPrimitiveShader = null;
         }
 
-        private static void RegisterMiscShader(Asset<Effect> shader, string passName, string name)
-        {
+        private static void RegisterMiscShader(Asset<Effect> shader, string passName, string name) {
             GameShaders.Misc[$"{ShaderPrefix}{name}"] = new MiscShaderData(shader, passName);
         }
 
-        private static void RegisterSceneFilter(ScreenShaderData data, string name, EffectPriority priority)
-        {
+        private static void RegisterSceneFilter(ScreenShaderData data, string name, EffectPriority priority) {
             string key = $"{ShaderPrefix}{name}";
             Filters.Scene[key] = new Filter(data, priority);
             Filters.Scene[key].Load();
         }
 
-        private static void RegisterScreenShader(Asset<Effect> shader, string passName, string name, EffectPriority priority = EffectPriority.High)
-        {
+        private static void RegisterScreenShader(Asset<Effect> shader, string passName, string name, EffectPriority priority = EffectPriority.High) {
             RegisterSceneFilter(new ScreenShaderData(shader, passName), name, priority);
         }
     }

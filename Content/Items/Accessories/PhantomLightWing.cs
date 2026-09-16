@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Rarities;
+﻿using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -16,14 +16,12 @@ namespace CalamityEntropy.Content.Items.Accessories
         public int FallingFrame => 2;
         public int MaxFrame => 8;
         public int SlowFallingFrame => 1;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             base.SetStaticDefaults();
             ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(wTime, HorSpeed, AccMul, false, 20, 2.8f);
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.width = 22;
             Item.height = 20;
@@ -31,17 +29,14 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.rare = ModContent.RarityType<Lunarblight>();
             Item.accessory = true;
         }
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             base.UpdateAccessory(player, hideVisual);
             player.Entropy().addEquip("PLWing", !hideVisual);
-            if (!hideVisual)
-            {
+            if (!hideVisual) {
                 player.Entropy().light += 0.8f;
             }
         }
-        public override void UpdateVanity(Player player)
-        {
+        public override void UpdateVanity(Player player) {
             base.UpdateVanity(player);
             player.Entropy().addEquipVisual("PLWing");
         }

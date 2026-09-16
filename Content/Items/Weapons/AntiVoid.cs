@@ -1,8 +1,9 @@
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Cooldowns;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Cooldowns;
 using CalamityEntropy.Core.Graphics;
 using InnoVault;
@@ -15,7 +16,6 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -23,14 +23,12 @@ namespace CalamityEntropy.Content.Items.Weapons
     {
         public string DevName => "ChaLost";
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
 
             ItemID.Sets.AnimatesAsSoul[Type] = true;
             Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 5));
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 80;
             Item.height = 144;
             Item.noMelee = true;
@@ -49,28 +47,22 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.value = Item.buyPrice(0, 60);
             Item.rare = ModContent.RarityType<VoidPurple>();
         }
-        public override bool AltFunctionUse(Player player)
-        {
+        public override bool AltFunctionUse(Player player) {
             return !player.HasCooldown(AntivoidDashCooldown.ID);
         }
-        public override bool CanShoot(Player player)
-        {
-            if (player.altFunctionUse == 2)
-            {
+        public override bool CanShoot(Player player) {
+            if (player.altFunctionUse == 2) {
                 Item.useTime = 20;
                 Item.useAnimation = 20;
             }
-            else
-            {
+            else {
                 Item.useTime = 8;
                 Item.useAnimation = 16;
             }
             return base.CanShoot(player);
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            if (player.altFunctionUse == 2)
-            {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
+            if (player.altFunctionUse == 2) {
                 type = ModContent.ProjectileType<AntivoidDash>();
                 damage *= 4;
                 player.AddCooldown(AntivoidDashCooldown.ID, 15 * 60);
@@ -78,8 +70,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 if (player.mount.Active)
                     player.mount.Dismount(player);
             }
-            else
-            {
+            else {
                 velocity = CEUtils.randomRot().ToRotationVector2() * velocity.Length();
             }
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, Main.rand.NextBool() ? -1 : 1);
@@ -87,13 +78,11 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
 
 
-        public override bool MeleePrefix()
-        {
+        public override bool MeleePrefix() {
             return true;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient<VoidBlade>()
                 .AddCalOrOwn(CEID.Item_TwistingNether, ModContent.ItemType<WraithSoulEssence>(), 4)
@@ -116,15 +105,13 @@ namespace CalamityEntropy.Content.Items.Weapons
         internal static Effect AntivoidTrailShader;
         List<float> odr = new List<float>();
         List<float> odl = new List<float>();
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 12;
 
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
@@ -141,8 +128,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public float alpha = 0;
         public bool init = true;
         public bool shoot = true;
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             CEUtils.SetShake(target.Center, 6, 3000);
             CEUtils.PlaySound("antivoidhit", Main.rand.NextFloat(0.8f, 1.2f), target.Center);
             Color impactColor = Color.LightBlue;
@@ -153,19 +139,16 @@ namespace CalamityEntropy.Content.Items.Weapons
 
 
             float sparkCount = 32;
-            for (int i = 0; i < sparkCount; i++)
-            {
+            for (int i = 0; i < sparkCount; i++) {
                 float p = Main.rand.NextFloat();
                 Vector2 sparkVelocity2 = (target.Center - Projectile.Center).normalize().RotatedByRandom(p * 0.4f) * Main.rand.NextFloat(6, 34 * (2 - p));
                 int sparkLifetime2 = (int)((2 - p) * 7);
                 float sparkScale2 = 0.6f + (1 - p);
                 Color sparkColor2 = Color.Lerp(Color.DeepSkyBlue, Color.Purple, p);
-                if (Main.rand.NextBool())
-                {
+                if (Main.rand.NextBool()) {
                     PRTLoader.NewParticle<PRT_AltSpark>(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f), sparkVelocity2 * (1f), sparkColor2, sparkScale2 * (1.4f)).Configure(false, (int)(sparkLifetime2 * (1.2f)));
                 }
-                else
-                {
+                else {
                     PRTLoader.NewParticle<PRT_LineCal>(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f), sparkVelocity2 * (Projectile.frame == 7 ? 1f : 0.65f), Main.rand.NextBool() ? Color.Red : Color.Firebrick, sparkScale2 * (Projectile.frame == 7 ? 1.4f : 1f)).Configure(false, (int)(sparkLifetime2 * (Projectile.frame == 7 ? 1.2f : 1f)));
                 }
             }
@@ -173,18 +156,15 @@ namespace CalamityEntropy.Content.Items.Weapons
         public float RotF = 0;
         public float rc = 0;
         public float yc = 0;
-        public override void AI()
-        {
-            if (yc == 0)
-            {
+        public override void AI() {
+            if (yc == 0) {
                 yc = Main.rand.NextFloat(0.3f, 0.8f);
             }
             Player owner = Projectile.GetOwner();
             float MaxUpdateTimes = 14 * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
             counter++;
-            if (init)
-            {
+            if (init) {
                 CEUtils.PlaySound("antivoiduse", Main.rand.NextFloat(0.7f, 1.4f), Projectile.Center, 36);
                 float scale_ = owner.HeldItem.scale;
                 owner.ApplyMeleeScale(ref scale_);
@@ -192,8 +172,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 init = false;
             }
             Projectile.timeLeft = 3;
-            if (RotF == 0)
-            {
+            if (RotF == 0) {
                 RotF = Main.rand.NextFloat(MathHelper.ToRadians(340), MathHelper.ToRadians(400));
                 rc = Main.rand.NextFloat(0.2f, 0.4f);
             }
@@ -207,49 +186,41 @@ namespace CalamityEntropy.Content.Items.Weapons
 
             Projectile.Center = Projectile.GetOwner().MountedCenter;
 
-            if (Projectile.velocity.X > 0)
-            {
+            if (Projectile.velocity.X > 0) {
                 owner.direction = 1;
                 owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - (float)(Math.PI * 0.5f));
             }
-            else
-            {
+            else {
                 owner.direction = -1;
                 owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - (float)(Math.PI * 0.5f));
             }
-            if (counter > MaxUpdateTimes)
-            {
+            if (counter > MaxUpdateTimes) {
                 Projectile.Kill();
             }
             odr.Add(Projectile.rotation);
             odl.Add(lg);
-            if (odr.Count > 110)
-            {
+            if (odr.Count > 110) {
                 odl.RemoveAt(0);
                 odr.RemoveAt(0);
             }
         }
         public float lg = 0;
-        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
-        {
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI) {
             overPlayers.Add(index);
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
         public Texture2D tex => Projectile.GetTexture();
         public float rofs = 0f;
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             rofs += 0.01f;
             Texture2D trail = RuneRibbonTex.Value;
             List<ColoredVertex> ve = new List<ColoredVertex>();
             float MaxUpdateTimes = 14 * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
             float ofs = 0;
-            for (int i = 0; i < odr.Count; i++)
-            {
+            for (int i = 0; i < odr.Count; i++) {
                 Color b = new Color(255, 255, 255);
                 ve.Add(new ColoredVertex(Projectile.Center - Main.screenPosition + (new Vector2(170 * Projectile.scale * odl[i], 0).RotatedBy(odr[i])),
                       new Vector3(ofs, 1, 1),
@@ -257,13 +228,11 @@ namespace CalamityEntropy.Content.Items.Weapons
                 ve.Add(new ColoredVertex(Projectile.Center - Main.screenPosition + (new Vector2(Projectile.scale * odl[i], 0).RotatedBy(odr[i])),
                       new Vector3(ofs, 0, 1),
                       b));
-                if (i < odr.Count - 1)
-                {
+                if (i < odr.Count - 1) {
                     ofs += 1f / odr.Count;
                 }
             }
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 var gd = Main.graphics.GraphicsDevice;
                 SpriteBatch sb = Main.spriteBatch;
                 Effect shader = AntivoidTrailShader;
@@ -290,12 +259,10 @@ namespace CalamityEntropy.Content.Items.Weapons
 
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * (160 * lg) * Projectile.scale * scale, targetHitbox, 64);
         }
-        public override void CutTiles()
-        {
+        public override void CutTiles() {
             Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * (160 * lg) * Projectile.scale * scale, 54, DelegateMethods.CutTiles);
         }
     }
@@ -305,24 +272,20 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override string Texture => CEUtils.WhiteTexPath;
         public PRT_AntivoidTrail trail;
         public PRT_StarTrailParticle trail2;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Melee, true, -1);
             Projectile.width = Projectile.height = 16;
             Projectile.MaxUpdates = 4;
             Projectile.timeLeft = 60;
         }
 
-        public override void AI()
-        {
-            if (Projectile.ai[1] == 0)
-            {
+        public override void AI() {
+            if (Projectile.ai[1] == 0) {
                 CEUtils.PlaySound("AntivoidDash", 1, Projectile.Center);
             }
             var player = Projectile.GetOwner();
             player.Entropy().immune = 5;
-            if (trail == null)
-            {
+            if (trail == null) {
                 //带Cal后缀是CalamityPorts,Configure签名对齐Calamity原构造不是统一五参
                 trail = PRTLoader.NewParticle<PRT_AntivoidTrail>(Projectile.Center, Vector2.Zero, new Color(40, 10, 80, 255), 1f);
                 trail.Configure(1, true, PRTDrawModeEnum.NonPremultiplied);
@@ -335,23 +298,19 @@ namespace CalamityEntropy.Content.Items.Weapons
             trail2.Position = (Projectile.Center + new Vector2(0, -10));
             trail2.AddPoint(trail2.Position);
             trail.Lifetime = trail2.Lifetime = 30;
-            if (Projectile.ai[1]++ > 20)
-            {
+            if (Projectile.ai[1]++ > 20) {
                 Projectile.velocity *= 0.98f;
             }
             player.Center = Projectile.Center;
             player.velocity = Projectile.velocity;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (Projectile.ai[2]++ == 0)
-            {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            if (Projectile.ai[2]++ == 0) {
                 CEUtils.PlaySound("AntivoidDashHit", 1, target.Center);
                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), target.Center, Vector2.Zero, ModContent.ProjectileType<AntivoidMark>(), Projectile.damage * 3, 0, Projectile.owner, target.whoAmI);
             }
         }
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
+        public override bool OnTileCollide(Vector2 oldVelocity) {
             Projectile.GetOwner().Center -= Projectile.velocity;
             return base.OnTileCollide(oldVelocity);
         }
@@ -359,28 +318,23 @@ namespace CalamityEntropy.Content.Items.Weapons
 
     public class AntivoidMark : ModProjectile
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.light = 1;
             Projectile.timeLeft = 42;
         }
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             if (Projectile.ai[1] < 39)
                 return false;
             return null;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.Center = ((int)Projectile.ai[0]).ToNPC().Center;
             Projectile.ai[1]++;
-            if (Projectile.ai[1] == 24)
-            {
+            if (Projectile.ai[1] == 24) {
                 CEUtils.PlaySound("AntivoidDashSlash", 1, Projectile.Center);
             }
-            if (Projectile.ai[1] == 39)
-            {
+            if (Projectile.ai[1] == 39) {
                 //轨迹类maxLength/SameAlpha字段Configure前先赋,PRTDrawMode只能走Configure
                 var line1 = PRTLoader.NewParticle<PRT_AbyssalLine>(Projectile.Center, Vector2.Zero, new Color(30, 10, 50), 1f);
                 line1.xadd = 2.4f;
@@ -396,10 +350,8 @@ namespace CalamityEntropy.Content.Items.Weapons
                 line3.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 30);
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            if (Projectile.ai[1] > 40)
-            {
+        public override bool PreDraw(ref Color lightColor) {
+            if (Projectile.ai[1] > 40) {
                 return false;
             }
             Texture2D tex = Projectile.GetTexture();
@@ -412,8 +364,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Main.EntitySpriteDraw(tex, drawPos - Main.screenPosition, null, Color.White * alpha, 0, tex.Size() / 2f, scale, SpriteEffects.None);
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center + new Vector2(-240, 0), Projectile.Center + new Vector2(240, 0), targetHitbox);
         }
     }

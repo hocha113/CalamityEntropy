@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.AI;
+﻿using CalamityEntropy.Core.AI;
 using InnoVault.StateMachines;
 using Terraria;
 using Terraria.ID;
@@ -72,8 +72,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.Core
         /// 各状态在负值区的分支与 -1 帧相同,所以这几帧的运动是连续的
         /// </para>
         /// </summary>
-        protected IVaultState<LuminarisStateContext> Tick(LuminarisStateContext ctx, int countdown)
-        {
+        protected IVaultState<LuminarisStateContext> Tick(LuminarisStateContext ctx, int countdown) {
             ctx.Countdown--;
             return countdown < 0 ? NextAttack(ctx) : null;
         }
@@ -103,10 +102,8 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.Core
         /// 客户端不生成(原 <c>Shoot&lt;T&gt;</c> 自带的 netMode 门,原样保留)
         /// </summary>
         protected static void Shoot<T>(LuminarisStateContext ctx, Vector2 pos, Vector2 velocity,
-            float damageMult = 1f, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile
-        {
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
+            float damageMult = 1f, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile {
+            if (Main.netMode == NetmodeID.MultiplayerClient) {
                 return;
             }
             NPC npc = ctx.Npc;

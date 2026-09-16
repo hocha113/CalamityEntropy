@@ -7,14 +7,12 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class RockBulletShot : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 8;
             Projectile.height = 8;
             Projectile.aiStyle = 1;
@@ -27,15 +25,13 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.extraUpdates = 3;
             AIType = ProjectileID.Bullet;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Projectile.GetTexture();
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, new Vector2(tex.Width, tex.Height / 2), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.rotation = Projectile.velocity.ToRotation();
         }
     }

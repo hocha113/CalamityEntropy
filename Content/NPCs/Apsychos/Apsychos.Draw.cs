@@ -1,11 +1,9 @@
-using CalamityEntropy.Assets.Register;
-using CalamityEntropy.Content.NPCs.Apsychos.Core;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Core.Graphics;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.NPCs.Apsychos
 {
@@ -23,19 +21,16 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
         private static Asset<Texture2D> tail2TexAsset = null;
 
         /// <summary>白化着色器入口。武器(GreatSwordofEmbers / CinderConvergencer)和模组预加载都调它,不能挪走</summary>
-        public static Effect WhiteTransShader()
-        {
+        public static Effect WhiteTransShader() {
             return CEEffectAssets.WhiteTrans;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) {
             float outline = Context?.Outline ?? 0f;
             float highLight = Context?.HighLight ?? 1f;
             float tailLight = Context?.TailLight ?? 0f;
             int phase = Context?.Phase ?? 1;
-            if (outline > 0.01f)
-            {
+            if (outline > 0.01f) {
                 DrawOutLine(outline, phase);
             }
             drawColor = Color.White;
@@ -47,28 +42,23 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             Texture2D bodyTex = NPC.getTexture();
             Texture2D segTex = segTexAsset.Value;
             Texture2D tailTex = tailTexAsset.Value;
-            if (phase == 2)
-            {
+            if (phase == 2) {
                 bodyTex = body2TexAsset.Value;
                 segTex = seg2TexAsset.Value;
                 tailTex = tail2TexAsset.Value;
             }
             Main.EntitySpriteDraw(bodyTex, NPC.Center - Main.screenPosition, null, drawColor, NPC.rotation, bodyTex.Size() * 0.5f, NPC.scale, SpriteEffects.None);
 
-            if (tail != null)
-            {
+            if (tail != null) {
                 Main.EntitySpriteDraw(tailTex, tail.Center - Main.screenPosition, null, drawColor, tail.rotation, new Vector2(20, tailTex.Height * 0.5f), NPC.scale, SpriteEffects.None);
-                if (segs != null)
-                {
-                    for (int i = 0; i < segs.Count; i++)
-                    {
+                if (segs != null) {
+                    for (int i = 0; i < segs.Count; i++) {
                         TailSeg seg = segs[i];
                         Main.EntitySpriteDraw(segTex, seg.Center - Main.screenPosition, null, drawColor, seg.rotation, segTex.Size() * 0.5f, NPC.scale, SpriteEffects.None);
                     }
                 }
                 Main.spriteBatch.ExitShaderRegion();
-                if (tailLight > 0.01f)
-                {
+                if (tailLight > 0.01f) {
                     float p = 110;
                     Main.spriteBatch.UseBlendState(BlendState.Additive);
                     Texture2D ray = CEExtraAssets.Ray;
@@ -86,15 +76,12 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             return false;
         }
 
-        private void DrawOutLine(float alpha, int phase)
-        {
-            if (CEEffectAssets.WhiteTrans == null)
-            {
+        private void DrawOutLine(float alpha, int phase) {
+            if (CEEffectAssets.WhiteTrans == null) {
                 return;
             }
             Color drawColor = new Color(255, 80, 40) * alpha;
-            if (phase == 2)
-            {
+            if (phase == 2) {
                 drawColor = new Color(70, 70, 255) * alpha;
             }
             Texture2D bodyTex = NPC.getTexture();
@@ -104,18 +91,14 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             CEEffectAssets.WhiteTrans.Parameters["strength"].SetValue(1);
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, CEEffectAssets.WhiteTrans, Main.GameViewMatrix.TransformationMatrix);
             CEEffectAssets.WhiteTrans.CurrentTechnique.Passes[0].Apply();
-            for (int ir = 0; ir < 4; ir++)
-            {
+            for (int ir = 0; ir < 4; ir++) {
                 float r = ir * MathHelper.PiOver2 + Main.GlobalTimeWrappedHourly * 10;
                 Vector2 ofs = r.ToRotationVector2() * 8 * NPC.scale;
                 Main.spriteBatch.Draw(bodyTex, NPC.Center + ofs - Main.screenPosition, null, drawColor, NPC.rotation, bodyTex.Size() * 0.5f, NPC.scale, SpriteEffects.None, 0);
-                if (tail != null)
-                {
+                if (tail != null) {
                     Main.spriteBatch.Draw(tailTex, tail.Center + ofs - Main.screenPosition, null, drawColor, tail.rotation, new Vector2(20, tailTex.Height * 0.5f), NPC.scale, SpriteEffects.None, 0);
-                    if (segs != null)
-                    {
-                        for (int i = 0; i < segs.Count; i++)
-                        {
+                    if (segs != null) {
+                        for (int i = 0; i < segs.Count; i++) {
                             TailSeg seg = segs[i];
                             Main.spriteBatch.Draw(segTex, seg.Center + ofs - Main.screenPosition, null, drawColor, seg.rotation, segTex.Size() * 0.5f, NPC.scale, SpriteEffects.None, 0);
                         }

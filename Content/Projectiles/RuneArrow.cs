@@ -1,10 +1,8 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
-using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
@@ -17,12 +15,10 @@ namespace CalamityEntropy.Content.Projectiles
         List<Vector2> odp = new List<Vector2>();
         List<float> odr = new List<float>();
         bool htd = false;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 24;
             Projectile.height = 24;
@@ -36,34 +32,28 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.ArmorPenetration = 30;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
 
 
             Projectile.ai[0]++;
-            if (htd)
-            {
-                if (odp.Count > 0)
-                {
+            if (htd) {
+                if (odp.Count > 0) {
                     odp.RemoveAt(0);
                     odr.RemoveAt(0);
 
                 }
                 Projectile.velocity = Vector2.Zero;
             }
-            else
-            {
+            else {
                 odp.Add(Projectile.Center);
                 odr.Add(Projectile.rotation);
-                if (odp.Count > 16)
-                {
+                if (odp.Count > 16) {
                     odp.RemoveAt(0);
                     odr.RemoveAt(0);
                 }
 
                 NPC target = Projectile.FindTargetWithinRange(1100, false);
-                if (target != null)
-                {
+                if (target != null) {
                     Projectile.velocity *= 0.9f;
                     Vector2 v = target.Center - Projectile.Center;
                     v.Normalize();
@@ -76,31 +66,25 @@ namespace CalamityEntropy.Content.Projectiles
 
             Projectile.rotation = Projectile.velocity.ToRotation();
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            if (htd)
-            {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+            if (htd) {
                 return false;
             }
             return base.Colliding(projHitbox, targetHitbox);
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            for (int i = 0; i < 16; i++)
-            {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            for (int i = 0; i < 16; i++) {
                 //RuneParticle字段(homing/target)旧初始化器拆成spawn后直赋
                 PRTLoader.NewParticle<PRT_RuneParticle>(target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(-5f, 5f), Color.White, Projectile.scale * 0.6f).Configure(1, true, PRTDrawModeEnum.AlphaBlend, 0);
             }
             target.AddBuff(ModContent.BuffType<SoulDisorder>(), 300);
-            if (!htd)
-            {
+            if (!htd) {
                 Projectile.timeLeft = 20;
                 htd = true;
             }
             CEUtils.PlaySound("crystalsound" + Main.rand.Next(1, 3).ToString(), Main.rand.NextFloat(0.7f, 1.3f), target.Center, 10, 0.4f);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             odp.Add(Projectile.Center);
             odr.Add(Projectile.rotation);
             Color cl = Color.Lerp(Color.Black, Color.White, Projectile.ai[0] / 30f);
@@ -108,8 +92,7 @@ namespace CalamityEntropy.Content.Projectiles
 
 
             c = 0;
-            if (odp.Count > 1)
-            {
+            if (odp.Count > 1) {
                 Main.spriteBatch.End();
 
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
@@ -121,8 +104,7 @@ namespace CalamityEntropy.Content.Projectiles
                 ve.Add(new ColoredVertex(odp[0] - Main.screenPosition + (odp[1] - odp[0]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 20 * 0.6f,
                       new Vector3((float)0, 0, 1),
                       b));
-                for (int i = 1; i < odp.Count; i++)
-                {
+                for (int i = 1; i < odp.Count; i++) {
 
 
                     c += 1f / odp.Count;
@@ -137,22 +119,19 @@ namespace CalamityEntropy.Content.Projectiles
 
                 SpriteBatch sb = Main.spriteBatch;
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     Texture2D tx = CEExtraAssets.rvslash;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
-                if (!htd)
-                {
+                if (!htd) {
                     Texture2D light = CEExtraAssets.lightball;
                     Main.spriteBatch.Draw(light, Projectile.Center - Main.screenPosition, null, Color.White * 0.4f, Projectile.rotation, light.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
                 }
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-                if (htd)
-                {
+                if (htd) {
                     return false;
 
                 }

@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.AI;
+﻿using CalamityEntropy.Core.AI;
 using System.Collections.Generic;
 
 namespace CalamityEntropy.Content.NPCs.LuminarisMoth.Core
@@ -115,8 +115,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.Core
         /// 每帧默认值。本 Boss 没有需要回落的声明通道,见类注释;
         /// 保留覆写是为了把「这里故意是空的」这件事写在代码里,而不是留给下一个人猜
         /// </summary>
-        public override void BeginFrameDefaults()
-        {
+        public override void BeginFrameDefaults() {
             base.BeginFrameDefaults();
         }
     }

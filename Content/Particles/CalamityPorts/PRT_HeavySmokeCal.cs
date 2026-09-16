@@ -1,4 +1,4 @@
-using InnoVault.PRT;
+﻿using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -20,8 +20,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             Spin = 0f;
             StrongVisual = false;
@@ -35,8 +34,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_HeavySmokeCal Configure(float opacity, int lifetime, float rotationSpeed = 0f,
-            bool glowing = false, float hueshift = 0f, bool required = false, bool affectedByLight = false)
-        {
+            bool glowing = false, float hueshift = 0f, bool required = false, bool affectedByLight = false) {
             Opacity = opacity;
             Spin = rotationSpeed;
             Glowing = glowing;
@@ -49,16 +47,14 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 200;
             Variant = Main.rand.Next(7);
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             if (Time / (float)Lifetime < 0.2f)   //前20%用Time/Lifetime不用Completion,跟Cal原版写法一致
                 Scale += 0.01f;
             else
@@ -73,8 +69,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             Color *= fade;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch) {
             //6帧竖排80x80,Variant横排7列,跟EHeavySmoke同一套图
             Texture2D tex = PRTSharedAssets.HeavySmoke.Value;
             int animationFrame = (int)Math.Floor(Time / ((float)Lifetime / FrameAmount));

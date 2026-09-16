@@ -22,12 +22,10 @@ namespace CalamityEntropy.Content.Projectiles
             public Vector2 pos = Vector2.Zero;
             public float rot = 0;
         }
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Default;
             Projectile.width = 2;
             Projectile.height = 2;
@@ -41,24 +39,20 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.ArmorPenetration = 86;
         }
 
-        public override bool? CanCutTiles()
-        {
+        public override bool? CanCutTiles() {
             return false;
         }
 
         List<Vpoint> v1 = new List<Vpoint>();
         List<Vpoint> v2 = new List<Vpoint>();
 
-        public void updatePoints()
-        {
-            for (int i = 0; i < v1.Count; i++)
-            {
+        public void updatePoints() {
+            for (int i = 0; i < v1.Count; i++) {
                 float urotu = Projectile.rotation;
                 float urotd = Projectile.rotation;
                 Vector2 uposu = Projectile.Center + new Vector2(-36, -80).RotatedBy(Projectile.rotation);
                 Vector2 uposd = Projectile.Center + new Vector2(-36, 80).RotatedBy(Projectile.rotation);
-                if (i > 0)
-                {
+                if (i > 0) {
                     urotu = v1[i - 1].rot;
                     urotd = v2[i - 1].rot;
                     uposu = v1[i - 1].pos;
@@ -79,84 +73,68 @@ namespace CalamityEntropy.Content.Projectiles
             }
         }
         bool sp = true;
-        public override void AI()
-        {
-            if (sp)
-            {
+        public override void AI() {
+            if (sp) {
                 sp = false;
-                for (int i = 0; i < 16; i++)
-                {
+                for (int i = 0; i < 16; i++) {
                     v1.Add(new Vpoint() { pos = Projectile.Center });
                     v2.Add(new Vpoint() { pos = Projectile.Center });
                 }
             }
             updatePoints();
             Player player = Projectile.owner.ToPlayer();
-            if (player.dead)
-            {
+            if (player.dead) {
                 Projectile.Kill();
             }
-            if (Projectile.Entropy().IndexOfTwistedTwinShootedThisProj != -1 && !(Projectile.Entropy().IndexOfTwistedTwinShootedThisProj.ToProj().active))
-            {
+            if (Projectile.Entropy().IndexOfTwistedTwinShootedThisProj != -1 && !(Projectile.Entropy().IndexOfTwistedTwinShootedThisProj.ToProj().active)) {
                 Projectile.Kill();
             }
             Vector2 playerRotatedPoint = player.RotatedRelativePoint(player.MountedCenter, true);
-            if (Main.myPlayer == Projectile.owner)
-            {
+            if (Main.myPlayer == Projectile.owner) {
                 HandleChannelMovement(player, playerRotatedPoint);
             }
             Projectile.Center = player.MountedCenter;
             Projectile.rotation = Projectile.velocity.ToRotation();
             Projectile.Center += new Vector2(12, 6 * Projectile.direction).RotatedBy(Projectile.rotation) + player.gfxOffY * Vector2.UnitY;
-            if (Projectile.velocity.X >= 0)
-            {
+            if (Projectile.velocity.X >= 0) {
                 player.direction = 1;
                 Projectile.direction = 1;
                 player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2);
             }
-            else
-            {
+            else {
                 player.direction = -1;
                 Projectile.direction = -1;
                 player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - MathHelper.PiOver2);
             }
-            if (player.HeldItem.type == ModContent.ItemType<Oblivion>())
-            {
+            if (player.HeldItem.type == ModContent.ItemType<Oblivion>()) {
                 Projectile.timeLeft = 3;
             }
             player.heldProj = Projectile.whoAmI;
         }
-        public void HandleChannelMovement(Player player, Vector2 playerRotatedPoint)
-        {
+        public void HandleChannelMovement(Player player, Vector2 playerRotatedPoint) {
             float speed = 16f;
             Vector2 newVelocity = (Main.MouseWorld - playerRotatedPoint).SafeNormalize(Vector2.UnitX * player.direction) * speed;
 
-            if (Projectile.velocity.X != newVelocity.X || Projectile.velocity.Y != newVelocity.Y)
-            {
+            if (Projectile.velocity.X != newVelocity.X || Projectile.velocity.Y != newVelocity.Y) {
                 Projectile.netUpdate = true;
             }
             Projectile.velocity = newVelocity;
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
-        public Color TrailColor(float completionRatio, Vector2 vertex)
-        {
+        public Color TrailColor(float completionRatio, Vector2 vertex) {
             Color result = new Color(230, 200, 255);
             return result * completionRatio;
         }
 
-        public float TrailWidth(float completionRatio, Vector2 vertex)
-        {
-            if (completionRatio > 0.95f)
-            {
+        public float TrailWidth(float completionRatio, Vector2 vertex) {
+            if (completionRatio > 0.95f) {
                 return 42 * Projectile.scale * MathHelper.SmoothStep(0, 1, (1 - (completionRatio - 0.95f) / 0.05f));
             }
             return MathHelper.Lerp(16, 42 * Projectile.scale, completionRatio);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
             List<Vector2> l1 = new List<Vector2>();
             List<Vector2> l2 = new List<Vector2>();
@@ -165,8 +143,7 @@ namespace CalamityEntropy.Content.Projectiles
 
             l1.Add(uposu);
             l2.Add(uposd);
-            for (int i = 0; i < v1.Count; i++)
-            {
+            for (int i = 0; i < v1.Count; i++) {
                 l1.Add(v1[i].pos);
                 l2.Add(v2[i].pos);
             }
@@ -178,25 +155,21 @@ namespace CalamityEntropy.Content.Projectiles
             return false;
         }
         float tofs = 0;
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             return false;
         }
-        public void drawT(List<Vector2> points)
-        {
+        public void drawT(List<Vector2> points) {
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
             var mp = points;
-            if (mp.Count > 1)
-            {
+            if (mp.Count > 1) {
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = new Color(30, 30, 150);
 
                 float a = 0;
                 float lr = 0;
-                for (int i = 1; i < mp.Count; i++)
-                {
+                for (int i = 1; i < mp.Count; i++) {
                     a += 1f / (float)mp.Count;
 
                     ve.Add(new ColoredVertex(mp[i] - Main.screenPosition + (mp[i] - mp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 22,
@@ -209,8 +182,7 @@ namespace CalamityEntropy.Content.Projectiles
                 }
                 a = 1;
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     Texture2D tx = WohSlash3Tex.Value;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
@@ -234,8 +206,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.spriteBatch.ExitShaderRegion();
 
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return false;
         }
     }

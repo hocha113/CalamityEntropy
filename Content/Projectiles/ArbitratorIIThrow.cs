@@ -1,6 +1,5 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
-using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
@@ -20,12 +19,10 @@ namespace CalamityEntropy.Content.Projectiles
         List<Vector2> odp = new List<Vector2>();
         List<float> odr = new List<float>();
         public bool SetHandRot { get; set; }
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 70;
             Projectile.height = 70;
@@ -42,96 +39,76 @@ namespace CalamityEntropy.Content.Projectiles
         public float handrotspeed = 0;
         public Vector2 ownerMouse = Vector2.Zero;
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(Projectile.rotation);
             writer.Write(handrot);
             writer.Write(stick);
             writer.Write(stickNpc);
             writer.WriteVector2(offset);
         }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             Projectile.rotation = reader.ReadSingle();
             handrot = reader.ReadSingle();
             stick = reader.ReadBoolean();
             stickNpc = reader.ReadInt32();
             offset = reader.ReadVector2();
         }
-        public override void OnSpawn(IEntitySource source)
-        {
-            foreach (Projectile p in Main.projectile)
-            {
-                if (p.whoAmI != Projectile.whoAmI)
-                {
-                    if (p.ModProjectile is IJavelin jv)
-                    {
+        public override void OnSpawn(IEntitySource source) {
+            foreach (Projectile p in Main.projectile) {
+                if (p.whoAmI != Projectile.whoAmI) {
+                    if (p.ModProjectile is IJavelin jv) {
                         jv.SetHandRot = false;
                     }
                 }
             }
         }
-        public override void AI()
-        {
+        public override void AI() {
             odp.Add(Projectile.Center);
             odr.Add(Projectile.rotation);
             frameChange--;
-            if (frameChange <= 0)
-            {
+            if (frameChange <= 0) {
                 frame++;
                 frameChange = 4;
             }
-            if (odp.Count > 16)
-            {
+            if (odp.Count > 16) {
                 odp.RemoveAt(0);
                 odr.RemoveAt(0);
             }
-            if (Projectile.ai[0] == 0)
-            {
+            if (Projectile.ai[0] == 0) {
                 handrotspeed = -0.3f;
             }
-            else if (Projectile.ai[0] < 12)
-            {
+            else if (Projectile.ai[0] < 12) {
                 handrotspeed += 0.056f;
             }
-            if (Projectile.ai[0] < 12)
-            {
+            if (Projectile.ai[0] < 12) {
 
                 var owner = Projectile.owner.ToPlayer();
 
-                if (Main.myPlayer == Projectile.owner)
-                {
+                if (Main.myPlayer == Projectile.owner) {
                     Projectile.rotation = (Main.MouseWorld - Projectile.Center).ToRotation();
                     Projectile.netUpdate = true;
                 }
-                if (this.SetHandRot)
-                {
+                if (this.SetHandRot) {
                     Projectile.owner.ToPlayer().heldProj = Projectile.whoAmI;
-                    if (owner.direction == 1)
-                    {
+                    if (owner.direction == 1) {
                         Projectile.Center = owner.MountedCenter + new Vector2(26, 0).RotatedBy(Projectile.rotation - MathHelper.PiOver2 - handrot);
                         owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - handrot - MathHelper.Pi);
                     }
-                    else
-                    {
+                    else {
                         Projectile.Center = owner.MountedCenter + new Vector2(26, 0).RotatedBy(Projectile.rotation + MathHelper.PiOver2 + handrot);
                         owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + handrot);
                     }
                 }
                 Projectile.velocity = new Vector2(Projectile.velocity.Length(), 0).RotatedBy(Projectile.rotation);
             }
-            else if (Projectile.ai[0] < 36)
-            {
+            else if (Projectile.ai[0] < 36) {
                 handrotspeed *= 0.84f;
                 var owner = Projectile.owner.ToPlayer();
-                if (this.SetHandRot)
-                {
-                    if (owner.direction == 1)
-                    {
+                if (this.SetHandRot) {
+                    if (owner.direction == 1) {
                         owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - handrot - MathHelper.Pi);
                     }
-                    else
-                    {
+                    else {
                         owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation + handrot);
 
                     }
@@ -139,35 +116,28 @@ namespace CalamityEntropy.Content.Projectiles
                 }
 
             }
-            if (Projectile.ai[0] > 12)
-            {
+            if (Projectile.ai[0] > 12) {
                 Projectile.rotation = Projectile.velocity.ToRotation();
-                for (int i = 0; i < 10; i++)
-                {
+                for (int i = 0; i < 10; i++) {
                     EclipseMetaball.SpawnParticle(Projectile.Center + (i * 0.1f * Projectile.velocity), CEUtils.randomPointInCircle(2.5f), Main.rand.NextFloat(12f, 29f));
                 }
             }
             handrot -= handrotspeed;
-            if (Projectile.ai[0] == 10)
-            {
+            if (Projectile.ai[0] == 10) {
 
                 SoundStyle SwingSound = SoundID.Item1;
                 SwingSound.Pitch = 0f;
-                if (Projectile.IsEmpowered())
-                {
+                if (Projectile.IsEmpowered()) {
                     SwingSound.Pitch = 1f;
                 }
 
                 SoundEngine.PlaySound(SwingSound, Projectile.Center);
             }
-            if (stick)
-            {
-                if (stickNpc.ToNPC().active)
-                {
+            if (stick) {
+                if (stickNpc.ToNPC().active) {
                     Projectile.Center = stickNpc.ToNPC().Center + offset;
                 }
-                else
-                {
+                else {
                     stick = false;
                     Projectile.Kill();
                 }
@@ -182,65 +152,50 @@ namespace CalamityEntropy.Content.Projectiles
         public Vector2 offset;
         public int hitc = 0;
         public bool exp = true;
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            for (int i = 0; i < 26; i++)
-            {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            for (int i = 0; i < 26; i++) {
                 EclipseMetaball.SpawnParticle(target.Center, CEUtils.randomPointInCircle(10), Main.rand.NextFloat(18f, 36f));
             }
-            if (exp)
-            {
+            if (exp) {
                 SoundEngine.PlaySound(new("CalamityEntropy/Assets/Sounds/Smash", 2) { Volume = 0.3f }, Projectile.Center);
                 float sparkCount = Projectile.IsEmpowered() ? 26 : 16;
-                for (int i = 0; i < sparkCount; i++)
-                {
+                for (int i = 0; i < sparkCount; i++) {
                     Vector2 sparkVelocity2 = new Vector2(16, 0).RotatedBy(Projectile.rotation).RotatedByRandom(MathHelper.ToRadians(40)) * Main.rand.NextFloat(0.5f, 1.8f);
                     int sparkLifetime2 = Main.rand.Next(20, 24);
                     float sparkScale2 = Main.rand.NextFloat(0.95f, 1.8f);
                     Color sparkColor2 = Color.Black;
 
                     float velc = Projectile.IsEmpowered() ? 1.5f : 0.9f;
-                    if (Main.rand.NextBool())
-                    {
+                    if (Main.rand.NextBool()) {
                         //PRT_AltSpark跟LineCal随机混用,旧Calamity spark/Lines二选一
                         PRTLoader.NewParticle<PRT_AltSpark>(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f), sparkVelocity2 * velc, sparkColor2, sparkScale2 * 1).Configure(false, (int)(sparkLifetime2 * 1));
                     }
-                    else
-                    {
+                    else {
                         PRTLoader.NewParticle<PRT_LineCal>(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f), sparkVelocity2 * velc * 1.2f, Main.rand.NextBool() ? Color.Yellow : Color.Orange, sparkScale2 * 1).Configure(false, (int)(sparkLifetime2 * 1));
                     }
                 }
-                if (!Projectile.IsEmpowered())
-                {
-                    for (int j = 0; j < 32; j++)
-                    {
+                if (!Projectile.IsEmpowered()) {
+                    for (int j = 0; j < 32; j++) {
                         Projectile.localNPCImmunity[target.whoAmI] = 0;
                         PRTLoader.NewParticle<PRT_AltSpark>(target.Center, CEUtils.randomPointInCircle(12), Color.Black, Main.rand.NextFloat(1.4f, 2.4f)).Configure(false, 60);
                     }
-                    for (int j = 0; j < 32; j++)
-                    {
+                    for (int j = 0; j < 32; j++) {
                         Projectile.localNPCImmunity[target.whoAmI] = 0;
                         PRTLoader.NewParticle<PRT_AltSpark>(target.Center, CEUtils.randomPointInCircle(12), Color.OrangeRed, Main.rand.NextFloat(1.4f, 2.4f)).Configure(false, 60);
                     }
                 }
             }
-            if (exp)
-            {
-                if (Projectile.IsEmpowered())
-                {
-                    if (!stick)
-                    {
+            if (exp) {
+                if (Projectile.IsEmpowered()) {
+                    if (!stick) {
                         offset = Projectile.Center - target.Center;
                         stick = true;
                         stickNpc = target.whoAmI;
                     }
-                    if (hitc == 1)
-                    {
+                    if (hitc == 1) {
                         SoundEngine.PlaySound(in SoundID.NPCDeath56, Projectile.Center);
-                        for (int i = 0; i < 4; i++)
-                        {
-                            for (int j = 0; j < 20; j++)
-                            {
+                        for (int i = 0; i < 4; i++) {
+                            for (int j = 0; j < 20; j++) {
                                 Projectile.localNPCImmunity[target.whoAmI] = 0;
                                 //AltSpark Configure(bool,int)是Ports签名,不是opacity/glow/mode那套
                                 PRTLoader.NewParticle<PRT_AltSpark>(target.Center + new Vector2(Main.rand.NextFloat(-4, 4), Main.rand.NextFloat(-4, 4)), new Vector2(Main.rand.NextFloat(0, 16)).RotatedBy(MathHelper.ToRadians(i * 90)), Color.Black, Main.rand.NextFloat(1, 1.4f)).Configure(false, 60);
@@ -248,33 +203,27 @@ namespace CalamityEntropy.Content.Projectiles
 
                             }
                         }
-                        for (int j = 0; j < 46; j++)
-                        {
+                        for (int j = 0; j < 46; j++) {
                             PRTLoader.NewParticle<PRT_AltSpark>(target.Center, CEUtils.randomPointInCircle(12), Color.Black, Main.rand.NextFloat(1.4f, 2.4f)).Configure(false, 60);
                         }
-                        for (int j = 0; j < 46; j++)
-                        {
+                        for (int j = 0; j < 46; j++) {
                             PRTLoader.NewParticle<PRT_AltSpark>(target.Center, CEUtils.randomPointInCircle(12), Color.OrangeRed, Main.rand.NextFloat(1.4f, 2.4f)).Configure(false, 60);
                         }
-                        for (int i = 0; i < 64; i++)
-                        {
+                        for (int i = 0; i < 64; i++) {
                             EclipseMetaball.SpawnParticle(target.Center, CEUtils.randomPointInCircle(21), Main.rand.NextFloat(30f, 64f));
                         }
                         exp = false;
-                        if(Main.myPlayer == Projectile.owner)
-                        {
+                        if (Main.myPlayer == Projectile.owner) {
                             Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ArbitratorStealthImpactSpawner>(), (int)(Projectile.damage * 0.2f), 0, Projectile.owner);
                         }
                         Projectile.Kill();
                     }
-                    else
-                    {
+                    else {
                         hitcd = 60;
                     }
                     hitc++;
                 }
-                else
-                {
+                else {
                     Projectile.localNPCImmunity[target.whoAmI] = 0;
                     Projectile.velocity *= 0.01f;
                     Projectile.Resize(300, 300);
@@ -285,19 +234,15 @@ namespace CalamityEntropy.Content.Projectiles
             }
             Projectile.netUpdate = true;
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return Projectile.ai[0] >= 12 && !stick && exp;
         }
 
-        public override bool? CanHitNPC(NPC target)
-        {
-            if (hitcd > 0)
-            {
+        public override bool? CanHitNPC(NPC target) {
+            if (hitcd > 0) {
                 return false;
             }
-            if (Projectile.ai[0] <= 10)
-            {
+            if (Projectile.ai[0] <= 10) {
                 return false;
             }
             return null;
@@ -306,16 +251,14 @@ namespace CalamityEntropy.Content.Projectiles
         public int frame = 0;
         public int frameChange = 4;
         public bool breakHandle = false;
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D handle = CEUtils.getExtraTex("Arbitrator/Arb0");
             Texture2D tx1 = CEUtils.getExtraTex("Arbitrator/Arb2");
             Texture2D tx2 = CEUtils.getExtraTex("Arbitrator/Arb3");
             Texture2D tx3 = CEUtils.getExtraTex("Arbitrator/Arb4");
             List<Texture2D> tx = new List<Texture2D>() { tx1, tx2, tx3 };
             float rj = 0;
-            if (Projectile.ai[0] < 12)
-            {
+            if (Projectile.ai[0] < 12) {
                 rj = -handrot * Projectile.owner.ToPlayer().direction;
             }
 
@@ -329,20 +272,16 @@ namespace CalamityEntropy.Content.Projectiles
     public class ArbitratorStealthImpactSpawner : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.timeLeft = 28;
             Projectile.width = Projectile.height = 32;
         }
-        public override bool? CanDamage()
-        {
+        public override bool? CanDamage() {
             return false;
         }
-        public override void AI()
-        {
-            if(Main.myPlayer == Projectile.owner && Projectile.timeLeft % 3 == 0)
-            {
+        public override void AI() {
+            if (Main.myPlayer == Projectile.owner && Projectile.timeLeft % 3 == 0) {
                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ArbitratorStealthImpact>(), Projectile.damage, 0, Projectile.owner);
             }
         }
@@ -350,28 +289,22 @@ namespace CalamityEntropy.Content.Projectiles
     public class ArbitratorStealthImpact : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.localNPCHitCooldown = -1;
             Projectile.timeLeft = 12;
             Projectile.width = Projectile.height = 32;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return new Circle(Projectile.Center, 500 * Projectile.scale).Intersects(targetHitbox);
         }
         public List<List<Vector2>> arcs = new List<List<Vector2>>();
-        public override void AI()
-        {
-            if(Projectile.Entropy().FirstFrames)
-            {
-                if (!Main.dedServ)
-                {
+        public override void AI() {
+            if (Projectile.Entropy().FirstFrames) {
+                if (!Main.dedServ) {
                     SoundEngine.PlaySound(in SoundID.NPCDeath56, Projectile.Center);
                     CEUtils.PlaySound("ApoctosisShoot", Main.rand.NextFloat(3f, 3.4f), Projectile.Center, 60, 0.95f);
-                    for (int i = 0; i < 12; i++)
-                    {
+                    for (int i = 0; i < 12; i++) {
                         List<Vector2> points = new List<Vector2>();
                         float rot = CEUtils.randomRot();
 
@@ -379,8 +312,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                         Vector2 pos = Projectile.Center;
                         points.Add(pos);
-                        for (float j = 0; j <= 1; j += 0.05f)
-                        {
+                        for (float j = 0; j <= 1; j += 0.05f) {
                             rot += Main.rand.NextFloat(-0.2f, 0.2f);
                             pos += rot.ToRotationVector2() * 25;
                             points.Add(pos);
@@ -390,22 +322,19 @@ namespace CalamityEntropy.Content.Projectiles
                 }
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Color color1 = Color.White;
             Color color2 = Color.Orange;
             float w = Projectile.timeLeft / 6f;
             if (w > 1)
                 w = 1;
-            for(int i = 0; i < arcs.Count; i++)
-            {
+            for (int i = 0; i < arcs.Count; i++) {
                 List<Vector2> arc = arcs[i];
                 List<CEUtils.VertexPointSets> ve = new List<CEUtils.VertexPointSets>();
-                for(int j = 0; j < arc.Count; j++)
-                {
+                for (int j = 0; j < arc.Count; j++) {
                     float maxl = Utils.Remap(Projectile.timeLeft, 6f, 12f, 1f, 0.11f);
                     float num = j / (arc.Count - 1f);
-                    float p =  (maxl - (j / (float)arc.Count)) / maxl;
+                    float p = (maxl - (j / (float)arc.Count)) / maxl;
                     float pw = 1 - p;
                     pw = 1 - pw * pw;
                     if (num > maxl)
@@ -416,8 +345,7 @@ namespace CalamityEntropy.Content.Projectiles
             }
             return false;
         }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
             modifiers.ArmorPenetration += 32;
         }
     }

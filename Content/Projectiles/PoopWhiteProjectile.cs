@@ -6,24 +6,19 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class PoopWhiteProjectile : PoopProj
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Projectile.light = 1f;
         }
-        public override void AI()
-        {
+        public override void AI() {
             base.AI();
-            foreach (Player p in Main.ActivePlayers)
-            {
-                if (CEUtils.getDistance(Projectile.Center, p.Center) < 64 * Projectile.scale * 2f)
-                {
+            foreach (Player p in Main.ActivePlayers) {
+                if (CEUtils.getDistance(Projectile.Center, p.Center) < 64 * Projectile.scale * 2f) {
                     p.Entropy().holyGroundTime = 2;
                 }
             }
         }
-        public override void PostDraw(Color lightColor)
-        {
+        public override void PostDraw(Color lightColor) {
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix); ;
 

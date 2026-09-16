@@ -15,8 +15,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/PrismShard";
 
         public PRT_PrismShard Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -26,20 +25,16 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 38;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             //碎裂/音效钉在倒数第二tick(Time==Lifetime-1),对齐旧系统到期前一刻爆发,别挪到Time==0(SetProperty太早)
-            if (Time == Lifetime - 1)
-            {
-                for (int i = 0; i < 4; i++)
-                {
+            if (Time == Lifetime - 1) {
+                for (int i = 0; i < 4; i++) {
                     var p = PRTLoader.NewParticle<PRT_PrismShardSmall>(Position, CEUtils.randomPointInCircle(12), Color.White, 1f);
                     p.PixelPass = PixelPass;   //父走像素RT子也必须同通道,不然Screen2合成和常规桶分层
                     p.Configure(1, true, PRTDrawModeEnum.AlphaBlend, CEUtils.randomRot(), 120);
@@ -50,8 +45,7 @@ namespace CalamityEntropy.Content.Particles
             }
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             if (PixelPass)
                 return false;
             Color clr = Color;
@@ -67,8 +61,7 @@ namespace CalamityEntropy.Content.Particles
         }
 
         //DrawPixelPass故意不吃Glow/Lighting,进Screen2 RT前就要全亮,和旧DrawPixelShaderParticles一致
-        public void DrawPixelPass(SpriteBatch sb)
-        {
+        public void DrawPixelPass(SpriteBatch sb) {
             Texture2D tex = PRTLoader.PRT_IDToTexture[ID];
             sb.Draw(tex, Position - Main.screenPosition, null, Color * Opacity, Rotation, tex.Size() / 2f, Scale, SpriteEffects.None, 0);
         }
@@ -83,8 +76,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/PrismShardSmall";
 
         public PRT_PrismShardSmall Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -94,22 +86,19 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 120;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Opacity = 1f - LifetimeCompletion;
             Rotation += Velocity.X * 0.025f;
             Velocity += new Vector2(0, 0.36f);
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             if (PixelPass)
                 return false;
             Color clr = Color;
@@ -125,8 +114,7 @@ namespace CalamityEntropy.Content.Particles
             return false;
         }
 
-        public void DrawPixelPass(SpriteBatch sb)
-        {
+        public void DrawPixelPass(SpriteBatch sb) {
             Texture2D tex = PRTLoader.PRT_IDToTexture[ID];
             sb.Draw(tex, Position - Main.screenPosition, null, Color * Opacity, Rotation, tex.Size() / 2f, Scale, SpriteEffects.None, 0);
         }

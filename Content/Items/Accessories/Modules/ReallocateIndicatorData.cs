@@ -1,5 +1,6 @@
-using CalamityEntropy.Content.Items.Armor.Azafure;
+﻿using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,6 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Utilities;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories.Modules
 {
@@ -26,32 +26,27 @@ namespace CalamityEntropy.Content.Items.Accessories.Modules
     }
     public class ReallocateIndicatorData : ModItem, IAzafureEnhancable
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 40;
             Item.height = 40;
             Item.value = Item.buyPrice(gold: 5);
             Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.accessory = true;
         }
-        public static void CalculateStatsForPlayer(Player player)
-        {
+        public static void CalculateStatsForPlayer(Player player) {
             float MaxDeviation = 0.4f;
             Item item = player.HeldItem;
             string name = item.type.ToString();
-            if (item.ModItem != null)
-            {
+            if (item.ModItem != null) {
                 name = item.ModItem.Name;
             }
             int seed = name.GetHashCode() + 14;
             seed += Main.worldName.GetHashCode() / 2 + player.name.GetHashCode() / 2;
-            if (Main.zenithWorld)
-            {
+            if (Main.zenithWorld) {
                 seed += player.position.ToPoint().GetHashCode();
             }
             float sum = new UnifiedRandom(seed).NextFloat(0, MaxDeviation / 2f);
-            if (player.AzafureEnhance())
-            {
+            if (player.AzafureEnhance()) {
                 sum += 0.38f;
             }
             List<float> ModifyMap = FloatListGenerator.GenerateFloatList(seed, 9, sum, -0.26f, 0.26f);
@@ -77,20 +72,16 @@ namespace CalamityEntropy.Content.Items.Accessories.Modules
             mp.Crit = Crit;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe().AddIngredient<HellIndustrialComponents>(2).AddCalOrOwn(CEID.Item_MysteriousCircuitry, ModContent.ItemType<AzafureCircuitry>(), 2).AddTile(TileID.WorkBenches).Register();
         }
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            if (player.HeldItem.type > ItemID.None)
-            {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
+            if (player.HeldItem.type > ItemID.None) {
                 CalculateStatsForPlayer(player);
                 ApplyStatModify(player);
             }
         }
-        public static void ApplyStatModify(Player player)
-        {
+        public static void ApplyStatModify(Player player) {
             var mp = player.GetModPlayer<RIDAtrPlayer>();
             DamageClass dc = DamageClass.Generic;
             player.GetDamage(dc) += mp.Dmg;
@@ -104,18 +95,14 @@ namespace CalamityEntropy.Content.Items.Accessories.Modules
             player.Entropy().WingTimeMult += mp.WingTime;
             player.GetCritChance(dc) += mp.Crit;
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             CalculateStatsForPlayer(Main.LocalPlayer);
             string tt = Mod.GetLocalization("RIDModifies").Value;
-            if (Main.LocalPlayer.HeldItem.type > ItemID.None && Main.LocalPlayer.HeldItem.type != Item.type)
-            {
-                string NegCheck(float v)
-                {
+            if (Main.LocalPlayer.HeldItem.type > ItemID.None && Main.LocalPlayer.HeldItem.type != Item.type) {
+                string NegCheck(float v) {
                     return v < 0 ? v.ToString() : "+" + v.ToString();
                 }
-                string NegCheckI(int v)
-                {
+                string NegCheckI(int v) {
                     return v < 0 ? v.ToString() : "+" + v.ToString();
                 }
                 var mp = Main.LocalPlayer.GetModPlayer<RIDAtrPlayer>();
@@ -134,8 +121,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Modules
         }
         public class FloatListGenerator
         {
-            public static List<float> GenerateFloatList(int seed, int length, float targetSum, float minValue, float maxValue)
-            {
+            public static List<float> GenerateFloatList(int seed, int length, float targetSum, float minValue, float maxValue) {
                 float minPossibleSum = length * minValue;
                 float maxPossibleSum = length * maxValue;
 
@@ -148,8 +134,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Modules
 
                 List<float> result = new List<float>();
 
-                for (int i = 0; i < length; i++)
-                {
+                for (int i = 0; i < length; i++) {
                     float randomValue = (float)(random.NextDouble() * (maxValue - minValue) + minValue);
                     result.Add(randomValue);
                 }
@@ -164,18 +149,15 @@ namespace CalamityEntropy.Content.Items.Accessories.Modules
             }
 
             private static List<float> AdjustListToTargetSum(int seed, List<float> list, float targetSum,
-                float minValue, float maxValue, float initialDifference)
-            {
+                float minValue, float maxValue, float initialDifference) {
                 float difference = initialDifference;
                 UnifiedRandom random = new UnifiedRandom(seed);
                 int maxAttempts = 1000; int attempts = 0;
 
-                while (Math.Abs(difference) > 0.0001f && attempts < maxAttempts)
-                {
+                while (Math.Abs(difference) > 0.0001f && attempts < maxAttempts) {
                     bool adjusted = false;
 
-                    for (int i = 0; i < list.Count && Math.Abs(difference) > 0.0001f; i++)
-                    {
+                    for (int i = 0; i < list.Count && Math.Abs(difference) > 0.0001f; i++) {
                         float currentValue = list[i];
                         float potentialAdjustment = difference / (list.Count - i);
                         float newValue = currentValue + potentialAdjustment;
@@ -187,36 +169,30 @@ namespace CalamityEntropy.Content.Items.Accessories.Modules
 
                         float actualAdjustment = newValue - currentValue;
 
-                        if (Math.Abs(actualAdjustment) > 0.0001f)
-                        {
+                        if (Math.Abs(actualAdjustment) > 0.0001f) {
                             list[i] = newValue;
                             difference -= actualAdjustment;
                             adjusted = true;
                         }
                     }
 
-                    if (!adjusted && Math.Abs(difference) > 0.0001f)
-                    {
+                    if (!adjusted && Math.Abs(difference) > 0.0001f) {
                         int index1 = random.Next(list.Count);
                         int index2 = random.Next(list.Count);
 
-                        if (index1 != index2)
-                        {
+                        if (index1 != index2) {
                             float value1 = list[index1];
                             float value2 = list[index2];
                             float adjustment = Math.Min(Math.Abs(difference) / 2,
                                 Math.Min(value1 - minValue, maxValue - value2));
 
-                            if (adjustment > 0.0001f)
-                            {
-                                if (difference > 0)
-                                {
+                            if (adjustment > 0.0001f) {
+                                if (difference > 0) {
                                     list[index1] = value1 - adjustment;
                                     list[index2] = value2 + adjustment;
                                     difference -= adjustment * 2;
                                 }
-                                else
-                                {
+                                else {
                                     list[index1] = value1 + adjustment;
                                     list[index2] = value2 - adjustment;
                                     difference += adjustment * 2;
@@ -231,19 +207,16 @@ namespace CalamityEntropy.Content.Items.Accessories.Modules
                 float finalSum = list.Sum();
                 float finalDifference = targetSum - finalSum;
 
-                if (Math.Abs(finalDifference) > 0.0001f)
-                {
+                if (Math.Abs(finalDifference) > 0.0001f) {
                     var adjustableItems = list.Select((value, index) => new { Value = value, Index = index })
                         .Where(x => (finalDifference > 0 && x.Value < maxValue) ||
                                    (finalDifference < 0 && x.Value > minValue))
                         .ToList();
 
-                    if (adjustableItems.Any())
-                    {
+                    if (adjustableItems.Any()) {
                         float adjustmentPerItem = finalDifference / adjustableItems.Count;
 
-                        foreach (var item in adjustableItems)
-                        {
+                        foreach (var item in adjustableItems) {
                             float newValue = item.Value + adjustmentPerItem;
                             newValue = Math.Max(minValue, Math.Min(maxValue, newValue));
                             float actualAdjustment = newValue - item.Value;

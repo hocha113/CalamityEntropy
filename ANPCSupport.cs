@@ -14,16 +14,13 @@ namespace CalamityEntropy
         [JITWhenModsEnabled("AlchemistNPCLite")]
         internal static class ANPCShopAdd
         {
-            public static void LoadHook()
-            {
+            public static void LoadHook() {
                 var orgMethod = GetAddShopMethod();
                 EModHooks.Add(orgMethod, OperatorAddShopHook);
                 CalamityEntropy.Instance.Logger.Info("CalamityEntropy ANPCSupport Hook Loaded");
             }
-            public static void LoadShop()
-            {
-                if (NPCShopDatabase.TryGetNPCShop(NPCShopDatabase.GetShopName(ModContent.NPCType<Operator>(), "ModBags1"), out var calBagsShop))
-                {
+            public static void LoadShop() {
+                if (NPCShopDatabase.TryGetNPCShop(NPCShopDatabase.GetShopName(ModContent.NPCType<Operator>(), "ModBags1"), out var calBagsShop)) {
                     var shop = (NPCShop)calBagsShop;
                     shop.AddModItemToShop(CalamityEntropy.Instance, "ApsychosBag", 800000, () => EDownedBosses.downedApsychos);
                     shop.AddModItemToShop(CalamityEntropy.Instance, "LuminarisBag", 4000000, () => EDownedBosses.downedLuminaris);
@@ -31,23 +28,19 @@ namespace CalamityEntropy
                     shop.AddModItemToShop(CalamityEntropy.Instance, "NihilityTwinBag", 22000000, () => EDownedBosses.downedNihilityTwin);
                     shop.AddModItemToShop(CalamityEntropy.Instance, "CruiserBag", 50000000, () => EDownedBosses.downedCruiser);
                 }
-                else
-                {
+                else {
                     CalamityEntropy.Instance.Logger.Warn("Cannot find operator's bossbag shop");
                 }
-                if (NPCShopDatabase.TryGetNPCShop(NPCShopDatabase.GetShopName(ModContent.NPCType<Operator>(), "ModMaterials"), out var meterialShop))
-                {
+                if (NPCShopDatabase.TryGetNPCShop(NPCShopDatabase.GetShopName(ModContent.NPCType<Operator>(), "ModMaterials"), out var meterialShop)) {
                     var shop = (NPCShop)meterialShop;
                     shop.AddModItemToShop(CalamityEntropy.Instance, "HellIndustrialComponents", 5000, () => EDownedBosses.downedAcropolis);
                 }
-                else
-                {
+                else {
                     CalamityEntropy.Instance.Logger.Warn("Cannot find operator's meterials shop");
                 }
-                
+
             }
-            public static MethodBase GetAddShopMethod()
-            {
+            public static MethodBase GetAddShopMethod() {
                 return typeof(Operator).GetMethod("AddShops",
                       System.Reflection.BindingFlags.Public |
                       System.Reflection.BindingFlags.Instance,
@@ -55,8 +48,7 @@ namespace CalamityEntropy
             Type.EmptyTypes,
             null);
             }
-            public static void OperatorAddShopHook(Action<Operator> orig, Operator mnpc)
-            {
+            public static void OperatorAddShopHook(Action<Operator> orig, Operator mnpc) {
                 orig.Invoke(mnpc);
                 LoadShop();
             }

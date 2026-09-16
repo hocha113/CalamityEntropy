@@ -16,8 +16,7 @@ namespace CalamityEntropy.Content.Tiles
 {
     public class VoidToiletTile : ModTile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             RegisterItemDrop(ModContent.ItemType<VoidToilet>());
 
             Main.tileFrameImportant[Type] = true;
@@ -48,21 +47,18 @@ namespace CalamityEntropy.Content.Tiles
             TileID.Sets.HasOutlines[Type] = true;
         }
 
-        public override bool CreateDust(int i, int j, ref int type)
-        {
+        public override bool CreateDust(int i, int j, ref int type) {
             Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Firework_Blue, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             type = DustID.BlueCrystalShard;
             return false;
         }
 
-        public override void NumDust(int i, int j, bool fail, ref int num)
-        {
+        public override void NumDust(int i, int j, bool fail, ref int num) {
             num = fail ? 1 : 4;
         }
         public override void ModifySittingTargetInfo(int i, int j, ref TileRestingInfo info) => FurnitureCommon.ChairSitInfo(i, j, ref info, 40, true, shitter: true);
 
-        public override bool RightClick(int i, int j)
-        {
+        public override bool RightClick(int i, int j) {
             Player plr = Main.LocalPlayer;
             FurnitureCommon.ChairRightClick(i, j);
 
@@ -71,13 +67,11 @@ namespace CalamityEntropy.Content.Tiles
 
         public override void MouseOver(int i, int j) => FurnitureCommon.ChairMouseOver(i, j, ModContent.ItemType<VoidToilet>(), true);
 
-        public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings)
-        {
+        public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) {
             return settings.player.IsWithinSnappngRangeToTile(i, j, PlayerSittingHelper.ChairSittingMaxDistance);
         }
 
-        public override void HitWire(int i, int j)
-        {
+        public override void HitWire(int i, int j) {
             Tile tile = Main.tile[i, j];
 
             int spawnX = i;
@@ -86,13 +80,11 @@ namespace CalamityEntropy.Content.Tiles
             Wiring.SkipWire(spawnX, spawnY);
             Wiring.SkipWire(spawnX, spawnY + 1);
 
-            if (Wiring.CheckMech(spawnX, spawnY, 60))
-            {
+            if (Wiring.CheckMech(spawnX, spawnY, 60)) {
                 SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/void_laser"), new Vector2(spawnX * 16 + 8, spawnY * 16 + 12));
                 Projectile.NewProjectile(Wiring.GetProjectileSource(spawnX, spawnY), spawnX * 16 + 8, spawnY * 16 + 12, 0f, 0f, ProjectileID.ToiletEffect, 0, 0f, Main.myPlayer);
                 Projectile.NewProjectile(Wiring.GetProjectileSource(spawnX, spawnY), spawnX * 16 + 8, spawnY * 16 + 6 * 16, 0f, -8f, ModContent.ProjectileType<ToiletLaser>(), 1100, 10f, Main.myPlayer);
-                for (int i_ = 0; i_ < 64; i_++)
-                {
+                for (int i_ = 0; i_ < 64; i_++) {
                     Projectile.NewProjectile(Wiring.GetProjectileSource(spawnX, spawnY), spawnX * 16 + 8, spawnY * 16, Main.rand.NextFloat(-24, 24), Main.rand.NextFloat(-20, -36), ModContent.ProjectileType<ToiletVoidPoop>(), 400, 10f, Main.myPlayer);
                 }
             }

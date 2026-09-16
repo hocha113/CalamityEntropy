@@ -2,10 +2,8 @@
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Particles;
-using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,15 +21,13 @@ namespace CalamityEntropy.Content.Projectiles
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/Xytheron";
         List<float> odr = new List<float>();
         List<float> ods = new List<float>();
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 12;
 
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
@@ -45,37 +41,30 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.timeLeft = 100000;
             Projectile.extraUpdates = 7;
         }
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(rotSpeed);
         }
         public int addcharge = 3;
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff<LifeOppress>(600);
             CEUtils.PlaySound("xhit", Main.rand.NextFloat(0.8f, 1.1f), Projectile.Center, 8, volume: 0.32f);
             CEUtils.PlaySound("DevourerDeathImpact", Main.rand.NextFloat(0.8f, 1f), Projectile.Center, 8, volume: 0.32f);
             CalamityEntropy.Instance.screenShakeAmp = 5;
-            for (int i = 0; i < 3; i++)
-            {
+            for (int i = 0; i < 3; i++) {
                 //AbyssalLine旧版粒子系统 spawn,现走BasePRT,参数照抄
                 PRTLoader.NewParticle<PRT_AbyssalLine>(target.Center, Vector2.Zero, Color.White, 1).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, CEUtils.randomRot());  //AbyssalLine带lifetime的Configure是CalamityPorts签名
             }
-            if (Projectile.owner.ToPlayer().HeldItem.ModItem is Xytheron xr)
-            {
-                if (addcharge > 0)
-                {
+            if (Projectile.owner.ToPlayer().HeldItem.ModItem is Xytheron xr) {
+                if (addcharge > 0) {
                     xr.charge += 1;
-                    if (xr.charge > 20)
-                    {
+                    if (xr.charge > 20) {
                         xr.charge = 20;
                     }
                     addcharge--;
                 }
             }
         }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             rotSpeed = reader.ReadSingle();
         }
         public float scaleD = 0.64f;
@@ -83,17 +72,14 @@ namespace CalamityEntropy.Content.Projectiles
         public float rotSpeedJ = 0;
         float glowalpha = 0;
         public bool playsound = true;
-        public override void AI()
-        {
+        public override void AI() {
             float updates = Projectile.MaxUpdates;
-            if (Projectile.localAI[2]++ == 0)
-            {
+            if (Projectile.localAI[2]++ == 0) {
                 float scale_ = Projectile.GetOwner().HeldItem.scale;
                 Projectile.GetOwner().ApplyMeleeScale(ref scale_);
                 Projectile.scale *= scale_;
             }
-            if (Projectile.ai[0] == 0)
-            {
+            if (Projectile.ai[0] == 0) {
                 Projectile.direction = Projectile.velocity.X > 0 ? 1 : -1;
                 Projectile.rotation = Projectile.velocity.ToRotation();
                 Projectile.rotation -= 2.42f * Projectile.direction;
@@ -103,55 +89,43 @@ namespace CalamityEntropy.Content.Projectiles
 
             Projectile.Center = owner.MountedCenter + owner.gfxOffY * Vector2.UnitY;
             Projectile.rotation += rotSpeed * meleeSpeed * 0.32f;
-            if (Projectile.ai[0] >= 74 && playsound)
-            {
+            if (Projectile.ai[0] >= 74 && playsound) {
                 MotifList = new List<float>() { 1, 0, 0, 0, 0.6f, 1, 0.8f, 1, 1.18f, 0, 0.9f, 1, 0, 0, 0, 0, 0, 1f, 0.9f, 0.8f, 0.7f, 0.84f, 0, 1, 0.95f, 1.05f, 1.2f, 0, 1.2f, 1.3f, 1.2f, 0, 1.1f, 1, 0.8f, 0, 1f, 0, 0.7f, 0, 0, 1.05f, 0, 1.1f, 0, 0, 1.2f, 1f, 0.9f, 0, 0, 0, 0 };
                 float pitch = Main.rand.NextFloat(0.9f, 1.4f);
-                if (Main.zenithWorld)
-                {
+                if (Main.zenithWorld) {
                     pitch = MotifList[soundCount];
                     soundCount++;
-                    if (soundCount >= MotifList.Count)
-                    {
+                    if (soundCount >= MotifList.Count) {
                         soundCount = 0;
                     }
                 }
-                if (pitch > 0)
-                {
+                if (pitch > 0) {
                     CEUtils.PlaySound("xswing", pitch, Projectile.Center, 8, 0.8f);
                 }
                 playsound = false;
             }
-            if (Projectile.ai[0] < 60 * updates)
-            {
+            if (Projectile.ai[0] < 60 * updates) {
                 Projectile.ai[0] = 60 * updates;
             }
-            else
-            {
-                if (Projectile.ai[0] < 86 * updates)
-                {
+            else {
+                if (Projectile.ai[0] < 86 * updates) {
                     rotSpeed += 0.0006f * Projectile.direction * meleeSpeed;
                 }
-                else
-                {
+                else {
                     rotSpeed *= (float)Math.Pow(0.94, 1.0 / meleeSpeed);
-                    if (Projectile.ai[0] > 86 * updates)
-                    {
+                    if (Projectile.ai[0] > 86 * updates) {
                         rotSpeed *= 0.6f;
-                        if (Projectile.owner == Main.myPlayer)
-                        {
+                        if (Projectile.owner == Main.myPlayer) {
                             Projectile.direction = (Main.MouseWorld - owner.Center).X > 0 ? 1 : -1;
                             float targetrot = (Main.MouseWorld - owner.Center).ToRotation() - 2.42f * Projectile.direction;
                             Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, targetrot, 0.05f * meleeSpeed, false);
                         }
-                        if (odr.Count > 0)
-                        {
+                        if (odr.Count > 0) {
                             odr.RemoveAt(0);
                             ods.RemoveAt(0);
                         }
                     }
-                    if (Projectile.ai[0] > 94 * updates)
-                    {
+                    if (Projectile.ai[0] > 94 * updates) {
                         owner.itemTime = 1;
                         owner.itemAnimation = 1;
                         Projectile.Kill();
@@ -160,26 +134,22 @@ namespace CalamityEntropy.Content.Projectiles
                 }
             }
 
-            if (Projectile.ai[0] > 88 * updates)
-            {
+            if (Projectile.ai[0] > 88 * updates) {
                 alpha *= 0.96f;
             }
 
             Projectile.ai[0] += meleeSpeed;
             odr.Add(Projectile.rotation);
             ods.Add(scaleD);
-            if (odr.Count > 60)
-            {
+            if (odr.Count > 60) {
                 odr.RemoveAt(0);
                 ods.RemoveAt(0);
             }
-            if (Projectile.velocity.X > 0)
-            {
+            if (Projectile.velocity.X > 0) {
                 owner.direction = 1;
                 owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - (float)(Math.PI * 0.5f));
             }
-            else
-            {
+            else {
                 owner.direction = -1;
                 owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - (float)(Math.PI * 0.5f));
             }
@@ -188,22 +158,18 @@ namespace CalamityEntropy.Content.Projectiles
             owner.itemAnimation = 2;
         }
         public float alpha = 1;
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             return base.CanHitNPC(target);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             drawSlash();
             drawSword();
             return false;
         }
-        public void drawSword()
-        {
+        public void drawSword() {
             SpriteBatch sb = Main.spriteBatch;
             GraphicsDevice gd = Main.graphics.GraphicsDevice;
             Player player = Main.player[Projectile.owner];
@@ -220,8 +186,7 @@ namespace CalamityEntropy.Content.Projectiles
             sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
         }
-        public void drawSlash()
-        {
+        public void drawSlash() {
             if (odr.Count < 2)
                 return;
             SpriteBatch sb = Main.spriteBatch;
@@ -234,10 +199,8 @@ namespace CalamityEntropy.Content.Projectiles
             var r = Main.rand;
             List<float> odr_ = new List<float>();
             List<float> ods_ = new List<float>();
-            for (int i = 1; i < odr.Count; i++)
-            {
-                for (float j = 0.1f; j <= 1; j += 0.1f)
-                {
+            for (int i = 1; i < odr.Count; i++) {
+                for (float j = 0.1f; j <= 1; j += 0.1f) {
                     odr_.Add(CEUtils.RotateTowardsAngle(odr[i - 1], odr[i], j, false));
                     ods_.Add(float.Lerp(ods[i - 1], ods[i], j));
                 }
@@ -245,8 +208,7 @@ namespace CalamityEntropy.Content.Projectiles
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             List<ColoredVertex> ve = new List<ColoredVertex>();
-            for (int i = 0; i < odr_.Count; i++)
-            {
+            for (int i = 0; i < odr_.Count; i++) {
                 Color b = new Color(100, 100, 100) * alpha;
                 ve.Add(new ColoredVertex(Projectile.Center - Main.screenPosition + (new Vector2(708 * ods_[i] * Projectile.scale, 0).RotatedBy(odr_[i])),
                       new Vector3((float)i / (float)odr_.Count, 1, 1),
@@ -256,13 +218,11 @@ namespace CalamityEntropy.Content.Projectiles
                       b));
             }
 
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 gd.Textures[0] = tail;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 ve.Clear();
-                for (int i = 0; i < odr_.Count; i++)
-                {
+                for (int i = 0; i < odr_.Count; i++) {
                     Color b = new Color(255, 255, 255) * alpha;
                     ve.Add(new ColoredVertex(Projectile.Center - Main.screenPosition + (new Vector2(708 * ods_[i] * Projectile.scale, 0).RotatedBy(odr_[i])),
                           new Vector3((float)i / (float)odr_.Count, 1, 1),
@@ -295,12 +255,10 @@ namespace CalamityEntropy.Content.Projectiles
             sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * 720 * Projectile.scale * scaleD, targetHitbox, 100);
         }
-        public override void CutTiles()
-        {
+        public override void CutTiles() {
             Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * 725 * Projectile.scale * scaleD, 128, DelegateMethods.CutTiles);
         }
     }

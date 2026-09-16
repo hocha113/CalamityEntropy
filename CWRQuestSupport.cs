@@ -1,8 +1,6 @@
-using CalamityEntropy.Common;
-using CalamityEntropy.Content.ArmorPrefixes;
+﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.AzafureMiners;
 using CalamityEntropy.Content.Items;
-using CalamityEntropy.Content.Items.Potions;
 using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Accessories.Cards;
 using CalamityEntropy.Content.Items.Accessories.EvilCards;
@@ -10,6 +8,7 @@ using CalamityEntropy.Content.Items.Accessories.SoulCards;
 using CalamityEntropy.Content.Items.Armor.Marivinium;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Books.BookMarks;
+using CalamityEntropy.Content.Items.Potions;
 using CalamityEntropy.Content.Items.PrefixItem;
 using CalamityEntropy.Content.NPCs;
 using CalamityEntropy.Core.Weapons;
@@ -63,50 +62,38 @@ namespace CalamityEntropy
         private static int[] mariviniumTypes;
         private static int[] finalArmTypes;
 
-        internal static void Register()
-        {
-            if (!ModLoader.TryGetMod(CWRName, out cwr))
-            {
+        internal static void Register() {
+            if (!ModLoader.TryGetMod(CWRName, out cwr)) {
                 return;
             }
 
             bool supported = false;
-            try
-            {
+            try {
                 supported = cwr.Call(CmdSupports) is true;
-            }
-            catch
-            {
+            } catch {
                 supported = false;
             }
-            if (!supported)
-            {
+            if (!supported) {
                 //装了 CWR 但版本不带这套对外接口
                 cwr = null;
                 return;
             }
 
-            try
-            {
+            try {
                 CacheItemTypes();
                 RegisterBossLane();
                 RegisterChronicle();
                 RegisterEndgame();
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 CalamityEntropy.Instance.Logger.Info($"CalamityEntropy: CWR quest registration aborted: {ex.Message}");
-            }
-            finally
-            {
+            } finally {
                 //注册只用这一次，不要整局捏着对方的 Mod 引用
                 cwr = null;
             }
         }
 
         /// <summary>热重载时清掉缓存，避免下一局谓词踩到已卸掉的字典</summary>
-        internal static void Unload()
-        {
+        internal static void Unload() {
             cwr = null;
             zodiacTypes = null;
             oracleCardTypes = null;
@@ -116,8 +103,7 @@ namespace CalamityEntropy
             minerScanned = false;
         }
 
-        private static void CacheItemTypes()
-        {
+        private static void CacheItemTypes() {
             zodiacTypes = new int[]
             {
                 ModContent.ItemType<BookMarkAries>(),
@@ -165,8 +151,7 @@ namespace CalamityEntropy
         /// 六个自有 Boss 铺在原版主脊下方同一行，各自向上连到对应的原版 Boss 节点，
         /// 彼此再横向连成本模组的讨伐链。全组计入完典，奖励只给纪念章与阶段消耗品
         /// </summary>
-        private static void RegisterBossLane()
-        {
+        private static void RegisterBossLane() {
             new Node("AcropolisMachine")
                 .Parents(PEyeOfCthulhu)
                 .At(LaneShiftX, LaneDropY)
@@ -251,8 +236,7 @@ namespace CalamityEntropy
         /// 秘录枢纽自己就是本模组的入门任务，下挂书页、卡组、器物三条支线。
         /// 器物支线里蓄势与抽奖是瞬时判定，只挂枢纽，不许再加原版第二父节点
         /// </summary>
-        private static void RegisterChronicle()
-        {
+        private static void RegisterChronicle() {
             new Node("Chronicle")
                 .Parents(PFirst)
                 .At(-150f, 1200f)
@@ -385,8 +369,7 @@ namespace CalamityEntropy
         #region 终末与成就
 
         /// <summary>挂在讨伐线尾部的收集与成就节点，含全套里唯一的隐藏节点</summary>
-        private static void RegisterEndgame()
-        {
+        private static void RegisterEndgame() {
             new Node("SoulEssence")
                 .Parents(Full("NihilityTwin"))
                 .At(0f, 150f)
@@ -461,10 +444,8 @@ namespace CalamityEntropy
         /// 不走 <see cref="BookMarkLoader.IsABookMark"/>：那边会直接 ContainsKey，
         /// 热重载时 CustomBMByID 已被置空，谓词抛三次就会被 CWR 停用
         /// </summary>
-        private static bool IsBookmarkSafe(Item item)
-        {
-            if (item.ModItem is BookMark)
-            {
+        private static bool IsBookmarkSafe(Item item) {
+            if (item.ModItem is BookMark) {
                 return true;
             }
             Dictionary<int, BookMarkLoader.BookMarkTag> map = BookMarkLoader.CustomBMByID;
@@ -472,19 +453,15 @@ namespace CalamityEntropy
         }
 
         /// <summary>熵语之书里当前装着几枚书签。槽位表很短，不必进节流缓存</summary>
-        private static int LoadedBookmarkCount(Player player)
-        {
+        private static int LoadedBookmarkCount(Player player) {
             List<Item> slots = player?.Entropy()?.EBookStackItems;
-            if (slots == null)
-            {
+            if (slots == null) {
                 return 0;
             }
             int count = 0;
-            for (int i = 0; i < slots.Count; i++)
-            {
+            for (int i = 0; i < slots.Count; i++) {
                 Item item = slots[i];
-                if (item != null && !item.IsAir && IsBookmarkSafe(item))
-                {
+                if (item != null && !item.IsAir && IsBookmarkSafe(item)) {
                     count++;
                 }
             }
@@ -492,11 +469,9 @@ namespace CalamityEntropy
         }
 
         /// <summary>堕化与灵魂两套卡组各算一份</summary>
-        private static int DeckCount(Player player)
-        {
+        private static int DeckCount(Player player) {
             EModPlayer mp = player?.Entropy();
-            if (mp == null)
-            {
+            if (mp == null) {
                 return 0;
             }
             return (mp.taintedDeckInInv ? 1 : 0) + (mp.soulDeckInInv ? 1 : 0);
@@ -508,24 +483,19 @@ namespace CalamityEntropy
         private static bool minerFound;
 
         /// <summary>世界里是否已经放下一台采矿机。TP 列表运行时会被增删，按 InnoVault 的要求倒序遍历</summary>
-        private static bool MinerPlaced()
-        {
-            if (!NeedRescan(ref minerScanFrame, ref minerScanned, MinerScanInterval))
-            {
+        private static bool MinerPlaced() {
+            if (!NeedRescan(ref minerScanFrame, ref minerScanned, MinerScanInterval)) {
                 return minerFound;
             }
             minerFound = false;
 
             List<TileProcessor> inWorld = TileProcessorLoader.TP_InWorld;
-            if (inWorld == null)
-            {
+            if (inWorld == null) {
                 return false;
             }
-            for (int i = inWorld.Count - 1; i >= 0; i--)
-            {
+            for (int i = inWorld.Count - 1; i >= 0; i--) {
                 TileProcessor tp = i < inWorld.Count ? inWorld[i] : null;
-                if (tp != null && tp.Active && tp is AzMinerTP)
-                {
+                if (tp != null && tp.Active && tp is AzMinerTP) {
                     minerFound = true;
                     break;
                 }
@@ -538,11 +508,9 @@ namespace CalamityEntropy
         /// 否则节点一多，计数式的冷却会在几帧内就被抽干，等于没节流。
         /// GameUpdateCount 在换世界时归零，此时无符号相减会溢出成极大值，正好落在「重扫」这一侧
         /// </summary>
-        private static bool NeedRescan(ref uint lastFrame, ref bool primed, uint interval)
-        {
+        private static bool NeedRescan(ref uint lastFrame, ref bool primed, uint interval) {
             uint now = Main.GameUpdateCount;
-            if (primed && now - lastFrame < interval)
-            {
+            if (primed && now - lastFrame < interval) {
                 return false;
             }
             lastFrame = now;
@@ -571,19 +539,16 @@ namespace CalamityEntropy
             internal bool HasAltar;
             internal bool ArmorPrefixed;
 
-            internal static Scan Of(Player player)
-            {
+            internal static Scan Of(Player player) {
                 if (player == null || !player.active || zodiacTypes == null
-                    || !NeedRescan(ref lastFrame, ref primed, Interval))
-                {
+                    || !NeedRescan(ref lastFrame, ref primed, Interval)) {
                     return cache;
                 }
                 cache.Refresh(player);
                 return cache;
             }
 
-            private void Refresh(Player player)
-            {
+            private void Refresh(Player player) {
                 Zodiac = 0;
                 OracleCards = 0;
                 BookKinds = 0;
@@ -616,34 +581,26 @@ namespace CalamityEntropy
             }
 
             private void Sweep(IList<Item> items, bool[] zodiacSeen, bool[] cardSeen, bool[] mariviniumSeen,
-                bool[] finalArmSeen, HashSet<int> bookKinds, int altarType, int essenceType)
-            {
-                if (items == null)
-                {
+                bool[] finalArmSeen, HashSet<int> bookKinds, int altarType, int essenceType) {
+                if (items == null) {
                     return;
                 }
-                for (int i = 0; i < items.Count; i++)
-                {
+                for (int i = 0; i < items.Count; i++) {
                     Item item = items[i];
-                    if (item == null || item.IsAir)
-                    {
+                    if (item == null || item.IsAir) {
                         continue;
                     }
 
-                    if (item.ModItem is EntropyBook)
-                    {
+                    if (item.ModItem is EntropyBook) {
                         bookKinds.Add(item.type);
                     }
-                    if (item.type == altarType)
-                    {
+                    if (item.type == altarType) {
                         HasAltar = true;
                     }
-                    if (item.type == essenceType)
-                    {
+                    if (item.type == essenceType) {
                         SoulEssence += item.stack;
                     }
-                    if (!ArmorPrefixed && item.Entropy().armorPrefix != null)
-                    {
+                    if (!ArmorPrefixed && item.Entropy().armorPrefix != null) {
                         ArmorPrefixed = true;
                     }
 
@@ -654,25 +611,19 @@ namespace CalamityEntropy
                 }
             }
 
-            private static void Mark(int[] types, bool[] seen, int itemType)
-            {
-                for (int i = 0; i < types.Length; i++)
-                {
-                    if (types[i] == itemType)
-                    {
+            private static void Mark(int[] types, bool[] seen, int itemType) {
+                for (int i = 0; i < types.Length; i++) {
+                    if (types[i] == itemType) {
                         seen[i] = true;
                         return;
                     }
                 }
             }
 
-            private static int CountTrue(bool[] seen)
-            {
+            private static int CountTrue(bool[] seen) {
                 int count = 0;
-                for (int i = 0; i < seen.Length; i++)
-                {
-                    if (seen[i])
-                    {
+                for (int i = 0; i < seen.Length; i++) {
+                    if (seen[i]) {
                         count++;
                     }
                 }
@@ -695,8 +646,7 @@ namespace CalamityEntropy
             private readonly Dictionary<string, object> args = new Dictionary<string, object>();
             private readonly List<Dictionary<string, object>> rewards = new List<Dictionary<string, object>>();
 
-            internal Node(string nodeKey)
-            {
+            internal Node(string nodeKey) {
                 key = nodeKey;
                 args["id"] = Full(nodeKey);
                 args["title"] = Text("Title");
@@ -709,21 +659,18 @@ namespace CalamityEntropy
                 => CalamityEntropy.Instance.GetLocalization($"CWRQuest.{key}.{field}");
 
             /// <summary>首个父节点决定坐标原点，其余只参与解锁。解锁要求全部父节点完成</summary>
-            internal Node Parents(params string[] ids)
-            {
+            internal Node Parents(params string[] ids) {
                 args["parents"] = ids;
                 return this;
             }
 
-            internal Node At(float x, float y)
-            {
+            internal Node At(float x, float y) {
                 args["x"] = x;
                 args["y"] = y;
                 return this;
             }
 
-            internal Node Kind(string type, string difficulty)
-            {
+            internal Node Kind(string type, string difficulty) {
                 args["type"] = type;
                 args["difficulty"] = difficulty;
                 return this;
@@ -733,84 +680,68 @@ namespace CalamityEntropy
             /// 图标走贴图路径而不是 iconNpc：CWR 对 NPC 图标按 npcFrameCount 竖切首帧，
             /// 会切坏本模组的 Boss 图集，而每个 Boss 都有现成的单帧 _Head_Boss 小图
             /// </summary>
-            internal Node Icon(string path)
-            {
+            internal Node Icon(string path) {
                 args["icon"] = path;
                 return this;
             }
 
-            internal Node IconItem(int itemType)
-            {
+            internal Node IconItem(int itemType) {
                 args["iconItem"] = itemType;
                 return this;
             }
 
             /// <summary>单步目标，读持久状态</summary>
-            internal Node Done(Func<Player, bool> complete)
-            {
+            internal Node Done(Func<Player, bool> complete) {
                 args["complete"] = complete;
                 return this;
             }
 
             /// <summary>分步目标，谓词返回 0 到 1，界面按 n / max 显示</summary>
-            internal Node Progress(Func<Player, float> complete, int max)
-            {
+            internal Node Progress(Func<Player, float> complete, int max) {
                 args["complete"] = (Func<Player, float>)(player => MathHelper.Clamp(complete(player), 0f, 1f));
                 args["progressMax"] = max;
                 return this;
             }
 
-            internal Node Unlock(Func<Player, bool> unlock)
-            {
+            internal Node Unlock(Func<Player, bool> unlock) {
                 args["unlock"] = unlock;
                 return this;
             }
 
-            internal Node Hidden()
-            {
+            internal Node Hidden() {
                 args["hiddenUntilUnlocked"] = true;
                 return this;
             }
 
-            internal Node Completionist()
-            {
+            internal Node Completionist() {
                 args["countsTowardCompletionist"] = true;
                 return this;
             }
 
-            internal Node Chapter(int order)
-            {
+            internal Node Chapter(int order) {
                 args["chapterHub"] = true;
                 args["chapterOrder"] = order;
                 return this;
             }
 
             /// <summary>奖励顺序跨会话必须固定：CWR 的领取标记按下标存，调换顺序会串位</summary>
-            internal Node Reward(int itemType, int stack = 1)
-            {
-                rewards.Add(new Dictionary<string, object>
-                {
+            internal Node Reward(int itemType, int stack = 1) {
+                rewards.Add(new Dictionary<string, object> {
                     ["item"] = itemType,
                     ["stack"] = stack
                 });
                 return this;
             }
 
-            internal void Push()
-            {
-                if (rewards.Count > 0)
-                {
+            internal void Push() {
+                if (rewards.Count > 0) {
                     args["rewards"] = rewards;
                 }
-                try
-                {
-                    if (cwr?.Call(CmdRegister, args) is not true)
-                    {
+                try {
+                    if (cwr?.Call(CmdRegister, args) is not true) {
                         CalamityEntropy.Instance.Logger.Info($"CalamityEntropy: CWR rejected quest node `{args["id"]}`");
                     }
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     //单节点失败不能把后面的节点一起带走
                     CalamityEntropy.Instance.Logger.Info($"CalamityEntropy: CWR quest node `{args["id"]}` threw: {ex.Message}");
                 }

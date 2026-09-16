@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Cruiser.Core;
+﻿using CalamityEntropy.Content.NPCs.Cruiser.Core;
 using CalamityEntropy.Content.Projectiles.Cruiser;
 using InnoVault.StateMachines;
 using Terraria;
@@ -15,13 +15,11 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
     {
         public override CruiserStateIndex StateIndex => CruiserStateIndex.EnergyBall;
 
-        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx)
-        {
+        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
 
-            if (ctx.ChangeCounter == 0)
-            {
+            if (ctx.ChangeCounter == 0) {
                 Shoot(ctx, ModContent.ProjectileType<CruiserEnergyBall>(), npc.Center, Vector2.Zero,
                     CruiserDirector.EnergyBallDamageMult, npc.whoAmI);
                 MarkNetUpdate(ctx);
@@ -29,8 +27,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
             ctx.ChangeCounter++;
 
             IVaultState<CruiserStateContext> next = null;
-            if (ctx.ChangeCounter > CruiserDirector.EnergyBallDuration)
-            {
+            if (ctx.ChangeCounter > CruiserDirector.EnergyBallDuration) {
                 next = NextAttack(ctx);
             }
             npc.velocity += (player.Center - npc.Center).normalize()

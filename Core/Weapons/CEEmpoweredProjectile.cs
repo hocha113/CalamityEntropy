@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
@@ -41,12 +41,10 @@ namespace CalamityEntropy.Core.Weapons
         private static bool IsWeaponUse(EntitySource_ItemUse itemUse)
             => itemUse.Item != null && !itemUse.Item.accessory && itemUse.Item.damage > 0;
 
-        public override void OnSpawn(Projectile projectile, IEntitySource source)
-        {
+        public override void OnSpawn(Projectile projectile, IEntitySource source) {
             // 直接由物品使用生成:先记武器来源标记,再按蓄势武器记来源与当帧强化窗口。
             // (EntitySource_ItemUse 继承自 EntitySource_Parent,须先判)
-            if (source is EntitySource_ItemUse itemUse)
-            {
+            if (source is EntitySource_ItemUse itemUse) {
                 FromWeaponUse = IsWeaponUse(itemUse);
 
                 if (itemUse.Item?.ModItem is not ICEChargeWeapon)
@@ -57,8 +55,7 @@ namespace CalamityEntropy.Core.Weapons
                 // TryConsume 打开的当帧强化窗口:同帧由该玩家此武器发出的弹幕自动打标。
                 // OnSpawn 先于生成同步包发出,标志随首包到达其他端,无需二次同步。
                 if (projectile.owner >= 0 && projectile.owner < Main.maxPlayers
-                    && Main.player[projectile.owner].GetModPlayer<CEChargePlayer>().EmpowerWindowActive)
-                {
+                    && Main.player[projectile.owner].GetModPlayer<CEChargePlayer>().EmpowerWindowActive) {
                     Empowered = true;
                 }
                 return;
@@ -67,33 +64,28 @@ namespace CalamityEntropy.Core.Weapons
             // 父弹幕链路(GetSource_FromAI 等):父弹幕已记录来源武器时,子弹幕继承其来源。
             // 覆盖手持弹幕→伤害弹的间接生成链(如 AzafureLightMachineGun 的 ALMGLaser)。
             // 每次生成继承一跳,深链由逐级继承自然传递,不做向上遍历,因此不存在环。
-            if (source is EntitySource_Parent parentSource && parentSource.Entity is Projectile parentProj)
-            {
+            if (source is EntitySource_Parent parentSource && parentSource.Entity is Projectile parentProj) {
                 CEEmpowerGlobalProjectile parentGlobal = parentProj.GetGlobalProjectile<CEEmpowerGlobalProjectile>();
                 FromWeaponUse = parentGlobal.FromWeaponUse;
-                if (parentGlobal.sourceItem != null)
-                {
+                if (parentGlobal.sourceItem != null) {
                     sourceItem = parentGlobal.sourceItem;
                     creditBlocked = parentGlobal.Empowered || parentGlobal.creditBlocked;
                 }
             }
         }
 
-        public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone) {
             // 命中计数回充:仅普通弹幕计数,大招弹幕及其衍生弹不回充
             if (Empowered || creditBlocked || sourceItem == null)
                 return;
             CEChargeWeapon.CreditHit(Main.player[projectile.owner], sourceItem);
         }
 
-        public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter binaryWriter)
-        {
+        public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter binaryWriter) {
             bitWriter.WriteBit(Empowered);
         }
 
-        public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader binaryReader)
-        {
+        public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader binaryReader) {
             Empowered = bitReader.ReadBit();
         }
     }
@@ -116,8 +108,7 @@ namespace CalamityEntropy.Core.Weapons
         /// 标记为蓄势强化弹。sync = true 时立即补发同步包
         /// (生成后再打标时首包不含标志,需要补同步;走 TryConsume 窗口自动打标的不需要)。
         /// </summary>
-        public static void SetEmpowered(this Projectile projectile, bool sync = true)
-        {
+        public static void SetEmpowered(this Projectile projectile, bool sync = true) {
             projectile.GetGlobalProjectile<CEEmpowerGlobalProjectile>().Empowered = true;
             if (sync)
                 CEUtils.SyncProj(projectile);

@@ -5,7 +5,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using Terraria;
-using Terraria.ModLoader;
 
 namespace CalamityEntropy.Utilities
 {
@@ -19,64 +18,50 @@ namespace CalamityEntropy.Utilities
         private static extern int SystemParametersInfo(int uAction, int uParam, StringBuilder lpvParam, int fuWinIni);
 
 
-        public static string GetDesktopWallpaper()
-        {
-            if (!OperatingSystem.IsWindows())
-            {
+        public static string GetDesktopWallpaper() {
+            if (!OperatingSystem.IsWindows()) {
                 return null;
             }
             return CopyWallpaperToTemp();
         }
 
-        public static string CopyWallpaperToTemp()
-        {
+        public static string CopyWallpaperToTemp() {
             StringBuilder wallpaperPath = new StringBuilder(MAX_PATH);
             SystemParametersInfo(SPI_GETDESKWALLPAPER, MAX_PATH, wallpaperPath, 0);
             string originalPath = wallpaperPath.ToString();
             string tempPath = Path.Combine(Main.SavePath, "CalamityEntropy/Wallpaper.jpg");
 
-            try
-            {
+            try {
                 File.Copy(originalPath, tempPath, true);
                 return tempPath;
-            }
-            catch (UnauthorizedAccessException)
-            {
+            } catch (UnauthorizedAccessException) {
                 return null;
             }
 
         }
 
         public static Texture2D wallpaper = null;
-        public static Texture2D getWallpaper()
-        {
-            if (wallpaper != null)
-            {
+        public static Texture2D getWallpaper() {
+            if (wallpaper != null) {
                 return wallpaper;
             }
-            try
-            {
+            try {
                 string wallpaperPath = GetDesktopWallpaper();
-                if (wallpaperPath == null)
-                {
+                if (wallpaperPath == null) {
                     wallpaper = CEExtraAssets.white;
                     return wallpaper;
                 }
                 GraphicsDevice graphicsDevice = Main.graphics.GraphicsDevice;
-                if (File.Exists(wallpaperPath))
-                {
-                    using (FileStream stream = new FileStream(wallpaperPath, FileMode.Open))
-                    {
+                if (File.Exists(wallpaperPath)) {
+                    using (FileStream stream = new FileStream(wallpaperPath, FileMode.Open)) {
                         wallpaper = Texture2D.FromStream(graphicsDevice, stream);
                         return wallpaper;
                     }
                 }
-                else
-                {
+                else {
                     wallpaper = CEExtraAssets.white;
                 }
-            }
-            catch { wallpaper = CEExtraAssets.white; }
+            } catch { wallpaper = CEExtraAssets.white; }
             return wallpaper;
 
         }

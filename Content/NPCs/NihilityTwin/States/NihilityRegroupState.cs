@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.NihilityTwin.Core;
+﻿using CalamityEntropy.Content.NPCs.NihilityTwin.Core;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -20,8 +20,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.States
     {
         public override NihilityStateIndex StateIndex => NihilityStateIndex.Regroup;
 
-        public override IVaultState<NihilityStateContext> OnUpdate(NihilityStateContext ctx)
-        {
+        public override IVaultState<NihilityStateContext> OnUpdate(NihilityStateContext ctx) {
             NPC npc = ctx.Npc;
             NPC cell = ctx.Cell;
             Vector2 targetPos = ctx.Target.Center;
@@ -29,23 +28,19 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.States
             ctx.Num1++;
             npc.velocity *= NihilityDirector.RegroupDrag;
             cell.velocity *= NihilityDirector.RegroupDrag;
-            if (ctx.Phase == 1)
-            {
-                if (CEUtils.getDistance(cell.Center, npc.Center) > NihilityDirector.RegroupCellLeash)
-                {
+            if (ctx.Phase == 1) {
+                if (CEUtils.getDistance(cell.Center, npc.Center) > NihilityDirector.RegroupCellLeash) {
                     cell.velocity += (npc.Center - cell.Center).SafeNormalize(Vector2.Zero) * NihilityDirector.RegroupCellPullP1;
                 }
             }
-            else
-            {
+            else {
                 cell.velocity += (targetPos - cell.Center).SafeNormalize(Vector2.Zero) * NihilityDirector.RegroupCellPushP2;
             }
             npc.velocity += (targetPos - npc.Center).SafeNormalize(Vector2.Zero) * NihilityDirector.RegroupThrust;
             npc.rotation = npc.velocity.ToRotation();
             ctx.Owner.SpawnParticle(ctx.Owner.buttom);
 
-            if (ctx.Num1 > NihilityDirector.RegroupFrames)
-            {
+            if (ctx.Num1 > NihilityDirector.RegroupFrames) {
                 return NextAttack(ctx);
             }
             return null;

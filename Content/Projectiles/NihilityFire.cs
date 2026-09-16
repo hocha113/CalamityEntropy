@@ -5,12 +5,10 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class NihilityFire : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 6;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 30;
             Projectile.height = 30;
             Projectile.friendly = false;
@@ -21,13 +19,11 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.timeLeft = 300;
         }
         public bool setRot = true;
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2; Projectile.frameCounter++;
 
             Projectile.frameCounter++;
-            if (Projectile.frameCounter > 4)
-            {
+            if (Projectile.frameCounter > 4) {
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }

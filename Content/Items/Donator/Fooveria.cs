@@ -1,14 +1,11 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
-using CalamityEntropy.Core.CalamityRef;
-using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
-using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -21,12 +18,10 @@ namespace CalamityEntropy.Content.Items.Donator
 {
     public class Fooveria : ModItem, IDonatorItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 10;
             Item.DamageType = DamageClass.Melee;
             Item.width = 48;
@@ -50,28 +45,23 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public int useCounter = 0;
         public int atkType = 1;
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             damage *= useCounter % 4 == 3 ? 2 : 1;
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0, useCounter % 4 == 3 ? 1 : Main.rand.NextBool() ? 1 : -1, useCounter % 4 == 3 ? 1 : 0);
             atkType *= -1;
             useCounter++;
             return false;
         }
-        public override bool MeleePrefix()
-        {
+        public override bool MeleePrefix() {
             return true;
         }
 
-        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
-        {
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI) {
             Item.QuickDrawItemWithBloomToWorld(spriteBatch, Color.SkyBlue, ref scale, rotation);
             return false;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady())
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady()) {
                 CreateRecipe()
                     .AddIngredient(ItemID.Shiverthorn, 3)
                     .AddIngredient(ItemID.IceBlock, 20)
@@ -89,24 +79,19 @@ namespace CalamityEntropy.Content.Items.Donator
                 .Register();
         }
         /// <summary>装灾厄走 3.33 的 15 段阶梯,无灾厄保持 4.0 的 9 条 Check（伤害表 case 10 仍是死码）</summary>
-        public static int GetLevel()
-        {
+        public static int GetLevel() {
             int Level = 0;
             bool flag = true;
-            void Check(bool f)
-            {
-                if (f && flag)
-                {
+            void Check(bool f) {
+                if (f && flag) {
                     Level++;
                 }
-                else
-                {
+                else {
                     flag = false;
                 }
             }
 
-            if (!CERef.Has)
-            {
+            if (!CERef.Has) {
                 Check(NPC.downedSlimeKing || NPC.downedBoss1);
                 Check(NPC.downedBoss2);
                 Check(NPC.downedBoss3);
@@ -139,16 +124,12 @@ namespace CalamityEntropy.Content.Items.Donator
 
         public string DonatorName => "普维莉雅";
 
-        public override void UpdateInventory(Player player)
-        {
+        public override void UpdateInventory(Player player) {
             int level = GetLevel();
-            if (LastLevel != level)
-            {
+            if (LastLevel != level) {
                 int dmg = Item.damage;
-                if (CERef.Has)
-                {
-                    switch (level)
-                    {
+                if (CERef.Has) {
+                    switch (level) {
                         case 0: dmg = 5; break;
                         case 1: dmg = 10; break;
                         case 2: dmg = 13; break;
@@ -167,10 +148,8 @@ namespace CalamityEntropy.Content.Items.Donator
                         case 15: dmg = 2300; break;
                     }
                 }
-                else
-                {
-                    switch (level)
-                    {
+                else {
+                    switch (level) {
                         case 0: dmg = 5; break;
                         case 1: dmg = 10; break;
                         case 2: dmg = 13; break;
@@ -192,18 +171,15 @@ namespace CalamityEntropy.Content.Items.Donator
                 Item.scale = 1;
                 Item.Prefix(Item.prefix);
             }
-            if (player.HeldItem == Item)
-            {
+            if (player.HeldItem == Item) {
                 player.Entropy().BBarNoDecrease = 120;
                 player.Entropy().MouseWorldListener = true;
             }
         }
-        public override bool AllowPrefix(int pre)
-        {
+        public override bool AllowPrefix(int pre) {
             return true;
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             tooltips.Replace("[L]", GetLevel());
         }
     }
@@ -212,14 +188,12 @@ namespace CalamityEntropy.Content.Items.Donator
         public override string Texture => "CalamityEntropy/Content/Items/Donator/Fooveria";
         List<float> odr = new List<float>();
         List<float> ods = new List<float>();
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 12;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
@@ -241,16 +215,12 @@ namespace CalamityEntropy.Content.Items.Donator
         public bool LeftClicked = false;
         public bool Spin = false;
         public bool snd = true;
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (snd)
-            {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            if (snd) {
                 CEUtils.PlaySound("CryogenHit" + Main.rand.Next(1, 4), Main.rand.NextFloat(1.4f, 1.7f), Projectile.Center);
-                if (target.Organic())
-                {
+                if (target.Organic()) {
                 }
-                else
-                {
+                else {
                     CEUtils.PlaySound("metalhit", Main.rand.NextFloat(0.8f, 1.2f), target.Center, 6, CEUtils.WeapSound * 0.5f);
                 }
                 CEUtils.PlaySound("GrassSwordHit" + Main.rand.Next(4).ToString(), 1, target.Center, 16, CEUtils.WeapSound * 0.5f);
@@ -262,31 +232,26 @@ namespace CalamityEntropy.Content.Items.Donator
             PRTLoader.NewParticle<PRT_SparkleCal>(target.Center + Main.rand.NextVector2Circular(target.width * 0.75f, target.height * 0.75f), Vector2.Zero, impactColor, impactParticleScale).Configure(Color.SkyBlue, 8, 0, 2.5f);
 
             float sparkCount = 16 + Fooveria.GetLevel() / 2;
-            for (int i = 0; i < sparkCount; i++)
-            {
+            for (int i = 0; i < sparkCount; i++) {
                 float p = Main.rand.NextFloat();
                 Vector2 sparkVelocity2 = (target.Center - Projectile.Center).normalize().RotatedByRandom(p * 0.4f) * Main.rand.NextFloat(6, 20 * (2 - p)) * (1 + Fooveria.GetLevel() * 0.1f) * 0.7f;
                 int sparkLifetime2 = (int)((2 - p) * 16);
                 float sparkScale2 = 0.6f + (1 - p);
                 sparkScale2 *= (1 + Fooveria.GetLevel() * 0.06f);
                 Color sparkColor2 = Color.Lerp(Color.LightSkyBlue, Color.AliceBlue, p);
-                if (Main.rand.NextBool())
-                {
+                if (Main.rand.NextBool()) {
                     PRTLoader.NewParticle<PRT_AltSpark>(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f), sparkVelocity2 * (1f), sparkColor2, sparkScale2 * (1.4f)).Configure(false, (int)(sparkLifetime2 * (1.2f)));
                 }
-                else
-                {
+                else {
                     PRTLoader.NewParticle<PRT_LineCal>(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f), sparkVelocity2, Main.rand.NextBool() ? Color.LightBlue : Color.SkyBlue, sparkScale2 * (Projectile.frame == 7 ? 1.4f : 1f)).Configure(false, (int)(sparkLifetime2));
                 }
             }
-            if (Projectile.ai[2] > 0)
-            {
+            if (Projectile.ai[2] > 0) {
                 CEUtils.PlaySound("CryogenHit" + Main.rand.Next(1, 4), Main.rand.NextFloat(1f, 1.2f), Projectile.Center, 16);
                 CEUtils.PlaySound("CryogenHit" + Main.rand.Next(1, 4), Main.rand.NextFloat(1f, 1.2f), Projectile.Center, 16);
                 Projectile.GetOwner().Entropy().noItemTime = (int)(30f / Projectile.GetOwner().GetTotalAttackSpeed(DamageClass.Melee));
                 int pt = ModContent.ProjectileType<FooveriaIceShard>();
-                for (int i = 0; i < 6; i++)
-                {
+                for (int i = 0; i < 6; i++) {
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(0, 100) * Projectile.scale, Projectile.rotation.ToRotationVector2() * Main.rand.NextFloat(16, 26) + CEUtils.randomPointInCircle(4), pt, Projectile.damage / 2, 4, Projectile.owner);
                 }
                 Projectile.Kill();
@@ -294,25 +259,21 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public float rScale = 1;
         public float slashP = Main.rand.NextFloat(0.2f, 0.3f);
-        public override void AI()
-        {
+        public override void AI() {
             CEUtils.AddLight(Projectile.Center + Projectile.velocity.normalize() * 20 * Projectile.scale, Color.LightBlue, Projectile.scale);
             Player owner = Projectile.GetOwner();
-            if (owner.dead)
-            {
+            if (owner.dead) {
                 Projectile.Kill();
                 return;
             }
             float MaxUpdateTimes = owner.itemTimeMax * Projectile.MaxUpdates;
-            if (Projectile.ai[2] == 1)
-            {
+            if (Projectile.ai[2] == 1) {
                 MaxUpdateTimes *= 2;
                 slashP = 1;
             }
             float progress = (counter / MaxUpdateTimes);
             counter++;
-            if (init)
-            {
+            if (init) {
                 Projectile.ai[1] *= Projectile.velocity.X > 0 ? 1 : -1;
 
                 CEUtils.PlaySound("HellkiteSwing" + Main.rand.Next(1, 3), Main.rand.NextFloat(0f, 0.5f) + (Projectile.ai[2] == 1 ? 2f : 2.4f), Projectile.Center, 12, 0.66f * CEUtils.WeapSound);
@@ -321,8 +282,7 @@ namespace CalamityEntropy.Content.Items.Donator
                 owner.ApplyMeleeScale(ref scale_);
                 Projectile.scale *= scale_;
                 init = false;
-                if (Main.myPlayer == Projectile.owner)
-                {
+                if (Main.myPlayer == Projectile.owner) {
 
                 }
             }
@@ -331,7 +291,7 @@ namespace CalamityEntropy.Content.Items.Donator
             Projectile.timeLeft = 3;
             alpha = 1;
             float cr = MathHelper.ToRadians(10);
-            float RotF = 4.5f; 
+            float RotF = 4.5f;
             float rot = progress <= 0.5f ? ((RotF * -0.5f + CEUtils.Parabola(progress, RotF + cr)) * Projectile.ai[1]) : ((RotF * 0.5f + cr - CEUtils.GetRepeatedCosFromZeroToOne(2 * (progress - 0.5f), 1) * cr) * Projectile.ai[1]);
             Vector2 v = rot.ToRotationVector2() * new Vector2(1, slashP);
             Projectile.rotation = v.ToRotation() + Projectile.velocity.ToRotation();
@@ -339,56 +299,46 @@ namespace CalamityEntropy.Content.Items.Donator
             rScale = v.Length();
             scale = 1.4f;
 
-            if (Projectile.velocity.X > 0)
-            {
+            if (Projectile.velocity.X > 0) {
                 owner.direction = 1;
                 owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - (float)(Math.PI * 0.5f));
             }
-            else
-            {
+            else {
                 owner.direction = -1;
                 owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - (float)(Math.PI * 0.5f));
             }
             owner.heldProj = Projectile.whoAmI;
             owner.itemTime = 2;
             owner.itemAnimation = 2;
-            if (counter > MaxUpdateTimes)
-            {
+            if (counter > MaxUpdateTimes) {
                 owner.itemTime = 1;
                 owner.itemAnimation = 1;
                 Projectile.Kill();
             }
-            if (progress < 0.45f)
-            {
+            if (progress < 0.45f) {
                 SpawnParticle();
                 odr.Add(Projectile.rotation);
                 ods.Add(rScale);
-                if (odr.Count > 120)
-                {
+                if (odr.Count > 120) {
                     odr.RemoveAt(0);
                     ods.RemoveAt(0);
                 }
             }
-            else
-            {
-                if (odr.Count > 0)
-                {
+            else {
+                if (odr.Count > 0) {
                     ods.RemoveAt(0);
                     odr.RemoveAt(0);
                 }
             }
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
         public bool NoDraw = false;
         public Vector2 lPos = Vector2.Zero;
-        public void SpawnParticle()
-        {
+        public void SpawnParticle() {
             Vector2 vpos = Projectile.rotation.ToRotationVector2() * rScale * scale * Projectile.scale * 116;
-            if (lPos == Vector2.Zero)
-            {
+            if (lPos == Vector2.Zero) {
                 lPos = vpos;
                 return;
             }
@@ -399,21 +349,17 @@ namespace CalamityEntropy.Content.Items.Donator
             sparkScale2 *= (1 + Fooveria.GetLevel() * 0.06f);
             Color sparkColor2 = Color.Lerp(Color.AliceBlue, Color.LightBlue, Main.rand.NextFloat());
             Vector2 pos = Projectile.Center + Projectile.rotation.ToRotationVector2() * 116 * scale * Projectile.scale * rScale;
-            if (Main.rand.NextBool())
-            {
+            if (Main.rand.NextBool()) {
                 PRTLoader.NewParticle<PRT_AltLineCal>(pos, sparkVelocity2 * (1f), sparkColor2, sparkScale2 * (1.4f)).Configure(false, (int)(sparkLifetime2 * (1.2f)));
             }
-            else
-            {
+            else {
                 PRTLoader.NewParticle<PRT_LineCal>(pos, sparkVelocity2, Main.rand.NextBool() ? Color.LightBlue : Color.SkyBlue, sparkScale2 * (Projectile.frame == 7 ? 1.4f : 1f)).Configure(false, (int)(sparkLifetime2));
             }
             PRTLoader.NewParticle<PRT_Snowflake>(Projectile.Center + Projectile.rotation.ToRotationVector2() * 100 * scale * Projectile.scale * rScale * Main.rand.NextFloat(Main.rand.NextFloat(0.25f, 1f), 1f), sparkVelocity2 * 0.2f, Color.White, Main.rand.NextFloat(0.16f, 0.36f) * scale * Projectile.scale).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, CEUtils.randomRot(), 8);
             lPos = vpos;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            if (NoDraw)
-            {
+        public override bool PreDraw(ref Color lightColor) {
+            if (NoDraw) {
                 return false;
             }
             Texture2D tex = Projectile.GetTexture();
@@ -422,8 +368,7 @@ namespace CalamityEntropy.Content.Items.Donator
             float MaxUpdateTimes = Projectile.GetOwner().itemTimeMax * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
 
-            for (int i = 0; i < odr.Count; i++)
-            {
+            for (int i = 0; i < odr.Count; i++) {
                 Color b = new Color(220, 255, 200);
                 ve.Add(new ColoredVertex(Projectile.Center - Main.screenPosition + (new Vector2(116 * Projectile.scale * scale * ods[i], 0).RotatedBy(odr[i])),
                       new Vector3((i) / ((float)odr.Count - 1), 1, 1),
@@ -432,8 +377,7 @@ namespace CalamityEntropy.Content.Items.Donator
                       new Vector3((i) / ((float)odr.Count - 1), 0, 1),
                       b));
             }
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 var gd = Main.graphics.GraphicsDevice;
                 SpriteBatch sb = Main.spriteBatch;
                 Effect shader = CEEffectAssets.SwordTrail;
@@ -461,18 +405,15 @@ namespace CalamityEntropy.Content.Items.Donator
 
             float MaxUpdateTime = Projectile.GetOwner().itemTimeMax * Projectile.MaxUpdates;
             Main.spriteBatch.UseAdditiveClamp();
-            if (Projectile.ai[2] > 0)
-            {
-                for(float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver4)
-                {
+            if (Projectile.ai[2] > 0) {
+                for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver4) {
                     Main.EntitySpriteDraw(tex, Projectile.Center + Projectile.GetOwner().gfxOffY * Vector2.UnitY - Main.screenPosition + i.ToRotationVector2() * 4, null, lightColor * alpha, rot, origin, Projectile.scale * scale * rScale * 0.6f, effect);
                 }
             }
             Main.spriteBatch.ExitShaderRegion();
             Main.EntitySpriteDraw(tex, Projectile.Center + Projectile.GetOwner().gfxOffY * Vector2.UnitY - Main.screenPosition, null, lightColor * alpha, rot, origin, Projectile.scale * scale * rScale * 0.6f, effect);
             Main.spriteBatch.UseAdditiveClamp();
-            if (Projectile.ai[2] > 0)
-            {
+            if (Projectile.ai[2] > 0) {
                 Main.EntitySpriteDraw(tex, Projectile.Center + Projectile.GetOwner().gfxOffY * Vector2.UnitY - Main.screenPosition, null, Color.White * alpha, rot, origin, Projectile.scale * scale * rScale * 0.6f, effect);
                 Main.EntitySpriteDraw(tex, Projectile.Center + Projectile.GetOwner().gfxOffY * Vector2.UnitY - Main.screenPosition, null, Color.White * alpha, rot, origin, Projectile.scale * scale * rScale * 0.6f, effect);
             }
@@ -480,16 +421,13 @@ namespace CalamityEntropy.Content.Items.Donator
 
             return false;
         }
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             return null;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * 120 * Projectile.scale * scale * rScale, targetHitbox, 64);
         }
-        public override void CutTiles()
-        {
+        public override void CutTiles() {
             Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * 120 * Projectile.scale * scale * rScale, 54, DelegateMethods.CutTiles);
         }
     }
@@ -498,33 +436,27 @@ namespace CalamityEntropy.Content.Items.Donator
         public List<Vector2> odp = new List<Vector2>();
         public List<float> odr = new List<float>();
         public float alpha = 1;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void PostAI()
-        {
+        public override void PostAI() {
             odp.Add(Projectile.Center);
             odr.Add(Projectile.rotation);
-            if (odp.Count > 7)
-            {
+            if (odp.Count > 7) {
                 odp.RemoveAt(0);
                 odr.RemoveAt(0);
             }
         }
-        public Color TrailColor(float completionRatio, Vector2 vertex)
-        {
+        public Color TrailColor(float completionRatio, Vector2 vertex) {
             Color result = new Color(220, 235, 255) * completionRatio * alpha;
             return result;
         }
 
-        public float TrailWidth(float completionRatio, Vector2 vertex)
-        {
+        public float TrailWidth(float completionRatio, Vector2 vertex) {
             return MathHelper.Lerp(0, 12 * Projectile.scale, completionRatio);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             CEUtils.PlaySound("CryogenHit" + Main.rand.Next(1, 4), 1, Projectile.Center);
 
             float scale = 60 / 40f;
@@ -532,8 +464,7 @@ namespace CalamityEntropy.Content.Items.Donator
             PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.LightBlue, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 13);
 
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 36;
             Projectile.height = 36;
@@ -543,34 +474,28 @@ namespace CalamityEntropy.Content.Items.Donator
             Projectile.light = 0.4f;
             Projectile.timeLeft = 120;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.rotation += Projectile.velocity.X * 0.02f;
-            if (Projectile.localAI[0]++ < 50)
-            {
+            if (Projectile.localAI[0]++ < 50) {
                 Projectile.velocity *= 0.96f;
             }
-            else
-            {
+            else {
                 if (Projectile.HomingToNPCNearby(4, 0.94f, 2000))
                     if (Projectile.timeLeft < 60)
                         Projectile.timeLeft = 60;
             }
             alpha = float.Min(1, Projectile.timeLeft / 20f);
         }
-        public override bool? CanDamage()
-        {
+        public override bool? CanDamage() {
             return Projectile.localAI[0] >= 50;
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             Color color = new Color(160, 180, 255) * alpha;
             var mp = this;
-            if (mp.odp.Count > 1)
-            {
+            if (mp.odp.Count > 1) {
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = color * 0.66f;
                 b.A = 255;
@@ -582,8 +507,7 @@ namespace CalamityEntropy.Content.Items.Donator
                 ve.Add(new ColoredVertex(mp.odp[0] - Main.screenPosition + (mp.odp[1] - mp.odp[0]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 14 * Projectile.scale,
                       new Vector3(0, 0, 1),
                       b * (1f / (float)mp.odp.Count)));
-                for (int i = 1; i < mp.odp.Count; i++)
-                {
+                for (int i = 1; i < mp.odp.Count; i++) {
                     a += 1f / (float)mp.odp.Count;
 
                     ve.Add(new ColoredVertex(mp.odp[i] - Main.screenPosition + (mp.odp[i] - mp.odp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 14 * Projectile.scale,
@@ -596,8 +520,7 @@ namespace CalamityEntropy.Content.Items.Donator
                 }
                 a = 1;
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     Texture2D tx = CEExtraAssets.wohslash;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
@@ -607,8 +530,7 @@ namespace CalamityEntropy.Content.Items.Donator
 
                     a = 0;
                     lr = 0;
-                    for (int i = 1; i < mp.odp.Count; i++)
-                    {
+                    for (int i = 1; i < mp.odp.Count; i++) {
                         a += 1f / (float)mp.odp.Count;
 
                         ve.Add(new ColoredVertex(mp.odp[i] - Main.screenPosition + (mp.odp[i] - mp.odp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 8 * Projectile.scale,
@@ -634,8 +556,7 @@ namespace CalamityEntropy.Content.Items.Donator
             GameShaders.Misc["CalamityEntropy:ArtAttack"].Apply();
             CEPrimitiveRenderer.RenderTrail(odp, new CEPrimitiveSettings(TrailWidth, TrailColor, (_, _) => Vector2.Zero, smoothen: true, pixelate: false, GameShaders.Misc["CalamityEntropy:ArtAttack"]), 180);
             Main.spriteBatch.ExitShaderRegion();
-            if (odp.Count > 1)
-            {
+            if (odp.Count > 1) {
                 Texture2D texture = Projectile.GetTexture();
                 Rectangle frame = CEUtils.GetCutTexRect(texture, 4, Projectile.whoAmI % 4, false);
                 Vector2 position = odp[odp.Count - 1] - Main.screenPosition + Vector2.UnitY * base.Projectile.gfxOffY;

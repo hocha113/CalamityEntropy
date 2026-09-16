@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.NihilityTwin.Core;
+﻿using CalamityEntropy.Content.NPCs.NihilityTwin.Core;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -35,8 +35,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         /// 尾迹尘。频率由 <c>localAI[0]</c> 的余弦给,所以两侧尘线会交替张合。
         /// <c>Dust.NewDust</c> 在服务端直接返回,不吃随机数
         /// </summary>
-        public void SpawnParticle(Vector2 center)
-        {
+        public void SpawnParticle(Vector2 center) {
             Vector2 vel = (NPC.rotation + MathHelper.PiOver2).ToRotationVector2() * (float)Math.Cos(NPC.localAI[0] * 0.3f) * 16;
             Vector2 vel2 = vel * -1;
             vel -= NPC.velocity * 1f;
@@ -49,17 +48,14 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         private bool InLaserPose => Context != null && Context.Phase == 2
             && (int)NPC.ai[3] == (int)NihilityStateIndex.P2Laser;
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
-        {
-            if (spawnAnm > 0)
-            {
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) {
+            if (spawnAnm > 0) {
                 return false;
             }
             float rot = NPC.rotation + MathHelper.PiOver2;
 
             Texture2D tex = NPC.getTexture();
-            if (InLaserPose)
-            {
+            if (InLaserPose) {
                 tex = bodyAltTex.Value;
             }
             Color color = Color.White;
@@ -89,14 +85,11 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         /// 本体与细胞之间的绳索。由 <see cref="ChaoticCell"/> 的绘制路径回调,
         /// 两端读的都是未加平滑偏移的原始 <c>Center</c>(本体与细胞都已关掉 netOffset),不会出现根部跳动
         /// </summary>
-        public void drawRope()
-        {
-            if (rope == null || cell == null)
-            {
+        public void drawRope() {
+            if (rope == null || cell == null) {
                 return;
             }
-            if (ropeLerp <= 0)
-            {
+            if (ropeLerp <= 0) {
                 return;
             }
             List<ColoredVertex> ve = new List<ColoredVertex>();
@@ -108,8 +101,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             float lc = 1;
             float jn = 0;
 
-            for (int i = 1; i < points.Count - 1; i++)
-            {
+            for (int i = 1; i < points.Count - 1; i++) {
                 jn += CEUtils.getDistance(points[i - 1], points[i]) / (float)28 * lc;
 
                 ve.Add(new ColoredVertex(points[i] - Main.screenPosition + (points[i] - points[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 7 * lc,
@@ -121,8 +113,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             }
 
             GraphicsDevice gd = Main.graphics.GraphicsDevice;
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 

@@ -10,14 +10,12 @@ namespace CalamityEntropy.Content.Items.Weapons
 {
     public class CreeperWand : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ItemID.Sets.GamepadWholeScreenUseRange[Item.type] = true;
             ItemID.Sets.LockOnIgnoresCollision[Item.type] = true;
             ItemID.Sets.StaffMinionSlotsRequired[Item.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 32;
             Item.DamageType = DamageClass.Summon;
             Item.width = 46;
@@ -36,8 +34,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.buffType = ModContent.BuffType<CreeperBuff>();
             Item.rare = ItemRarityID.Orange;
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             player.AddBuff(Item.buffType, 3);
             int projectile = Projectile.NewProjectile(source, Main.MouseWorld, velocity, type, Item.damage, knockback, player.whoAmI, 0, 1, 0);
             Main.projectile[projectile].originalDamage = Item.damage;
@@ -50,15 +47,13 @@ namespace CalamityEntropy.Content.Items.Weapons
     }
     public class CreeperMinion : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
             base.SetStaticDefaults();
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Summon;
             Projectile.width = 32;
             Projectile.height = 32;
@@ -77,23 +72,18 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         // 原灾厄肾上腺素(AdrenalineMode)检测随 ripper 系统退役，保留周期激活常态分支
         public bool Active => ((int)Main.GameUpdateCount + Projectile.ai[1]) % 450 < 120;
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             return Active ? null : false;
         }
-        public override bool? CanCutTiles()
-        {
+        public override bool? CanCutTiles() {
             return false;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Player player = Projectile.GetOwner();
             Projectile.MinionCheck<CreeperBuff>();
-            if (Projectile.localAI[0] == 0)
-            {
-                for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.TwoPi * 0.05f)
-                {
+            if (Projectile.localAI[0] == 0) {
+                for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.TwoPi * 0.05f) {
                     var dust = Dust.NewDustDirect(Projectile.Center, 0, 0, Main.rand.NextBool() ? DustID.Blood : DustID.GreenBlood);
                     dust.position = Projectile.Center;
                     dust.noGravity = true;
@@ -101,13 +91,11 @@ namespace CalamityEntropy.Content.Items.Weapons
                     dust.scale = 1.5f;
                 }
             }
-            if (Projectile.localAI[0]++ < 3)
-            {
+            if (Projectile.localAI[0]++ < 3) {
                 Projectile.timeLeft++;
                 return;
             }
-            if (Projectile.Distance(player.Center) > 4000)
-            {
+            if (Projectile.Distance(player.Center) > 4000) {
                 Projectile.Center = player.Center + CEUtils.randomPointInCircle(128);
             }
             Projectile.pushByOther(0.2f);
@@ -116,12 +104,9 @@ namespace CalamityEntropy.Content.Items.Weapons
             int sum = 0;
             int self = 0;
 
-            foreach (Projectile p in Main.ActiveProjectiles)
-            {
-                if (p.owner == Projectile.owner && p.type == Projectile.type)
-                {
-                    if (p.whoAmI == Projectile.whoAmI)
-                    {
+            foreach (Projectile p in Main.ActiveProjectiles) {
+                if (p.owner == Projectile.owner && p.type == Projectile.type) {
+                    if (p.whoAmI == Projectile.whoAmI) {
                         self = sum;
                     }
                     sum++;
@@ -129,12 +114,9 @@ namespace CalamityEntropy.Content.Items.Weapons
             }
             Projectile.ai[1] = self * 60;
             NPC target = Projectile.FindMinionTarget(1400, true);
-            if (Active && target != null)
-            {
-                if (!flag)
-                {
-                    for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.TwoPi * 0.05f)
-                    {
+            if (Active && target != null) {
+                if (!flag) {
+                    for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.TwoPi * 0.05f) {
                         var dust = Dust.NewDustDirect(Projectile.Center, 0, 0, Main.rand.NextBool() ? DustID.Blood : DustID.GreenBlood);
                         dust.position = Projectile.Center;
                         dust.noGravity = true;
@@ -145,12 +127,10 @@ namespace CalamityEntropy.Content.Items.Weapons
                 flag = true;
                 Projectile.velocity *= 0.82f;
                 Projectile.velocity += num2.ToRotationVector2() * 6f;
-                if (CEUtils.getDistance(Projectile.Center, target.Center) > 80)
-                {
+                if (CEUtils.getDistance(Projectile.Center, target.Center) > 80) {
                     num += 0.1f;
                 }
-                else
-                {
+                else {
                     num = 0;
                 }
                 if (num > 1)
@@ -160,36 +140,30 @@ namespace CalamityEntropy.Content.Items.Weapons
 
                 trailAlpha = 1;
             }
-            else
-            {
+            else {
                 if (trailAlpha > 0)
                     trailAlpha -= 0.05f;
                 num = 0;
-                if (target != null)
-                {
+                if (target != null) {
                     num2 = (target.Center - Projectile.Center).ToRotation();
                 }
                 flag = false;
                 Vector2 tp = Projectile.Center + Projectile.velocity;
-                if (Projectile.Distance(player.Center) > 100)
-                {
+                if (Projectile.Distance(player.Center) > 100) {
                     Projectile.velocity *= 0.97f;
                     Projectile.velocity += (player.Center - Projectile.Center).normalize() * 0.95f;
                 }
             }
-            if (oldPos.Count > 0)
-            {
+            if (oldPos.Count > 0) {
                 Vector2 sp = oldPos[oldPos.Count - 1];
                 Vector2 tp = Projectile.Center + Projectile.velocity;
-                for (float i = 0.2f; i <= 1; i += 0.2f)
-                {
+                for (float i = 0.2f; i <= 1; i += 0.2f) {
                     oldPos.Add(Vector2.Lerp(sp, tp, i));
                     if (oldPos.Count > 36)
                         oldPos.RemoveAt(0);
                 }
             }
-            else
-            {
+            else {
                 oldPos.Add(Projectile.Center + Projectile.velocity);
             }
         }
@@ -198,13 +172,11 @@ namespace CalamityEntropy.Content.Items.Weapons
         public float num = 0;
         public float num2 = 0;
         public float trailAlpha = 0;
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Projectile.GetTexture();
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, tex.Size() / 2f, Projectile.scale, (Projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally));
 
-            for (int i = 0; i < oldPos.Count; i++)
-            {
+            for (int i = 0; i < oldPos.Count; i++) {
                 float p = (i + 1f) / oldPos.Count;
                 Color color = lightColor * p * 0.4f * trailAlpha;
                 Main.EntitySpriteDraw(tex, oldPos[i] - Main.screenPosition, null, color, Projectile.rotation, tex.Size() / 2f, Projectile.scale, (Projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally));

@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
+﻿using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using CalamityEntropy.Content.Projectiles.VoidDestroyer;
 using InnoVault.StateMachines;
 using Terraria;
@@ -17,46 +17,38 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 
         private int cornerStep;
 
-        public override void OnEnter(VDStateContext ctx)
-        {
+        public override void OnEnter(VDStateContext ctx) {
             base.OnEnter(ctx);
             cornerStep = 0;
         }
 
-        public override IVDState OnUpdate(VDStateContext ctx)
-        {
+        public override IVDState OnUpdate(VDStateContext ctx) {
             Timer++;
             NPC npc = ctx.Npc;
-            if (cornerStep < VDDirector.TeleportFireOrder.Length)
-            {
-                if (Timer == 1 && IsServer)
-                {
+            if (cornerStep < VDDirector.TeleportFireOrder.Length) {
+                if (Timer == 1 && IsServer) {
                     ctx.CornerIndex = VDDirector.TeleportFireOrder[cornerStep];
                     ctx.Owner.StartBlink(ctx.Target.Center + VDVfx.CornerDirs[ctx.CornerIndex] * VDDirector.TeleportFireOffset);
                 }
                 //落地后核心亮起到出手
                 ctx.CoreGlow = System.Math.Max(ctx.CoreGlow, MathHelper.Clamp(Timer / (float)VDDirector.TeleportFireShotFrame, 0f, 1f));
-                if (Timer == VDDirector.TeleportFireShotFrame)
-                {
+                if (Timer == VDDirector.TeleportFireShotFrame) {
                     Vector2 core = ctx.Owner.CorePos;
                     Vector2 dir = (ctx.Target.Center - core).SafeNormalize(Vector2.UnitY);
                     MuzzleCue(ctx, dir, 4f, "CruiserSpit", 0.85f);
                     int half = VDDirector.TeleportFireBolts / 2;
-                    for (int i = -half; i <= half; i++)
-                    {
+                    for (int i = -half; i <= half; i++) {
                         Shoot<VDVoidBolt>(ctx, core, dir.RotatedBy(MathHelper.ToRadians(VDDirector.TeleportFireSpreadDeg * i)) * VDDirector.TeleportFireBoltSpeed, VDDirector.DmgVoidBolt, VDVoidBolt.ModeStraight);
                     }
                 }
-                if (Timer >= VDDirector.TeleportFireCornerFrames)
-                {
+                if (Timer >= VDDirector.TeleportFireCornerFrames) {
                     cornerStep++;
                     ResetTimer();
                     MarkNetUpdate(ctx);
                 }
                 return null;
             }
-            if (Timer >= VDDirector.TeleportFireTail)
-            {
+            if (Timer >= VDDirector.TeleportFireTail) {
                 return EndAttack(ctx);
             }
             return null;

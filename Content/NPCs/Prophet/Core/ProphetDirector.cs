@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.CalamityRef;
+﻿using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.Prophet.Core
@@ -29,31 +29,24 @@ namespace CalamityEntropy.Content.NPCs.Prophet.Core
         /// 根本走不到这里。原代码就这么写的,照搬保留。
         /// </para>
         /// </summary>
-        public static float Difficult(NPC npc)
-        {
+        public static float Difficult(NPC npc) {
             float difficult = 1;
-            if (Main.expertMode)
-            {
+            if (Main.expertMode) {
                 difficult += 0.06f;
             }
-            if (Main.masterMode)
-            {
+            if (Main.masterMode) {
                 difficult += 0.06f;
             }
-            if (CECal.IsRevengeance)
-            {
+            if (CECal.IsRevengeance) {
                 difficult += 0.1f;
             }
-            if (CECal.IsDeathMode)
-            {
+            if (CECal.IsDeathMode) {
                 difficult += 0.1f;
             }
-            if (Main.getGoodWorld)
-            {
+            if (Main.getGoodWorld) {
                 difficult += 0.15f;
             }
-            if (Main.zenithWorld)
-            {
+            if (Main.zenithWorld) {
                 difficult += 0.15f;
             }
             difficult *= 1 + ((float)npc.life / npc.lifeMax) * 0.2f;
@@ -159,10 +152,8 @@ namespace CalamityEntropy.Content.NPCs.Prophet.Core
         /// 原 <c>GetAIType(int r)</c>:八个槽位到招式的映射,其中三个槽位当场掷一次硬币。
         /// <b>掷骰只在权威端</b>,结果经状态号写进 <c>ai[3]</c> 过线
         /// </summary>
-        public static ProphetStateIndex AttackFor(int slot)
-        {
-            switch (slot)
-            {
+        public static ProphetStateIndex AttackFor(int slot) {
+            switch (slot) {
                 case 0: return ProphetStateIndex.RuneVolley;
                 case 1: return ProphetStateIndex.RuneTorrentFan;
                 case 2: return ProphetStateIndex.VoidSpike;
@@ -181,10 +172,8 @@ namespace CalamityEntropy.Content.NPCs.Prophet.Core
         /// 倒计时在选招那一帧被赋上本招时长,状态体<b>当帧</b>就以满值跑一遍,
         /// 帧末再自减一次,所以每一手正好跑「时长」帧
         /// </summary>
-        public static int DurationFor(ProphetStateIndex state)
-        {
-            switch (state)
-            {
+        public static int DurationFor(ProphetStateIndex state) {
+            switch (state) {
                 case ProphetStateIndex.RuneVolley: return 240;
                 case ProphetStateIndex.Dash: return 220;
                 //原代码写的是 120 + 60 * 4,保留算式形状

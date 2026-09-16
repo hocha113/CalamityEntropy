@@ -1,4 +1,4 @@
-using InnoVault.StateMachines;
+﻿using InnoVault.StateMachines;
 using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.Cruiser.Core
@@ -39,30 +39,24 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.Core
         /// </summary>
         /// <param name="ctx">上下文</param>
         /// <param name="from">正在收招的状态。一阶段哨兵槽要读它(原代码读的是当时还没改的 <c>ai</c>)</param>
-        public static IVaultState<CruiserStateContext> Pick(CruiserStateContext ctx, CruiserStateIndex from)
-        {
+        public static IVaultState<CruiserStateContext> Pick(CruiserStateContext ctx, CruiserStateIndex from) {
             //对齐原代码:计数先无条件清零,再做裁决(netUpdate 由 AiSlotNetSync 在写状态号时打)
             ctx.ChangeCounter = 0;
 
             NPC npc = ctx.Npc;
-            if (ctx.Phase == 1)
-            {
+            if (ctx.Phase == 1) {
                 ctx.AttackIndex++;
-                if (ctx.AttackIndex > CruiserDirector.Phase1.Length - 1)
-                {
+                if (ctx.AttackIndex > CruiserDirector.Phase1.Length - 1) {
                     ctx.AttackIndex = 0;
                 }
                 CruiserStateIndex slot = CruiserDirector.Phase1[ctx.AttackIndex];
-                if (slot == CruiserStateIndex.PhaseTransing)
-                {
+                if (slot == CruiserStateIndex.PhaseTransing) {
                     //隐式行为一:哨兵槽
-                    if (from == CruiserStateIndex.StayAwayAndShootVoidStar)
-                    {
+                    if (from == CruiserStateIndex.StayAwayAndShootVoidStar) {
                         ctx.AttackIndex--;
                         slot = CruiserStateIndex.TryToClosePlayer;
                     }
-                    else
-                    {
+                    else {
                         slot = Main.rand.NextBool() ? CruiserStateIndex.EnergyBall : CruiserStateIndex.VoidResidue;
                     }
                 }
@@ -73,8 +67,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.Core
             npc.defense = CruiserDirector.DefensePhase2;
             ctx.Owner.DamageReduction = CruiserDirector.DRPhase2;
             ctx.AttackIndex++;
-            if (ctx.AttackIndex >= CruiserDirector.Phase2.Length)
-            {
+            if (ctx.AttackIndex >= CruiserDirector.Phase2.Length) {
                 ctx.AttackIndex = 0;
             }
             return Create(CruiserDirector.Phase2[ctx.AttackIndex]);

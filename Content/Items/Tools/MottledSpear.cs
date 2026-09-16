@@ -9,16 +9,14 @@ namespace CalamityEntropy.Content.Items.Tools
 {
     public class MottledSpear : ModItem, IAzafureEnhancable
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.CloneDefaults(ItemID.AmethystHook);
             Item.width = 54;
             Item.height = 48;
             Item.shootSpeed = MottledSpearHook.LaunchSpeed;
             Item.shoot = ModContent.ProjectileType<MottledSpearHook>();
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             tooltips.Replace("[1]", MottledSpearHook.GrappleRangInTiles);
             tooltips.Replace("[2]", MottledSpearHook.LaunchSpeed);
             tooltips.Replace("[3]", MottledSpearHook.ReelbackSpeed);
@@ -35,67 +33,54 @@ namespace CalamityEntropy.Content.Items.Tools
 
         public const float GrappleRangInTiles = 24f;
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.Projectile.CloneDefaults(230);
         }
 
-        public override bool? CanUseGrapple(Player player)
-        {
+        public override bool? CanUseGrapple(Player player) {
             int num = 0;
-            for (int i = 0; i < Main.maxProjectiles; i++)
-            {
-                if (Main.projectile[i].active && Main.projectile[i].owner == Main.myPlayer && Main.projectile[i].type == base.Projectile.type)
-                {
+            for (int i = 0; i < Main.maxProjectiles; i++) {
+                if (Main.projectile[i].active && Main.projectile[i].owner == Main.myPlayer && Main.projectile[i].type == base.Projectile.type) {
                     num++;
                 }
             }
-            if (num > 0)
-            {
+            if (num > 0) {
                 return false;
             }
             return true;
         }
 
-        public override float GrappleRange()
-        {
+        public override float GrappleRange() {
             return GrappleRangInTiles * 16 * (Projectile.GetOwner().AzafureEnhance() ? 1.5f : 1);
         }
 
-        public override void NumGrappleHooks(Player player, ref int numHooks)
-        {
+        public override void NumGrappleHooks(Player player, ref int numHooks) {
             numHooks = 1;
         }
 
-        public override void GrappleRetreatSpeed(Player player, ref float speed)
-        {
+        public override void GrappleRetreatSpeed(Player player, ref float speed) {
             hitsnd = false;
             speed = ReelbackSpeed * (Projectile.GetOwner().AzafureEnhance() ? 1.5f : 1);
         }
 
-        public override void GrapplePullSpeed(Player player, ref float speed)
-        {
-            if (hitsnd)
-            {
+        public override void GrapplePullSpeed(Player player, ref float speed) {
+            if (hitsnd) {
                 CEUtils.PlaySound("ExoHit1", 1.6f, Projectile.Center, volume: 0.45f);
                 hitsnd = false;
             }
             speed = PullSpeed * (Projectile.GetOwner().AzafureEnhance() ? 1.5f : 1);
-            if (Projectile.Distance(player.MountedCenter) < PullSpeed * 2.2f)
-            {
+            if (Projectile.Distance(player.MountedCenter) < PullSpeed * 2.2f) {
                 player.velocity = player.velocity.normalize() * PullSpeed * (Projectile.GetOwner().AzafureEnhance() ? 1.5f : 1);
                 Projectile.Kill();
             }
         }
 
         // 锁链绘制（原生移植，替代灾厄 DrawHook 扩展）：自钩头向玩家逐节铺贴链条
-        private void DrawChain(Texture2D chainTexture)
-        {
+        private void DrawChain(Texture2D chainTexture) {
             Player player = Projectile.GetOwner();
             Vector2 center = Projectile.Center;
             float angleToMountedCenter = Projectile.AngleTo(player.MountedCenter) - MathHelper.PiOver2;
-            while (true)
-            {
+            while (true) {
                 float distanceMagnitude = (player.MountedCenter - center).Length();
                 if (distanceMagnitude < chainTexture.Height + 1f || float.IsNaN(distanceMagnitude))
                     break;
@@ -108,8 +93,7 @@ namespace CalamityEntropy.Content.Items.Tools
             }
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             if (hitsnd)
                 Projectile.rotation = (Projectile.Center - Projectile.GetOwner().Center).ToRotation();
             Texture2D hook = Projectile.GetTexture();
@@ -119,22 +103,18 @@ namespace CalamityEntropy.Content.Items.Tools
             return false;
         }
 
-        public override void AI()
-        {
-            if (Projectile.localAI[2]++ == 0)
-            {
+        public override void AI() {
+            if (Projectile.localAI[2]++ == 0) {
                 if (Projectile.GetOwner().AzafureEnhance())
                     Projectile.velocity *= 1.5f;
                 Projectile.velocity += Projectile.GetOwner().velocity;
                 CEUtils.PlaySound("chains_break", 1f, Projectile.Center, volume: 0.18f);
             }
             base.Projectile.spriteDirection = -base.Projectile.direction;
-            if (base.Projectile.ai[0] == 2f)
-            {
+            if (base.Projectile.ai[0] == 2f) {
                 base.Projectile.extraUpdates = 1;
             }
-            else
-            {
+            else {
                 base.Projectile.extraUpdates = 0;
             }
             Projectile.rotation = (Projectile.Center - Projectile.GetOwner().Center).ToRotation();

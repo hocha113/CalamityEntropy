@@ -1,5 +1,4 @@
-using CalamityEntropy.Core.AI;
-using Terraria;
+﻿using CalamityEntropy.Core.AI;
 
 namespace CalamityEntropy.Content.NPCs.Cruiser.Core
 {
@@ -68,8 +67,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.Core
         /// 每帧默认值。只回落尾鞭声明——<see cref="ChangeCounter"/> / <see cref="LaserAim"/>
         /// 是跨状态持久量,嘴部两项由宿主在状态机之后统一结算,都不在这里动
         /// </summary>
-        public override void BeginFrameDefaults()
-        {
+        public override void BeginFrameDefaults() {
             base.BeginFrameDefaults();
             TailWhipCue = false;
         }

@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.LuminarisMoth.Core;
+﻿using CalamityEntropy.Content.NPCs.LuminarisMoth.Core;
 using CalamityEntropy.Content.Projectiles.LuminarisShoots;
 using InnoVault.StateMachines;
 using System;
@@ -19,8 +19,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
     {
         public override LuminarisStateIndex StateIndex => LuminarisStateIndex.StayAboveAndShooting;
 
-        public override IVaultState<LuminarisStateContext> OnUpdate(LuminarisStateContext ctx)
-        {
+        public override IVaultState<LuminarisStateContext> OnUpdate(LuminarisStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
             float enrange = ctx.Enrange;
@@ -34,15 +33,13 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
             if (c > LuminarisDirector.StayAboveShootLowGate / enrange
                 && c % (int)(LuminarisDirector.StayAboveShootIntervalBase / enrange) == 0
                 && c < LuminarisDirector.StayAboveShootHighGate * enrange
-                && c > LuminarisDirector.StayAboveShootFloor)
-            {
+                && c > LuminarisDirector.StayAboveShootFloor) {
                 //后坐是运动,所以各端都要跑:不能跟着下面的弹幕一起进权威端门
                 npc.velocity -= (player.Center - npc.Center).normalize() * LuminarisDirector.StayAboveRecoil;
                 int mxr = (int)(LuminarisDirector.StayAboveShotsPerEnrange * enrange);
                 float a = 0;
                 float rj = LuminarisDirector.StayAboveAngleTotal / mxr;
-                for (int i = 0; i < mxr; i++)
-                {
+                for (int i = 0; i < mxr; i++) {
                     //a 是「度」,却被塞进按弧度解释的 ai0(弹幕拿它当重力方向),
                     //所以实际重力方向是 0、36、72… 弧度而不是均分一圈。原代码如此,照搬
                     Shoot<LuminarisAstralShoot>(ctx, npc.Center,
@@ -51,8 +48,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
                         LuminarisDirector.StayAboveProjGravity * enrange, LuminarisDirector.StayAboveProjGravityDelay * enrange);
                     a += rj;
                 }
-                if (!Main.dedServ)
-                {
+                if (!Main.dedServ) {
                     ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Vector2.Zero,
                         Utils.Remap(Main.LocalPlayer.Distance(npc.Center), LuminarisDirector.StayAboveShakeFar, LuminarisDirector.StayAboveShakeNear, 0f, LuminarisDirector.StayAboveShakeAmp)));
                 }

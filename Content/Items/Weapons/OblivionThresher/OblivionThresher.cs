@@ -1,25 +1,22 @@
 ﻿using CalamityEntropy.Content.Cooldowns;
-using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Weapons.Chainsaw;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Cooldowns;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
 {
     public class OblivionThresher : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 84;
             Item.height = 46;
             Item.damage = 850;
@@ -38,10 +35,8 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
             Item.shootSpeed = 24;
 
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_SuperradiantSlaughterer, CEID.Item_AscendantSpiritEssence))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_SuperradiantSlaughterer, CEID.Item_AscendantSpiritEssence)) {
                 CreateRecipe()
                 .AddIngredient(CEID.Item_SuperradiantSlaughterer)
                 .AddIngredient<VoidBar>(5)
@@ -56,21 +51,17 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
                 .AddTile<VoidWellTile>()
                 .Register();
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            if (player.altFunctionUse == 2)
-            {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
+            if (player.altFunctionUse == 2) {
                 player.AddCooldown(OblivionThretherCooldown.ID, 320);
             }
             return base.Shoot(player, source, position, velocity, type, damage, knockback);
         }
-        public override bool AltFunctionUse(Player player)
-        {
+        public override bool AltFunctionUse(Player player) {
             return !player.HasCooldown(OblivionThretherCooldown.ID);
         }
 
-        public override bool CanShoot(Player player)
-        {
+        public override bool CanShoot(Player player) {
             Item.shoot = player.altFunctionUse == 2 ? ModContent.ProjectileType<OblivionCruiserDash>() : ModContent.ProjectileType<OblivionThresherHoldout>();
 
             return base.CanShoot(player);

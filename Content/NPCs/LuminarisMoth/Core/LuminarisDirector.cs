@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.CalamityRef;
+﻿using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.LuminarisMoth.Core
@@ -24,35 +24,27 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.Core
         /// </para>
         /// <para>装灾厄读复仇/死亡,缺席仍走专家/大师兜底。勿连带改熵灾那一项。</para>
         /// </summary>
-        public static float Enrange()
-        {
+        public static float Enrange() {
             float enrange = 1f;
-            if (Main.expertMode)
-            {
+            if (Main.expertMode) {
                 enrange += 0.1f;
             }
-            if (Main.masterMode)
-            {
+            if (Main.masterMode) {
                 enrange += 0.1f;
             }
-            if (CECal.IsRevengeance)
-            {
+            if (CECal.IsRevengeance) {
                 enrange += 0.15f;
             }
-            if (CECal.IsDeathMode)
-            {
+            if (CECal.IsDeathMode) {
                 enrange += 0.15f;
             }
-            if (CalamityEntropy.EntropyMode)
-            {
+            if (CalamityEntropy.EntropyMode) {
                 enrange *= 1.4f;
             }
-            if (Main.getGoodWorld)
-            {
+            if (Main.getGoodWorld) {
                 enrange *= 1.1f;
             }
-            if (Main.zenithWorld)
-            {
+            if (Main.zenithWorld) {
                 enrange *= 0.85f;
             }
             return enrange;
@@ -171,51 +163,39 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.Core
         /// 原 <c>SetAISyyle()</c> 之后那一串时长赋值,逐条搬过来。
         /// 写成同样的「先兜底再覆盖」形状,不折成 switch,免得把那条到不了的兜底路径优化掉
         /// </summary>
-        public static int DurationOf(LuminarisStateIndex state)
-        {
+        public static int DurationOf(LuminarisStateIndex state) {
             int duration = PickFallbackFrames;
-            if (state == LuminarisStateIndex.RoundShooting)
-            {
+            if (state == LuminarisStateIndex.RoundShooting) {
                 duration = RoundShootingFrames;
             }
-            if (state == LuminarisStateIndex.AboveMovingShooting)
-            {
+            if (state == LuminarisStateIndex.AboveMovingShooting) {
                 duration = AboveMovingShootingFrames;
             }
-            if (state == LuminarisStateIndex.Waiting1Sec)
-            {
+            if (state == LuminarisStateIndex.Waiting1Sec) {
                 duration = Waiting1SecFrames;
             }
-            if (state == LuminarisStateIndex.Subduction)
-            {
+            if (state == LuminarisStateIndex.Subduction) {
                 duration = SubductionFrames;
             }
-            if (state == LuminarisStateIndex.StayAboveAndShooting)
-            {
+            if (state == LuminarisStateIndex.StayAboveAndShooting) {
                 duration = StayAboveAndShootingFrames;
             }
-            if (state == LuminarisStateIndex.Dashing)
-            {
+            if (state == LuminarisStateIndex.Dashing) {
                 duration = DashingFrames;
             }
-            if (state == LuminarisStateIndex.AstralSpike)
-            {
+            if (state == LuminarisStateIndex.AstralSpike) {
                 duration = AstralSpikeFrames;
             }
-            if (state == LuminarisStateIndex.Shoot360)
-            {
+            if (state == LuminarisStateIndex.Shoot360) {
                 duration = Shoot360Frames;
             }
-            if (state == LuminarisStateIndex.RoundAndDash)
-            {
+            if (state == LuminarisStateIndex.RoundAndDash) {
                 duration = RoundAndDashFrames;
             }
-            if (state == LuminarisStateIndex.SmashDown)
-            {
+            if (state == LuminarisStateIndex.SmashDown) {
                 duration = SmashDownFrames;
             }
-            if (state == LuminarisStateIndex.ShootTriangle)
-            {
+            if (state == LuminarisStateIndex.ShootTriangle) {
                 duration = ShootTriangleFrames;
             }
             return duration;

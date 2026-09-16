@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Cruiser.Core;
+﻿using CalamityEntropy.Content.NPCs.Cruiser.Core;
 using CalamityEntropy.Content.Projectiles.Cruiser;
 using InnoVault.StateMachines;
 using Terraria;
@@ -16,45 +16,36 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
     {
         public override CruiserStateIndex StateIndex => CruiserStateIndex.VoidResidue;
 
-        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx)
-        {
+        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
             Vector2 dir = (player.Center - npc.Center).normalize();
 
             //自增前:嘴部开合
-            if (ctx.ChangeCounter < CruiserDirector.ResidueMouthOpenUntil)
-            {
+            if (ctx.ChangeCounter < CruiserDirector.ResidueMouthOpenUntil) {
                 ctx.MouthRot += CruiserDirector.ResidueMouthOpenRate;
             }
-            else if (ctx.ChangeCounter < CruiserDirector.ResidueMouthCloseUntil)
-            {
+            else if (ctx.ChangeCounter < CruiserDirector.ResidueMouthCloseUntil) {
                 ctx.MouthRot += CruiserDirector.ResidueMouthCloseRate;
             }
 
             ctx.ChangeCounter++;
 
             if (ctx.ChangeCounter < CruiserDirector.ResidueBurstFrame
-                && npc.Distance(player.Center) > CruiserDirector.ResidueApproachDistance)
-            {
+                && npc.Distance(player.Center) > CruiserDirector.ResidueApproachDistance) {
                 npc.velocity *= CruiserDirector.ResidueFarDrag;
                 npc.velocity += dir * CruiserDirector.ResidueFarThrust;
             }
-            else
-            {
+            else {
                 npc.velocity *= CruiserDirector.ResidueNearDrag;
                 npc.velocity += dir * CruiserDirector.ResidueNearThrust;
             }
-            if (ctx.ChangeCounter == CruiserDirector.ResidueSoundFrame)
-            {
+            if (ctx.ChangeCounter == CruiserDirector.ResidueSoundFrame) {
                 CEUtils.PlaySound("voidSound", CruiserDirector.ResidueSoundPitch, npc.Center);
             }
-            if (ctx.ChangeCounter == CruiserDirector.ResidueBurstFrame)
-            {
-                if (IsServer)
-                {
-                    for (int i = 0; i < CruiserDirector.ResidueBurstCount; i++)
-                    {
+            if (ctx.ChangeCounter == CruiserDirector.ResidueBurstFrame) {
+                if (IsServer) {
+                    for (int i = 0; i < CruiserDirector.ResidueBurstCount; i++) {
                         Shoot(ctx, ModContent.ProjectileType<VoidResidue>(), npc.Center,
                             npc.velocity.normalize().RotatedByRandom(CruiserDirector.ResidueBurstSpread)
                                 * CruiserDirector.ResidueBurstSpeed
@@ -66,13 +57,11 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
                 CEUtils.PlaySound("CruiserSpit2", 1.4f, npc.Center);
                 CEUtils.PlaySound("CruiserVoidResidue", 1, npc.Center);
             }
-            if (ctx.ChangeCounter > CruiserDirector.ResidueLungeStart)
-            {
+            if (ctx.ChangeCounter > CruiserDirector.ResidueLungeStart) {
                 npc.velocity += npc.rotation.ToRotationVector2() * CruiserDirector.ResidueLungeThrust;
                 npc.velocity *= CruiserDirector.ResidueLungeDrag;
             }
-            if (ctx.ChangeCounter > CruiserDirector.ResidueDuration)
-            {
+            if (ctx.ChangeCounter > CruiserDirector.ResidueDuration) {
                 return NextAttack(ctx);
             }
             return null;

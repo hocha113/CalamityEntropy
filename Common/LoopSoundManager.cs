@@ -9,119 +9,85 @@ namespace CalamityEntropy.Common
     {
         public SoundEffectInstance instance;
         public int timeleft = 2;
-        public void setVolume(float v)
-        {
+        public void setVolume(float v) {
             if (instance == null)
                 return;
-            if (!Main.dedServ)
-            {
-                try
-                {
+            if (!Main.dedServ) {
+                try {
                     instance.Volume = v * Main.soundVolume;
-                }
-                catch { }
+                } catch { }
             }
         }
-        public void setVolume_Dist(Vector2 center, float mindist, float maxdist, float volume = 1)
-        {
+        public void setVolume_Dist(Vector2 center, float mindist, float maxdist, float volume = 1) {
             if (instance == null)
                 return;
-            try
-            {
-                if (!Main.dedServ)
-                {
-                    if (CEUtils.getDistance(center, Main.LocalPlayer.Center) > mindist)
-                    {
-                        if (CEUtils.getDistance(center, Main.LocalPlayer.Center) > maxdist)
-                        {
+            try {
+                if (!Main.dedServ) {
+                    if (CEUtils.getDistance(center, Main.LocalPlayer.Center) > mindist) {
+                        if (CEUtils.getDistance(center, Main.LocalPlayer.Center) > maxdist) {
                             setVolume(0);
                         }
-                        else
-                        {
+                        else {
                             setVolume((1 - (float)(CEUtils.getDistance(center, Main.LocalPlayer.Center) - mindist) / (maxdist - mindist)) * volume);
                         }
                     }
-                    else
-                    {
+                    else {
                         setVolume(volume);
                     }
                 }
-            }
-            catch
-            { }
+            } catch { }
         }
-        public LoopSound(SoundEffect sf)
-        {
-            if (!Main.dedServ)
-            {
-                try
-                {
+        public LoopSound(SoundEffect sf) {
+            if (!Main.dedServ) {
+                try {
                     instance = sf.CreateInstance();
                     instance.IsLooped = true;
-                }
-                catch { }
+                } catch { }
             }
         }
-        public void play()
-        {
+        public void play() {
             if (instance == null)
                 return;
-            if (!Main.dedServ && LoopSoundManager.sounds != null)
-            {
-                if (LoopSoundManager.sounds.Count < 5)
-                {
-                    if (ModContent.GetInstance<Config>().EnableLoopingSound)
-                    {
-                        try
-                        {
+            if (!Main.dedServ && LoopSoundManager.sounds != null) {
+                if (LoopSoundManager.sounds.Count < 5) {
+                    if (ModContent.GetInstance<Config>().EnableLoopingSound) {
+                        try {
                             instance.Play();
-                        }
-                        catch { }
+                        } catch { }
                         LoopSoundManager.sounds.Add(this);
                     }
                 }
             }
         }
-        public void stop()
-        {
+        public void stop() {
             if (instance == null)
                 return;
-            if (!Main.dedServ)
-            {
-                try
-                {
+            if (!Main.dedServ) {
+                try {
                     instance.Stop();
-                }
-                catch { }
+                } catch { }
             }
         }
     }
     public static class LoopSoundManager
     {
         public static List<LoopSound> sounds;
-        public static void init()
-        {
+        public static void init() {
             sounds = new List<LoopSound>();
         }
 
-        public static void unload()
-        {
-            if (sounds is not null)
-            {
-                foreach (var sound in sounds)
-                {
+        public static void unload() {
+            if (sounds is not null) {
+                foreach (var sound in sounds) {
                     sound.stop();
                 }
             }
             sounds = null;
         }
 
-        public static void update()
-        {
-            for (int i = sounds.Count - 1; i >= 0; i--)
-            {
-                if (sounds[i].timeleft-- <= 0)
-                {
+        public static void update() {
+            for (int i = sounds.Count - 1; i >= 0; i--) {
+                if (sounds[i].timeleft-- <= 0) {
                     sounds[i].stop();
                     sounds.RemoveAt(i);
                 }

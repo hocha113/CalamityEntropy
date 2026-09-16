@@ -9,8 +9,7 @@ namespace CalamityEntropy.Content.Items.Pets
 {
     public class LightningPendant : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.CloneDefaults(ItemID.ZephyrFish);
             SoundStyle s = new("CalamityEntropy/Assets/Sounds/vmspawn");
             s.Volume = 0.6f;
@@ -19,10 +18,8 @@ namespace CalamityEntropy.Content.Items.Pets
             Item.buffType = ModContent.BuffType<Rainstorm>();
         }
 
-        public override bool? UseItem(Player player)
-        {
-            if (player.whoAmI == Main.myPlayer)
-            {
+        public override bool? UseItem(Player player) {
+            if (player.whoAmI == Main.myPlayer) {
                 player.AddBuff(Item.buffType, 3600);
             }
             return true;

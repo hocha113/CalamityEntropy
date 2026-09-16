@@ -1,9 +1,9 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
-using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -22,8 +22,7 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
     {
         public string DonatorName => "勿忘草与永远";
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 52;
             Item.height = 70;
             Item.damage = 7;
@@ -44,63 +43,49 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
         }
         public static int MaxShield(int lv) => 10 + lv * 4;
         /// <summary>装灾厄走 3.33 的 10 档阶梯,无灾厄保持 4.0 常数 10</summary>
-        public static int Level()
-        {
-            if (!CERef.Has)
-            {
+        public static int Level() {
+            if (!CERef.Has) {
                 return 10;
             }
-            if (CECal.DownedYharon(EDownedBosses.downedCruiser))
-            {
+            if (CECal.DownedYharon(EDownedBosses.downedCruiser)) {
                 return 10;
             }
-            if (CECal.DownedDoG(EDownedBosses.downedCruiser))
-            {
+            if (CECal.DownedDoG(EDownedBosses.downedCruiser)) {
                 return 9;
             }
-            if (CECal.DownedProvidence(EDownedBosses.downedNihilityTwin))
-            {
+            if (CECal.DownedProvidence(EDownedBosses.downedNihilityTwin)) {
                 return 8;
             }
-            if (NPC.downedMoonlord)
-            {
+            if (NPC.downedMoonlord) {
                 return 7;
             }
-            if (NPC.downedPlantBoss && CECal.DownedCalamitasClone(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3))
-            {
+            if (NPC.downedPlantBoss && CECal.DownedCalamitasClone(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)) {
                 return 6;
             }
-            if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
-            {
+            if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3) {
                 return 5;
             }
-            if (Main.hardMode)
-            {
+            if (Main.hardMode) {
                 return 4;
             }
-            if (NPC.downedQueenBee || NPC.downedBoss3)
-            {
+            if (NPC.downedQueenBee || NPC.downedBoss3) {
                 return 3;
             }
-            if (NPC.downedBoss2 || CECal.DownedPerforator || CECal.DownedHiveMind)
-            {
+            if (NPC.downedBoss2 || CECal.DownedPerforator || CECal.DownedHiveMind) {
                 return 2;
             }
-            if (NPC.downedBoss1 || CECal.DownedDesertScourge || NPC.downedSlimeKing)
-            {
+            if (NPC.downedBoss1 || CECal.DownedDesertScourge || NPC.downedSlimeKing) {
                 return 1;
             }
             return 0;
         }
         public static int GetMaxTarget(int lv) => lv / 2 + 1;
         public static float TargetDist(int lv) => 600 + lv * 200;
-        public override void UpdateInventory(Player player)
-        {
+        public override void UpdateInventory(Player player) {
             int level = Level();
             Item.damage = GetDamage(level);
         }
-        public static int GetDamage(int level) => level switch
-        {
+        public static int GetDamage(int level) => level switch {
             0 => 5,
             1 => 7,
             2 => 9,
@@ -114,17 +99,13 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
             10 => 180,
             _ => 180
         };
-        public override bool AllowPrefix(int pre)
-        {
+        public override bool AllowPrefix(int pre) {
             return false;
         }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            foreach (Projectile proj in Main.ActiveProjectiles)
-            {
-                if (proj.type == type && proj.owner == player.whoAmI)
-                {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
+            foreach (Projectile proj in Main.ActiveProjectiles) {
+                if (proj.type == type && proj.owner == player.whoAmI) {
                     proj.timeLeft = 1;
                     proj.netUpdate = true;
                 }
@@ -136,10 +117,8 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
             player.UpdateMaxTurrets();
             return false;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady())
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady()) {
                 CreateRecipe()
                     .AddIngredient(ItemID.Book)
                     .AddIngredient(ItemID.ManaCrystal)
@@ -157,25 +136,21 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
                 .Register();
 
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             tooltips.Replace("[LV]", Level());
             tooltips.Replace("[MAXLV]", 10);
         }
 
-        public bool OwnAble(Player player, ref int count)
-        {
+        public bool OwnAble(Player player, ref int count) {
             return player.name == "本条二亚";
         }
     }
     public class RatzielSentry : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 9000;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 128;
             Projectile.height = 128;
             Projectile.ignoreWater = true;
@@ -194,20 +169,16 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
         int attackTimer = 36;
         public float rayAlpha = 0;
         public List<float> raySize = new List<float>();
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.velocity *= 1 - 0.38f * target.knockBackResist;
         }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
             target.Entropy().nextHitCrit = true;
             modifiers.CritDamage += -0.5f + Projectile.GetOwner().maxMinions * 0.05f;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.GetOwner().Entropy().RatzielShieldTime = 3;
-            if (Projectile.Opacity == 0)
-            {
+            if (Projectile.Opacity == 0) {
                 //PRT_HadCircle2 AdditiveBlend+rotation走Configure
                 PRTLoader.NewParticle<PRT_HadCircle2>(Projectile.Center, Vector2.Zero, Color.Yellow, 1)
                     .Configure(1, true, PRTDrawModeEnum.AdditiveBlend).CScale = 0.7f * Projectile.scale;
@@ -223,32 +194,27 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
                 Projectile.Opacity += 0.05f;
             Player player = Main.player[Projectile.owner];
             attackTimer--;
-            if (attackTimer <= 0)
-            {
+            if (attackTimer <= 0) {
                 attackTimer = 36;
                 rayAlpha = 0;
                 targetVecs.Clear();
                 raySize.Clear();
                 var targets = FindNearestHostileNPCs(Projectile.Center, Ratziel.GetMaxTarget(Ratziel.Level()));
-                foreach (var t in targets)
-                {
+                foreach (var t in targets) {
                     raySize.Add(Main.rand.NextFloat(0.36f, 1.2f));
                     targetVecs.Add(t.Center + (t.Center - Projectile.Center).normalize() * Main.rand.NextFloat(80, 200));
                 }
             }
             rayAlpha = float.Lerp(rayAlpha, (attackTimer > 12) ? 1 : 0, 0.08f);
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            foreach (Vector2 v in targetVecs)
-            {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+            foreach (Vector2 v in targetVecs) {
                 if (CEUtils.LineThroughRect(projHitbox.Center.ToVector2(), v, targetHitbox, 32))
                     return true;
             }
             return false;
         }
-        public static List<NPC> FindNearestHostileNPCs(Vector2 center, int maxCount = 5)
-        {
+        public static List<NPC> FindNearestHostileNPCs(Vector2 center, int maxCount = 5) {
             if (maxCount <= 0)
                 return new List<NPC>();
             var list = new List<NPC>();
@@ -260,8 +226,7 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
                            && !npc.dontTakeDamage
                            && npc.lifeMax > 5
                            && npc.Distance(center) < Ratziel.TargetDist(Ratziel.Level()))
-                .Select(npc => new
-                {
+                .Select(npc => new {
                     NPC = npc,
                     DistanceSq = Vector2.DistanceSquared(center, npc.Center)
                 })
@@ -272,13 +237,11 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
 
             return result;
         }
-        public override bool? CanCutTiles()
-        {
+        public override bool? CanCutTiles() {
             return false;
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Projectile.GetTexture();
             Texture2D tex2 = this.getTextureAlt("Book");
             Main.spriteBatch.Draw(tex, Projectile.Center + new Vector2(0, -40) * Projectile.scale - Main.screenPosition, null, new Color(140, 140, 255) * Projectile.Opacity, 0, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
@@ -287,8 +250,7 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
             DrayRays();
             return false;
         }
-        public void DrawForce()
-        {
+        public void DrawForce() {
             string key = "Nebula";
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.Transform);
@@ -301,19 +263,16 @@ namespace CalamityEntropy.Content.Items.Donator.Ratziel
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
         }
-        public void DrayRays()
-        {
+        public void DrayRays() {
             Texture2D ray = CEExtraAssets.GlowCone;
             Main.spriteBatch.UseAdditive();
-            for (int i = 0; i < targetVecs.Count; i++)
-            {
+            for (int i = 0; i < targetVecs.Count; i++) {
                 Vector2 scaling = new Vector2(CEUtils.getDistance(targetVecs[i], Projectile.Center) / 360f, raySize[i] * 0.6f);
                 Main.spriteBatch.Draw(ray, Projectile.Center - Main.screenPosition, null, Color.Aqua * 1.2f * rayAlpha, (targetVecs[i] - Projectile.Center).ToRotation(), new Vector2(0, ray.Height / 2), scaling, SpriteEffects.None, 0);
             }
             Main.spriteBatch.ExitShaderRegion();
         }
-        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
-        {
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI) {
             behindNPCs.Add(index);
         }
     }

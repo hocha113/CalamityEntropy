@@ -23,8 +23,7 @@ namespace CalamityEntropy.Content.Projectiles
         public ref float Time => ref Projectile.ai[0];
         public int MistType = -1;
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = Projectile.height = 10;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
@@ -38,17 +37,14 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.tileCollide = false;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Time++;
-            if (Time < Fadetime && Main.rand.NextBool(6))
-            {
+            if (Time < Fadetime && Main.rand.NextBool(6)) {
                 Vector2 cinderPos = Projectile.Center + Main.rand.NextVector2Circular(60f, 60f) * Utils.Remap(Time, 0f, Lifetime, 0.5f, 1f);
                 float cinderSize = Utils.GetLerpValue(6f, 12f, Time, true);
                 // 原灾厄 BrimstoneFlame 尘埃改用原版红炬焰
                 Dust cinder = Dust.NewDustDirect(cinderPos, 4, 4, Terraria.ID.DustID.RedTorch, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f);
-                if (Main.rand.NextBool(3))
-                {
+                if (Main.rand.NextBool(3)) {
                     cinder.scale *= 2f;
                     cinder.velocity *= 2f;
                 }
@@ -64,8 +60,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
 
 
-        public override void ModifyDamageHitbox(ref Rectangle hitbox)
-        {
+        public override void ModifyDamageHitbox(ref Rectangle hitbox) {
             int size = (int)Utils.Remap(Time, 0f, Fadetime, 10f, 40f);
 
             if (Time > Fadetime)
@@ -73,24 +68,20 @@ namespace CalamityEntropy.Content.Projectiles
             hitbox.Inflate(size, size);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff(ModContent.BuffType<SoulDisorder>(), 300);
 
             Projectile.GetOwner().statMana += 2;
-            if (Projectile.GetOwner().statMana > Projectile.GetOwner().statManaMax2)
-            {
+            if (Projectile.GetOwner().statMana > Projectile.GetOwner().statManaMax2) {
                 Projectile.GetOwner().statMana = Projectile.GetOwner().statManaMax2;
             }
-            for (int i = 0; i < 4; i++)
-            {
+            for (int i = 0; i < 4; i++) {
                 //RuneParticleHoming追踪字段spawn后赋,Configure管不了entity引用
                 var __prt = PRTLoader.NewParticle<PRT_RuneParticleHoming>(target.Center, CEUtils.randomPointInCircle(10), Color.White, 0.5f).Configure(1, true, PRTDrawModeEnum.AlphaBlend, 0);
                 __prt.homingTarget = Projectile.GetOwner();
             }
             int smokeCount = 3 + (int)MathHelper.Clamp(target.width * 0.1f, 0f, 20f);
-            for (int i = 0; i < smokeCount; i++)
-            {
+            for (int i = 0; i < smokeCount; i++) {
                 bool Smoketype = Main.rand.NextBool();
                 Vector2 smokePos = target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f);
                 Vector2 smokeVel = Vector2.UnitY * (Smoketype ? Main.rand.NextFloat(-0.8f, -2f) : Main.rand.NextFloat(-1.2f, -0.2f)) * MathHelper.Clamp(target.height * 0.1f, 1f, 10f);
@@ -99,8 +90,7 @@ namespace CalamityEntropy.Content.Projectiles
             }
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D fire = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D mist = MistTex.Value;
 
@@ -117,8 +107,7 @@ namespace CalamityEntropy.Content.Projectiles
             if (timeRatio >= 1f)
                 return false;
 
-            for (float j = 1f; j >= 0f; j -= length)
-            {
+            for (float j = 1f; j >= 0f; j -= length) {
                 Color fireColor = ((timeRatio < 0.1f) ? Color.Lerp(Color.Transparent, color1, Utils.GetLerpValue(0f, 0.1f, timeRatio)) :
                 ((timeRatio < 0.2f) ? Color.Lerp(color1, color2, Utils.GetLerpValue(0.1f, 0.2f, timeRatio)) :
                 ((timeRatio < 0.35f) ? color2 :

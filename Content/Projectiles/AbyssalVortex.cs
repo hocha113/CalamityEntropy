@@ -1,7 +1,5 @@
 ﻿using CalamityEntropy.Assets.Register;
-using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
@@ -11,12 +9,10 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class AbyssalVortex : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 256;
             Projectile.height = 256;
@@ -33,27 +29,22 @@ namespace CalamityEntropy.Content.Projectiles
         public int ct = 0;
         float scale = 0;
         float scalej = 0.25f;
-        public override void AI()
-        {
+        public override void AI() {
             scale += scalej;
             scalej -= 0.03f;
-            if (scale < 0)
-            {
+            if (scale < 0) {
                 Projectile.Kill();
             }
             Projectile.rotation += 0.2f;
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return Projectile.Center.getRectCentered(188 * scale, 188 * scale).Intersects(targetHitbox);
         }
-        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
-        {
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI) {
             overPlayers.Add(index);
         }
-        public void DrawVortex(Vector2 pos, Color color, float Size = 1, float glow = 1f)
-        {
+        public void DrawVortex(Vector2 pos, Color color, float Size = 1, float glow = 1f) {
             Main.spriteBatch.End();
             Effect effect = CEEffectAssets.Vortex;
             effect.Parameters["Center"].SetValue(new Vector2(0.5f, 0.5f));
@@ -70,8 +61,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.spriteBatch.Draw(CEExtraAssets.VoronoiShapes, pos - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly * 12, CEExtraAssets.VoronoiShapes.Size() / 2f, 0.2f * Size, SpriteEffects.None, 0);
             CEUtils.DrawGlow(pos, Color.White * 0.4f * glow, 0.8f * Size * glow);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D t1 = TextureAssets.Projectile[Projectile.type].Value;
             //Main.spriteBatch.Draw(t1, Projectile.Center - Main.screenPosition, null, Color.DarkBlue, Projectile.rotation, new Vector2(t1.Width, t1.Height) / 2, 188f / 408f * scale, SpriteEffects.None, 0);
             DrawVortex(Projectile.Center, new Color(40, 40, 200), 3.8f * scale, 2);

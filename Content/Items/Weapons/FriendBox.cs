@@ -1,26 +1,24 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Projectiles.TwistedTwin;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class FriendBox : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ItemID.Sets.GamepadWholeScreenUseRange[Item.type] = true;
             ItemID.Sets.LockOnIgnoresCollision[Item.type] = true;
             ItemID.Sets.ItemNoGravity[Item.type] = true;
             ItemID.Sets.StaffMinionSlotsRequired[Item.type] = 2;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 40;
             Item.crit = 0;
             Item.DamageType = DamageClass.Summon;
@@ -39,8 +37,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.buffType = ModContent.BuffType<TwistedTwinBuff>();
             Item.rare = CECal.RarityHotPink(ModContent.RarityType<VoidPurple>());
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             player.AddBuff(Item.buffType, 3);
             int projectile = Projectile.NewProjectile(source, Main.MouseWorld, velocity, type, (int)(damage), knockback, player.whoAmI, 0, 1, 0);
             Main.projectile[projectile].originalDamage = damage;
@@ -51,8 +48,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             return false;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
         }
     }
 }

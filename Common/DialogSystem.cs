@@ -1,4 +1,4 @@
-using InnoVault;
+﻿using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using ReLogic.Graphics;
@@ -38,8 +38,7 @@ namespace CalamityEntropy.Common
         public bool drawRect = false;
         public Vector2 position;
         public static List<Typer> activeTypers = null;
-        public Typer(string text, DynamicSpriteFont font, float scale = 1, int width = 520, int speed = 2, int lineAddWidth = 0, Color? color = null, bool serious = false)
-        {
+        public Typer(string text, DynamicSpriteFont font, float scale = 1, int width = 520, int speed = 2, int lineAddWidth = 0, Color? color = null, bool serious = false) {
             this.text = text;
             this.font = font;
             this.scale = scale;
@@ -52,28 +51,23 @@ namespace CalamityEntropy.Common
             this.lineAddWidth = lineAddWidth;
             this.chrcounter = 0;
             this.serious = serious;
-            if (color != null)
-            {
+            if (color != null) {
                 this.color = (Color)color;
             }
-            else
-            {
+            else {
                 this.color = Color.White;
             }
-            for (int i = 0; i <= this.text.Length; i++)
-            {
+            for (int i = 0; i <= this.text.Length; i++) {
                 this.colorList.Add(this.color);
                 this.lightColorList.Add(new Color(0, 0, 0, 0));
                 this.lightSizeList.Add(new Vector2(1, 1));
             }
-            if (this.lineAddWidth == -1)
-            {
+            if (this.lineAddWidth == -1) {
                 this.lineAddWidth = ((int)((font.MeasureString("* ").X + 14) * this.scale));
             }
         }
 
-        public Typer copy()
-        {
+        public Typer copy() {
             Typer rt = new Typer(this.text, this.font, this.scale, this.width, this.speed, this.lineAddWidth, this.color, this.serious);
             rt.xfloat = this.xfloat;
             rt.yfloat = this.yfloat;
@@ -89,41 +83,33 @@ namespace CalamityEntropy.Common
             return rt;
 
         }
-        public void reset()
-        {
+        public void reset() {
             this.charCount = 0;
             this.counter = 0;
             this.colorList.Clear();
             this.lightColorList.Clear();
             this.lightSizeList.Clear();
-            for (int i = 0; i <= this.text.Length; i++)
-            {
+            for (int i = 0; i <= this.text.Length; i++) {
                 this.colorList.Add(this.color);
                 this.lightColorList.Add(new Color(0, 0, 0, 0));
                 this.lightSizeList.Add(new Vector2(1, 1));
             }
         }
         public float heightMult = 0;
-        public void update()
-        {
-            if (this.charCount < this.text.Length)
-            {
-                if (this.chrcounter == 0 && charCount % 2 == 1)
-                {
-                    if (this.sound.HasValue)
-                    {
+        public void update() {
+            if (this.charCount < this.text.Length) {
+                if (this.chrcounter == 0 && charCount % 2 == 1) {
+                    if (this.sound.HasValue) {
                         char char_ = this.text[this.charCount];
                         string noSound = " ，。“”！,.\'\"/<>[]{}!@#$%^&*()+-*";
-                        if (!noSound.Contains(char_))
-                        {
+                        if (!noSound.Contains(char_)) {
                             SoundEngine.PlaySound(this.sound.Value);
                         }
                     }
                 }
                 this.chrcounter += 1;
 
-                if (this.chrcounter >= this.speed)
-                {
+                if (this.chrcounter >= this.speed) {
 
                     this.chrcounter = 0;
                     this.charCount += 1;
@@ -133,14 +119,11 @@ namespace CalamityEntropy.Common
             this.counter++;
         }
         public bool Finish() => charCount >= text.Length;
-        public void draw()
-        {
+        public void draw() {
             draw(Main.spriteBatch, this.position);
         }
-        public void draw(SpriteBatch spriteBatch, Vector2 position)
-        {
-            if (drawRect)
-            {
+        public void draw(SpriteBatch spriteBatch, Vector2 position) {
+            if (drawRect) {
                 heightMult = float.Lerp(heightMult, 1, 0.16f);
                 int addw = 18;
                 Vector2 center = position + new Vector2(this.width + 2, this.height) / 2f;
@@ -151,20 +134,15 @@ namespace CalamityEntropy.Common
             }
             Vector2 posp = new Vector2(0, 0);
             Random random = new Random();
-            for (int i = 0; i < this.charCount; i++)
-            {
-                if (i >= this.text.Length)
-                {
+            for (int i = 0; i < this.charCount; i++) {
+                if (i >= this.text.Length) {
                     return;
                 }
-                if (!(this.text[i] == '\n'))
-                {
+                if (!(this.text[i] == '\n')) {
                     Vector2 px = new Vector2(random.Next(-this.shake, this.shake + 1), random.Next(-this.shake, this.shake + 1));
                     px += ((float)(this.counter - i * 2) / 8f).ToRotationVector2() * new Vector2(this.xfloat, this.yfloat);
-                    if (this.serious)
-                    {
-                        if (random.Next(0, 340) == 0)
-                        {
+                    if (this.serious) {
+                        if (random.Next(0, 340) == 0) {
                             px += new Vector2(random.Next(-2, 3), random.Next(-2, 3));
                         }
                     }
@@ -172,34 +150,29 @@ namespace CalamityEntropy.Common
 
                     Texture2D light = LightTex.Value;
                     Vector2 dsize = new Vector2(this.font.MeasureString(this.text[i].ToString()).X, this.font.MeasureString(this.text[i].ToString()).X);
-                    if (this.lightSizeList[i] != Vector2.Zero)
-                    {
+                    if (this.lightSizeList[i] != Vector2.Zero) {
                         spriteBatch.UseBlendState_UI(BlendState.Additive);
                         spriteBatch.Draw(light, position + posp + new Vector2(dsize.X + 4, dsize.Y / 2), null, this.lightColorList[i], 0, new Vector2(light.Height / 2, light.Height / 2), this.scale * this.lightSizeList[i] / new Vector2(light.Width, light.Height) * 4, SpriteEffects.None, 0);
                         spriteBatch.Draw(light, position + posp + new Vector2(dsize.X + 4, dsize.Y / 2), null, this.lightColorList[i], 0, new Vector2(light.Height / 2, light.Height / 2), this.scale * this.lightSizeList[i] / new Vector2(light.Width, light.Height) * 4, SpriteEffects.None, 0);
                         spriteBatch.UseBlendState_UI(BlendState.AlphaBlend);
                     }
-                    if (this.dispersion)
-                    {
+                    if (this.dispersion) {
                         spriteBatch.DrawString(this.font, this.text[i].ToString(), px + position + posp - new Vector2(4, 0), new Color((int)colordraw.R, 0, 0, colordraw.A / 3), 0, new Vector2(0, 0), new Vector2(this.scale, this.scale), SpriteEffects.None, 0);
                         spriteBatch.DrawString(this.font, this.text[i].ToString(), px + position + posp, new Color(0, (int)colordraw.G, 0, colordraw.A / 3), 0, new Vector2(0, 0), new Vector2(this.scale, this.scale), SpriteEffects.None, 0);
                         spriteBatch.DrawString(this.font, this.text[i].ToString(), px + position + posp + new Vector2(4, 0), new Color(0, 0, (int)colordraw.B, colordraw.A / 3), 0, new Vector2(0, 0), new Vector2(this.scale, this.scale), SpriteEffects.None, 0);
 
                     }
-                    else
-                    {
+                    else {
                         spriteBatch.DrawString(this.font, this.text[i].ToString(), px + position + posp, colordraw, 0, new Vector2(0, 0), new Vector2(this.scale, this.scale), SpriteEffects.None, 0);
                     }
                     posp.X += (this.font.MeasureString(this.text[i].ToString()).X) * this.scale;
                 }
-                if (posp.X > this.width || this.text[i] == '\n')
-                {
+                if (posp.X > this.width || this.text[i] == '\n') {
                     posp.X = this.lineAddWidth;
                     posp.Y += 36 * this.scale;
                 }
             }
-            if (drawRect && Finish())
-            {
+            if (drawRect && Finish()) {
                 Vector2 rb = position + new Vector2(width - 6, height * heightMult - 10);
                 spriteBatch.DrawString(this.font, ">", rb, Color.LightSkyBlue, 0, new Vector2(0, 0), new Vector2(this.scale, this.scale), SpriteEffects.None, 0);
             }
@@ -207,8 +180,7 @@ namespace CalamityEntropy.Common
     }
     public class DialogSystem : ModSystem
     {
-        public override void PostDrawInterface(SpriteBatch spriteBatch)
-        {
+        public override void PostDrawInterface(SpriteBatch spriteBatch) {
             /*if (CEKeybinds.RuneDashHotKey.JustPressed)
             {
                 Typer.activeTypers.Clear();

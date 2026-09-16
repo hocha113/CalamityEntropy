@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,17 +10,14 @@ namespace CalamityEntropy.Content.Items
     {
         public abstract ArmorShaderData ShaderDataToBind { get; }
 
-        public sealed override void SetStaticDefaults()
-        {
-            if (!Main.dedServ)
-            {
+        public sealed override void SetStaticDefaults() {
+            if (!Main.dedServ) {
                 GameShaders.Armor.BindShader(Item.type, ShaderDataToBind);
             }
             SafeSetStaticDefaults();
         }
 
-        public sealed override void SetDefaults()
-        {
+        public sealed override void SetDefaults() {
             int dye = Item.dye;
             Item.CloneDefaults(ItemID.GelDye);
             Item.dye = dye;
@@ -28,13 +25,11 @@ namespace CalamityEntropy.Content.Items
         }
 
         /// <summary>等价 SetDefaults，染料 ID 克隆已由基类处理。</summary>
-        public virtual void SafeSetDefaults()
-        {
+        public virtual void SafeSetDefaults() {
         }
 
         /// <summary>等价 SetStaticDefaults，着色器绑定已由基类处理。</summary>
-        public virtual void SafeSetStaticDefaults()
-        {
+        public virtual void SafeSetStaticDefaults() {
         }
     }
 }

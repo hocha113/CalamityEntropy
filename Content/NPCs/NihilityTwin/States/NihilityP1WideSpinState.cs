@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.NihilityTwin.Core;
+﻿using CalamityEntropy.Content.NPCs.NihilityTwin.Core;
 using CalamityEntropy.Content.Projectiles;
 using InnoVault.StateMachines;
 using Terraria;
@@ -19,8 +19,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.States
     {
         public override NihilityStateIndex StateIndex => NihilityStateIndex.P1WideSpin;
 
-        public override IVaultState<NihilityStateContext> OnUpdate(NihilityStateContext ctx)
-        {
+        public override IVaultState<NihilityStateContext> OnUpdate(NihilityStateContext ctx) {
             NPC npc = ctx.Npc;
             NPC cell = ctx.Cell;
             Vector2 targetPos = ctx.Target.Center;
@@ -36,13 +35,10 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.States
             cell.velocity *= NihilityDirector.WideCellDrag;
             cell.velocity = (npc.Center + npc.rotation.ToRotationVector2() * NihilityDirector.WideCellOffset - cell.Center) * NihilityDirector.WideCellLerp;
 
-            if (ctx.Num1 > NihilityDirector.WideWindup && ctx.FrameCounter % NihilityDirector.WideFireInterval == 0 && IsServer)
-            {
+            if (ctx.Num1 > NihilityDirector.WideWindup && ctx.FrameCounter % NihilityDirector.WideFireInterval == 0 && IsServer) {
                 float rot = (targetPos - cell.Center).ToRotation();
-                for (int i = 0; i < NihilityDirector.WideFanLayers; i++)
-                {
-                    if (i > 0)
-                    {
+                for (int i = 0; i < NihilityDirector.WideFanLayers; i++) {
+                    if (i > 0) {
                         Shoot<CellBullet>(cell.GetSource_FromThis(),
                             cell.Center + new Vector2(i * NihilityDirector.WideFanBackStep, i * NihilityDirector.WideFanSideStep).RotatedBy(rot),
                             rot.ToRotationVector2() * NihilityDirector.WideFanSpeed,
@@ -52,16 +48,14 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.States
                             rot.ToRotationVector2() * NihilityDirector.WideFanSpeed,
                             BulletDamage(ctx), NihilityDirector.BulletKnockback);
                     }
-                    else
-                    {
+                    else {
                         Shoot<CellBullet>(cell.GetSource_FromThis(), cell.Center,
                             rot.ToRotationVector2() * NihilityDirector.WideFanSpeed,
                             npc.damage / NihilityDirector.ProjDamageDivisorCenter, NihilityDirector.BulletKnockback);
                     }
                 }
                 rot = CEUtils.randomRot();
-                for (int i = 0; i < 360; i += NihilityDirector.WideRingStepDeg)
-                {
+                for (int i = 0; i < 360; i += NihilityDirector.WideRingStepDeg) {
                     Shoot<CellBullet>(cell.GetSource_FromThis(), cell.Center,
                         (rot + MathHelper.ToRadians(i)).ToRotationVector2() * NihilityDirector.WideRingSpeed,
                         BulletDamage(ctx), NihilityDirector.BulletKnockback);
@@ -69,8 +63,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.States
             }
 
             ctx.Num1++;
-            if (ctx.Num1 > NihilityDirector.WideDuration)
-            {
+            if (ctx.Num1 > NihilityDirector.WideDuration) {
                 return EndAttack(ctx);
             }
             return null;

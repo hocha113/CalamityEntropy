@@ -7,8 +7,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 {
     public class BookMarkAries : BookMark
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.rare = ItemRarityID.Orange;
             Item.Entropy().stroke = true;
@@ -19,8 +18,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Aries");
         public override Color tooltipColor => Color.LightBlue;
-        public override EBookProjectileEffect getEffect()
-        {
+        public override EBookProjectileEffect getEffect() {
             return new AriesBMEffect();
         }
     }
@@ -28,8 +26,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     /// <summary>白羊座书签(2026-08-31 平衡案重做):攻击时召唤暗影之手伤害敌人(固定基伤20)。</summary>
     public class AriesBMEffect : EBookProjectileEffect
     {
-        public override void OnShoot(EntropyBookHeldProjectile book)
-        {
+        public override void OnShoot(EntropyBookHeldProjectile book) {
             Projectile proj = book.Projectile;
             Player owner = proj.GetOwner();
             NPC target = proj.FindTargetWithinRange(900, false);
@@ -43,8 +40,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     public class AriesShadowHand : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 46;
             Projectile.height = 60;
             Projectile.friendly = true;
@@ -56,12 +52,10 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 40;
         }
-        public override void AI()
-        {
+        public override void AI() {
             // 从下方升起再收拢的爪形黑雾
             float rise = 1f - Projectile.timeLeft / 36f;
-            if (Main.rand.NextBool())
-            {
+            if (Main.rand.NextBool()) {
                 Dust d = Dust.NewDustDirect(Projectile.position + new Vector2(0, Projectile.height * (1f - rise)), Projectile.width, (int)(Projectile.height * rise), DustID.Shadowflame);
                 d.noGravity = true;
                 d.velocity = new Vector2(Main.rand.NextFloat(-1, 1), -Main.rand.NextFloat(2, 5));

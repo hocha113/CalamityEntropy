@@ -12,35 +12,27 @@ namespace CalamityEntropy.Common
         public static bool Ch4Crystal = false;
         public static bool Ch5Crystal = false;
         public static bool SaveFileExist = false;
-        public static void Load()
-        {
-            try
-            {
+        public static void Load() {
+            try {
                 string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                 string drIni = Path.Combine(appData, "DELTARUNE/dr.ini");
                 SaveFileExist = Path.Exists(drIni);
-                if (SaveFileExist)
-                {
+                if (SaveFileExist) {
                     string content = File.ReadAllText(drIni, Encoding.UTF8);
-                    bool CheckFile(string text, string header)
-                    {
+                    bool CheckFile(string text, string header) {
                         string[] lines = content.Split("\n");
                         bool flag = false;
-                        for (int i = 0; i < lines.Length; i++)
-                        {
+                        for (int i = 0; i < lines.Length; i++) {
                             string line = lines[i];
-                            if (!flag)
-                            {
+                            if (!flag) {
                                 if (line.Contains("[URA]"))
                                     flag = true;
                                 continue;
                             }
-                            if (line.StartsWith(header))
-                            {
+                            if (line.StartsWith(header)) {
                                 if (line[2] == '3')
                                     continue;
-                                if (line.Contains("1.000000") || line.Contains("2.000000"))
-                                {
+                                if (line.Contains("1.000000") || line.Contains("2.000000")) {
                                     return true;
                                 }
                             }
@@ -54,13 +46,10 @@ namespace CalamityEntropy.Common
                     Ch5Crystal = CheckFile(content, "5_");
 
                 }
-            }
-            catch
-            {
+            } catch {
             }
         }
-        public static void Reset()
-        {
+        public static void Reset() {
             SaveFileExist = false;
             Ch1Crystal = false;
             Ch2Crystal = false;

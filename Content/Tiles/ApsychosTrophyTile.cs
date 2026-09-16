@@ -8,8 +8,7 @@ namespace CalamityEntropy.Content.Tiles
 {
     public class ApsychosTrophyTile : ModTile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.tileFrameImportant[Type] = true;
             Main.tileLavaDeath[Type] = true;
             Main.tileSpelunker[Type] = true;

@@ -1,7 +1,5 @@
 ﻿using CalamityEntropy.Assets.Register;
-using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -15,8 +13,7 @@ namespace CalamityEntropy.Content.Projectiles
 
         public float TileCollisionYThreshold => Projectile.ai[0];
 
-        public bool HasCollidedWithGround
-        {
+        public bool HasCollidedWithGround {
             get => Projectile.ai[1] == 1f;
             set => Projectile.ai[1] = value.ToInt();
         }
@@ -27,15 +24,13 @@ namespace CalamityEntropy.Content.Projectiles
 
         public const float MaxFallSpeed = 24f;
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 14;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 86;
             Projectile.height = 130;
             Projectile.netImportant = true;
@@ -47,26 +42,21 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.sentry = true;
         }
         public int counter = 0;
-        public override void AI()
-        {
+        public override void AI() {
             counter++;
-            if (counter == 15)
-            {
+            if (counter == 15) {
                 SoundEngine.PlaySound(new("CalamityEntropy/Assets/Sounds/spin1"), Projectile.Center);
             }
-            if (counter == 160)
-            {
+            if (counter == 160) {
                 SoundEngine.PlaySound(SoundID.Coins with { Pitch = 0.4f }, Projectile.Center);
             }
-            if (counter < 160)
-            {
+            if (counter < 160) {
                 return;
             }
             if (SquishFactor <= 0f)
                 SquishFactor = 1f;
 
-            if (Projectile.velocity.Y == 0f && !HasCollidedWithGround)
-            {
+            if (Projectile.velocity.Y == 0f && !HasCollidedWithGround) {
                 PerformGroundCollisionEffects();
                 HasCollidedWithGround = true;
                 Projectile.netUpdate = true;
@@ -79,60 +69,46 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.frameCounter++;
             if (!HasCollidedWithGround)
                 Projectile.frame = Projectile.frameCounter / 6 % 5;
-            else
-            {
+            else {
                 Projectile.velocity.X = 0f;
                 if (Projectile.frame < 5)
                     Projectile.frame = 5;
-                if (Projectile.frameCounter % 8 == 7)
-                {
+                if (Projectile.frameCounter % 8 == 7) {
                     Projectile.frame++;
 
-                    if (Projectile.frame == 8)
-                    {
+                    if (Projectile.frame == 8) {
                         SoundEngine.PlaySound(new Terraria.Audio.SoundStyle("CalamityEntropy/Assets/Sounds/steam"), Projectile.Top);
-                        if (Main.rand.NextDouble() < 0.01f)
-                        {
-                            if (Main.netMode == NetmodeID.SinglePlayer || Main.netMode == NetmodeID.Server)
-                            {
+                        if (Main.rand.NextDouble() < 0.01f) {
+                            if (Main.netMode == NetmodeID.SinglePlayer || Main.netMode == NetmodeID.Server) {
                                 NPC.NewNPC(Projectile.GetSource_FromAI(), (int)Projectile.Center.X, (int)Projectile.Center.Y, NPCID.SleepingAngler);
                                 Projectile.frame = 9;
                             }
                         }
 
-                        if (Projectile.Entropy().AtlasItemType == 0)
-                        {
+                        if (Projectile.Entropy().AtlasItemType == 0) {
                             CombatText.NewText(Projectile.getRect(), Color.Yellow, "哇，什么也没有");
                         }
-                        else if (Projectile.Entropy().AtlasItemType == -11)
-                        {
-                            if (Main.netMode == NetmodeID.SinglePlayer)
-                            {
+                        else if (Projectile.Entropy().AtlasItemType == -11) {
+                            if (Main.netMode == NetmodeID.SinglePlayer) {
                                 NPC.NewNPC(Projectile.GetSource_GiftOrReward(), (int)Projectile.Center.X, (int)Projectile.Center.Y, NPCID.SleepingAngler);
                             }
-                            if (Main.netMode == NetmodeID.Server)
-                            {
+                            if (Main.netMode == NetmodeID.Server) {
                                 int np = NPC.NewNPC(Projectile.GetSource_GiftOrReward(), (int)Projectile.Center.X, (int)Projectile.Center.Y, NPCID.SleepingAngler);
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, np);
                             }
                         }
-                        else
-                        {
+                        else {
                             // 灾厄 CodebreakerBase 套装特判已随奖池重做删除（misc-map §二 p7），统一走通用掉落
                             Item ispawn = new Item(Projectile.Entropy().AtlasItemType, Projectile.Entropy().AtlasItemStack);
-                            if (Main.netMode == NetmodeID.SinglePlayer)
-                            {
+                            if (Main.netMode == NetmodeID.SinglePlayer) {
                                 int np = Item.NewItem(Projectile.GetSource_FromAI(), Projectile.getRect(), ispawn);
                             }
-                            if (Main.netMode == NetmodeID.Server)
-                            {
+                            if (Main.netMode == NetmodeID.Server) {
                                 int np = Item.NewItem(Projectile.GetSource_FromAI(), Projectile.getRect(), ispawn);
                                 NetMessage.SendData(MessageID.SyncItem, -1, -1, null, np);
                             }
-                            if (Projectile.Entropy().AtlasItemType == ItemID.PoopBlock)
-                            {
-                                for (int i = 0; i < 5; i++)
-                                {
+                            if (Projectile.Entropy().AtlasItemType == ItemID.PoopBlock) {
+                                for (int i = 0; i < 5; i++) {
                                     Projectile.NewProjectile(Wiring.GetProjectileSource((int)Projectile.Center.X / 16, (int)Projectile.Center.Y / 16), Projectile.Center.X, Projectile.Center.Y, 0f, 0f, ProjectileID.ToiletEffect, 0, 0f, Main.myPlayer);
                                 }
                             }
@@ -149,14 +125,12 @@ namespace CalamityEntropy.Content.Projectiles
                 Projectile.velocity.Y = MaxFallSpeed;
         }
 
-        public void PerformGroundCollisionEffects()
-        {
+        public void PerformGroundCollisionEffects() {
             SquishFactor = 1.4f;
 
             int dustID = 182;
             int dustCount = 54;
-            for (int i = 0; i < dustCount; i += 2)
-            {
+            for (int i = 0; i < dustCount; i += 2) {
                 float pairSpeed = Main.rand.NextFloat(0.5f, 16f);
                 Dust d = Dust.NewDustDirect(Projectile.Bottom, 0, 0, dustID);
                 d.velocity = Vector2.UnitX * pairSpeed;
@@ -174,28 +148,23 @@ namespace CalamityEntropy.Content.Projectiles
             CEUtils.SetShake(Projectile.Center, 4.5f, 1800);
         }
 
-        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
-        {
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI) {
             overPlayers.Add(index);
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return counter >= 160;
         }
         public override bool? CanDamage() => false;
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
 
-        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
-        {
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac) {
             fallThrough = false;
             return true;
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
-            if (counter < 160)
-            {
+        public override bool PreDraw(ref Color lightColor) {
+            if (counter < 160) {
                 return false;
             }
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;

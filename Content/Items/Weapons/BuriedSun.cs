@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Dusts;
+﻿using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Core.CalamityRef;
 using InnoVault.PRT;
@@ -16,18 +16,15 @@ namespace CalamityEntropy.Content.Items.Weapons
 {
     public class BuriedSun : ModItem
     {
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             Color c = Color.Lerp(Color.LightGreen * 1.4f, new Color(20, 20, 20), (float)((Math.Sin(Main.GlobalTimeWrappedHourly * 8) + 1.0) / 2.0));
             tooltips.Replace("f0ffe6", c.Hex3());
             tooltips.Replace("f0ffe6", c.Hex3());
         }
-        public override bool RangedPrefix()
-        {
+        public override bool RangedPrefix() {
             return true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 134;
             Item.height = 38;
             Item.damage = 120;
@@ -47,18 +44,15 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.crit = 14;
             Item.noUseGraphic = true;
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<BuriedSunHoldout>(), damage, knockback, player.whoAmI);
             return false;
         }
 
         // 2026-08-31 平衡案删掉了 3.33 的配方、改挂拜月邪教徒 1/3。
         // 装灾厄时还原 3.33 配方,同时拜月那一行进 !CERef.Has 门;无灾厄什么都不注册,保持 4.0 现状
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_MeldBlob))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_MeldBlob)) {
                 CreateRecipe()
                     .AddIngredient(CEID.Item_MeldBlob, 18)
                     .AddTile(TileID.LunarCraftingStation)
@@ -70,16 +64,13 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class BuriedSunHoldout : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/BuriedSun";
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
-        public override bool? CanDamage()
-        {
+        public override bool? CanDamage() {
             return false;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.width = Projectile.height = 2;
 
@@ -91,12 +82,10 @@ namespace CalamityEntropy.Content.Items.Weapons
         public int ShootCount = 3;
         public Player player => Projectile.GetOwner();
         public Vector2 FirePos => Projectile.Center + Projectile.velocity.normalize() * 112 * Projectile.scale;
-        public void Shoot()
-        {
+        public void Shoot() {
             ShootCount--;
             Lighting.AddLight(base.Projectile.Center, Color.LightGreen.ToVector3() * 0.36f);
-            for (int i = 0; i <= 10; i++)
-            {
+            for (int i = 0; i <= 10; i++) {
                 float num2 = Main.rand.NextFloat(-0.7f, 0.7f);
                 int type2 = ModContent.DustType<VoidDustInverted>();
                 Dust dust2 = Dust.NewDustPerfect(FirePos, type2);
@@ -106,42 +95,34 @@ namespace CalamityEntropy.Content.Items.Weapons
                 dust2.color = Color.LightGreen;
             }
             CEUtils.PlaySound("CursedDaggerThrow", Main.rand.NextFloat(2f, 2.4f), FirePos, 16, 0.3f);
-            if (Main.myPlayer == Projectile.owner)
-            {
+            if (Main.myPlayer == Projectile.owner) {
                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), FirePos, Projectile.velocity.normalize() * player.HeldItem.shootSpeed, ModContent.ProjectileType<BuriedShoot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
             }
 
         }
-        public override void AI()
-        {
-            if (Projectile.Entropy().FirstFrames)
-            {
+        public override void AI() {
+            if (Projectile.Entropy().FirstFrames) {
                 Delay = Projectile.GetOwner().HeldItem.useTime * 2;
             }
             Projectile.StickToPlayer();
             player.SetHandRot(Projectile.rotation);
             player.itemTime = player.itemAnimation = 3;
-            if (ShootCount > 0)
-            {
+            if (ShootCount > 0) {
                 Charge++;
-                if (Charge > MaxCharge)
-                {
+                if (Charge > MaxCharge) {
                     Charge = 0;
                     Shoot();
                 }
             }
-            else
-            {
+            else {
                 Delay--;
-                if (Delay <= 0)
-                {
+                if (Delay <= 0) {
                     Projectile.Kill();
                     player.itemTime = player.itemAnimation = 1;
                 }
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.EntitySpriteDraw(Projectile.GetTexture(), Projectile.Center + Projectile.velocity.normalize() * 32 + player.gfxOffY * Vector2.UnitY - Main.screenPosition, null, lightColor, Projectile.rotation, Projectile.GetTexture().Size().Half(), Projectile.scale, Projectile.velocity.X > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);
             float gScale = Charge / ((float)MaxCharge);
             CEUtils.DrawGlow(FirePos, Color.Black, gScale * 0.6f, false);
@@ -156,12 +137,10 @@ namespace CalamityEntropy.Content.Items.Weapons
         public Color InnerColor = Color.LightGreen;
 
         public override string Texture => CEUtils.InvisAsset;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.CultistIsResistantTo[base.Type] = true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = Projectile.height = 16;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
@@ -174,53 +153,43 @@ namespace CalamityEntropy.Content.Items.Weapons
             Projectile.localNPCHitCooldown = -1;
         }
         public int OrigDamage = 0;
-        public void SpawnParticle()
-        {
+        public void SpawnParticle() {
             SpawnParticle(Projectile.Center);
         }
-        public void SpawnParticle(Vector2 pos)
-        {
+        public void SpawnParticle(Vector2 pos) {
             //Additive亮层走AfterPlayers叠暗层上,跟旧版粒子系统 Before/After分层一样
             PRTLoader.NewParticle<PRT_CustomSpark>(pos, Vector2.Zero, Color.Black, 0.24f).Configure("CalamityEntropy/Assets/Particles/LargeBloom", false, 8, Vector2.One, false, false, 0f, false, false);
             PRTLoader.NewParticle<PRT_CustomSpark>(pos, Vector2.Zero, Color.White, 0.12f).Configure("CalamityEntropy/Assets/Particles/LargeBloom", false, 8, Vector2.One, true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
         }
-        public override void AI()
-        {
-            if (Projectile.Entropy().FirstFrames)
-            {
+        public override void AI() {
+            if (Projectile.Entropy().FirstFrames) {
                 OrigDamage = Projectile.damage;
                 SpawnParticle();
             }
-            if (base.Projectile.timeLeft % 2 == 0)
-            {
+            if (base.Projectile.timeLeft % 2 == 0) {
                 //DetailedExplosionCal/CustomSpark CalamityPorts,Configure签名各管各的
                 PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + Projectile.velocity.normalize() * 40, -base.Projectile.velocity * 0.05f, Color.Black, 0.052f).Configure("CalamityEntropy/Assets/Particles/GlowSpark2", false, 9, new Vector2(0.6f, 1.3f), false, false, 0f, false, false);
                 PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + Projectile.velocity.normalize() * 40, -base.Projectile.velocity * 0.05f, Color.LightGreen, 0.022f).Configure("CalamityEntropy/Assets/Particles/GlowSpark", false, 9, new Vector2(0.6f, 1.9f), true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
             }
         }
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             Vector2 spos = Projectile.Center + Projectile.velocity.normalize() * 68;
             SpawnParticle(spos);
-            if (Main.myPlayer == Projectile.owner)
-            {
+            if (Main.myPlayer == Projectile.owner) {
                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), spos, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(16, 24), ModContent.ProjectileType<BuriedDot>(), OrigDamage, Projectile.knockBack, Projectile.owner);
             }
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             SpawnParticle();
             if (Projectile.timeLeft > 60)
                 Projectile.timeLeft = 60;
             // 原灾厄 DeadSunsWind.Explosion（DeadSunExplosion），以自有 explosionbig 近似
-            SoundStyle style = new SoundStyle("CalamityEntropy/Assets/Sounds/explosionbig")
-            {
+            SoundStyle style = new SoundStyle("CalamityEntropy/Assets/Sounds/explosionbig") {
                 Pitch = 0.6f + Main.rand.NextFloat(-0.2f, 0.2f),
                 Volume = 0.2f
             };
             SoundEngine.PlaySound(in style, base.Projectile.Center);
-            for (int i = 0; i <= 16; i++)
-            {
+            for (int i = 0; i <= 16; i++) {
                 float num2 = Main.rand.NextFloat(-0.7f, 0.7f);
                 int type2 = ModContent.DustType<VoidDustInverted>();
                 Dust dust2 = Dust.NewDustPerfect(Projectile.Center, type2);
@@ -243,12 +212,10 @@ namespace CalamityEntropy.Content.Items.Weapons
         public Color InnerColor = Color.LightGreen;
 
         public override string Texture => CEUtils.InvisAsset;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.CultistIsResistantTo[base.Type] = true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = Projectile.height = 16;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
@@ -260,37 +227,30 @@ namespace CalamityEntropy.Content.Items.Weapons
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
-        public void SpawnParticle()
-        {
+        public void SpawnParticle() {
             SpawnParticle(Projectile.Center);
         }
-        public void SpawnParticle(Vector2 pos)
-        {
+        public void SpawnParticle(Vector2 pos) {
             //CustomPulse贴图路径Configure现传,Texture属性填白图应付框架
             PRTLoader.NewParticle<PRT_CustomSpark>(pos, Vector2.Zero, Color.Black, 0.24f).Configure("CalamityEntropy/Assets/Particles/LargeBloom", false, 8, Vector2.One, false, false, 0f, false, false);
             PRTLoader.NewParticle<PRT_CustomSpark>(pos, Vector2.Zero, Color.White, 0.12f).Configure("CalamityEntropy/Assets/Particles/LargeBloom", false, 8, Vector2.One, true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
         }
-        public override void AI()
-        {
-            if (base.Projectile.timeLeft % 2 == 0)
-            {
+        public override void AI() {
+            if (base.Projectile.timeLeft % 2 == 0) {
                 PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + Projectile.velocity.normalize() * 40, -base.Projectile.velocity * 0.05f, Color.Black, 0.052f).Configure("CalamityEntropy/Assets/Particles/GlowSpark2", false, 9, new Vector2(0.6f, 1.3f), false, false, 0f, false, false);
                 PRTLoader.NewParticle<PRT_CustomSpark>(Projectile.Center + Projectile.velocity.normalize() * 40, -base.Projectile.velocity * 0.05f, Color.LightGreen, 0.022f).Configure("CalamityEntropy/Assets/Particles/GlowSpark", false, 9, new Vector2(0.6f, 1.9f), true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
             }
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             SpawnParticle();
             if (Projectile.timeLeft > 50)
                 Projectile.timeLeft = 50;
-            SoundStyle style = new SoundStyle("CalamityEntropy/Assets/Sounds/explosionbig")
-            {
+            SoundStyle style = new SoundStyle("CalamityEntropy/Assets/Sounds/explosionbig") {
                 Pitch = 1.2f + Main.rand.NextFloat(-0.2f, 0.2f),
                 Volume = 0.16f
             };
             SoundEngine.PlaySound(in style, base.Projectile.Center);
-            for (int i = 0; i <= 16; i++)
-            {
+            for (int i = 0; i <= 16; i++) {
                 float num2 = Main.rand.NextFloat(-0.7f, 0.7f);
                 int type2 = ModContent.DustType<VoidDustInverted>();
                 Dust dust2 = Dust.NewDustPerfect(Projectile.Center, type2);
@@ -310,8 +270,7 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class BuriedDot : ModProjectile
     {
         public override string Texture => CEUtils.InvisAsset;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = Projectile.height = 16;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
@@ -322,43 +281,33 @@ namespace CalamityEntropy.Content.Items.Weapons
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
-        public override bool? CanDamage()
-        {
+        public override bool? CanDamage() {
             return false;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.velocity *= 0.92f;
-            if (Projectile.timeLeft < 60)
-            {
+            if (Projectile.timeLeft < 60) {
                 Projectile.Opacity = 60f / Projectile.timeLeft;
             }
-            else
-            {
-                if (Projectile.ai[0] == 0)
-                {
-                    if (Main.myPlayer == Projectile.owner)
-                    {
+            else {
+                if (Projectile.ai[0] == 0) {
+                    if (Main.myPlayer == Projectile.owner) {
                         List<Projectile> projs = new();
-                        foreach (Projectile p in Main.ActiveProjectiles)
-                        {
+                        foreach (Projectile p in Main.ActiveProjectiles) {
                             if (p.whoAmI == Projectile.whoAmI)
                                 continue;
-                            if (p.owner == Projectile.owner && p.type == Projectile.type && p.timeLeft > 60 && p.ai[0] == 0 && p.Distance(Projectile.Center) < 800)
-                            {
+                            if (p.owner == Projectile.owner && p.type == Projectile.type && p.timeLeft > 60 && p.ai[0] == 0 && p.Distance(Projectile.Center) < 800) {
                                 projs.Add(p);
                             }
                         }
-                        projs = projs.Select(proj => new
-                        {
+                        projs = projs.Select(proj => new {
                             Proj = proj,
                             Dist = Vector2.Distance(Projectile.Center, proj.Center)
                         }).OrderBy(p => p.Dist)
                         .Take(2)
                         .Select(x => x.Proj)
                         .ToList();
-                        if (projs.Count == 2)
-                        {
+                        if (projs.Count == 2) {
                             Projectile.ai[0] = projs[0].ai[0] = projs[1].ai[0] = 1;
 
                             Projectile.ai[1] = projs[0].whoAmI;
@@ -376,32 +325,25 @@ namespace CalamityEntropy.Content.Items.Weapons
                         }
                     }
                 }
-                if (Projectile.ai[0] > 0)
-                {
-                    if (!((int)Projectile.ai[1]).ToProj().active || !((int)Projectile.ai[2]).ToProj().active)
-                    {
+                if (Projectile.ai[0] > 0) {
+                    if (!((int)Projectile.ai[1]).ToProj().active || !((int)Projectile.ai[2]).ToProj().active) {
                         Projectile.ai[0] = 0;
                         Projectile.ai[1] = Projectile.ai[2] = 0;
                     }
                 }
-                if (Projectile.ai[0] > 0)
-                {
+                if (Projectile.ai[0] > 0) {
                     var p1 = ((int)Projectile.ai[1]).ToProj();
                     var p2 = ((int)Projectile.ai[2]).ToProj();
                     Vector2 mid = (Projectile.Center / 3f + p1.Center / 3f + p2.Center / 3f);
                     Projectile.timeLeft = 400;
                     Projectile.ai[0]++;
-                    if (Projectile.ai[0] == 8)
-                    {
-                        if (Main.myPlayer == Projectile.owner)
-                        {
+                    if (Projectile.ai[0] == 8) {
+                        if (Main.myPlayer == Projectile.owner) {
                             NPC target = CEUtils.FindTarget_HomingProj(Projectile, mid, 1200);
-                            if (target != null)
-                            {
+                            if (target != null) {
                                 Item gun = new Item(ModContent.ItemType<BuriedSun>());
                                 Vector2 start = Projectile.Center;
-                                if (Projectile.GetOwner().PickAmmo(gun, out int projType, out float speed, out int _, out float kb, out int _, false))
-                                {
+                                if (Projectile.GetOwner().PickAmmo(gun, out int projType, out float speed, out int _, out float kb, out int _, false)) {
                                     int p = Projectile.NewProjectile(Projectile.GetSource_FromAI(), start, (target.Center - start).normalize() * speed * 1.6f, projType, Projectile.damage / 3, kb, Projectile.owner);
                                     p.ToProj().Entropy().buriedShoot = true;
                                     CEUtils.SyncProj(p);
@@ -409,17 +351,14 @@ namespace CalamityEntropy.Content.Items.Weapons
                             }
                         }
                     }
-                    if (Projectile.ai[0] > 26)
-                    {
+                    if (Projectile.ai[0] > 26) {
                         SpawnParticle(Projectile.Center, 1.2f);
                         SpawnParticle(p1.Center, 1.2f);
                         SpawnParticle(p2.Center, 1.2f);
                         SpawnParticle(mid, 1.4f);
-                        for (int i = 0; i < 3; i++)
-                        {
+                        for (int i = 0; i < 3; i++) {
                             Vector2 start = i == 0 ? Projectile.Center : (i == 1 ? p1.Center : p2.Center);
-                            for (float l = 0.04f; l <= 0.96f; l += 0.02f)
-                            {
+                            for (float l = 0.04f; l <= 0.96f; l += 0.02f) {
                                 Vector2 p = Vector2.Lerp(start, mid, l);
                                 float scale = CEUtils.Parabola(l, 0.8f) + 0.2f;
                                 scale *= 0.6f;
@@ -430,8 +369,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                             }
                         }
                         NPC target = CEUtils.FindTarget_HomingProj(Projectile, mid, 1200);
-                        if (target != null)
-                        {
+                        if (target != null) {
                             Projectile.NewProjectile(Projectile.GetSource_FromAI(), mid, (target.Center - mid).normalize() * 10, ModContent.ProjectileType<BuriedShoot2>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                         }
                         ExpParticle(mid);
@@ -449,23 +387,20 @@ namespace CalamityEntropy.Content.Items.Weapons
             dust2.scale = Projectile.Opacity * 1f;
 
         }
-        public void ExpParticle(Vector2 pos)
-        {
+        public void ExpParticle(Vector2 pos) {
             Color color1 = Color.LightGreen;
             Color color2 = Color.Black;
             float ExplosionRadius = 60;
             PRTLoader.NewParticle<PRT_DetailedExplosionCal>(pos, Vector2.Zero, color1, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5f, 5f), ExplosionRadius * 0.0065f + 0.1f, Main.rand.Next(15, 22), true, renderLayer: PRTRenderLayer.AfterPlayers);
             PRTLoader.NewParticle<PRT_DetailedExplosionCal>(pos, Vector2.Zero, Color.Black, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5f, 5f), ExplosionRadius * 0.0045f + 0.1f, Main.rand.Next(15, 22), false);
             PRTLoader.NewParticle<PRT_DetailedExplosionCal>(pos, Vector2.Zero, Color.Black, 0f).Configure(Vector2.One, Main.rand.NextFloat(-5f, 5f), ExplosionRadius * 0.003f + 0.1f, Main.rand.Next(15, 22), false);
-            for (int i = 0; i < 4; i++)
-            {
+            for (int i = 0; i < 4; i++) {
                 PRTLoader.NewParticle<PRT_CustomPulse>(pos, Vector2.Zero, color1, 0f).Configure("CalamityEntropy/Assets/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, ExplosionRadius * 0.005f + 0.05f, 25, renderLayer: PRTRenderLayer.AfterPlayers);
             }
 
             float num = ExplosionRadius * 0.1f + 10f;
             float num2 = 360f / num;
-            for (int j = 0; (float)j < num; j++)
-            {
+            for (int j = 0; (float)j < num; j++) {
                 float num3 = MathHelper.ToRadians((float)j * num2);
                 Vector2 vector = (Vector2.UnitX * Main.rand.NextFloat(ExplosionRadius * 0.2f, 3.1f)).RotatedBy(num3 * Main.rand.NextFloat(1.1f, 9.1f));
                 Vector2 vector2 = (Vector2.UnitX * Main.rand.NextFloat(ExplosionRadius * 0.2f, 3.1f)).RotatedBy(num3 * Main.rand.NextFloat(1.1f, 9.1f));
@@ -476,8 +411,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 dust.scale = ((dust.type == 278) ? Main.rand.NextFloat(0.7f, 1.3f) : Main.rand.NextFloat(1.6f, 2.2f));
             }
         }
-        public void SpawnParticle(Vector2 pos, float scale)
-        {
+        public void SpawnParticle(Vector2 pos, float scale) {
             PRTLoader.NewParticle<PRT_CustomSpark>(pos, Vector2.Zero, Color.Black, 0.24f * scale).Configure("CalamityEntropy/Assets/Particles/LargeBloom", false, 8, Vector2.One, false, false, 0f, false, false);
             PRTLoader.NewParticle<PRT_CustomSpark>(pos, Vector2.Zero, Color.White, 0.12f * scale).Configure("CalamityEntropy/Assets/Particles/LargeBloom", false, 8, Vector2.One, true, false, 0f, false, false, renderLayer: PRTRenderLayer.AfterPlayers);
         }

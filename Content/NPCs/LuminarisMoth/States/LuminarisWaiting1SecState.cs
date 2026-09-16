@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.LuminarisMoth.Core;
+﻿using CalamityEntropy.Content.NPCs.LuminarisMoth.Core;
 using InnoVault.StateMachines;
 
 namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
@@ -12,8 +12,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
     {
         public override LuminarisStateIndex StateIndex => LuminarisStateIndex.Waiting1Sec;
 
-        public override IVaultState<LuminarisStateContext> OnUpdate(LuminarisStateContext ctx)
-        {
+        public override IVaultState<LuminarisStateContext> OnUpdate(LuminarisStateContext ctx) {
             int c = ctx.Countdown;
             ctx.Npc.rotation = 0;
             return Tick(ctx, c);

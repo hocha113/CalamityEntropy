@@ -1,6 +1,5 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Terraria;
-using Terraria.ModLoader;
 
 namespace CalamityEntropy.Core.Cooldowns
 {
@@ -63,8 +62,7 @@ namespace CalamityEntropy.Core.Cooldowns
             => player.GetModPlayer<CECooldownPlayer>().GetCharge(key, max);
 
         /// <summary>取每物品充能计量器,不存在则按 max 创建。已存在时同步 Max 到最新值。</summary>
-        public static CEChargeMeter GetChargeMeter(this Item item, float max)
-        {
+        public static CEChargeMeter GetChargeMeter(this Item item, float max) {
             var global = item.GetGlobalItem<CEChargeGlobalItem>();
             if (global.meter == null)
                 global.meter = new CEChargeMeter(max);

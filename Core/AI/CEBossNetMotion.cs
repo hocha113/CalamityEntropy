@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using Terraria;
 
@@ -49,11 +49,9 @@ namespace CalamityEntropy.Core.AI
         private int packetCounter;
 
         /// <summary>客户端 AI 开头:清原版平滑偏移,分摊一份待消化纠偏</summary>
-        public void BeginFrame(NPC npc)
-        {
+        public void BeginFrame(NPC npc) {
             npc.netOffset = Vector2.Zero;
-            if (pending == Vector2.Zero)
-            {
+            if (pending == Vector2.Zero) {
                 return;
             }
             Vector2 step = pending.LengthSquared() < 1f ? pending : pending * Rate;
@@ -62,15 +60,13 @@ namespace CalamityEntropy.Core.AI
         }
 
         /// <summary>客户端 AI 末尾:记下按本地积分预测的下一帧位置(原版随后执行 position += velocity)</summary>
-        public void EndFrame(NPC npc)
-        {
+        public void EndFrame(NPC npc) {
             predictedNext = npc.position + npc.velocity;
             hasPrediction = true;
         }
 
         /// <summary>状态直接改写位置(瞬移/闪现定位)后调用:丢掉旧预测,下一包不当失步处理</summary>
-        public void ForgetPrediction()
-        {
+        public void ForgetPrediction() {
             hasPrediction = false;
             pending = Vector2.Zero;
         }
@@ -79,11 +75,9 @@ namespace CalamityEntropy.Core.AI
         /// 收包时刻(ReceiveExtraAI,此时 position/velocity 已被服务端值覆盖)。
         /// <paramref name="frameDelta"/> 为本地时钟相对这一包的帧差(本地帧数 - 包内帧数),无法判定时传 0
         /// </summary>
-        public void OnSnapshot(NPC npc, int frameDelta)
-        {
+        public void OnSnapshot(NPC npc, int frameDelta) {
             npc.netOffset = Vector2.Zero;
-            if (!hasPrediction)
-            {
+            if (!hasPrediction) {
                 return;
             }
 
@@ -91,8 +85,7 @@ namespace CalamityEntropy.Core.AI
             Vector2 serverNow = npc.position + npc.velocity * frameDelta;
             Vector2 error = serverNow - predictedNext;
 
-            if (error.LengthSquared() > SnapDistance * SnapDistance)
-            {
+            if (error.LengthSquared() > SnapDistance * SnapDistance) {
                 npc.position = serverNow;
                 pending = Vector2.Zero;
                 return;
@@ -105,8 +98,7 @@ namespace CalamityEntropy.Core.AI
         /// <summary>
         /// 权威端:把当前状态的计时写进快照流(SendExtraAI 内调用)。格式固定在这一处,两端才不会读写错位
         /// </summary>
-        public static void WriteTiming(BinaryWriter writer, int stateId, int timer, int counter)
-        {
+        public static void WriteTiming(BinaryWriter writer, int stateId, int timer, int counter) {
             writer.Write(stateId);
             writer.Write(timer);
             writer.Write(counter);
@@ -115,8 +107,7 @@ namespace CalamityEntropy.Core.AI
         /// <summary>
         /// 客户端:读出权威端计时并顺手纠偏(ReceiveExtraAI 内调用,与 <see cref="WriteTiming"/> 严格对应)
         /// </summary>
-        public void ReceiveTiming(BinaryReader reader, NPC npc, int localStateId, int localTimer)
-        {
+        public void ReceiveTiming(BinaryReader reader, NPC npc, int localStateId, int localTimer) {
             int stateId = reader.ReadInt32();
             int timer = reader.ReadInt32();
             int counter = reader.ReadInt32();
@@ -124,8 +115,7 @@ namespace CalamityEntropy.Core.AI
         }
 
         /// <summary>计时走其它通道(同步槽)时的入口</summary>
-        public void ReceiveTiming(int stateId, int timer, int counter, NPC npc, int localStateId, int localTimer)
-        {
+        public void ReceiveTiming(int stateId, int timer, int counter, NPC npc, int localStateId, int localTimer) {
             packetStateId = stateId;
             packetTimer = timer;
             packetCounter = counter;
@@ -133,11 +123,9 @@ namespace CalamityEntropy.Core.AI
 
             //只有两端处在同一状态时,计时差才是帧相位差;换态包无从比较,按 0 帧处理
             int frameDelta = 0;
-            if (stateId == localStateId)
-            {
+            if (stateId == localStateId) {
                 int d = localTimer - timer;
-                if (Math.Abs(d) <= MaxFrameDelta)
-                {
+                if (Math.Abs(d) <= MaxFrameDelta) {
                     frameDelta = d;
                 }
             }
@@ -148,12 +136,10 @@ namespace CalamityEntropy.Core.AI
         /// 客户端:取出待收养的计时,状态对得上才给(读后即清)。
         /// 调用点有两处:AI 开头(同态收包)与状态机换态之后(换态包携带的新态计时)
         /// </summary>
-        public bool TryTakeTiming(int localStateId, out int timer, out int counter)
-        {
+        public bool TryTakeTiming(int localStateId, out int timer, out int counter) {
             timer = 0;
             counter = 0;
-            if (!timingPending || packetStateId != localStateId)
-            {
+            if (!timingPending || packetStateId != localStateId) {
                 return false;
             }
             timingPending = false;
@@ -163,8 +149,7 @@ namespace CalamityEntropy.Core.AI
         }
 
         /// <summary>只差一两帧是网络抖动的常态,硬对齐会让 Timer == X 型一次性拍被跳过或重放</summary>
-        public static int AdoptTimer(int local, int synced, int tolerance = TimerTolerance)
-        {
+        public static int AdoptTimer(int local, int synced, int tolerance = TimerTolerance) {
             return Math.Abs(synced - local) > tolerance ? synced : local;
         }
 
@@ -172,8 +157,7 @@ namespace CalamityEntropy.Core.AI
         /// 位置由确定性重算的部件(编队仆从、贴锚点的部位):快照只该纠正数据,
         /// 不该在贴图上留下偏移。原版平滑对它们纯属噪声,逐帧清掉
         /// </summary>
-        public static void ClearSmoothing(NPC npc)
-        {
+        public static void ClearSmoothing(NPC npc) {
             npc.netOffset = Vector2.Zero;
         }
 
@@ -183,8 +167,7 @@ namespace CalamityEntropy.Core.AI
         /// 不要写 npc.position +=:那是各端各滚的随机游走,写在 !dedServ 里更糟,
         /// 只有客户端在飘,而且恰好飘在纠偏器要对账的预警帧上
         /// </summary>
-        public static void DrawShake(NPC npc, Vector2 offset)
-        {
+        public static void DrawShake(NPC npc, Vector2 offset) {
             npc.netOffset = offset;
         }
     }

@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Apsychos.Core;
+﻿using CalamityEntropy.Content.NPCs.Apsychos.Core;
 using CalamityEntropy.Content.Projectiles.ApsychosProjs;
 using InnoVault.StateMachines;
 using System;
@@ -18,14 +18,12 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.States
         /// <summary>本地一次性拍锁存,不过线。中途加入在宽限窗内仍补后坐,弹幕由权威端生成</summary>
         private bool laserCued;
 
-        public override void OnEnter(ApsychosStateContext ctx)
-        {
+        public override void OnEnter(ApsychosStateContext ctx) {
             base.OnEnter(ctx);
             laserCued = false;
         }
 
-        public override IVaultState<ApsychosStateContext> OnUpdate(ApsychosStateContext ctx)
-        {
+        public override IVaultState<ApsychosStateContext> OnUpdate(ApsychosStateContext ctx) {
             NPC npc = ctx.Npc;
             NPC tail = ctx.Tail;
             Player player = ctx.Target;
@@ -36,17 +34,14 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.States
             tail.Center = Vector2.Lerp(tail.Center, tpos, ApsychosDirector.LaserTailLerp);
             tail.rotation = (npc.Center + npc.rotation.ToRotationVector2() * ApsychosDirector.LaserAimReach - tail.Center).ToRotation();
             ctx.TailLight += ApsychosDirector.LaserTailLightRise;
-            if (Timer < ApsychosDirector.LaserTrackFrames)
-            {
+            if (Timer < ApsychosDirector.LaserTrackFrames) {
                 float targetRot = (player.Center - npc.Center).ToRotation();
                 npc.rotation = CEUtils.RotateTowardsAngle(npc.rotation, targetRot, ApsychosDirector.LaserTrackRotate, false);
                 npc.velocity *= ApsychosDirector.LaserTrackDrag;
                 npc.velocity += npc.rotation.ToRotationVector2() * ApsychosDirector.LaserTrackThrust;
             }
-            else
-            {
-                if (Timer > ApsychosDirector.LaserSlowTrackFrame)
-                {
+            else {
+                if (Timer > ApsychosDirector.LaserSlowTrackFrame) {
                     float targetRot = (player.Center - npc.Center).ToRotation();
                     npc.rotation = CEUtils.RotateTowardsAngle(npc.rotation, targetRot, ApsychosDirector.LaserSlowRotateLerp, false);
                     npc.rotation = CEUtils.RotateTowardsAngle(npc.rotation, targetRot, ApsychosDirector.LaserSlowRotateFixed, true);
@@ -55,11 +50,9 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.States
                 npc.velocity += npc.rotation.ToRotationVector2() * ApsychosDirector.LaserBackThrust;
             }
             tail.Center = Vector2.Lerp(tail.Center, npc.Center + npc.rotation.ToRotationVector2() * ApsychosDirector.LaserTailReach * npc.scale, ApsychosDirector.LaserTailHomeLerp * enrange);
-            if (!laserCued)
-            {
+            if (!laserCued) {
                 laserCued = true;
-                if (!CuePassed(0))
-                {
+                if (!CuePassed(0)) {
                     tail.velocity += tail.rotation.ToRotationVector2() * ApsychosDirector.LaserRecoil;
                     Shoot<ApsychosLaser>(ctx, tail.Center + tail.rotation.ToRotationVector2() * ApsychosDirector.LaserMuzzleOffset,
                         tail.rotation.ToRotationVector2() * ApsychosDirector.LaserSpeed,
@@ -67,8 +60,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.States
                     MarkNetUpdate(ctx);
                 }
             }
-            if (Timer > ApsychosDirector.LaserDuration)
-            {
+            if (Timer > ApsychosDirector.LaserDuration) {
                 return NextAttack(ctx);
             }
             return null;

@@ -1,17 +1,16 @@
-using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class PrisonOfPermafrost : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 150;
             Item.DamageType = DamageClass.Magic;
             Item.width = 96;
@@ -37,24 +36,19 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.Entropy().HasCustomStrokeColor = true;
             Item.Entropy().HasCustomNameColor = true;
         }
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
 
             player.channel = true;
-            if (player.ownedProjectileCounts[type] < 1)
-            {
+            if (player.ownedProjectileCounts[type] < 1) {
                 return true;
             }
             return false;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_IceBarrage, CEID.Item_GlacialEmbrace, CEID.Item_AuricBar, CEID.Item_AscendantSpiritEssence, CEID.Tile_CosmicAnvil))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_IceBarrage, CEID.Item_GlacialEmbrace, CEID.Item_AuricBar, CEID.Item_AscendantSpiritEssence, CEID.Tile_CosmicAnvil)) {
                 Recipe calRecipe = CreateRecipe();
                 calRecipe.AddIngredient(CEID.Item_IceBarrage, 1);
                 calRecipe.AddIngredient(CEID.Item_GlacialEmbrace, 1);

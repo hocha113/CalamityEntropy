@@ -7,13 +7,11 @@ namespace CalamityEntropy.Content.Items.Ammo
 {
     public class HiveArrow : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.ResearchUnlockCount = 99;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 14;
             Item.height = 36;
             Item.damage = 2;
@@ -28,8 +26,7 @@ namespace CalamityEntropy.Content.Items.Ammo
             Item.ammo = AmmoID.Arrow;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe(50).AddIngredient(ItemID.BeeWax)
                 .AddTile(TileID.WorkBenches)
                 .Register();

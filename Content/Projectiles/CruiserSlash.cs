@@ -9,8 +9,7 @@ namespace CalamityEntropy.Content.Projectiles
     public class CruiserSlash : ModProjectile
     {
         public bool sPlayerd = false;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Generic;
             Projectile.width = 64;
             Projectile.height = 64;
@@ -23,32 +22,25 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.ArmorPenetration = 1024;
         }
         public int ct = 0;
-        public override void AI()
-        {
+        public override void AI() {
             ct++;
-            if (Main.dedServ)
-            {
+            if (Main.dedServ) {
                 sPlayerd = true;
             }
-            if (ct > 60)
-            {
-                if (!sPlayerd)
-                {
+            if (ct > 60) {
+                if (!sPlayerd) {
                     sPlayerd = true;
-                    if (CEUtils.getDistance(Projectile.Center, Main.LocalPlayer.Center) < 600)
-                    {
+                    if (CEUtils.getDistance(Projectile.Center, Main.LocalPlayer.Center) < 600) {
                         SoundStyle s = new("CalamityEntropy/Assets/Sounds/swing" + Main.rand.Next(1, 4));
                         s.Volume = 1f;
                         s.Pitch = 0.8f;
                         SoundEngine.PlaySound(s, Projectile.Center);
                     }
                 }
-                if (Projectile.ai[2] < 6)
-                {
+                if (Projectile.ai[2] < 6) {
                     Projectile.ai[0] += 100;
                 }
-                else
-                {
+                else {
                     Projectile.ai[1] = Projectile.ai[1] + (Projectile.ai[0] - Projectile.ai[1]) * 0.3f;
                 }
                 Projectile.ai[2]++;
@@ -56,14 +48,11 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.rotation = Projectile.velocity.ToRotation();
         }
 
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            if (Projectile.timeLeft < 16)
-            {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+            if (Projectile.timeLeft < 16) {
                 return false;
             }
             if (ct < 60 || ct > 64)
@@ -71,12 +60,10 @@ namespace CalamityEntropy.Content.Projectiles
             return CEUtils.LineThroughRect(Projectile.Center + Projectile.rotation.ToRotationVector2() * 380, Projectile.Center + Projectile.rotation.ToRotationVector2() * -380, targetHitbox, 12);
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D t1 = CEExtraAssets.lightball;
 
-            if (ct < 60)
-            {
+            if (ct < 60) {
                 SpriteBatch sb = Main.spriteBatch;
                 sb.End();
                 sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);

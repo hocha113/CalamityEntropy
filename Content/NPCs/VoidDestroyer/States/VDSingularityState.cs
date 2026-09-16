@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
+﻿using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using CalamityEntropy.Content.Projectiles.VoidDestroyer;
 using InnoVault.StateMachines;
 using System;
@@ -22,24 +22,20 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         private Beat beat;
         private Vector2 lockedDir = Vector2.UnitX;
 
-        public override void OnEnter(VDStateContext ctx)
-        {
+        public override void OnEnter(VDStateContext ctx) {
             base.OnEnter(ctx);
             beat = Beat.Charge;
         }
 
-        public override IVDState OnUpdate(VDStateContext ctx)
-        {
+        public override IVDState OnUpdate(VDStateContext ctx) {
             Timer++;
             NPC npc = ctx.Npc;
             Vector2 hover = new Vector2(ctx.SideDir * VDDirector.SingHoverOffset.X, VDDirector.SingHoverOffset.Y);
 
-            if (beat == Beat.Charge)
-            {
+            if (beat == Beat.Charge) {
                 float progress = MathHelper.Clamp(Timer / (float)VDDirector.SingChargeFrames, 0f, 1f);
                 //锁向前追瞄,最后 8 帧死向
-                if (Timer <= VDDirector.SingChargeFrames - 8)
-                {
+                if (Timer <= VDDirector.SingChargeFrames - 8) {
                     lockedDir = (ctx.Target.Center - ctx.Owner.CorePos).SafeNormalize(Vector2.UnitX);
                 }
                 //迟滞后撤:pow8,几乎不动 → 最后猛吸
@@ -48,25 +44,20 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 npc.velocity = Vector2.Lerp(npc.velocity, -lockedDir * (1.5f + 10f * late), 0.25f);
                 ctx.CoreGlow = Math.Max(ctx.CoreGlow, progress);
                 ctx.WingPulse = Math.Max(ctx.WingPulse, progress);
-                if (Timer == 1)
-                {
+                if (Timer == 1) {
                     VDVfx.Sound("VoidAnticipation", 0.7f, npc.Center, 3, 1f);
                 }
                 //汇聚流密度随蓄力升,72% 处硬切:尖叫前的吸气
-                if (progress < 0.72f && Timer % 2 == 0)
-                {
+                if (progress < 0.72f && Timer % 2 == 0) {
                     ConvergeSparks(ctx, VDVfx.VoidPurple, 120f, 260f, 0.08f);
-                    if (progress > 0.4f)
-                    {
+                    if (progress > 0.4f) {
                         ConvergeSparks(ctx, VDVfx.VoidPink, 200f, 360f, 0.06f);
                     }
                 }
-                else if (progress >= 0.72f)
-                {
+                else if (progress >= 0.72f) {
                     ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, 0.5f);
                 }
-                if (Timer >= VDDirector.SingChargeFrames)
-                {
+                if (Timer >= VDDirector.SingChargeFrames) {
                     Launch(ctx);
                     beat = Beat.Hold;
                     ResetTimer();
@@ -77,16 +68,14 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 
             DeclareHoldRelative(ctx, hover, 0.08f, 0.25f, 26f);
             int total = VDSingularity.TravelFrames + VDDirector.SingActiveFrames + VDDirector.SingCollapseFrames + VDDirector.SingTail;
-            if (Timer >= total)
-            {
+            if (Timer >= total) {
                 return EndAttack(ctx);
             }
             return null;
         }
 
         /// <summary>放出奇点:初速按到玩家一半距离标定(30 帧 ×0.94 衰减的总程),反冲 6</summary>
-        private void Launch(VDStateContext ctx)
-        {
+        private void Launch(VDStateContext ctx) {
             Vector2 core = ctx.Owner.CorePos;
             float dist = Vector2.Distance(core, ctx.Target.Center);
             //总程 = v0·(1-0.94^30)/(1-0.94) ≈ v0·14,目标飘到中点

@@ -1,4 +1,4 @@
-using InnoVault.StateMachines;
+﻿using InnoVault.StateMachines;
 using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.Apsychos.Core
@@ -30,8 +30,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.Core
         /// 客户端若也调一遍就会把标量提前清零、序号也跟着乱。门开在
         /// <see cref="ApsychosStateBase.NextAttack"/> 上
         /// </summary>
-        public static IVaultState<ApsychosStateContext> Pick(ApsychosStateContext ctx)
-        {
+        public static IVaultState<ApsychosStateContext> Pick(ApsychosStateContext ctx) {
             //对齐原代码:三个标量先无条件清零,再做裁决(计时由新状态的 OnEnter 归零)
             ctx.Num1 = 0f;
             ctx.Num2 = 0f;
@@ -40,24 +39,20 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.Core
             NPC npc = ctx.Npc;
             ApsychosStateIndex next;
 
-            if (npc.HasValidTarget && npc.target.ToPlayer().Distance(npc.Center) > ApsychosDirector.ForceApproachDistance)
-            {
+            if (npc.HasValidTarget && npc.target.ToPlayer().Distance(npc.Center) > ApsychosDirector.ForceApproachDistance) {
                 //隐式行为一:序号不动
                 next = ApsychosStateIndex.MoveToTarget;
             }
-            else if (ctx.Phase == 1 && npc.life < npc.lifeMax * ApsychosDirector.Phase2LifeRatio)
-            {
+            else if (ctx.Phase == 1 && npc.life < npc.lifeMax * ApsychosDirector.Phase2LifeRatio) {
                 //隐式行为二:置 0 而非自增。转阶段结束后的那次 Pick 会把它推到 1
                 next = ApsychosStateIndex.PhaseTrans;
                 ctx.AttackIndex = 0;
             }
-            else
-            {
+            else {
                 //隐式行为三:换表不重置序号,只在越界时归零
                 ApsychosStateIndex[] table = ApsychosDirector.TableFor(ctx.Phase, npc);
                 ctx.AttackIndex++;
-                if (ctx.AttackIndex >= table.Length)
-                {
+                if (ctx.AttackIndex >= table.Length) {
                     ctx.AttackIndex = 0;
                 }
                 next = table[ctx.AttackIndex];

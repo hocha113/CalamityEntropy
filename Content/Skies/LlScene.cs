@@ -9,8 +9,7 @@ namespace CalamityEntropy.Content.Skies
 
         public override bool IsSceneEffectActive(Player player) => Main.LocalPlayer.Entropy().llSky > 0;
 
-        public override void SpecialVisuals(Player player, bool isActive)
-        {
+        public override void SpecialVisuals(Player player, bool isActive) {
             player.ManageSpecialBiomeVisuals("CalamityEntropy:DimensionLens", isActive);
         }
     }

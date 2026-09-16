@@ -1,15 +1,14 @@
 ﻿using CalamityEntropy.Content.Projectiles.monument;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class VoidMonument : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 48;
             Item.DamageType = DamageClass.Melee;
             Item.width = 100;
@@ -33,14 +32,11 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.Entropy().HasCustomStrokeColor = true;
             Item.Entropy().HasCustomNameColor = true;
         }
-        public override bool CanUseItem(Player player)
-        {
+        public override bool CanUseItem(Player player) {
             return player.ownedProjectileCounts[ModContent.ProjectileType<VoidMonumentProj>()] < 1;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_DepthCells, CEID.Item_Lumenyl, CEID.Item_SmoothVoidstone, CEID.Tile_VoidCondenser))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_DepthCells, CEID.Item_Lumenyl, CEID.Item_SmoothVoidstone, CEID.Tile_VoidCondenser)) {
                 CreateRecipe().
                 AddIngredient(CEID.Item_DepthCells, 10).
                 AddIngredient(CEID.Item_Lumenyl, 15).
@@ -57,8 +53,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 Register();
         }
 
-        public override bool MeleePrefix()
-        {
+        public override bool MeleePrefix() {
             return true;
         }
     }

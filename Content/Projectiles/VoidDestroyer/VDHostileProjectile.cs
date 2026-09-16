@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public virtual int DebuffTime => 180;
         public virtual int DefaultTimeLeft => 300;
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.hostile = true;
             Projectile.friendly = false;
             Projectile.tileCollide = false;
@@ -26,29 +25,23 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             SetExtraDefaults();
         }
 
-        public virtual void SetExtraDefaults()
-        {
+        public virtual void SetExtraDefaults() {
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (DebuffType >= 0)
-            {
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) {
+            if (DebuffType >= 0) {
                 target.AddDebuffFixed(DebuffType, DebuffTime);
             }
         }
 
         /// <summary>ai 槽里存的玩家索引,失效时返回 null</summary>
-        protected Player TargetPlayer(int slot)
-        {
+        protected Player TargetPlayer(int slot) {
             int idx = (int)Projectile.ai[slot];
-            if (idx < 0 || idx >= Main.maxPlayers)
-            {
+            if (idx < 0 || idx >= Main.maxPlayers) {
                 return null;
             }
             Player p = Main.player[idx];
-            if (!p.active || p.dead)
-            {
+            if (!p.active || p.dead) {
                 return null;
             }
             return p;

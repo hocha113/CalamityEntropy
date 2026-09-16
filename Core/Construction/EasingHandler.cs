@@ -49,8 +49,7 @@ namespace CalamityEntropy.Core.Construction
         /// </summary>
         /// <param name="t"></param>
         /// <returns></returns>
-        public static float EaseOutBack(float t)
-        {
+        public static float EaseOutBack(float t) {
             if (t == 1)
                 return 1;
             const float c1 = 1.70158f;
@@ -63,8 +62,7 @@ namespace CalamityEntropy.Core.Construction
         /// </summary>
         /// <param name="t"></param>
         /// <returns></returns>
-        public static float EaseInBack(float t)
-        {
+        public static float EaseInBack(float t) {
             if (t == 1)
                 return 1;
             const float c1 = 1.70158f;
@@ -77,8 +75,7 @@ namespace CalamityEntropy.Core.Construction
         /// </summary>
         /// <param name="t"></param>
         /// <returns></returns>
-        public static float EaseInOutSin(float t)
-        {
+        public static float EaseInOutSin(float t) {
             float num = (float)Math.Sin(MathF.PI * t);
             return num;
         }

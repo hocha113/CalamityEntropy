@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.AI;
+﻿using CalamityEntropy.Core.AI;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -82,10 +82,8 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.Core
         /// 客户端不生成
         /// </summary>
         protected static void Shoot(CruiserStateContext ctx, int type, Vector2 pos, Vector2 velocity,
-            float damageMult = 1f, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f)
-        {
-            if (!IsServer)
-            {
+            float damageMult = 1f, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) {
+            if (!IsServer) {
                 return;
             }
             NPC npc = ctx.Npc;

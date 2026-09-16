@@ -1,8 +1,6 @@
 # 如果要从更高级别的目录继承 .editorconfig 设置，请删除以下行
 root = true
 
-# 统一按 UTF-8 保存。系统 ANSI 代码页是 GBK，VS 2022 打开无 BOM 的纯 ASCII 文件会回退为 GBK，
-# 写入中文再保存就会以 GBK 落盘变成乱码；声明 charset 后 VS 保存时强制 UTF-8。
 [*]
 charset = utf-8-bom
 
@@ -10,7 +8,7 @@ charset = utf-8-bom
 [*.{fx,fxh,hlsl}]
 charset = utf-8
 
-# JSON / glTF：严格的 JSON 解析器不接受 BOM
+# JSON / glTF：严格的 JSON 解析器（Node JSON.parse、glTF 加载器等）不接受 BOM
 [*.{json,gltf}]
 charset = utf-8
 
@@ -84,8 +82,8 @@ dotnet_code_quality_unused_parameters = all
 dotnet_remove_unnecessary_suppression_exclusions = none
 
 # 新行首选项
-dotnet_style_allow_multiple_blank_lines_experimental = true
-dotnet_style_allow_statement_immediately_after_block_experimental = false
+dotnet_style_allow_multiple_blank_lines_experimental = false
+dotnet_style_allow_statement_immediately_after_block_experimental = true
 
 #### c# 编码约定 ####
 
@@ -105,12 +103,12 @@ csharp_style_expression_bodied_operators = false:silent
 csharp_style_expression_bodied_properties = true:silent
 
 # 模式匹配首选项
-csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
-csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
-csharp_style_prefer_extended_property_pattern = true:suggestion
-csharp_style_prefer_not_pattern = true:suggestion
-csharp_style_prefer_pattern_matching = true:silent
-csharp_style_prefer_switch_expression = true:suggestion
+csharp_style_pattern_matching_over_as_with_null_check = true
+csharp_style_pattern_matching_over_is_with_cast_check = true
+csharp_style_prefer_extended_property_pattern = true
+csharp_style_prefer_not_pattern = true
+csharp_style_prefer_pattern_matching = true
+csharp_style_prefer_switch_expression = true
 
 # Null 检查首选项
 csharp_style_conditional_delegate_call = true:suggestion
@@ -130,47 +128,47 @@ csharp_style_prefer_primary_constructors = true:suggestion
 csharp_style_prefer_top_level_statements = true:silent
 
 # 表达式级首选项
-csharp_prefer_simple_default_expression = true:suggestion
-csharp_style_deconstructed_variable_declaration = true:suggestion
-csharp_style_implicit_object_creation_when_type_is_apparent = true:suggestion
-csharp_style_inlined_variable_declaration = true:suggestion
-csharp_style_prefer_index_operator = true:suggestion
-csharp_style_prefer_local_over_anonymous_function = true:suggestion
-csharp_style_prefer_null_check_over_type_check = true:suggestion
-csharp_style_prefer_range_operator = true:suggestion
-csharp_style_prefer_tuple_swap = true:suggestion
-csharp_style_prefer_utf8_string_literals = true:suggestion
-csharp_style_throw_expression = true:suggestion
-csharp_style_unused_value_assignment_preference = discard_variable:suggestion
-csharp_style_unused_value_expression_statement_preference = discard_variable:silent
+csharp_prefer_simple_default_expression = true
+csharp_style_deconstructed_variable_declaration = true
+csharp_style_implicit_object_creation_when_type_is_apparent = true
+csharp_style_inlined_variable_declaration = true
+csharp_style_prefer_index_operator = true
+csharp_style_prefer_local_over_anonymous_function = true
+csharp_style_prefer_null_check_over_type_check = true
+csharp_style_prefer_range_operator = true
+csharp_style_prefer_tuple_swap = true
+csharp_style_prefer_utf8_string_literals = true
+csharp_style_throw_expression = true
+csharp_style_unused_value_assignment_preference = discard_variable
+csharp_style_unused_value_expression_statement_preference = discard_variable
 
 # "using" 指令首选项
 csharp_using_directive_placement = outside_namespace:silent
 
 # 新行首选项
-csharp_style_allow_blank_line_after_colon_in_constructor_initializer_experimental = true:silent
-csharp_style_allow_blank_line_after_token_in_arrow_expression_clause_experimental = true:silent
-csharp_style_allow_blank_line_after_token_in_conditional_expression_experimental = true:silent
-csharp_style_allow_blank_lines_between_consecutive_braces_experimental = true:silent
-csharp_style_allow_embedded_statements_on_same_line_experimental = false:suggestion
+csharp_style_allow_blank_line_after_colon_in_constructor_initializer_experimental = true
+csharp_style_allow_blank_line_after_token_in_arrow_expression_clause_experimental = false
+csharp_style_allow_blank_line_after_token_in_conditional_expression_experimental = true
+csharp_style_allow_blank_lines_between_consecutive_braces_experimental = true
+csharp_style_allow_embedded_statements_on_same_line_experimental = false
 
 #### C# 格式规则 ####
 
 # 新行首选项
-csharp_new_line_before_catch = true
+csharp_new_line_before_catch = false
 csharp_new_line_before_else = true
-csharp_new_line_before_finally = true
-csharp_new_line_before_members_in_anonymous_types = true
-csharp_new_line_before_members_in_object_initializers = true
-csharp_new_line_before_open_brace = all
-csharp_new_line_between_query_expression_clauses = true
+csharp_new_line_before_finally = false
+csharp_new_line_before_members_in_anonymous_types = false
+csharp_new_line_before_members_in_object_initializers = false
+csharp_new_line_before_open_brace = types
+csharp_new_line_between_query_expression_clauses = false
 
 # 缩进首选项
 csharp_indent_block_contents = true
 csharp_indent_braces = false
 csharp_indent_case_contents = true
-csharp_indent_case_contents_when_block = true
-csharp_indent_labels = one_less_than_current
+csharp_indent_case_contents_when_block = false
+csharp_indent_labels = flush_left
 csharp_indent_switch_labels = true
 
 # 空格键首选项
@@ -246,38 +244,10 @@ csharp_prefer_system_threading_lock = true:suggestion
 csharp_prefer_static_anonymous_function = true:suggestion
 
 [*.{cs,vb}]
+end_of_line = crlf
 dotnet_style_qualification_for_field = false:silent
 dotnet_style_qualification_for_property = false:silent
 dotnet_style_qualification_for_method = false:silent
 dotnet_style_qualification_for_event = false:silent
-end_of_line = crlf
-indent_size = 4
-tab_width = 4
-dotnet_style_operator_placement_when_wrapping = beginning_of_line
 dotnet_style_require_accessibility_modifiers = for_non_interface_members:silent
 dotnet_code_quality_unused_parameters = all:suggestion
-dotnet_style_readonly_field = true:suggestion
-dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:silent
-dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:silent
-dotnet_style_parentheses_in_other_operators = never_if_unnecessary:silent
-dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:silent
-dotnet_style_allow_multiple_blank_lines_experimental = true:silent
-dotnet_style_allow_statement_immediately_after_block_experimental = false:silent
-dotnet_style_coalesce_expression = true:suggestion
-dotnet_style_null_propagation = true:suggestion
-dotnet_style_prefer_is_null_check_over_reference_equality_method = true:suggestion
-dotnet_style_prefer_auto_properties = true:silent
-dotnet_style_object_initializer = true:suggestion
-dotnet_style_collection_initializer = true:suggestion
-dotnet_style_prefer_simplified_boolean_expressions = true:suggestion
-dotnet_style_prefer_conditional_expression_over_assignment = true:silent
-dotnet_style_prefer_conditional_expression_over_return = true:silent
-dotnet_style_explicit_tuple_names = true:suggestion
-dotnet_style_prefer_inferred_tuple_names = true:suggestion
-dotnet_style_prefer_inferred_anonymous_type_member_names = true:suggestion
-dotnet_style_prefer_compound_assignment = true:suggestion
-dotnet_style_prefer_simplified_interpolation = true:suggestion
-dotnet_style_prefer_collection_expression = when_types_loosely_match:suggestion
-dotnet_style_namespace_match_folder = true:suggestion
-dotnet_style_predefined_type_for_locals_parameters_members = true:silent
-dotnet_style_predefined_type_for_member_access = true:silent

@@ -8,8 +8,7 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
 {
     public class NightProjection : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 44;
             Item.height = 44;
             Item.damage = 70;
@@ -29,12 +28,10 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
             Item.mana = 2;
             Item.DamageType = DamageClass.Magic;
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             // 3.33 没有配方,唯一来源是白金星舰的宝藏袋(已在 EGlobalItem 的灾厄宝袋段补回)。
             // 这条是脱灾期的补偿合成,装灾厄时整条不注册
-            if (CERef.Has)
-            {
+            if (CERef.Has) {
                 return;
             }
             CreateRecipe()
@@ -43,8 +40,7 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
     }

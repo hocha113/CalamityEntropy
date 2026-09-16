@@ -17,8 +17,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_PortalParticle Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -28,15 +27,13 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 30;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             float alpha = Lifetime - Time > FadingTime ? 1 : ((Lifetime - Time) / (float)FadingTime);
             //两圈顺序固定:先外圈原色再内圈0.6白芯,反了白芯会被外圈吞
             //每圈各End/Begin+完整Vortex参数,不是一层shader画两圈
@@ -45,8 +42,7 @@ namespace CalamityEntropy.Content.Particles
             return false;
         }
 
-        public void DrawVortex(SpriteBatch sb, Vector2 pos, Color color, float Size = 1, float glow = 1f)
-        {
+        public void DrawVortex(SpriteBatch sb, Vector2 pos, Color color, float Size = 1, float glow = 1f) {
             //Vortex.fx固定Additive+ZoomMatrix,跟PRT桶Blend对不上,每圈End/Begin一次
             sb.End();
             Effect effect = CEEffectAssets.Vortex;

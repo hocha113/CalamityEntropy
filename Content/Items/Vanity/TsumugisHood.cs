@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
-using Terraria.Audio;
-using Terraria.GameContent.Tile_Entities;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
@@ -13,10 +10,8 @@ namespace CalamityEntropy.Content.Items.Vanity
 {
     public class TsumugisHood : ModItem, IVanitySkin
     {
-        public override void Load()
-        {
-            if (Main.netMode != NetmodeID.Server)
-            {
+        public override void Load() {
+            if (Main.netMode != NetmodeID.Server) {
                 EquipLoader.AddEquipTexture(Mod, $"CalamityEntropy/Content/Items/Vanity/{Name}_Head", EquipType.Head, this);
                 EquipLoader.AddEquipTexture(Mod, $"CalamityEntropy/Content/Items/Vanity/{Name}_Body", EquipType.Body, this);
                 EquipLoader.AddEquipTexture(Mod, $"CalamityEntropy/Content/Items/Vanity/{Name}_Legs", EquipType.Legs, this);
@@ -24,44 +19,35 @@ namespace CalamityEntropy.Content.Items.Vanity
         }
 
         bool NoHoodEnabled = false;
-        public override void SaveData(TagCompound tag)
-        {
-            if(NoHoodEnabled)
+        public override void SaveData(TagCompound tag) {
+            if (NoHoodEnabled)
                 tag.Add("NoHoodEnabled", NoHoodEnabled);
         }
-        public override void LoadData(TagCompound tag)
-        {
-            if(tag.ContainsKey("NoHoodEnabled"))
+        public override void LoadData(TagCompound tag) {
+            if (tag.ContainsKey("NoHoodEnabled"))
                 NoHoodEnabled = tag.GetBool("NoHoodEnabled");
         }
-        public override void NetSend(BinaryWriter writer)
-        {
+        public override void NetSend(BinaryWriter writer) {
             writer.Write(NoHoodEnabled);
         }
-        public override void NetReceive(BinaryReader reader)
-        {
+        public override void NetReceive(BinaryReader reader) {
             NoHoodEnabled = reader.ReadBoolean();
         }
         public override bool CanRightClick() => Main.keyState.PressingShift();
-        public override void RightClick(Player player)
-        {
-            if (Main.keyState.PressingShift())
-            {
+        public override void RightClick(Player player) {
+            if (Main.keyState.PressingShift()) {
                 NoHoodEnabled = !NoHoodEnabled;
                 Item.NetStateChanged();
                 Item.Entropy().strokeColor = Color.White;
             }
         }
-        public override bool ConsumeItem(Player player)
-        {
+        public override bool ConsumeItem(Player player) {
             return false;
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             tooltips.Replace("[D]", Mod.GetLocalization($"Items.{Name}." + (NoHoodEnabled ? "Hide" : "Show")).Value);
         }
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             if (Main.netMode == NetmodeID.Server)
                 return;
             int equipSlotHead = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
@@ -73,8 +59,7 @@ namespace CalamityEntropy.Content.Items.Vanity
             ArmorIDs.Legs.Sets.HidesBottomSkin[equipSlotLegs] = true;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 32;
             Item.height = 36;
             Item.accessory = true;
@@ -86,29 +71,24 @@ namespace CalamityEntropy.Content.Items.Vanity
             Item.Entropy().NameColor = new Color(40, 20, 30);
             Item.Entropy().NameLightColor = Color.Green * 0.7f;
         }
-        public override void UpdateInventory(Player player)
-        {
+        public override void UpdateInventory(Player player) {
             Item.Entropy().strokeColor = Color.Lerp(Item.Entropy().strokeColor, new Color(174, 156, 162), 0.07f);
         }
-        public override void UpdateVanity(Player player)
-        {
+        public override void UpdateVanity(Player player) {
             player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             player.GetModPlayer<VanityModPlayer>().SpecialFlag = NoHoodEnabled ? 1 : 0;
             Item.Entropy().strokeColor = new Color(174, 156, 162);
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            if (!hideVisual)
-            {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
+            if (!hideVisual) {
                 player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
                 player.GetModPlayer<VanityModPlayer>().SpecialFlag = NoHoodEnabled ? 1 : 0;
                 Item.Entropy().strokeColor = new Color(174, 156, 162);
             }
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ItemID.ArcaneCrystal)
                 .AddIngredient(ItemID.Silk, 8)

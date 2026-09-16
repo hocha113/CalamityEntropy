@@ -1,4 +1,4 @@
-using InnoVault.PRT;
+﻿using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -17,8 +17,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             Spin = 0f;
             Bloom = default;
@@ -30,8 +29,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         //ThinSparkle+BloomCircle,映射见PRTSharedAssets的Assets/Particles条目
         public override string Texture => CEUtils.WhiteTexPath;
 
-        public PRT_CritSparkCal Configure(Color bloom, int lifetime, float rotationSpeed = 1f, float bloomScale = 1f, float hueShift = 0f)
-        {
+        public PRT_CritSparkCal Configure(Color bloom, int lifetime, float rotationSpeed = 1f, float bloomScale = 1f, float hueShift = 0f) {
             Bloom = bloom;
             Spin = rotationSpeed;
             BloomScale = bloomScale;
@@ -43,15 +41,13 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 30;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             opacity = (float)Math.Sin(MathHelper.PiOver2 + LifetimeCompletion * MathHelper.PiOver2);
             Velocity *= 0.80f;
             Rotation += Spin * (Velocity.X > 0f ? 1f : -1f) * (LifetimeCompletion > 0.5f ? 1f : 0.5f);
@@ -62,8 +58,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             Lighting.AddLight(Position, Bloom.R / 255f * opacity, Bloom.G / 255f * opacity, Bloom.B / 255f * opacity);
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch) {
             Texture2D sparkTexture = PRTSharedAssets.ThinSparkle.Value;
             Texture2D bloomTexture = PRTSharedAssets.BloomCircle.Value;   //自制BloomCircle,VaultLoaden共享入口
             float properBloomSize = (float)sparkTexture.Height / bloomTexture.Height;

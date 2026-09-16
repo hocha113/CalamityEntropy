@@ -11,8 +11,7 @@ namespace CalamityEntropy.Content.Items.Donator
     {
         public static Dictionary<int, List<int>> ammoList = new();
         public string DonatorName => "永霞伊";
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 40;
             Item.height = 40;
             Item.value = Item.buyPrice(gold: 60);
@@ -20,14 +19,11 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.accessory = true;
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.Entropy().fruitCake = true;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_OverloadedSludge, CEID.Item_PurifiedGel))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_OverloadedSludge, CEID.Item_PurifiedGel)) {
                 CreateRecipe()
                 .AddIngredient(CEID.Item_OverloadedSludge)
                 .AddIngredient(ItemID.WoodenArrow)
@@ -44,56 +40,42 @@ namespace CalamityEntropy.Content.Items.Donator
                 .AddTile(TileID.Anvils)
                 .Register();
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            for (int i = tooltips.Count - 1; i >= 0; i--)
-            {
-                if (tooltips[i].Mod == "Terraria" && tooltips[i].Text.StartsWith("#"))
-                {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
+            for (int i = tooltips.Count - 1; i >= 0; i--) {
+                if (tooltips[i].Mod == "Terraria" && tooltips[i].Text.StartsWith("#")) {
                     bool hide = true;
-                    if (int.TryParse(tooltips[i].Text[1].ToString(), out int n))
-                    {
-                        if (Level() >= n)
-                        { hide = false; }
+                    if (int.TryParse(tooltips[i].Text[1].ToString(), out int n)) {
+                        if (Level() >= n) { hide = false; }
                     }
                     tooltips[i].Text = tooltips[i].Text.Substring(2);
-                    if (hide)
-                    {
+                    if (hide) {
                         tooltips.RemoveAt(i);
                     }
                 }
             }
         }
-        public static int Level()
-        {
+        public static int Level() {
             // 成长阶梯按 progression-map.md 重排：原版节点 + 自有 Boss 线
             int l = 0;
-            if (NPC.downedSlimeKing || NPC.downedBoss1 || NPC.downedBoss2 || CECal.DownedDesertScourge)
-            {
+            if (NPC.downedSlimeKing || NPC.downedBoss1 || NPC.downedBoss2 || CECal.DownedDesertScourge) {
                 l = 1;
             }
-            if (NPC.downedBoss2)
-            {
+            if (NPC.downedBoss2) {
                 l = 2;
             }
-            if (CECal.DownedSlimeGod)
-            {
+            if (CECal.DownedSlimeGod) {
                 l = 3;
             }
-            if (CECal.DownedCryogen || CECal.DownedBrimstoneElemental)
-            {
+            if (CECal.DownedCryogen || CECal.DownedBrimstoneElemental) {
                 l = 4;
             }
-            if (EDownedBosses.downedProphet)
-            {
+            if (EDownedBosses.downedProphet) {
                 l = 5;
             }
-            if (NPC.downedMoonlord)
-            {
+            if (NPC.downedMoonlord) {
                 l = 6;
             }
-            if (CECal.DownedPolterghast)
-            {
+            if (CECal.DownedPolterghast) {
                 l = 7;
             }
             return l;

@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.SpiritFountain.Core;
+﻿using CalamityEntropy.Content.NPCs.SpiritFountain.Core;
 using InnoVault.StateMachines;
 
 namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
@@ -18,11 +18,9 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
     {
         public override SpiritFountainStateIndex StateIndex => SpiritFountainStateIndex.RingFountains;
 
-        protected override IVaultState<SpiritFountainStateContext> RunBody(SpiritFountainStateContext ctx)
-        {
+        protected override IVaultState<SpiritFountainStateContext> RunBody(SpiritFountainStateContext ctx) {
             ctx.Owner.column1.offset.X *= SpiritFountainDirector.ColumnRetractDamp;
-            if (Timer > SpiritFountainDirector.RingFountainsDuration)
-            {
+            if (Timer > SpiritFountainDirector.RingFountainsDuration) {
                 return Advance(ctx, StateIndex);
             }
             return null;

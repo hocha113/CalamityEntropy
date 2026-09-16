@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Cruiser.Core;
+﻿using CalamityEntropy.Content.NPCs.Cruiser.Core;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -14,29 +14,24 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
     {
         public override CruiserStateIndex StateIndex => CruiserStateIndex.QuickDash;
 
-        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx)
-        {
+        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
 
-            if (ctx.ChangeCounter == 0)
-            {
+            if (ctx.ChangeCounter == 0) {
                 npc.rotation = (player.Center - npc.Center).ToRotation();
                 MarkNetUpdate(ctx);
             }
             ctx.ChangeCounter++;
 
-            if (ctx.ChangeCounter > CruiserDirector.QuickDashThrustFrames)
-            {
+            if (ctx.ChangeCounter > CruiserDirector.QuickDashThrustFrames) {
                 npc.velocity *= CruiserDirector.QuickDashChaseDrag;
                 npc.velocity += (player.Center - npc.Center).normalize() * CruiserDirector.QuickDashChaseThrust;
             }
-            else
-            {
+            else {
                 npc.velocity += npc.rotation.ToRotationVector2() * CruiserDirector.QuickDashThrust;
             }
-            if (ctx.ChangeCounter > CruiserDirector.QuickDashDuration)
-            {
+            if (ctx.ChangeCounter > CruiserDirector.QuickDashDuration) {
                 return NextAttack(ctx);
             }
             return null;

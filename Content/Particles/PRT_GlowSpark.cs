@@ -12,8 +12,7 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             //CanPool,grav默认true,复用忘清会继承上一条的无重力状态
             base.Reset();
             Glow = true;
@@ -23,8 +22,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/GlowSpark";
 
         public PRT_GlowSpark Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -34,25 +32,21 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 26;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Opacity = 1f - LifetimeCompletion;   //旧alpha走remaining比例,等价写法
-            if (grav)
-            {
+            if (grav) {
                 Velocity += Vector2.UnitY * 0.2f;
                 Rotation = Velocity.ToRotation();
             }
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Color clr = Color;
             if (!Glow)
                 clr = Lighting.GetColor((int)(Position.X / 16), (int)(Position.Y / 16), clr);
@@ -76,8 +70,7 @@ namespace CalamityEntropy.Content.Particles
         public override bool CanPool => true;
 
         //GlowSpark兄弟,CanPool开着,Reset只登记Glow
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             Glow = true;
         }
@@ -85,8 +78,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/GlowSpark2";
 
         public PRT_GlowSpark2 Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -96,22 +88,19 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 26;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Opacity = 1f - LifetimeCompletion;   //1→0淡出,跟Directing那粒反着
             Velocity += Vector2.UnitY * 0.2f;
             Rotation = Velocity.ToRotation();
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Color clr = Color;
             if (!Glow)
                 clr = Lighting.GetColor((int)(Position.X / 16), (int)(Position.Y / 16), clr);
@@ -139,8 +128,7 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             Glow = true;
             TargetPos = default;
@@ -153,8 +141,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/GlowSpark";
 
         public PRT_GlowSparkDirecting Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -164,8 +151,7 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 200;
@@ -175,14 +161,11 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool ShouldUpdatePosition() => false;   //Position由AI里Lerp算,框架别自动+=Velocity
 
-        public override void AI()
-        {
-            if (followOwner != null)
-            {
+        public override void AI() {
+            if (followOwner != null) {
                 if (ownerLastPos == Vector2.Zero)
                     ownerLastPos = followOwner.Center;
-                else
-                {
+                else {
                     TargetPos += followOwner.Center - ownerLastPos;
                     SpawnPos += followOwner.Center - ownerLastPos;
                 }
@@ -193,8 +176,7 @@ namespace CalamityEntropy.Content.Particles
             Rotation = (TargetPos - SpawnPos).ToRotation();
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Color clr = Color;
             if (!Glow)
                 clr = Lighting.GetColor((int)(Position.X / 16), (int)(Position.Y / 16), clr);

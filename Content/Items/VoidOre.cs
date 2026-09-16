@@ -8,14 +8,12 @@ namespace CalamityEntropy.Content.Items
 {
     public class VoidOre : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.ResearchUnlockCount = 100;
             ItemID.Sets.SortingPriorityMaterials[Type] = 119;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 10;
             Item.height = 10;
             Item.createTile = ModContent.TileType<VoidOreTile>();

@@ -21,12 +21,10 @@ namespace CalamityEntropy.Content.Items.Weapons
         public CEChargeProfile ChargeProfile => CEChargeProfile.HitCount(10, 2.4f, 3f, 2f);
 
         public int atkType = 1;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.staff[Item.type] = true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 60;
             Item.height = 60;
             Item.damage = 30;
@@ -45,15 +43,12 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.DamageType = DamageClass.Melee;
         }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<PFKnifeHeld>(), 0, 0, player.whoAmI, atkType);
 
-            if (CEChargeWeapon.TryConsume(player, Item))
-            {
+            if (CEChargeWeapon.TryConsume(player, Item)) {
                 int p = Projectile.NewProjectile(source, position, velocity, type, damage * 2, knockback, player.whoAmI);
-                if (p >= 0 && p < Main.maxProjectiles)
-                {
+                if (p >= 0 && p < Main.maxProjectiles) {
                     CEChargeWeapon.Empower(p);
                 }
                 Projectile.NewProjectile(source, position, velocity.RotatedBy(0.2f), type, (int)(damage * 0.2f), knockback, player.whoAmI);
@@ -61,14 +56,12 @@ namespace CalamityEntropy.Content.Items.Weapons
                 CEUtils.PlaySound("bne0", 1, position);
                 return false;
             }
-            else
-            {
+            else {
                 CEUtils.PlaySound("HiltAttack", Main.rand.NextFloat(1.5f, 1.72f), position);
                 float r = 0.6f;
                 type = ModContent.ProjectileType<FutureKnifeSpin>();
                 NPC target = CEUtils.FindTarget_HomingProj(player, Main.MouseWorld, 800);
-                for (int i = 0; i < 4; i++)
-                {
+                for (int i = 0; i < 4; i++) {
                     float c = (atkType < 0 ? (Math.Abs(r - ((i / 4f) * r - r * 0.5f))) : (Math.Abs(r - (((8 - i) / 4f) * r - r * 0.5f))));
                     c = 1f / c;
                     Vector2 tp = (target != null ? target.Center : Main.MouseWorld) + CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(260, 300);
@@ -84,15 +77,13 @@ namespace CalamityEntropy.Content.Items.Weapons
     {
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/ProphecyFlyingKnife";
         List<float> odr = new List<float>();
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 12;
 
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
@@ -110,12 +101,10 @@ namespace CalamityEntropy.Content.Items.Weapons
         public bool init = true;
         public bool shoot = true;
 
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             return false;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Player owner = Projectile.GetOwner();
             float MaxUpdateTimes = owner.itemTimeMax * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
@@ -127,49 +116,40 @@ namespace CalamityEntropy.Content.Items.Weapons
             alpha = 1;
             scale = 1f;
             float cr = MathHelper.ToRadians(90);
-            if (progress <= 0.5f)
-            {
+            if (progress <= 0.5f) {
                 Projectile.rotation = Projectile.velocity.ToRotation() + (RotF * -0.5f + CEUtils.Parabola(progress, RotF + cr)) * Projectile.ai[0];
             }
-            else
-            {
+            else {
                 Projectile.rotation = Projectile.velocity.ToRotation() + (RotF * 0.5f + cr - CEUtils.GetRepeatedCosFromZeroToOne(2 * (progress - 0.5f), 1) * cr) * Projectile.ai[0];
             }
             Projectile.Center = Projectile.GetOwner().MountedCenter;
 
 
-            if (odr.Count > 2600)
-            {
+            if (odr.Count > 2600) {
                 odr.RemoveAt(0);
             }
-            if (Projectile.velocity.X > 0)
-            {
+            if (Projectile.velocity.X > 0) {
                 owner.direction = 1;
                 owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - (float)(Math.PI * 0.5f));
             }
-            else
-            {
+            else {
                 owner.direction = -1;
                 owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - (float)(Math.PI * 0.5f));
             }
             owner.heldProj = Projectile.whoAmI;
-            if (counter > MaxUpdateTimes)
-            {
+            if (counter > MaxUpdateTimes) {
                 Projectile.Kill();
             }
             odr.Add(Projectile.rotation);
-            if (odr.Count > 32)
-            {
+            if (odr.Count > 32) {
                 odr.RemoveAt(0);
             }
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Projectile.GetTexture();
 
             int dir = (int)(Projectile.ai[0]);
@@ -183,12 +163,10 @@ namespace CalamityEntropy.Content.Items.Weapons
 
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * (160 * (Projectile.ai[0] == 2 ? 1.24f : 1)) * Projectile.scale * scale, targetHitbox, 64);
         }
-        public override void CutTiles()
-        {
+        public override void CutTiles() {
             Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * (160 * (Projectile.ai[0] == 2 ? 1.24f : 1)) * Projectile.scale * scale, 54, DelegateMethods.CutTiles);
         }
     }
@@ -196,40 +174,31 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class FutureKnifeSpin : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Content/Projectiles/FutureKnife";
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.width = Projectile.height = 36;
             Projectile.timeLeft = 90;
         }
-        public override bool? CanDamage()
-        {
+        public override bool? CanDamage() {
             return Projectile.localAI[0] > 12 ? null : false;
         }
         public Vector2 targetPos { get { return new Vector2(Projectile.ai[0], Projectile.ai[1]); } set { Projectile.ai[0] = value.X; Projectile.ai[1] = value.Y; } }
         public PRT_TrailParticle trail;
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.GetOwner().Entropy().MouseWorldListener = true;
-            if (Projectile.Entropy().FirstFrames)
-            {
+            if (Projectile.Entropy().FirstFrames) {
                 Projectile.velocity = (targetPos - Projectile.Center) / 12f;
             }
-            if (Projectile.localAI[0]++ >= 12)
-            {
+            if (Projectile.localAI[0]++ >= 12) {
                 sAlpha *= 0.8f;
-                if (Projectile.localAI[0] > 20)
-                {
-                    if (Projectile.localAI[0] == 21)
-                    {
+                if (Projectile.localAI[0] > 20) {
+                    if (Projectile.localAI[0] == 21) {
                         NPC target = CEUtils.FindTarget_HomingProj(Projectile, Projectile.Center, 1600);
-                        if (target != null)
-                        {
+                        if (target != null) {
                             float tr = (target.Center - Projectile.Center).ToRotation();
                             Projectile.rotation = tr;
                         }
-                        else
-                        {
+                        else {
                             Projectile.rotation = (Projectile.GetOwner().Entropy().MouseWorld - Projectile.Center).ToRotation();
                         }
                         Projectile.velocity = Projectile.rotation.ToRotationVector2() * 40;
@@ -237,10 +206,8 @@ namespace CalamityEntropy.Content.Items.Weapons
                     }
                     //dedServ时NewParticle给孤儿实例不是null,后面字段赋值照常别挡
                     PRTLoader.NewParticle<PRT_RuneParticle>(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(-0.34f, 0.34f), Color.Aqua, 0.5f).Configure(0.5f, true, PRTDrawModeEnum.AlphaBlend, 0);
-                    if (!Main.dedServ)
-                    {
-                        if (trail == null)
-                        {
+                    if (!Main.dedServ) {
+                        if (trail == null) {
                             //轨迹类maxLength/SameAlpha字段Configure前先赋,PRTDrawMode只能走Configure
                             trail = PRTLoader.NewParticle<PRT_TrailParticle>(Projectile.Center, Vector2.Zero, Color.Aqua * 0.6f, Projectile.scale * 0.6f * (Projectile.IsEmpowered() ? 2 : 1));
                             trail.maxLength = 16;
@@ -250,37 +217,30 @@ namespace CalamityEntropy.Content.Items.Weapons
                         trail.AddPoint(Projectile.Center + Projectile.velocity);
                     }
                 }
-                else
-                {
+                else {
                     Projectile.velocity *= 0;
                     NPC target = CEUtils.FindTarget_HomingProj(Projectile, Projectile.Center, 1600);
-                    if (target != null)
-                    {
+                    if (target != null) {
                         float tr = (target.Center - Projectile.Center).ToRotation();
                         Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, tr, 0.2f, false);
                         Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, tr, 0.04f, true);
                     }
-                    else
-                    {
+                    else {
                         float tr = (Projectile.GetOwner().Entropy().MouseWorld - Projectile.Center).ToRotation();
                         Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, tr, 0.2f, false);
                         Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, tr, 0.04f, true);
                     }
                 }
             }
-            else
-            {
+            else {
                 Projectile.rotation = Projectile.velocity.ToRotation();
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            if (Projectile.localAI[0] <= 12)
-            {
+        public override bool PreDraw(ref Color lightColor) {
+            if (Projectile.localAI[0] <= 12) {
                 Main.spriteBatch.Draw(Projectile.GetTexture(), Projectile.Center - Main.screenPosition, null, Color.White, Main.GlobalTimeWrappedHourly * 64, Projectile.GetTexture().Size().Half(), Projectile.scale, SpriteEffects.None, 0);
             }
-            else
-            {
+            else {
                 Main.EntitySpriteDraw(Projectile.getDrawData(Color.White));
             }
             Main.spriteBatch.UseAdditive();
@@ -291,8 +251,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             return false;
         }
         public float sAlpha = 1;
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             CEUtils.PlaySound("HIT", Main.rand.NextFloat(1.4f, 1.7f), target.Center, volume: 0.6f);
             CEUtils.PlaySound("VividClarityBeamAppear", Main.rand.NextFloat(1f, 1.3f), target.Center, volume: 0.5f);
 

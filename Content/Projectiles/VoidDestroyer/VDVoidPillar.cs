@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.NPCs.VoidDestroyer;
 using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using System;
@@ -22,8 +22,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public int Age => Life - Projectile.timeLeft;
         public float HalfLength => VDDirector.OrbitalPillarLength * 0.5f;
 
-        public override void SetExtraDefaults()
-        {
+        public override void SetExtraDefaults() {
             Projectile.width = 20;
             Projectile.height = 20;
         }
@@ -32,27 +31,22 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public override bool ShouldUpdatePosition() => false;
 
         /// <summary>宽度包络:前 4 帧张开,末 10 帧收拢</summary>
-        public float Envelope()
-        {
+        public float Envelope() {
             float open = MathHelper.Clamp(Age / 4f, 0f, 1f);
             float close = MathHelper.Clamp(Projectile.timeLeft / 10f, 0f, 1f);
             return Math.Min(open, close);
         }
 
-        public override void AI()
-        {
-            if (Projectile.localAI[0] == 0f)
-            {
+        public override void AI() {
+            if (Projectile.localAI[0] == 0f) {
                 Projectile.localAI[0] = 1f;
                 Projectile.timeLeft = Life;
-                if (!Main.dedServ)
-                {
+                if (!Main.dedServ) {
                     CEUtils.PlaySound("void_laser", 0.75f, Projectile.Center, 4, 1f);
                     CEUtils.PlaySound("VoidBomb", 0.9f, Projectile.Center, 4, 0.9f);
                     CEUtils.SetShake(Projectile.Center, 7f, 2200f);
                     VDVfx.Explosion(Projectile.Center, 0.9f, 22);
-                    for (int i = 0; i < 30; i++)
-                    {
+                    for (int i = 0; i < 30; i++) {
                         Vector2 v = new Vector2(Main.rand.NextFloat(-14f, 14f), Main.rand.NextFloat(-9f, -1f));
                         VDVfx.SparkBurst(Projectile.Center, VDVfx.VoidPurple, 1, v.Length(), v.Length(), 30, 0.7f, 1.3f);
                     }
@@ -60,18 +54,15 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
             Projectile.position.X += Projectile.velocity.X;
             Lighting.AddLight(Projectile.Center, VDVfx.VoidPurple.ToVector3() * 1.2f * Envelope());
-            if (!Main.dedServ && Main.rand.NextBool(2))
-            {
+            if (!Main.dedServ && Main.rand.NextBool(2)) {
                 Vector2 pos = Projectile.Center + new Vector2(Main.rand.NextFloat(-Width * 0.4f, Width * 0.4f), Main.rand.NextFloat(-HalfLength * 0.6f, HalfLength * 0.6f));
                 Vector2 v = new Vector2(Math.Sign(pos.X - Projectile.Center.X) * Main.rand.NextFloat(1f, 4f), -Main.rand.NextFloat(2f, 6f));
                 VDVfx.SparkBurst(pos, VDVfx.VoidPink, 1, v.Length(), v.Length(), 16, 0.4f, 0.8f);
             }
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            if (Age < VDDirector.OrbitalPillarDamageDelay || Projectile.timeLeft < 8)
-            {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+            if (Age < VDDirector.OrbitalPillarDamageDelay || Projectile.timeLeft < 8) {
                 return false;
             }
             Vector2 top = Projectile.Center + new Vector2(0, -HalfLength);
@@ -79,8 +70,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             return CEUtils.LineThroughRect(top, bottom, targetHitbox, (int)(Width * 0.8f));
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             float env = Envelope();
             Vector2 top = Projectile.Center + new Vector2(0, -HalfLength);
             VDBeamDraw.Draw(top, Vector2.UnitY, HalfLength * 2f, Width, VDVfx.VoidPurple, VDVfx.CannonCore, env, 1f, Projectile.whoAmI * 0.41f);

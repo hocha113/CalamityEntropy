@@ -1,7 +1,7 @@
-using CalamityEntropy.Content.Items;
-using CalamityEntropy.Content.Particles.CalamityPorts;
+﻿using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,15 +11,13 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class Neltharion : ModItem
     {
         public int UseCount = 0;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 146;
             Item.height = 86;
             Item.damage = 240;
@@ -42,32 +40,25 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public static int AmmoSavedPercent = 90;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
-        public override bool RangedPrefix()
-        {
+        public override bool RangedPrefix() {
             return true;
         }
-        public override bool CanUseItem(Player player)
-        {
+        public override bool CanUseItem(Player player) {
             return player.ownedProjectileCounts[Item.shoot] <= 0;
         }
 
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
-            if (player.ownedProjectileCounts[Item.shoot] > 0)
-            {
+        public override bool CanConsumeAmmo(Item ammo, Player player) {
+            if (player.ownedProjectileCounts[Item.shoot] > 0) {
                 return Main.rand.Next(100) >= AmmoSavedPercent;
             }
             return false;
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             Projectile.NewProjectileDirect(source, position, velocity, Item.shoot, damage, knockback, player.whoAmI, Item.useTime).velocity = (player.mouseWorld() - player.MountedCenter).SafeNormalize(Vector2.Zero);
             return false;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_Kingsbane, CEID.Item_Onyxia, CEID.Item_RuinousSoul))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_Kingsbane, CEID.Item_Onyxia, CEID.Item_RuinousSoul)) {
                 CreateRecipe()
                 .AddIngredient(CEID.Item_Kingsbane)
                 .AddIngredient(CEID.Item_Onyxia)
@@ -91,8 +82,7 @@ namespace CalamityEntropy.Content.Items.Weapons
     {
         private Player Owner => Main.player[Projectile.owner];
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/Neltharion";
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 146;
             Projectile.height = 86;
             Projectile.friendly = true;
@@ -110,60 +100,48 @@ namespace CalamityEntropy.Content.Items.Weapons
         public bool EndShoot = false;
         public int CrystalCounter = 0;
         public int frame = 0;
-        public override void AI()
-        {
+        public override void AI() {
             FireFx--;
             Projectile.StickToPlayer();
             Projectile.position += Projectile.velocity.normalize() * (16 + offset);
             offset *= 0.84f;
             Owner.SetHandRot(Projectile.rotation);
-            if (Owner.channel)
-            {
+            if (Owner.channel) {
                 Projectile.timeLeft = 3;
                 Owner.itemTime = Owner.itemAnimation = 2;
             }
-            else
-            {
+            else {
                 if (WindUp == 0)
                     EndShoot = true;
             }
-            if (WindUp > 0)
-            {
+            if (WindUp > 0) {
                 WindUp--;
-                if (WindUpSoundCounter-- <= 0)
-                {
+                if (WindUpSoundCounter-- <= 0) {
                     frame++;
                     SoundEngine.PlaySound(SoundID.Item23 with { Pitch = (60 - WindUp) / 60f * 1.4f - 0.2f }, Projectile.Center);
                     WindUpSoundCounter = (int)Utils.Remap(WindUp, 60, 0, 19, 4);
                 }
             }
-            else
-            {
-                if (EndShoot)
-                {
-                    if (EndShootC-- > 0)
-                    {
+            else {
+                if (EndShoot) {
+                    if (EndShootC-- > 0) {
                         Projectile.timeLeft = 3;
                         Owner.itemTime = Owner.itemAnimation = 2;
                     }
-                    if (EndShootDelay-- < 0)
-                    {
-                        if (EndShootTime > 0)
-                        {
+                    if (EndShootDelay-- < 0) {
+                        if (EndShootTime > 0) {
                             EndShootTime--;
                             EndShootDelay = 16;
                             offset = -16;
                             CEUtils.PlaySound("gunshot", 1, Projectile.Center);
-                            if (Main.myPlayer == Projectile.owner)
-                            {
+                            if (Main.myPlayer == Projectile.owner) {
                                 Owner.PickAmmo(Owner.HeldItem, out int type, out float sts, out int dmg, out float kb, out int _, true);
                                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), FirePos, Projectile.velocity.normalize() * 46, ModContent.ProjectileType<NeltharionCrystal>(), dmg * 8, kb, Projectile.owner);
                                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), FirePos, Projectile.velocity.normalize().RotatedBy(0.054f) * 42, ModContent.ProjectileType<NeltharionCrystal>(), dmg * 8, kb, Projectile.owner);
                                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), FirePos, Projectile.velocity.normalize().RotatedBy(-0.054f) * 42, ModContent.ProjectileType<NeltharionCrystal>(), dmg * 8, kb, Projectile.owner);
                                 ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Projectile.velocity.normalize(), 8));
                             }
-                            for (int i = 0; i < 80; i++)
-                            {
+                            for (int i = 0; i < 80; i++) {
                                 var ds = Dust.NewDustDirect(FirePos, 0, 0, DustID.CorruptTorch);
                                 ds.position = FirePos + Projectile.velocity.normalize().RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-1, 1);
                                 ds.velocity = Projectile.velocity.normalize().RotatedByRandom(0.1f) * Main.rand.NextFloat(2, 32);
@@ -175,29 +153,23 @@ namespace CalamityEntropy.Content.Items.Weapons
                         }
                     }
                 }
-                else
-                {
+                else {
                     ShootDelay--;
-                    if (ShootDelay <= 0)
-                    {
+                    if (ShootDelay <= 0) {
                         FireFx = 3;
                         ShootDelay += (Projectile.ai[0] / Owner.GetWeaponAttackSpeed(Owner.HeldItem)) * Projectile.MaxUpdates;
                         offset = -10;
                         CEUtils.PlaySound("gunshot", Main.rand.NextFloat(1.4f, 1.6f), Projectile.Center, 32, 0.32f);
-                        if (Main.myPlayer == Projectile.owner)
-                        {
+                        if (Main.myPlayer == Projectile.owner) {
                             Owner.PickAmmo(Owner.HeldItem, out int type, out float sts, out int dmg, out float kb, out int _, false);
 
-                            for (int i = 0; i < 3; i++)
-                            {
+                            for (int i = 0; i < 3; i++) {
                                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), FirePos, Projectile.velocity.normalize().RotatedByRandom(0.05f) * sts, type, dmg, kb, Projectile.owner).ToProj().ArmorPenetration += 60;
                             }
-                            if (CrystalCounter-- < 0)
-                            {
+                            if (CrystalCounter-- < 0) {
                                 CrystalCounter = 3;
                                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), FirePos, Projectile.velocity.normalize().RotatedByRandom(0.05f) * 42, ModContent.ProjectileType<NeltharionCrystal>(), dmg * 8, kb, Projectile.owner);
-                                for (int i = 0; i < 24; i++)
-                                {
+                                for (int i = 0; i < 24; i++) {
                                     var ds = Dust.NewDustDirect(FirePos, 0, 0, DustID.CorruptTorch);
                                     ds.position = FirePos + Projectile.velocity.normalize().RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-1, 1);
                                     ds.velocity = Projectile.velocity.normalize().RotatedByRandom(0.1f) * Main.rand.NextFloat(2, 32);
@@ -206,8 +178,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                                 }
                             }
                         }
-                        for (int i = 0; i < 12; i++)
-                        {
+                        for (int i = 0; i < 12; i++) {
                             var ds = Dust.NewDustDirect(FirePos, 0, 0, DustID.Flare);
                             ds.position = FirePos + Projectile.velocity.normalize().RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-1, 1) - Owner.velocity;
                             ds.velocity = Projectile.velocity.normalize().RotatedByRandom(0.1f) * Main.rand.NextFloat(2, 20) + Owner.velocity;
@@ -225,16 +196,13 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public int FireFx = 0;
         public Vector2 FirePos => Projectile.Center + new Vector2(66, 1 * (Projectile.velocity.X > 0 ? 1 : -1)).RotatedBy(Projectile.rotation);
-        public override bool? CanDamage()
-        {
+        public override bool? CanDamage() {
             return false;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = this.getTextureAlt((frame % 4).ToString());
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, tex.Size() / 2f, Projectile.scale, Projectile.velocity.X > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);
-            if (FireFx > 0)
-            {
+            if (FireFx > 0) {
                 Texture2D tf = this.getTextureAlt("Fire");
                 int Frame = 3 - FireFx;
                 Rectangle rect = CEUtils.GetCutTexRect(tf, 3, Frame, false);
@@ -245,20 +213,16 @@ namespace CalamityEntropy.Content.Items.Weapons
     }
     public class NeltharionCrystal : ModProjectile
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Ranged, false, 1);
             Projectile.timeLeft = 26;
             Projectile.width = Projectile.height = 32;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.velocity *= 0.982f;
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            if (Projectile.localAI[2]++ > 0)
-            {
-                for (float i = 0; i < 1; i += 0.05f)
-                {
+            if (Projectile.localAI[2]++ > 0) {
+                for (float i = 0; i < 1; i += 0.05f) {
                     Dust d = Dust.NewDustDirect(Projectile.Center, 0, 0, DustID.PurpleTorch);
                     Vector2 of = Projectile.velocity.normalize().RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-3, 3);
                     d.noGravity = true;
@@ -274,8 +238,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 }
             }
         }
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             //四连CustomPulse不同贴图,全走Configure现传Assets/Particles路径
             PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.MediumPurple * 1.5f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShineExplosion2", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, 0.14f * Projectile.scale, 27);
             //Neltharion死亡四连CustomPulse,贴图路径全走Configure现传
@@ -286,11 +249,9 @@ namespace CalamityEntropy.Content.Items.Weapons
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             CEUtils.PlaySound("explosion", Main.rand.NextFloat(2.4f, 2.8f), Projectile.Center, 10, 0.5f);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.UseBlendState(BlendState.Additive);
-            for (float i = 0; i <= MathHelper.TwoPi; i += MathHelper.TwoPi / 3f)
-            {
+            for (float i = 0; i <= MathHelper.TwoPi; i += MathHelper.TwoPi / 3f) {
                 for (int i_ = 0; i_ < 4; i_++)
                     Main.EntitySpriteDraw(Projectile.getDrawData(Color.White, null, Projectile.Center + (i + Main.GlobalTimeWrappedHourly * 16f).ToRotationVector2() * 4f));
             }

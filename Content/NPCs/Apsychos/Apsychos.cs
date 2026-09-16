@@ -1,5 +1,4 @@
-using CalamityEntropy.Assets.Register;
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Lores;
 using CalamityEntropy.Content.Items.Weapons;
@@ -11,7 +10,6 @@ using CalamityEntropy.Core.AI;
 using InnoVault;
 using InnoVault.PRT;
 using InnoVault.StateMachines;
-using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
@@ -55,13 +53,11 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
         #endregion
 
         #region 定义
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.npcFrameCount[NPC.type] = 1;
             NPCID.Sets.MustAlwaysDraw[NPC.type] = true;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
-            {
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers() {
                 Scale = 0.44f,
                 PortraitScale = 0.3f,
                 CustomTexturePath = "CalamityEntropy/Assets/BCL/Apsychos",
@@ -74,8 +70,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             NPCID.Sets.NoMultiplayerSmoothingByType[Type] = true;
         }
 
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
-        {
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry) {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheUnderworld,
@@ -83,8 +78,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             });
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             NPC.boss = true;
             NPC.aiStyle = -1;
             NPC.width = 156;
@@ -100,26 +94,21 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             NPC.noGravity = true;
             NPC.dontCountMe = true;
             NPC.timeLeft *= 4;
-            if (!Main.dedServ)
-            {
+            if (!Main.dedServ) {
                 Music = MusicLoader.GetMusicSlot(Mod, "Assets/Sounds/Music/Apsychos");
             }
-            if (Main.getGoodWorld)
-            {
+            if (Main.getGoodWorld) {
                 NPC.scale = 1.25f;
             }
-            if (Main.zenithWorld)
-            {
+            if (Main.zenithWorld) {
                 NPC.scale = 0.7f;
             }
         }
         #endregion
 
         #region 状态机装配
-        private void EnsureContext()
-        {
-            Context ??= new ApsychosStateContext
-            {
+        private void EnsureContext() {
+            Context ??= new ApsychosStateContext {
                 Npc = NPC,
                 Owner = this,
             };
@@ -127,19 +116,16 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             Context.Owner = this;
         }
 
-        private void InitializeStateMachine()
-        {
+        private void InitializeStateMachine() {
             EnsureContext();
-            if (NPC.ai[2] < 1f)
-            {
+            if (NPC.ai[2] < 1f) {
                 NPC.ai[2] = 1f;
             }
             stateMachine = new NpcStateMachine<ApsychosStateContext>(Context);
             CEBossHost.HookStateSwapAdoption(netMotion, stateMachine);
 
             IVaultState<ApsychosStateContext> initial = null;
-            if (VaultUtils.isClient)
-            {
+            if (VaultUtils.isClient) {
                 initial = VaultStateRegistry<ApsychosStateContext>.Create((int)NPC.ai[3]);
             }
             stateMachine.SetInitialState(initial ?? new ApsychosMoveToTargetState());
@@ -147,13 +133,10 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
         #endregion
 
         #region 尾巴实体
-        private void EnsureTail()
-        {
-            if (spawnFlag)
-            {
+        private void EnsureTail() {
+            if (spawnFlag) {
                 spawnFlag = false;
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
+                if (Main.netMode != NetmodeID.MultiplayerClient) {
                     int index = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<ApsychosTail>(), 0, NPC.whoAmI);
                     TailNPCIndex = index;
                     tail = index.ToNPC();
@@ -161,42 +144,34 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
                     NPC.netSpam = 0;
                 }
             }
-            if (TailNPCIndex >= 0)
-            {
+            if (TailNPCIndex >= 0) {
                 tail = TailNPCIndex.ToNPC();
             }
-            if (tail == null)
-            {
+            if (tail == null) {
                 spawnFlag = true;
                 return;
             }
-            if (!tail.active)
-            {
+            if (!tail.active) {
                 spawnFlag = true;
             }
         }
         #endregion
 
-        public override void AI()
-        {
+        public override void AI() {
             EnsureContext();
-            if (stateMachine == null)
-            {
+            if (stateMachine == null) {
                 InitializeStateMachine();
             }
 
             bool client = VaultUtils.isClient;
-            if (client)
-            {
+            if (client) {
                 netMotion.BeginFrame(NPC);
                 CEBossHost.AdoptTimingAtFrameStart(netMotion, stateMachine);
             }
 
             EnsureTail();
-            if (tail == null)
-            {
-                if (client)
-                {
+            if (tail == null) {
+                if (client) {
                     netMotion.EndFrame(NPC);
                 }
                 return;
@@ -208,10 +183,8 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             Context.BeginFrameDefaults();
             //脱战也要走 Update:客户端靠这里的 NetSync 收到权威端切回接近。状态体本身见 RequiresTarget,没目标不跑
             stateMachine.Update();
-            if (disengaging)
-            {
-                if (stateMachine.CurrentState is CEBossStateBase<ApsychosStateContext> state)
-                {
+            if (disengaging) {
+                if (stateMachine.CurrentState is CEBossStateBase<ApsychosStateContext> state) {
                     state.ResetTiming();
                 }
                 UpdateDisengageMotion();
@@ -220,24 +193,20 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             SettleDeclarations();
             UpdateTail();
 
-            if (client)
-            {
+            if (client) {
                 netMotion.EndFrame(NPC);
             }
-            else
-            {
+            else {
                 CEBossHost.Heartbeat(NPC);
             }
         }
 
-        private void FindTarget()
-        {
+        private void FindTarget() {
             NPC.TargetClosest(false);
             targetPlayer = NPC.HasValidTarget ? Main.player[NPC.target] : null;
         }
 
-        private void UpdateContextFacts()
-        {
+        private void UpdateContextFacts() {
             Context.Npc = NPC;
             Context.Owner = this;
             Context.Target = targetPlayer;
@@ -249,44 +218,35 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
         }
 
         /// <summary>脱战只在这里处理。转阶段不打断当前招,等收招时由轮换表接走(对齐原 SetAIStyle)</summary>
-        private void EvaluateGlobalTransitions()
-        {
-            if (Context.TargetValid)
-            {
+        private void EvaluateGlobalTransitions() {
+            if (Context.TargetValid) {
                 deactiveCount = ApsychosDirector.DeactiveFrames;
-                if (disengaging)
-                {
+                if (disengaging) {
                     disengaging = false;
-                    if (stateMachine.CurrentState is CEBossStateBase<ApsychosStateContext> timed)
-                    {
+                    if (stateMachine.CurrentState is CEBossStateBase<ApsychosStateContext> timed) {
                         timed.ResetTiming();
                     }
                 }
                 return;
             }
 
-            if (!disengaging)
-            {
+            if (!disengaging) {
                 disengaging = true;
-                if (!VaultUtils.isClient && stateMachine.CurrentState is not ApsychosMoveToTargetState)
-                {
+                if (!VaultUtils.isClient && stateMachine.CurrentState is not ApsychosMoveToTargetState) {
                     stateMachine.ChangeState(new ApsychosMoveToTargetState());
                 }
             }
-            if (stateMachine.CurrentState is CEBossStateBase<ApsychosStateContext> state)
-            {
+            if (stateMachine.CurrentState is CEBossStateBase<ApsychosStateContext> state) {
                 state.ResetTiming();
             }
             deactiveCount--;
-            if (deactiveCount <= 0 && !VaultUtils.isClient)
-            {
+            if (deactiveCount <= 0 && !VaultUtils.isClient) {
                 NPC.active = false;
                 NPC.netUpdate = true;
             }
         }
 
-        private void UpdateDisengageMotion()
-        {
+        private void UpdateDisengageMotion() {
             Context.Outline *= ApsychosDirector.DisengageGlowDecay;
             Context.TailLight *= ApsychosDirector.DisengageGlowDecay;
             Context.HighLight *= ApsychosDirector.DisengageGlowDecay;
@@ -297,51 +257,40 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
         }
 
         /// <summary>原 AttackPlayer 末尾三个 Flag 的结算:状态没关掉衰减开关就把对应量拉回去</summary>
-        private void SettleDeclarations()
-        {
-            if (disengaging)
-            {
+        private void SettleDeclarations() {
+            if (disengaging) {
                 return;
             }
-            if (Context.DecayTailSpeed && tail != null)
-            {
+            if (Context.DecayTailSpeed && tail != null) {
                 tail.velocity *= ApsychosDirector.TailSpeedDecay;
             }
-            if (Context.DecayOutline)
-            {
+            if (Context.DecayOutline) {
                 Context.Outline *= ApsychosDirector.OutlineDecay;
             }
-            if (Context.DecayTailLight)
-            {
+            if (Context.DecayTailLight) {
                 Context.TailLight *= ApsychosDirector.TailLightDecay;
             }
-            if (Context.DecayHighLight)
-            {
+            if (Context.DecayHighLight) {
                 Context.HighLight *= ApsychosDirector.HighLightDecay;
             }
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => true;
 
-        public override void HitEffect(NPC.HitInfo hit)
-        {
-            if (!Main.dedServ)
-            {
+        public override void HitEffect(NPC.HitInfo hit) {
+            if (!Main.dedServ) {
                 CEUtils.PlaySound("ApsychosHit", Main.rand.NextFloat(0.8f, 1.2f), NPC.Center);
             }
-            if (NPC.life <= 0 && !Main.dedServ)
-            {
+            if (NPC.life <= 0 && !Main.dedServ) {
                 float scale = 360 / 40f;
                 PRTLoader.NewParticle<PRT_ShineParticle>(NPC.Center, Vector2.Zero, Color.Red * 0.8f, scale * 0.8f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
                 PRTLoader.NewParticle<PRT_ShineParticle>(NPC.Center, Vector2.Zero, Color.White * 0.8f, scale * 0.5f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
                 PRTLoader.NewParticle<PRT_CustomPulse>(NPC.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
                 PRTLoader.NewParticle<PRT_CustomPulse>(NPC.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 18);
                 PRTLoader.NewParticle<PRT_CustomPulse>(NPC.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.02f, 15);
-                if (tail != null && segs != null)
-                {
+                if (tail != null && segs != null) {
                     Gore.NewGore(NPC.GetSource_Death(), tail.Center, CEUtils.randomPointInCircle(6), Mod.Find<ModGore>("ApsychosGore1").Type);
-                    foreach (var seg in segs)
-                    {
+                    foreach (var seg in segs) {
                         Gore.NewGore(NPC.GetSource_Death(), seg.Center, CEUtils.randomPointInCircle(6), Mod.Find<ModGore>("ApsychosGore2").Type);
                     }
                 }
@@ -353,14 +302,12 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
         /// 定长块,顺序固定。累加量(朝向)写在计时之后,不改 CEBossNetMotion 的线格式。
         /// 字节数是编译期常量:不许加运行时条件决定写不写某个字段
         /// </summary>
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             EnsureContext();
             int stateId = (int)NPC.ai[3];
             int timer = 0;
             int counter = 0;
-            if (stateMachine?.CurrentState is ApsychosStateBase state)
-            {
+            if (stateMachine?.CurrentState is ApsychosStateBase state) {
                 stateId = state.StateId;
                 timer = state.Timer;
                 counter = state.Counter;
@@ -376,13 +323,11 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             writer.Write(TailNPCIndex);
         }
 
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             EnsureContext();
             int localStateId = -1;
             int localTimer = 0;
-            if (stateMachine?.CurrentState is ApsychosStateBase state)
-            {
+            if (stateMachine?.CurrentState is ApsychosStateBase state) {
                 localStateId = state.StateId;
                 localTimer = state.Timer;
             }
@@ -396,11 +341,9 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             Context.AttackIndex = reader.ReadInt32();
             Context.TailDashReps = reader.ReadInt32();
             TailNPCIndex = reader.ReadInt32();
-            if (TailNPCIndex >= 0)
-            {
+            if (TailNPCIndex >= 0) {
                 tail = TailNPCIndex.ToNPC();
-                if (tail != null && tail.active)
-                {
+                if (tail != null && tail.active) {
                     tail.rotation = tailRot;
                 }
             }
@@ -415,25 +358,21 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
         }
 
         /// <summary>标量当帧计数用:容差内不动,对齐 AdoptTimer 的口径</summary>
-        private static float AdoptScalar(float local, float synced)
-        {
+        private static float AdoptScalar(float local, float synced) {
             return System.Math.Abs(synced - local) > CEBossNetMotion.TimerTolerance ? synced : local;
         }
         #endregion
 
         #region 掉落
-        public override void OnKill()
-        {
+        public override void OnKill() {
             NPC.SetEventFlagCleared(ref EDownedBosses.downedApsychos, -1);
         }
 
-        public override void BossLoot(ref int potionType)
-        {
+        public override void BossLoot(ref int potionType) {
             potionType = ItemID.HealingPotion;
         }
 
-        public override void ModifyNPCLoot(NPCLoot npcLoot)
-        {
+        public override void ModifyNPCLoot(NPCLoot npcLoot) {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<ApsychosBag>()));
             npcLoot.Add(new DropPerPlayerOnThePlayer(ItemID.HealingPotion, 1, 5, 15, new HiddenDropCondition()));
 

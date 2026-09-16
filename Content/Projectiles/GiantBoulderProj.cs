@@ -7,8 +7,7 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class GiantBoulderProj : ModProjectile
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 160;
             Projectile.height = 160;
             Projectile.scale = 1f;
@@ -25,28 +24,22 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.localNPCHitCooldown = 30;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.rotation += Projectile.velocity.X * -0.045f;
             if (Math.Abs(Projectile.velocity.X) < 16)
                 Projectile.velocity.X *= 1.016f;
         }
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            if (Projectile.velocity.X != oldVelocity.X)
-            {
-                if (!Main.dedServ)
-                {
+        public override bool OnTileCollide(Vector2 oldVelocity) {
+            if (Projectile.velocity.X != oldVelocity.X) {
+                if (!Main.dedServ) {
                     ScreenShaker.AddShakeWithRangeFade(new ScreenShaker.ScreenShake(oldVelocity.normalize() * Vector2.UnitX * -6, oldVelocity.Length() * 0.4f), Projectile.Distance(Main.LocalPlayer.Center));
                     CEUtils.PlaySound("RockCrumble", Main.rand.NextFloat(0.6f, 0.75f), Projectile.Center, 16, 0.4f);
                 }
                 Projectile.velocity.X = -oldVelocity.X * 1f;
             }
-            if (Projectile.velocity.Y != oldVelocity.Y)
-            {
-                if (!Main.dedServ)
-                {
+            if (Projectile.velocity.Y != oldVelocity.Y) {
+                if (!Main.dedServ) {
                     ScreenShaker.AddShakeWithRangeFade(new ScreenShaker.ScreenShake(oldVelocity.normalize() * Vector2.UnitY * -6, oldVelocity.Length() * 0.4f), Projectile.Distance(Main.LocalPlayer.Center));
                     for (int i = 0; i < 8; i++)
                         Dust.NewDustDirect(Projectile.Center + new Vector2(Main.rand.NextFloat(-1, 1) * 80 * Projectile.scale, 80 * Projectile.scale), 0, 0, DustID.Stone).scale = 2;
@@ -59,26 +52,21 @@ namespace CalamityEntropy.Content.Projectiles
                 return true;
             return false;
         }
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             CEUtils.PlaySound("RockCrumble", Main.rand.NextFloat(0.4f, 0.5f), Projectile.Center, 160, 0.4f);
             for (int i = 0; i < 64; i++)
                 Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Stone).scale = 2;
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                for (int i = 0; i < 16; i++)
-                {
+            if (Main.netMode != NetmodeID.MultiplayerClient) {
+                for (int i = 0; i < 16; i++) {
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + CEUtils.randomPointInCircle(140), CEUtils.randomPointInCircle(36), ProjectileID.Boulder, 80, 6);
                 }
             }
         }
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) {
             target.velocity += Projectile.velocity * 2;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.velocity += Projectile.velocity * 2 * target.knockBackResist;
         }
     }

@@ -1,9 +1,6 @@
 ﻿using CalamityEntropy.Assets.Register;
-using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using ReLogic.Graphics;
-using System;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.Localization;
@@ -18,8 +15,7 @@ namespace CalamityEntropy.Content.Rarities
 
         public override int GetPrefixedRarity(int offset, float valueMult) => Type;
         public static void Draw(Item Item, SpriteBatch spriteBatch, string text, int X, int Y, float rotation,
-            Vector2 baseScale, float time, DynamicSpriteFont font)
-        {
+            Vector2 baseScale, float time, DynamicSpriteFont font) {
             Texture2D glow = CEExtraAssets.Glow;
             Texture2D particle = CEExtraAssets.Smoke;
             spriteBatch.UseBlendState_UI(BlendState.Additive);
@@ -30,8 +26,7 @@ namespace CalamityEntropy.Content.Rarities
             UnifiedRandom rand = new UnifiedRandom((int)(Item.type.GetHashCode()));
             int particleCount = (int)(font.MeasureString(text).X * 0.08f);
 
-            for (int i = 0; i < particleCount; i++)
-            {
+            for (int i = 0; i < particleCount; i++) {
                 Vector2 vec = new Vector2(rand.NextFloat(), rand.NextFloat());
                 vec.Y = CEUtils.Frac(vec.Y - time * 1f);
                 float alpha = 1;
@@ -44,22 +39,19 @@ namespace CalamityEntropy.Content.Rarities
                 vec.Y = Utils.Remap(vec.Y, 0, 1, -0.4f, 1.1f);
                 Color clr = ParticleColor * 0.76f;
                 Vector2 adjPos = new Vector2(X, Y) + vec * new Vector2(font.MeasureString(text).X, 20);
-                for (int ii = 0; ii < 1; ii++)
-                {
+                for (int ii = 0; ii < 1; ii++) {
                     Color c = clr * alpha * 0.9f;
                     spriteBatch.Draw(particle, adjPos, null, c, rand.NextFloat(MathHelper.TwoPi) + Main.GlobalTimeWrappedHourly * 5f * (rand.NextBool() ? 1 : -1), particle.Size() / 2f, baseScale * new Vector2(0.042f, 0.042f) * rand.NextFloat(0.8f, 1.25f), SpriteEffects.None, 0);
                 }
             }
             spriteBatch.UseBlendState_UI(BlendState.AlphaBlend);
 
-            for (float j = 0; j < MathHelper.TwoPi; j += MathHelper.PiOver4 * 0.5f)
-            {
+            for (float j = 0; j < MathHelper.TwoPi; j += MathHelper.PiOver4 * 0.5f) {
                 spriteBatch.DrawString(font, text, new Vector2(X, Y) + j.ToRotationVector2() * 1.5f, (TextColor * 0.2f));
             }
             spriteBatch.DrawString(font, text, new Vector2(X, Y), TextColor * 1.8f);
             spriteBatch.UseBlendState_UI(BlendState.Additive);
-            for (int i = 0; i < particleCount / 2; i++)
-            {
+            for (int i = 0; i < particleCount / 2; i++) {
                 Vector2 vec = new Vector2(rand.NextFloat(), rand.NextFloat());
                 vec.Y = CEUtils.Frac(vec.Y - time * 1f);
                 float alpha = 1;
@@ -73,8 +65,7 @@ namespace CalamityEntropy.Content.Rarities
                 ParticleColor = new Color(130, 70, 0);
                 Color clr = ParticleColor;
                 Vector2 adjPos = new Vector2(X, Y) + vec * new Vector2(font.MeasureString(text).X, 20);
-                for (int ii = 0; ii < 1; ii++)
-                {
+                for (int ii = 0; ii < 1; ii++) {
                     Color c = clr * alpha * 0.4f;
                     spriteBatch.Draw(particle, adjPos, null, c, rand.NextFloat(MathHelper.TwoPi) + Main.GlobalTimeWrappedHourly * 5f * (rand.NextBool() ? 1 : -1), particle.Size() / 2f, baseScale * new Vector2(0.034f, 0.034f) * rand.NextFloat(0.8f, 1.25f), SpriteEffects.None, 0);
                 }
@@ -83,8 +74,7 @@ namespace CalamityEntropy.Content.Rarities
         }
         public static Color TextColor = new Color(204, 71, 35);
         public static Color ParticleColor = new Color(130, 70, 0);
-        public static void Draw(Item Item, DrawableTooltipLine line)
-        {
+        public static void Draw(Item Item, DrawableTooltipLine line) {
             Draw(Item, Main.spriteBatch, line.Text, line.X, line.Y, 0, line.BaseScale, Main.GlobalTimeWrappedHourly, FontAssets.MouseText.Value);
         }
     }

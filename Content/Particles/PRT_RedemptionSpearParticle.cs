@@ -11,8 +11,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Projectiles/RedemptionSpear";
 
         public PRT_RedemptionSpearParticle Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -22,22 +21,19 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 20;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Opacity = 1f - LifetimeCompletion;
             Velocity *= 0.8f;
             Rotation = Velocity.ToRotation() + MathHelper.PiOver4;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Color clr = Color;
             if (!Glow)
                 clr = Lighting.GetColor((int)(Position.X / 16), (int)(Position.Y / 16), clr);

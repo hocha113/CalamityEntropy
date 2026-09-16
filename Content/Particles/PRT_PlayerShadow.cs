@@ -15,8 +15,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Assets/Extra/white";
 
         public PRT_PlayerShadow Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -26,20 +25,17 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 20;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Opacity = 1f - LifetimeCompletion;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             //就一趟DrawPlayer,没shader没TriangleStrip;PlayerRenderer内部会动SpriteBatch状态
             //return false挡掉框架sb.Draw白图,Texture留着只是堵HasAsset的Warn
             //DrawPlayer自己管SpriteBatch,return false框架不再sb.Draw Texture
@@ -62,8 +58,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Assets/Extra/white";
 
         public PRT_PlayerShadowBlack Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -73,24 +68,20 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 20;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Opacity = (1f - LifetimeCompletion) * alpha;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             //懒建clone涂黑,只建一次不每帧CopyVisuals,武器帧靠下面bodyFrame分支补
             //要开CanPool得Reset里clone=null并重走整套染色,漏了下一个残影顶上一套装备
-            if (clone == null)
-            {
+            if (clone == null) {
                 clone = new Player();
                 clone.CopyVisuals(plr);
                 clone.skinColor = Color.Black;
@@ -100,8 +91,7 @@ namespace CalamityEntropy.Content.Particles
                 clone.shoeColor = Color.Black;
                 clone.hairColor = Color.Black;
                 clone.eyeColor = Color.Red;
-                for (int i = 0; i < clone.dye.Length; i++)
-                {
+                for (int i = 0; i < clone.dye.Length; i++) {
                     if (clone.dye[i].type != ItemID.ShadowDye)
                         clone.dye[i].SetDefaults(ItemID.ShadowDye);
                 }

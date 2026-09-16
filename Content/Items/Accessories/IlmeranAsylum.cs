@@ -1,4 +1,4 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Rarities;
 using InnoVault.PRT;
@@ -11,8 +11,7 @@ namespace CalamityEntropy.Content.Items.Accessories
     public class IlmeranAsylum : ModItem
     {
         public static float DMGMult = 0.10f;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 52;
             Item.height = 52;
             Item.value = Item.buyPrice(platinum: 1);
@@ -20,19 +19,16 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.accessory = true;
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.Entropy().ilmeranAsylum = true;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
         }
     }
     public class IlmeranVortex : ModProjectile
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.friendly = true;
@@ -40,43 +36,33 @@ namespace CalamityEntropy.Content.Items.Accessories
             Projectile.light = 0.2f;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.timeLeft = 3;
             Projectile.rotation += 0.24f;
             float mc = 0;
             float max = 0;
             bool j = true;
-            foreach (Projectile p in Main.ActiveProjectiles)
-            {
+            foreach (Projectile p in Main.ActiveProjectiles) {
                 if (!p.friendly)
                     continue;
-                if (p.type == Projectile.type && p.owner == Projectile.owner)
-                {
+                if (p.type == Projectile.type && p.owner == Projectile.owner) {
                     max++;
-                    if (p.whoAmI != Projectile.whoAmI)
-                    {
-                        if (j)
-                        {
+                    if (p.whoAmI != Projectile.whoAmI) {
+                        if (j) {
                             mc++;
                         }
                     }
                     else { j = false; }
                 }
-                else
-                {
-                    if (p.damage > 0 && p.owner == Projectile.owner && p.Hitbox.Intersects(Projectile.Hitbox))
-                    {
-                        if (!p.Entropy().IlmeranEnhanced)
-                        {
-                            if (Projectile.ai[0] < 1)
-                            {
+                else {
+                    if (p.damage > 0 && p.owner == Projectile.owner && p.Hitbox.Intersects(Projectile.Hitbox)) {
+                        if (!p.Entropy().IlmeranEnhanced) {
+                            if (Projectile.ai[0] < 1) {
                                 Projectile.ai[0] += 0.1f;
                             }
                             p.Entropy().IlmeranEnhanced = true;
                             var target = CEUtils.FindTarget_HomingProj(p, p.Center, 6000);
-                            if (target != null)
-                            {
+                            if (target != null) {
                                 p.velocity = new Vector2(p.velocity.Length(), 0).RotatedBy((target.Center - p.Center).ToRotation());
                             }
                             //HadCircle2链式圆环,Configure里NonPremultiplied是旧spawn原值
@@ -91,44 +77,36 @@ namespace CalamityEntropy.Content.Items.Accessories
                 }
             }
             var targetz = CEUtils.FindTarget_HomingProj(Projectile, Projectile.Center, 6000);
-            if (Projectile.ai[0] >= 1 && targetz != null)
-            {
+            if (Projectile.ai[0] >= 1 && targetz != null) {
                 Vector2 targetPos = targetz.Center;
                 Projectile.velocity += (targetPos - Projectile.Center).normalize() * 1;
                 Projectile.velocity *= 0.98f;
             }
-            else
-            {
+            else {
                 Vector2 targetPos = Projectile.GetOwner().Center + (mc * (MathHelper.TwoPi / max)).ToRotationVector2().RotatedBy(Main.GameUpdateCount * 0.03f) * 320;
                 Projectile.velocity += (targetPos - Projectile.Center).normalize() * 3.6f;
                 Projectile.velocity *= 0.94f;
-                if (CEUtils.getDistance(Projectile.Center, targetPos) > 1600)
-                {
+                if (CEUtils.getDistance(Projectile.Center, targetPos) > 1600) {
                     Projectile.Center = targetPos;
                 }
             }
-            if (!Projectile.GetOwner().Entropy().ilmeranAsylum)
-            {
+            if (!Projectile.GetOwner().Entropy().ilmeranAsylum) {
                 Projectile.Kill();
             }
             Projectile.scale = 1 + Projectile.ai[0];
         }
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             PRTLoader.NewParticle<PRT_HadCircle2>(Projectile.Center, Vector2.Zero, Color.SkyBlue, 0.4f)
                 .Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0).CScale = 0.8f;
         }
-        public override bool? CanHitNPC(NPC target)
-        {
-            if (Projectile.ai[0] < 1)
-            {
+        public override bool? CanHitNPC(NPC target) {
+            if (Projectile.ai[0] < 1) {
                 return false;
             }
             return null;
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.End();
             Effect effect = CEEffectAssets.Vortex;
             effect.Parameters["Center"].SetValue(new Vector2(0.5f, 0.5f));

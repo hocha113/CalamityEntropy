@@ -9,16 +9,14 @@ namespace CalamityEntropy.Content.Items.Vanity.KM
     public class BloodstainedShirt : ModItem, IDonatorItem
     {
         public string DonatorName => "黯月殇梦";
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 48;
             Item.height = 48;
             Item.value = Item.buyPrice(gold: 20);
             Item.rare = ItemRarityID.Pink;
             Item.vanity = true;
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe().AddIngredient(ItemID.Silk, 10)
                 .AddIngredient(ItemID.Ruby, 2)
                 .AddTile(TileID.Loom)

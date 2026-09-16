@@ -10,12 +10,10 @@ namespace CalamityEntropy.Content.Projectiles
     public class Tail : ModProjectile
     {
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
@@ -24,13 +22,11 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.height = 2;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.timeLeft = 3;
             var player = Projectile.owner.ToPlayer();
             Projectile.Center = player.MountedCenter + Vector2.UnitY * player.gfxOffY + new Vector2(-8 * player.direction, 4).RotatedBy(player.fullRotation);
-            if (rope == null)
-            {
+            if (rope == null) {
                 rope = new Rope(Projectile.Center, 6, 8, new Vector2(0, 0.26f), 0.25f, 26, true);
             }
             rope.Start = Projectile.Center - player.velocity / 4 * 3;
@@ -44,10 +40,8 @@ namespace CalamityEntropy.Content.Projectiles
             var points = rope.GetPoints();
             odp.Clear();
             odp.Add(points[0]);
-            for (int i = 1; i < points.Count; i++)
-            {
-                for (float j = 0.25f; j <= 1f; j += 0.25f)
-                {
+            for (int i = 1; i < points.Count; i++) {
+                for (float j = 0.25f; j <= 1f; j += 0.25f) {
                     odp.Add(Vector2.Lerp(points[i - 1], points[i], j));
                 }
 
@@ -55,15 +49,13 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public Rope rope = null;
         public List<Vector2> odp = new List<Vector2>();
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Color cl = Color.Lerp(Color.Black, Color.White, Projectile.ai[0] / 30f);
             float c = 0;
 
 
             c = 0;
-            if (odp.Count > 1)
-            {
+            if (odp.Count > 1) {
                 Main.spriteBatch.End();
 
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
@@ -75,8 +67,7 @@ namespace CalamityEntropy.Content.Projectiles
                 ve.Add(new ColoredVertex(odp[0] - Main.screenPosition + (odp[1] - odp[0]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 6,
                       new Vector3((float)0, 0, 1),
                       b));
-                for (int i = 1; i < odp.Count; i++)
-                {
+                for (int i = 1; i < odp.Count; i++) {
 
 
                     c += 1f / odp.Count;
@@ -91,8 +82,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                 SpriteBatch sb = Main.spriteBatch;
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     Texture2D tx = TextureAssets.Projectile[Projectile.type].Value;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);

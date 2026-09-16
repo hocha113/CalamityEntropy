@@ -17,8 +17,7 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             Glow = true;
             spawnColor = new Color(190, 190, 255);
@@ -32,8 +31,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/AbyssalLine";
 
         public PRT_AbyssalLine Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -43,15 +41,13 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 50;   //旧默认50,也可能被AI提前Kill
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             lx *= 0.88f;
             xscale += xadd;
             xadd *= xdec;
@@ -61,8 +57,7 @@ namespace CalamityEntropy.Content.Particles
                 Kill();
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             //画的是ACircle拉成条带不是AbyssalLine贴图,双层叠出刃光
             float remaining = 1f - LifetimeCompletion;   //旧lifePercent 1→0剩余,Completion反的,这里减回来
             Texture2D tex = PRTExtraTextures.ACircle.Value;

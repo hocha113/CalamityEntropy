@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Tiles;
+﻿using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -7,8 +7,7 @@ namespace CalamityEntropy.Content.Items
 {
     public class VoidDestroyerRelic : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.DefaultToPlaceableTile(ModContent.TileType<VoidDestroyerRelicTile>(), 0);
 
             Item.width = 30;

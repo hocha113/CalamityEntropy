@@ -9,8 +9,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 {
     public class ShadowOfVoid : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 2480;
             Item.DamageType = DamageClass.Magic;
             Item.width = 40;
@@ -30,12 +29,10 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.rare = ModContent.RarityType<VoidPurple>();
         }
 
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<VoidAnnihilate>())
                 .AddIngredient(ModContent.ItemType<Silence>())

@@ -11,12 +11,10 @@ namespace CalamityEntropy.Content.Projectiles
     {
         public float rot { get { return Projectile.rotation; } set { Projectile.rotation = value; } }
         public Vector2 Center { get { return Projectile.Center; } set { Projectile.Center = value; } }
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Magic;
             Projectile.width = 42;
             Projectile.height = 42;
@@ -32,8 +30,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public List<Vector2> odp = new List<Vector2>();
         public List<float> odr = new List<float>();
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             EGlobalNPC.AddVoidTouch(target, 90, 3.6f, 1000, 16);
         }
 
@@ -41,14 +38,11 @@ namespace CalamityEntropy.Content.Projectiles
         public bool spawnSeg = true;
         public List<WyrmSeg> segs;
 
-        public override void AI()
-        {
+        public override void AI() {
             Player player = Projectile.GetOwner();
             player.itemTime = player.itemAnimation = 3;
-            if (Main.GameUpdateCount % 9 == 0)
-            {
-                if (!player.CheckMana(player.HeldItem.mana, true))
-                {
+            if (Main.GameUpdateCount % 9 == 0) {
+                if (!player.CheckMana(player.HeldItem.mana, true)) {
                     player.channel = false;
                     if (Projectile.timeLeft > 1)
                         Projectile.timeLeft = 1;
@@ -58,53 +52,43 @@ namespace CalamityEntropy.Content.Projectiles
 
             }
             player.Entropy().MouseWorldListener = true;
-            if (target == null)
-            {
+            if (target == null) {
                 Vector2 t = player.Entropy().MouseWorld + new Vector2(0, -120);
-                if (CEUtils.getDistance(t, Projectile.Center) > 300)
-                {
+                if (CEUtils.getDistance(t, Projectile.Center) > 300) {
                     Projectile.velocity *= 0.96f;
                     Projectile.velocity += (t - Projectile.Center).SafeNormalize(Vector2.Zero) * 0.6f;
                 }
             }
-            else
-            {
+            else {
                 AttackTarget(target);
             }
-            if (spawnSeg)
-            {
+            if (spawnSeg) {
                 spawnSeg = false;
                 segs = new List<WyrmSeg>();
                 iWyrmSeg seg = this;
                 List<int> spacings = new List<int>() { 28, 30, 32, 32, 32, 34, 18 };
-                for (int i = 0; i < 7; i++)
-                {
+                for (int i = 0; i < 7; i++) {
                     WyrmSeg spawn = new WyrmSeg() { Center = Projectile.Center, follow = seg, rotC = 0.06f, spacing = spacings[i] };
                     segs.Add(spawn);
                     seg = spawn;
                 }
             }
             Projectile.Center += Projectile.velocity;
-            foreach (WyrmSeg seg in segs)
-            {
+            foreach (WyrmSeg seg in segs) {
                 seg.update();
             }
             Projectile.Center -= Projectile.velocity;
             Projectile.localAI[0]++;
-            if (player.channel)
-            {
+            if (player.channel) {
                 Projectile.timeLeft = 3;
             }
 
             Vector2 orgPos = Projectile.Center;
             Projectile.Center = player.Entropy().MouseWorld;
             target = null;
-            foreach (NPC n in Main.ActiveNPCs)
-            {
-                if (!n.friendly && n.CanBeChasedBy(Projectile))
-                {
-                    if (target == null || target.Distance(player.Entropy().MouseWorld) > n.Distance(player.Entropy().MouseWorld))
-                    {
+            foreach (NPC n in Main.ActiveNPCs) {
+                if (!n.friendly && n.CanBeChasedBy(Projectile)) {
+                    if (target == null || target.Distance(player.Entropy().MouseWorld) > n.Distance(player.Entropy().MouseWorld)) {
                         target = n;
                     }
                 }
@@ -116,45 +100,37 @@ namespace CalamityEntropy.Content.Projectiles
         internal ref float Time => ref base.Projectile.ai[0];
 
         internal ref float FlyAcceleration => ref base.Projectile.ai[1];
-        internal void AttackTarget(NPC target)
-        {
+        internal void AttackTarget(NPC target) {
             float num = 0.18f;
             Vector2 center = target.Center;
             float num2 = base.Projectile.Distance(center);
-            if (base.Projectile.Distance(center) > 725f)
-            {
+            if (base.Projectile.Distance(center) > 725f) {
                 center += (Time % 30f / 30f * (MathF.PI * 2f)).ToRotationVector2() * 145f;
                 num2 = base.Projectile.Distance(center);
                 num *= 2.5f;
             }
 
-            if (num2 > 1500f && Time > 45f)
-            {
+            if (num2 > 1500f && Time > 45f) {
                 num = MathHelper.Min(6f, FlyAcceleration + 1f);
             }
 
             FlyAcceleration = MathHelper.Lerp(FlyAcceleration, num, 0.26f);
             float num3 = Vector2.Dot(base.Projectile.velocity.SafeNormalize(Vector2.Zero), base.Projectile.SafeDirectionTo(center));
-            if (num2 > 320f)
-            {
+            if (num2 > 320f) {
                 float num4 = base.Projectile.velocity.Length();
-                if (num4 < 23f)
-                {
+                if (num4 < 23f) {
                     num4 += 0.08f;
                 }
 
-                if (num4 > 32f)
-                {
+                if (num4 > 32f) {
                     num4 -= 0.08f;
                 }
 
-                if (num3 < 0.85f && num3 > 0.5f)
-                {
+                if (num3 < 0.85f && num3 > 0.5f) {
                     num4 += 6f;
                 }
 
-                if (num3 < 0.5f && num3 > -0.7f)
-                {
+                if (num3 < 0.5f && num3 > -0.7f) {
                     num4 -= 10f;
                 }
 
@@ -163,20 +139,16 @@ namespace CalamityEntropy.Content.Projectiles
             }
             Projectile.ai[2]--;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            foreach (WyrmSeg seg in segs)
-            {
-                if (seg.Center.getRectCentered(36, 36).Intersects(targetHitbox))
-                {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+            foreach (WyrmSeg seg in segs) {
+                if (seg.Center.getRectCentered(36, 36).Intersects(targetHitbox)) {
                     return true;
                 }
             }
             return base.Colliding(projHitbox, targetHitbox);
         }
         public Texture2D tex => Projectile.GetTexture();
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Rectangle head = new Rectangle(162, 0, 124, 80);
             Vector2 ohead = new Vector2(72, 54);
             Rectangle seg1 = new Rectangle(124, 0, 38, 80);
@@ -205,14 +177,11 @@ namespace CalamityEntropy.Content.Projectiles
 
             return false;
         }
-        public void DrawSeg(Vector2 pos, Rectangle frame, float rot, Vector2 origin, Color color)
-        {
-            if (Projectile.velocity.X > 0)
-            {
+        public void DrawSeg(Vector2 pos, Rectangle frame, float rot, Vector2 origin, Color color) {
+            if (Projectile.velocity.X > 0) {
                 Main.EntitySpriteDraw(tex, pos - Main.screenPosition, frame, color, rot, origin, Projectile.scale, SpriteEffects.None);
             }
-            else
-            {
+            else {
                 Main.EntitySpriteDraw(tex, pos - Main.screenPosition, frame, color, rot, new Vector2(origin.X, tex.Height - origin.Y), Projectile.scale, SpriteEffects.FlipVertically);
             }
         }

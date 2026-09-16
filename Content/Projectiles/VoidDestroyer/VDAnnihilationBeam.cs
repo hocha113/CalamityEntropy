@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.NPCs.VoidDestroyer;
 using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using Microsoft.Xna.Framework.Graphics;
@@ -28,21 +28,17 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public Vector2 Dir => Angle.ToRotationVector2();
         public float Width => VDDirector.CannonBeamWidth * (Main.getGoodWorld ? 1.3f : 1f);
 
-        private VoidDestroyerNPC Owner
-        {
-            get
-            {
+        private VoidDestroyerNPC Owner {
+            get {
                 int idx = (int)Projectile.ai[0];
-                if (idx < 0 || idx >= Main.maxNPCs || !Main.npc[idx].active || Main.npc[idx].ModNPC is not VoidDestroyerNPC boss)
-                {
+                if (idx < 0 || idx >= Main.maxNPCs || !Main.npc[idx].active || Main.npc[idx].ModNPC is not VoidDestroyerNPC boss) {
                     return null;
                 }
                 return boss;
             }
         }
 
-        public override void SetExtraDefaults()
-        {
+        public override void SetExtraDefaults() {
             Projectile.width = 30;
             Projectile.height = 30;
         }
@@ -50,29 +46,24 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public override bool ShouldUpdatePosition() => false;
 
         /// <summary>宽度包络:4 帧张满,末 12 帧收拢</summary>
-        public float Envelope()
-        {
+        public float Envelope() {
             float open = MathHelper.Clamp(Age / 4f, 0f, 1f);
             float close = MathHelper.Clamp(Projectile.timeLeft / 12f, 0f, 1f);
             return Math.Min(open, close);
         }
 
-        public override void AI()
-        {
-            if (Projectile.localAI[0] == 0f)
-            {
+        public override void AI() {
+            if (Projectile.localAI[0] == 0f) {
                 Projectile.localAI[0] = 1f;
                 Projectile.timeLeft = SweepFrames;
-                if (!Main.dedServ)
-                {
+                if (!Main.dedServ) {
                     CEUtils.PlaySound("VoidAttack", 0.55f, Projectile.Center, 2, 1.3f);
                     CEUtils.PlaySound("void_laser", 0.5f, Projectile.Center, 2, 1.1f);
                     CEUtils.SetShake(Projectile.Center, 12f, 4000f);
                 }
             }
             VoidDestroyerNPC boss = Owner;
-            if (boss == null)
-            {
+            if (boss == null) {
                 Projectile.Kill();
                 return;
             }
@@ -84,19 +75,15 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 
             //压场:暗角 + 低频震屏 + 循环音
             VDScreenFx.ReportVignette(VDDirector.CannonVignette * Envelope());
-            if (!Main.dedServ)
-            {
-                if (Age % 8 == 0)
-                {
+            if (!Main.dedServ) {
+                if (Age % 8 == 0) {
                     CEUtils.SetShake(boss.NPC.Center, 3f, 3200f);
                 }
-                if (Age % 20 == 10)
-                {
+                if (Age % 20 == 10) {
                     CEUtils.PlaySound("void_laser", 0.6f, Projectile.Center, 3, 0.8f);
                 }
                 //沿射线飞散的火花
-                for (int i = 0; i < 2; i++)
-                {
+                for (int i = 0; i < 2; i++) {
                     Vector2 pos = Projectile.Center + dir * Main.rand.NextFloat(80f, VDDirector.CannonBeamLength * 0.7f);
                     Vector2 v = dir.RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-6f, 6f) + dir * Main.rand.NextFloat(4f, 12f);
                     VDVfx.SparkBurst(pos, VDVfx.VoidPink, 1, v.Length(), v.Length(), 18, 0.4f, 0.9f);
@@ -104,8 +91,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
 
             //弹雨:沿射线随机一点向两侧各落一发(服务端)
-            if (IsServer && Age % VDDirector.CannonRainInterval == 5 && Projectile.timeLeft > 14)
-            {
+            if (IsServer && Age % VDDirector.CannonRainInterval == 5 && Projectile.timeLeft > 14) {
                 int dmg = (int)Math.Max(1f, Projectile.damage * VDDirector.DmgVoidBolt / (float)VDDirector.DmgAnnihilationBeam);
                 Vector2 pos = Projectile.Center + dir * Main.rand.NextFloat(300f, 2000f);
                 Vector2 side = dir.RotatedBy(MathHelper.PiOver2);
@@ -114,17 +100,14 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            if (Age < 3 || Envelope() < 0.5f)
-            {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+            if (Age < 3 || Envelope() < 0.5f) {
                 return false;
             }
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Dir * VDDirector.CannonBeamLength, targetHitbox, (int)(Width * 0.8f));
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             float env = Envelope();
             VDBeamDraw.Draw(Projectile.Center, Dir, VDDirector.CannonBeamLength, Width, VDVfx.VoidPurple, VDVfx.CannonCore, env, 1f, 0.77f);
             //炮口爆闪:出手前 6 帧最亮

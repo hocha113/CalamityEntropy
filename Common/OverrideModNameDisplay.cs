@@ -19,22 +19,18 @@ namespace CalamityEntropy.Common
         private static Asset<Texture2D> NameMaskTex;
         [VaultLoaden("CalamityEntropy/Assets/Effects/NameEffect", AssetMode.EffectValue, "EnchantedPass")]
         private static Effect NameEffectShader;
-        public override void Load()
-        {
-            if (Main.dedServ)
-            {
+        public override void Load() {
+            if (Main.dedServ) {
                 return;
             }
-            Main.QueueMainThreadAction(delegate ()
-            {
+            Main.QueueMainThreadAction(delegate () {
                 string text = base.Mod.DisplayName;
                 Point size = Utils.ToPoint(FontAssets.MouseText.Value.MeasureString(text) + new Vector2(4, 4));
                 _renderTarget = new RenderTarget2D(Main.graphics.GraphicsDevice, size.X, size.Y);
                 Main.spriteBatch.Begin();
                 Main.graphics.GraphicsDevice.SetRenderTarget(_renderTarget);
                 Main.graphics.GraphicsDevice.Clear(Color.Transparent);
-                for (float i = 0; i < 360; i += 60)
-                {
+                for (float i = 0; i < 360; i += 60) {
                     Main.spriteBatch.DrawString(FontAssets.MouseText.Value, text, new Vector2(2, 2) + MathHelper.ToRadians(i).ToRotationVector2() * 1, new Color(0, 0, 255), 0f, Vector2.Zero, Vector2.One, SpriteEffects.None, 0);
                 }
                 Main.spriteBatch.DrawString(FontAssets.MouseText.Value, text, new Vector2(2, 2), new Color(220, 220, 255), 0f, Vector2.Zero, Vector2.One, SpriteEffects.None, 0);
@@ -43,26 +39,21 @@ namespace CalamityEntropy.Common
             });
             _uiModItemType = Enumerable.First<Type>(typeof(Main).Assembly.GetTypes(), (Type t) => t.Name == "UIModItem");
             _drawMethod = _uiModItemType.GetMethod("Draw", (BindingFlags)20);
-            if (_drawMethod != null)
-            {
+            if (_drawMethod != null) {
                 MonoModHooks.Add(_drawMethod, new Action<DrawDelegate, object, SpriteBatch>(this.DrawHook));
             }
         }
-        private void DrawHook(DrawDelegate orig, object uiModItem, SpriteBatch sb)
-        {
+        private void DrawHook(DrawDelegate orig, object uiModItem, SpriteBatch sb) {
             orig(uiModItem, sb);
-            if (_renderTarget == null || NameMaskTex == null || NameEffectShader == null)
-            {
+            if (_renderTarget == null || NameMaskTex == null || NameEffectShader == null) {
                 return;
             }
             FieldInfo field = _uiModItemType.GetField("_modName", (BindingFlags)36);
             UIText modName = ((field != null) ? field.GetValue(uiModItem) : null) as UIText;
-            if (modName == null)
-            {
+            if (modName == null) {
                 return;
             }
-            if (!modName.Text.Contains(Mod.DisplayName))
-            {
+            if (!modName.Text.Contains(Mod.DisplayName)) {
                 return;
             }
             var texture = NameMaskTex.Value;

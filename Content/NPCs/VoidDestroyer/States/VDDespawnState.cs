@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
+﻿using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -16,15 +16,13 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         public override bool RunsDuringBlink => true;
         public override int TimeoutFrames => int.MaxValue;
 
-        public override void OnEnter(VDStateContext ctx)
-        {
+        public override void OnEnter(VDStateContext ctx) {
             base.OnEnter(ctx);
             ctx.BlinkTimer = 0;
             ctx.QueuedChainState = -1;
         }
 
-        public override IVDState OnUpdate(VDStateContext ctx)
-        {
+        public override IVDState OnUpdate(VDStateContext ctx) {
             Timer++;
             NPC npc = ctx.Npc;
             ctx.ArenaActive = false;
@@ -33,13 +31,11 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             float fade = MathHelper.Clamp(1f - Timer / (float)VDDirector.NoTargetDespawnFrames, 0f, 1f);
             DeclareAlpha(ctx, fade, 1f);
 
-            if (ctx.TargetValid)
-            {
+            if (ctx.TargetValid) {
                 ctx.AttackCooldown = VDDirector.AttackCooldown(ctx.Phase);
                 return new VDHubState();
             }
-            if (Timer > VDDirector.NoTargetDespawnFrames && IsServer)
-            {
+            if (Timer > VDDirector.NoTargetDespawnFrames && IsServer) {
                 npc.active = false;
                 npc.netUpdate = true;
             }

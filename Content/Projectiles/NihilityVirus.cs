@@ -20,13 +20,11 @@ namespace CalamityEntropy.Content.Projectiles
         private List<float> odr = new List<float>();
         private List<NPC> targets = new List<NPC>();
         public LoopSound sound = null;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Magic;
             Projectile.width = 78;
             Projectile.height = 78;
@@ -40,96 +38,78 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.ArmorPenetration = 64;
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return true;
         }
 
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             if (targets.Contains(target)) return null;
             return false;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff(ModContent.BuffType<VoidVirus>(), 360);
             CEUtils.PlaySound("nvspark", Main.rand.NextFloat(0.6f, 1.4f), target.Center, 4, 1f);
         }
 
-        public override bool PreUpdate()
-        {
-            if (lightnings.Count == 0)
-            {
-                for (int i = 0; i < 9; i++)
-                {
+        public override bool PreUpdate() {
+            if (lightnings.Count == 0) {
+                for (int i = 0; i < 9; i++) {
                     lightnings.Add(new LightningAdvanced(Projectile.Center, Projectile.Center));
                 }
             }
             return true;
         }
 
-        private void FindTarget()
-        {
+        private void FindTarget() {
             targets.Clear();
             float maxDistance = 640f + Owner.Entropy().WeaponBoost * 200f;
             float maxDistanceSq = maxDistance * maxDistance;
 
             List<(NPC npc, float distSq)> candidateList = new();
 
-            foreach (var npc in Main.ActiveNPCs)
-            {
+            foreach (var npc in Main.ActiveNPCs) {
 
-                if (npc.friendly || npc.dontTakeDamage || !npc.CanBeChasedBy(Projectile))
-                {
+                if (npc.friendly || npc.dontTakeDamage || !npc.CanBeChasedBy(Projectile)) {
                     continue;
                 }
 
-                if (targets.Contains(npc))
-                {
+                if (targets.Contains(npc)) {
                     continue;
                 }
 
                 float distSq = Vector2.DistanceSquared(npc.Center, Projectile.Center);
-                if (distSq <= maxDistanceSq)
-                {
+                if (distSq <= maxDistanceSq) {
                     candidateList.Add((npc, distSq));
                 }
             }
 
-            if (candidateList.Count > 0)
-            {
+            if (candidateList.Count > 0) {
                 //排序选最近的8个
                 candidateList.Sort((a, b) => a.distSq.CompareTo(b.distSq));
 
-                for (int i = 0; i < candidateList.Count && targets.Count < 8; i++)
-                {
+                for (int i = 0; i < candidateList.Count && targets.Count < 8; i++) {
                     targets.Add(candidateList[i].npc);
                 }
             }
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.timeLeft = 4;
 
-            if (DownLeft && Projectile.ai[0] == 0)
-            {
+            if (DownLeft && Projectile.ai[0] == 0) {
                 FindTarget();
                 Projectile.velocity = (InMousePos - Projectile.Center) * 0.12f;
                 //这个检查防止弹幕的第一帧和玩家重叠，导致角度计算出现不变的0度弧度
-                if (Projectile.Center == Owner.Center)
-                {
+                if (Projectile.Center == Owner.Center) {
                     Projectile.position += Projectile.velocity;
                 }
             }
-            else
-            {
+            else {
                 targets.Clear();
                 Projectile.position += Owner.velocity;
                 Projectile.ChasingBehavior(Owner.Center, 36);
-                if (Projectile.Distance(Owner.Center) < Projectile.width)
-                {
+                if (Projectile.Distance(Owner.Center) < Projectile.width) {
                     Projectile.Kill();
                 }
             }
@@ -142,12 +122,10 @@ namespace CalamityEntropy.Content.Projectiles
             Owner.itemRotation = ((Projectile.Center - Owner.Center) * Owner.direction).ToRotation();
             SetHeld();
 
-            if (Main.GameUpdateCount % 12 == 0)
-            {
+            if (Main.GameUpdateCount % 12 == 0) {
                 Owner.manaRegenDelay = 30;
                 Projectile.ai[0] = 0;
-                if (!Owner.CheckMana(Owner.HeldItem.mana, true))
-                {
+                if (!Owner.CheckMana(Owner.HeldItem.mana, true)) {
                     Projectile.ai[0] = 1;
                 }
             }
@@ -155,15 +133,13 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.rotation += 0.16f * Owner.direction;
             CEUtils.recordOldPosAndRots(Projectile, ref odp, ref odr, 12);
 
-            if (VaultUtils.isServer)
-            {
+            if (VaultUtils.isServer) {
                 return;
             }
 
             VaultUtils.ClockFrame(ref Projectile.frame, 3, 3);
 
-            if (sound == null)
-            {
+            if (sound == null) {
                 sound = new LoopSound(CalamityEntropy.ealaserSound2);
                 sound.play();
             }
@@ -171,16 +147,13 @@ namespace CalamityEntropy.Content.Projectiles
             sound.timeleft = 2;
         }
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
             modifiers.SourceDamage *= 1 + (8 - targets.Count) / 8f;
         }
 
-        public void Drawlightning(int index, float width, float lightSize)
-        {
+        public void Drawlightning(int index, float width, float lightSize) {
             var points = lightnings[index].GetPoints();
-            if (points == null || points.Count < 2)
-            {
+            if (points == null || points.Count < 2) {
                 return;
             }
 
@@ -193,20 +166,17 @@ namespace CalamityEntropy.Content.Projectiles
 
             //增强路径随机性，模拟扭曲
             List<Vector2> randomizedPoints = new List<Vector2>(points);
-            for (int i = 1; i < randomizedPoints.Count - 1; i++)
-            {
+            for (int i = 1; i < randomizedPoints.Count - 1; i++) {
                 float glitch = Main.rand.NextFloat(-8f, 8f); //更大随机偏移
                 randomizedPoints[i] += new Vector2(glitch, glitch * 0.5f);
                 //模拟分支效果
-                if (Main.rand.NextBool(10) && i < randomizedPoints.Count - 2)
-                {
+                if (Main.rand.NextBool(10) && i < randomizedPoints.Count - 2) {
                     Vector2 randSmd = new Vector2(Main.rand.NextFloat(-10f, 10f), Main.rand.NextFloat(-10f, 10f)) * lightSize * 2.6f;
                     randomizedPoints.Insert(i + 1, randomizedPoints[i] + randSmd);
                 }
             }
 
-            for (int i = 1; i < randomizedPoints.Count; i++)
-            {
+            for (int i = 1; i < randomizedPoints.Count; i++) {
                 Vector2 dir = randomizedPoints[i] - randomizedPoints[i - 1];
                 Vector2 offset = dir.SafeNormalize(Vector2.Zero).RotatedBy(MathHelper.PiOver2) * scale;
 
@@ -222,8 +192,7 @@ namespace CalamityEntropy.Content.Projectiles
                 p += (dir.Length() / lightning.Width) * 0.6f; //调整流动速度
             }
 
-            if (vertexCache.Count >= 3)
-            {
+            if (vertexCache.Count >= 3) {
                 Main.graphics.GraphicsDevice.Textures[0] = lightning;
                 Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip, vertexCache.ToArray(), 0, vertexCache.Count - 2);
             }
@@ -248,8 +217,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.spriteBatch.UseBlendState(BlendState.AlphaBlend); //恢复默认混合状态
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Player player = Projectile.GetOwner();
             Vector2 opos = player.MountedCenter + player.gfxOffY * Vector2.UnitY;
             Vector2 dir = (Projectile.Center - opos).SafeNormalize(Vector2.Zero);
@@ -261,11 +229,9 @@ namespace CalamityEntropy.Content.Projectiles
             int lc = 0;
             Vector2 projCenter = Projectile.Center;
 
-            foreach (NPC npc in targets)
-            {
+            foreach (NPC npc in targets) {
                 Vector2 npcCenter = npc.Center;
-                if (Vector2.DistanceSquared(lightnings[lc].Point2, npcCenter) > 24 * 24)
-                {
+                if (Vector2.DistanceSquared(lightnings[lc].Point2, npcCenter) > 24 * 24) {
                     for (int i = 0; i < 48; i++)
                         lightnings[lc].Update(projCenter, npcCenter);
                 }
@@ -280,8 +246,7 @@ namespace CalamityEntropy.Content.Projectiles
 
             float apStep = 1f / odp.Count;
             float ap = 0f;
-            for (int i = 0; i < odp.Count; i++)
-            {
+            for (int i = 0; i < odp.Count; i++) {
                 Main.spriteBatch.Draw(tex, odp[i] - Main.screenPosition, frame, Color.White * ap * 0.4f, odr[i], origin, 1f, SpriteEffects.None, 0f);
                 ap += apStep;
             }

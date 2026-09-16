@@ -1,24 +1,22 @@
 ﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class Zyphros : ModItem
     {
-        public override bool RangedPrefix()
-        {
+        public override bool RangedPrefix() {
             return true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 1000;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 36;
@@ -44,22 +42,18 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override Vector2? HoldoutOffset() => new Vector2(-42, -8);
 
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
+        public override bool CanConsumeAmmo(Item ammo, Player player) {
             return Main.rand.NextBool(12);
         }
 
-        public override bool? UseItem(Player player)
-        {
+        public override bool? UseItem(Player player) {
             CEUtils.PlaySound("zypshot" + Main.rand.Next(1, 3).ToString(), Main.rand.NextFloat(1f, 1.6f), player.Center, 3, 0.3f);
             return true;
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             // 2026-08-31 平衡案:一次发射5发追踪的水晶箭矢;协同水晶改由命中生成(见 ZyphrosArrowGlobal)
             player.Entropy().itemTime = 30;
-            for (int i = -2; i <= 2; i++)
-            {
+            for (int i = -2; i <= 2; i++) {
                 int arrow = Projectile.NewProjectile(source, position, velocity.RotatedBy(i * 0.06f).RotatedByRandom(MathHelper.ToRadians(2)), type, damage, knockback, player.whoAmI);
                 arrow.ToProj().Entropy().zypArrow = true;
                 arrow.ToProj().ArmorPenetration += 30;
@@ -68,10 +62,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             return false;
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_Drataliornus))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_Drataliornus)) {
                 CreateRecipe()
                 .AddIngredient(CEID.Item_Drataliornus, 1)
                 .AddIngredient(ModContent.ItemType<WyrmTooth>(), 14)
@@ -90,8 +82,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public override void HoldItem(Player player) => player.Entropy().MouseWorldListener = true;
 
-        public override void UseStyle(Player player, Rectangle heldItemFrame)
-        {
+        public override void UseStyle(Player player, Rectangle heldItemFrame) {
             player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
@@ -101,8 +92,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             CEUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
         }
 
-        public override void UseItemFrame(Player player)
-        {
+        public override void UseItemFrame(Player player) {
             player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
             float rotation = (player.Center - player.Entropy().MouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
@@ -115,20 +105,17 @@ namespace CalamityEntropy.Content.Items.Weapons
     /// </summary>
     public class ZyphrosArrowGlobal : GlobalProjectile
     {
-        public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone) {
             if (!projectile.Entropy().zypArrow || projectile.owner != Main.myPlayer)
                 return;
-            for (int i = 0; i < 3; i++)
-            {
+            for (int i = 0; i < 3; i++) {
                 int p = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center,
                     (projectile.velocity.SafeNormalize(Vector2.UnitX) * 10).RotatedByRandom(1.2f),
                     ModContent.ProjectileType<ZyphrosPhantomArrow>(), (int)(projectile.damage * 0.3f), projectile.knockBack * 0.5f, projectile.owner, target.whoAmI);
                 CEUtils.SyncProj(p);
             }
             Player owner = projectile.GetOwner();
-            if (owner != null && owner.ownedProjectileCounts[ModContent.ProjectileType<ZyphrosCrystal>()] < 6 && Main.rand.NextBool(3))
-            {
+            if (owner != null && owner.ownedProjectileCounts[ModContent.ProjectileType<ZyphrosCrystal>()] < 6 && Main.rand.NextBool(3)) {
                 int c = Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center, Vector2.Zero,
                     ModContent.ProjectileType<ZyphrosCrystal>(), projectile.damage, projectile.knockBack, projectile.owner, Main.rand.Next(1, 6));
                 CEUtils.SyncProj(c);
@@ -140,13 +127,11 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class ZyphrosPhantomArrow : ModProjectile
     {
         public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.WoodenArrowFriendly;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 10;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 10;
             Projectile.height = 10;
             Projectile.friendly = true;
@@ -157,37 +142,30 @@ namespace CalamityEntropy.Content.Items.Weapons
             Projectile.timeLeft = 180;
             Projectile.extraUpdates = 1;
         }
-        public override void AI()
-        {
+        public override void AI() {
             NPC target = null;
             int locked = (int)Projectile.ai[0];
-            if (locked >= 0 && locked < Main.maxNPCs && Main.npc[locked].active && Main.npc[locked].CanBeChasedBy(Projectile))
-            {
+            if (locked >= 0 && locked < Main.maxNPCs && Main.npc[locked].active && Main.npc[locked].CanBeChasedBy(Projectile)) {
                 target = Main.npc[locked];
             }
-            else
-            {
+            else {
                 target = Projectile.FindTargetWithinRange(900, false);
             }
-            if (target != null)
-            {
+            if (target != null) {
                 Projectile.velocity += (target.Center - Projectile.Center).SafeNormalize(Vector2.Zero) * 1.4f;
                 Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * MathHelper.Min(Projectile.velocity.Length(), 18);
             }
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            if (Main.rand.NextBool(3))
-            {
+            if (Main.rand.NextBool(3)) {
                 Dust d = Dust.NewDustPerfect(Projectile.Center, DustID.BlueCrystalShard, -Projectile.velocity * 0.1f);
                 d.noGravity = true;
                 d.scale = 0.9f;
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.spriteBatch.UseAdditive();
-            for (int i = 0; i < Projectile.oldPos.Length; i++)
-            {
+            for (int i = 0; i < Projectile.oldPos.Length; i++) {
                 float fade = 1f - i / (float)Projectile.oldPos.Length;
                 Vector2 pos = (i == 0 ? Projectile.Center : Projectile.oldPos[i] + Projectile.Size / 2f);
                 Main.spriteBatch.Draw(tex, pos - Main.screenPosition, null, new Color(120, 160, 255) * 0.55f * fade, Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);

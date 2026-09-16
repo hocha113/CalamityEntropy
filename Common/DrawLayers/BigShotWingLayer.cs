@@ -17,25 +17,21 @@ namespace CalamityEntropy.Common.DrawLayers
         [VaultLoaden("CalamityEntropy/Assets/Extra/jl")]
         internal static Asset<Texture2D> StringTex;
 
-        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
-        {
+        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) {
             //return false;
             if (drawInfo.drawPlayer.dead || drawInfo.shadow != 0 || (drawInfo.drawPlayer.Entropy().vanityWing != null && !(drawInfo.drawPlayer.Entropy().vanityWing.ModItem is BigShotsWing)))
                 return false;
             return drawInfo.drawPlayer.Entropy().hasAccVisual("BSWing");
         }
 
-        public override Position GetDefaultPosition()
-        {
+        public override Position GetDefaultPosition() {
             return new BeforeParent(PlayerDrawLayers.Wings);
         }
 
-        protected override void Draw(ref PlayerDrawSet drawInfo)
-        {
+        protected override void Draw(ref PlayerDrawSet drawInfo) {
             var player = drawInfo.drawPlayer;
             Texture2D texture = WingTex.Value;
-            Color GC(Color color)
-            {
+            Color GC(Color color) {
                 //脱离灾厄:灾厄肾上腺素/暴怒增益的白闪已随系统裁撤,恒走基础光照色
                 return Lighting.GetColor((player.Center / 16).ToPoint(), color) * 0.4f;
             }
@@ -49,13 +45,11 @@ namespace CalamityEntropy.Common.DrawLayers
             float scale = player.GetModPlayer<BigShotWingPlayer>().scale * 1.15f;
             var _drawInfo = drawInfo;
             int visual = player.Entropy().BigShotWingVisual;
-            void drawLine(Vector2 start)
-            {
+            void drawLine(Vector2 start) {
                 Vector2 end = start + new Vector2((start.X - origin.X) + player.GetModPlayer<BigShotWingPlayer>().StringsOffset, -1000);
                 _drawInfo.DrawDataCache.Add(new DrawData(StringTex.Value, start - Main.screenPosition, null, new Color(60, 255, 60) * (visual == 0 ? 0.6f : 0.2f), (end - start).ToRotation(), new Vector2(0, 0.5f), new Vector2(CEUtils.getDistance(start, end) / 1024f, 2), SpriteEffects.None));
             }
-            if (visual != 2)
-            {
+            if (visual != 2) {
                 drawLine(origin + new Vector2(50, -22).RotatedBy(rRot) * scale);
                 drawLine(origin + new Vector2(50, 22).RotatedBy(lRot) * scale);
                 drawLine(origin + new Vector2(28, -8).RotatedBy(rRot) * scale);
@@ -89,8 +83,7 @@ namespace CalamityEntropy.Common.DrawLayers
         //脱离灾厄:肾上腺素/暴怒的放大加成随系统裁撤,恒为基础尺寸
         public float scaleBoost => 1;
         public float scale = 1;
-        public override void PostUpdate()
-        {
+        public override void PostUpdate() {
             StringsOffset = float.Lerp(StringsOffset, Player.velocity.X * 12, 0.16f);
             float dist = 50;
             Vector2 origin = Player.MountedCenter + new Vector2(0, -8);

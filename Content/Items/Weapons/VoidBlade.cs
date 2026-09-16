@@ -1,15 +1,14 @@
 ﻿using CalamityEntropy.Content.Projectiles.VoidBlade;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class VoidBlade : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 26;
             Item.crit = 15;
             Item.DamageType = DamageClass.Melee;
@@ -35,14 +34,11 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.Entropy().HasCustomStrokeColor = true;
             Item.Entropy().HasCustomNameColor = true;
         }
-        public override bool CanUseItem(Player player)
-        {
+        public override bool CanUseItem(Player player) {
             return player.ownedProjectileCounts[ModContent.ProjectileType<VoidBladeProj>()] < 1;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_Voidstone, CEID.Item_PurifiedGel))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_Voidstone, CEID.Item_PurifiedGel)) {
                 Recipe recipe = CreateRecipe();
                 recipe.AddIngredient(ItemID.Katana, 1);
                 recipe.AddIngredient(CEID.Item_Voidstone, 5);
@@ -60,8 +56,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 .Register();
         }
 
-        public override bool MeleePrefix()
-        {
+        public override bool MeleePrefix() {
             return true;
         }
     }

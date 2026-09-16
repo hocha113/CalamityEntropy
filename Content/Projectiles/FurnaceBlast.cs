@@ -1,5 +1,4 @@
-using CalamityEntropy.Assets.Register;
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Particles.CalamityPorts;
@@ -8,7 +7,6 @@ using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Projectiles
@@ -17,8 +15,7 @@ namespace CalamityEntropy.Content.Projectiles
     public class FurnaceBlast : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 64;
             Projectile.height = 64;
             Projectile.friendly = true;
@@ -30,13 +27,10 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public float Scale = 0;
         public float Counter = 0;
-        public override void AI()
-        {
-            if (Counter == 0)
-            {
+        public override void AI() {
+            if (Counter == 0) {
                 Projectile.rotation = CEUtils.randomRot();
-                for (int i = 0; i < 42; i++)
-                {
+                for (int i = 0; i < 42; i++) {
                     Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDust>(), -Projectile.velocity);
                     dust.scale = Main.rand.NextFloat(2.2f, 3.6f);
                     dust.velocity = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(14f, 36f);
@@ -47,27 +41,23 @@ namespace CalamityEntropy.Content.Projectiles
             }
             Counter += 0.05f;
             Scale = CEUtils.GetRepeatedParaFromZeroToOne(Counter, 2);
-            if (Counter >= 1)
-            {
+            if (Counter >= 1) {
                 Scale = 0;
                 Projectile.Kill();
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Draw();
             return false;
         }
-        public void Draw()
-        {
+        public void Draw() {
             float a = 1 - Counter;
             a *= Projectile.Opacity;
             Texture2D tex = CEUtils.getExtraTex("Corona");
             Main.spriteBatch.UseAdditiveClamp();
             Color color1 = Color.White;
             Color color2 = Projectile.ai[0] == 0 ? new Color(178, 178, 255) : Color.Orange;
-            for (float i = 0.2f; i <= 1; i += 0.1f)
-            {
+            for (float i = 0.2f; i <= 1; i += 0.1f) {
                 Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenLastPosition, null, Color.Lerp(color1, color2, i * i) * a, Projectile.rotation + i * MathHelper.TwoPi * 2, tex.Size() * 0.5f, Scale * 1.8f * i, SpriteEffects.None, 0);
             }
             Main.spriteBatch.ExitShaderRegion();
@@ -76,8 +66,7 @@ namespace CalamityEntropy.Content.Projectiles
     public class AzafureMagicBlast : EBookBaseProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Projectile.width = 420;
             Projectile.height = 420;
@@ -91,31 +80,25 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public float Scale = 0;
         public float Counter = 0;
-        public override void ApplyHoming()
-        {
+        public override void ApplyHoming() {
 
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             Projectile.penetrate = -1;
             return null;
         }
-        public override void AI()
-        {
+        public override void AI() {
             base.AI();
             Counter += 0.035f;
             Scale = CEUtils.Parabola(Counter, 1) * 0.72f;
-            if (Counter >= 1)
-            {
+            if (Counter >= 1) {
                 Scale = 0;
                 Projectile.Kill();
             }
-            if (Projectile.localAI[2]++ == 0)
-            {
+            if (Projectile.localAI[2]++ == 0) {
                 CEUtils.PlaySound("energyImpact", Main.rand.NextFloat(0.9f, 1.2f), Projectile.Center, 8, 0.6f);
 
                 //CustomPulse贴图路径现传,走PRTPathTextures缓存,Configure第一个string是TexPath
@@ -127,25 +110,20 @@ namespace CalamityEntropy.Content.Projectiles
             }
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             return false;
         }
-        public List<Vector2> GP(float distAdd = 0, float c = 1)
-        {
+        public List<Vector2> GP(float distAdd = 0, float c = 1) {
             float dist = distAdd;
             List<Vector2> points = new List<Vector2>();
-            for (int i = 0; i <= 60; i++)
-            {
+            for (int i = 0; i <= 60; i++) {
                 points.Add(new Vector2(dist, 0).RotatedBy(MathHelper.ToRadians(i * 6 - 80 * c * Main.GlobalTimeWrappedHourly)));
             }
             return points;
         }
-        public void Draw()
-        {
+        public void Draw() {
             float a = 1;
-            if (a > 1)
-            {
+            if (a > 1) {
                 a = 1;
             }
             a *= Projectile.Opacity;
@@ -158,8 +136,7 @@ namespace CalamityEntropy.Content.Projectiles
                 List<Vector2> pointsOutside = GP(240 * Scale);
                 int i;
                 Projectile.ai[0] = 1;
-                for (i = 0; i < points.Count; i++)
-                {
+                for (i = 0; i < points.Count; i++) {
                     ve.Add(new ColoredVertex(Projectile.Center - Main.screenPosition + points[i],
                     new Vector3((float)i / points.Count, 1, 1f),
                           (Projectile.ai[0] == 1 ? Color.Red : Color.LightBlue) * a));
@@ -170,8 +147,7 @@ namespace CalamityEntropy.Content.Projectiles
                 }
                 SpriteBatch sb = Main.spriteBatch;
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     Texture2D tx = CEExtraAssets.AbyssalCircle3;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
@@ -182,8 +158,7 @@ namespace CalamityEntropy.Content.Projectiles
                 List<Vector2> points = GP(0, -1);
                 List<Vector2> pointsOutside = GP(200 * Scale, -1);
                 int i;
-                for (i = 0; i < points.Count; i++)
-                {
+                for (i = 0; i < points.Count; i++) {
                     ve.Add(new ColoredVertex(Projectile.Center - Main.screenPosition + points[i],
                           new Vector3((float)i / points.Count, 1, 1f),
                           Color.White * a));
@@ -194,8 +169,7 @@ namespace CalamityEntropy.Content.Projectiles
                 }
                 SpriteBatch sb = Main.spriteBatch;
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     Texture2D tx = CEExtraAssets.AbyssalCircle3;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
@@ -206,8 +180,7 @@ namespace CalamityEntropy.Content.Projectiles
                 List<Vector2> points = GP(0, 0.6f);
                 List<Vector2> pointsOutside = GP(240 * Scale, -1);
                 int i;
-                for (i = 0; i < points.Count; i++)
-                {
+                for (i = 0; i < points.Count; i++) {
                     ve.Add(new ColoredVertex(Projectile.Center - Main.screenPosition + points[i],
                           new Vector3((float)i / points.Count, 1, 1f),
                           (Projectile.ai[0] == 1 ? Color.Red : Color.LightBlue) * a));
@@ -218,8 +191,7 @@ namespace CalamityEntropy.Content.Projectiles
                 }
                 SpriteBatch sb = Main.spriteBatch;
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     Texture2D tx = CEExtraAssets.AbyssalCircle4;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);

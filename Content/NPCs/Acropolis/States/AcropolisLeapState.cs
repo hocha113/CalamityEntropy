@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Acropolis.Core;
+﻿using CalamityEntropy.Content.NPCs.Acropolis.Core;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -17,14 +17,12 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.States
     {
         public override AcropolisStateIndex StateIndex => AcropolisStateIndex.Leap;
 
-        public override void OnEnter(AcropolisStateContext ctx)
-        {
+        public override void OnEnter(AcropolisStateContext ctx) {
             base.OnEnter(ctx);
             NPC npc = ctx.Npc;
             ctx.Airborne = true;
             ctx.Owner.JumpCD = AcropolisDirector.LeapJumpCD;
-            if (ctx.Target != null)
-            {
+            if (ctx.Target != null) {
                 npc.velocity = new Vector2(
                     AcropolisDirector.LeapSpeedXFactor * (ctx.Target.Center.X - npc.Center.X) / npc.scale,
                     float.Max((ctx.Target.Center.Y - npc.Center.Y) / npc.scale * AcropolisDirector.LeapSpeedYFactor, AcropolisDirector.LeapSpeedYMax))
@@ -32,10 +30,8 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.States
             }
         }
 
-        public override IVaultState<AcropolisStateContext> OnUpdate(AcropolisStateContext ctx)
-        {
-            if (!ctx.Airborne)
-            {
+        public override IVaultState<AcropolisStateContext> OnUpdate(AcropolisStateContext ctx) {
+            if (!ctx.Airborne) {
                 return BackToWalk(ctx);
             }
             return null;

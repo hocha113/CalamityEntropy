@@ -1,10 +1,10 @@
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
-using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using InnoVault;
 using InnoVault.PRT;
@@ -16,14 +16,12 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class Erebodrepanon : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 10000;
             Item.crit = 20;
             Item.DamageType = DamageClass.Melee;
@@ -44,16 +42,14 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.scale *= 0.66f;
         }
         public int UseCount = 0;
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             Projectile.NewProjectile(source, position, velocity, type, damage * (UseCount == 2 ? 2 : 1), knockback, player.whoAmI, UseCount);
             UseCount++;
-            if(UseCount >= 3)
+            if (UseCount >= 3)
                 UseCount = 0;
             return false;
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddCalOrOwn(CEID.Item_DeathsAscension, ItemID.DeathSickle)
                 .AddIngredient<WyrmTooth>(12)
@@ -62,8 +58,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 .Register();
         }
 
-        public override bool MeleePrefix()
-        {
+        public override bool MeleePrefix() {
             return true;
         }
     }
@@ -73,8 +68,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         //星形贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
         [VaultLoaden("CalamityEntropy/Assets/Extra/Star2")]
         internal static Asset<Texture2D> Star2Tex;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.width = Projectile.height = 8;
             Projectile.MaxUpdates = 10;
@@ -86,75 +80,59 @@ namespace CalamityEntropy.Content.Items.Weapons
         public float rotateSpeed = 0;
         public float ScaleExtra = 1;
         public float tAlpha = 0;
-        public override void AI()
-        {
+        public override void AI() {
             Player player = Projectile.GetOwner();
             float speed = Projectile.GetOwner().GetTotalAttackSpeed(DamageClass.Melee);
             Projectile.Center = player.MountedCenter;
             player.itemTime = player.itemAnimation = 3;
             player.heldProj = Projectile.whoAmI;
-            if (counter == 0)
-            {
+            if (counter == 0) {
                 float scale_ = Projectile.GetOwner().HeldItem.scale;
                 Projectile.GetOwner().ApplyMeleeScale(ref scale_);
                 Projectile.scale *= scale_;
                 Projectile.MaxUpdates = (int)Math.Ceiling(Projectile.MaxUpdates * speed);
             }
-            if (style < 3)
-            {
+            if (style < 3) {
                 ScaleExtra = style == 2 ? 2.2f : 1.8f;
-                if (counter == 0)
-                {
+                if (counter == 0) {
                     Projectile.rotation = Projectile.velocity.ToRotation() + dir * -3.2f;
                 }
-                if(counter == 9 * 12)
-                {
+                if (counter == 9 * 12) {
                     CEUtils.PlaySound("scytheswing", 1.6f - (style == 2 ? 0.22f : Main.rand.NextFloat(0, 0.1f)), Projectile.Center);
                     tAlpha = 1;
                 }
-                if (counter < 9 * 12)
-                {
+                if (counter < 9 * 12) {
                     rotateSpeed *= 0.86f;
                     rotateSpeed -= dir * 0.0004f;
                 }
-                else
-                {
-                    if (counter % 4 == 0)
-                    {
+                else {
+                    if (counter % 4 == 0) {
                         oldRot.Add(Projectile.rotation);
                         if (oldRot.Count > 20)
                             oldRot.RemoveAt(0);
                     }
-                    if (style == 2)
-                    {
-                        if (counter < 11 * 12)
-                        {
+                    if (style == 2) {
+                        if (counter < 11 * 12) {
                             rotateSpeed += dir * 0.0061f;
                             rotateSpeed *= 0.93f;
                         }
                     }
-                    else
-                    {
-                        if (counter < 10 * 12)
-                        {
+                    else {
+                        if (counter < 10 * 12) {
                             rotateSpeed *= 0.96f;
                             rotateSpeed += dir * 0.01f;
                         }
                     }
-                    if (counter > (style == 2 ? 12 : 10) * 12)
-                    {
-                        if (counter > 18 * 12)
-                        {
+                    if (counter > (style == 2 ? 12 : 10) * 12) {
+                        if (counter > 18 * 12) {
                             tAlpha *= 0.97f;
                             if (tAlpha < 0.02f)
                                 tAlpha = 0;
                         }
-                        if (counter < (style == 2 ? 40 : 25) * 12)
-                        {
+                        if (counter < (style == 2 ? 40 : 25) * 12) {
                             rotateSpeed *= 0.984f;
                         }
-                        else
-                        {
+                        else {
                             player.itemTime = player.itemAnimation = 0;
                             Projectile.Kill();
                         }
@@ -163,38 +141,30 @@ namespace CalamityEntropy.Content.Items.Weapons
                 Projectile.rotation += rotateSpeed;
                 player.SetHandRotWithDir(Projectile.rotation, Projectile.velocity.X > 0 ? 1 : -1);
             }
-            
+
             counter++;
         }
         public List<float> oldRot = new List<float>();
-        public override bool? CanDamage()
-        {
-            if(style <= 2)
-            {
+        public override bool? CanDamage() {
+            if (style <= 2) {
                 return counter < 19 * 12 && counter > 8 * 12;
             }
             return null;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             float l = Projectile.scale * ScaleExtra * 260;
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * l, targetHitbox, 160);
         }
-        public override void CutTiles()
-        {
+        public override void CutTiles() {
             float l = Projectile.scale * ScaleExtra * 260;
             Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * l, 160, DelegateMethods.CutTiles);
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return style > 2;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if(style == 2)
-            {
-                if (Projectile.numHits < 3)
-                {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            if (style == 2) {
+                if (Projectile.numHits < 3) {
                     Projectile.NewProjectile(Projectile.GetSource_FromAI(), target.Center, Vector2.Zero, ModContent.ProjectileType<ErebodrepanonMark>(), (int)(Projectile.damage * 0.4f), 0, Projectile.owner, 0, 0, target.whoAmI);
                 }
             }
@@ -203,8 +173,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             PRTLoader.NewParticle<PRT_ShineParticle>(target.Center, Vector2.Zero, Color.Blue, 1.8f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
             PRTLoader.NewParticle<PRT_ShineParticle>(target.Center, Vector2.Zero, Color.White, 1.2f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 12);
             PRTLoader.NewParticle<PRT_ShineParticle>(target.Center, Vector2.Zero, Color.White, 1.2f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 12);
-            for (int i = 0; i < 18; i++)
-            {
+            for (int i = 0; i < 18; i++) {
                 var p1 = PRTLoader.NewParticle<PRT_StarTrailParticle>(target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(12, 44), Main.rand.NextBool() ? new Color(160, 160, 255) : new Color(255, 160, 80), Main.rand.NextFloat(1.6f, 2f));
                 p1.fadeOut = 6;
                 p1.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 12);
@@ -213,24 +182,21 @@ namespace CalamityEntropy.Content.Items.Weapons
                 p2.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 24);
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Projectile.GetTexture();
             Texture2D star = Star2Tex.Value;
             Texture2D s3 = CEExtraAssets.CircularSmear;
             Texture2D s2 = CEExtraAssets.CircularSmearSmokey;
-            float rotation = Projectile.rotation + 1.047f * dir; 
+            float rotation = Projectile.rotation + 1.047f * dir;
             SpriteEffects ef = dir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically;
             Vector2 origin = dir > 0 ? new Vector2(8, tex.Height - 8) : new Vector2(8, 8);
             float scale = Projectile.scale * ScaleExtra;
             Main.spriteBatch.UseBlendState(BlendState.Additive, SamplerState.PointClamp);
-            for(int i = 0; i < oldRot.Count; i++)
-            {
+            for (int i = 0; i < oldRot.Count; i++) {
                 float a = i / (oldRot.Count - 1.0f);
                 Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + CEUtils.randomPointInCircle(2) * scale + Vector2.UnitY * Projectile.GetOwner().gfxOffY, null, (Main.rand.NextBool(15) ? Color.Orange : new Color(120, 120, 255, 255)) * 0.04f * i, oldRot[i] + +1.047f * dir, origin, scale * 1.3f, ef, 0);
             }
-            for(float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver4 * 0.5f)
-            {
+            for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver4 * 0.5f) {
                 Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + i.ToRotationVector2() * 6 + Vector2.UnitY * Projectile.GetOwner().gfxOffY, null, new Color(60, 60, 255, 255) * 0.7f, rotation, origin, scale * 1.3f, ef, 0);
             }
             Main.spriteBatch.ExitShaderRegion();
@@ -253,41 +219,33 @@ namespace CalamityEntropy.Content.Items.Weapons
     }
     public class ErebodrepanonMark : ModProjectile
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.width = Projectile.height = 450;
         }
-        public override bool? CanDamage()
-        {
+        public override bool? CanDamage() {
             return Projectile.ai[1] > 0;
         }
         List<PRT_StarTrailParticle> trails = new List<PRT_StarTrailParticle>();
         public float tRot = 0f;
         public float tDist = 1f;
-        public override void AI()
-        {
+        public override void AI() {
             NPC n = ((int)Projectile.ai[2]).ToNPC();
-            if (n != null && n.active)
-            {
+            if (n != null && n.active) {
                 Projectile.Center = n.Center;
             }
-            if (Projectile.ai[0] == 0)
-            {
-                for(int i = 0; i < 4; i++)
-                {
+            if (Projectile.ai[0] == 0) {
+                for (int i = 0; i < 4; i++) {
                     var t = PRTLoader.NewParticle<PRT_StarTrailParticle>(Projectile.Center + (i * MathHelper.PiOver2).ToRotationVector2() * 600, Vector2.Zero, new Color(80, 80, 255), 2.5f);
                     t.maxLength = 14;
                     t.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 12);
                     trails.Add(t);
                 }
             }
-                Projectile.ai[0]++;
-            if (Projectile.ai[0] == 40)
-            {
+            Projectile.ai[0]++;
+            if (Projectile.ai[0] == 40) {
                 CEUtils.PlaySound("bne_hit", 1, Projectile.Center);
-                for (int i = 0; i < 24; i++)
-                {
+                for (int i = 0; i < 24; i++) {
                     var p = PRTLoader.NewParticle<PRT_StarTrailParticle>(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(10, 44), Main.rand.NextBool() ? new Color(160, 160, 255) : new Color(255, 160, 80), Main.rand.NextFloat(1.6f, 2f));
                     p.fadeOut = 16;
                     p.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 28);
@@ -295,13 +253,11 @@ namespace CalamityEntropy.Content.Items.Weapons
             }
             if (Projectile.ai[0] > 40)
                 Projectile.ai[1] = 1;
-            else
-            {
+            else {
                 tRot += Projectile.ai[0] * 0.008f + 0.03f;
                 tDist = (1 - Projectile.ai[0] / 46f);
                 tDist = 1 - CEUtils.Parabola(0.5f + tDist * 0.5f, 1);
-                for (int i = 0; i < 4;i++)
-                {
+                for (int i = 0; i < 4; i++) {
                     var t = trails[i];
                     Vector2 op = t.Position;
                     t.Position = Projectile.Center + (i * MathHelper.PiOver2 + tRot).ToRotationVector2() * 600 * tDist;
@@ -313,8 +269,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             if (Projectile.ai[0] >= 49)
                 Projectile.Kill();
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.UseAdditive();
             Texture2D s = CEExtraAssets.StarChromatic;
             float scale = Projectile.ai[0] / 40f * 0.2f;

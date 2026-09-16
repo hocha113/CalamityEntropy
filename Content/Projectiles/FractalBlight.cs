@@ -1,9 +1,7 @@
 ﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Core.Graphics;
-using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.Graphics.Shaders;
@@ -14,13 +12,11 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class FractalBlight : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 16;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 12;
             Projectile.height = 12;
@@ -33,50 +29,39 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.tileCollide = false;
         }
         NPC homing = null;
-        public override void AI()
-        {
-            if (homing == null)
-            {
+        public override void AI() {
+            if (homing == null) {
                 homing = Projectile.FindTargetWithinRange(1200);
             }
-            else
-            {
-                if (!homing.active)
-                {
+            else {
+                if (!homing.active) {
                     homing = null;
                 }
             }
-            if (homing != null)
-            {
+            if (homing != null) {
                 float homingStrength = Projectile.ai[1] == 1 ? 1.6f : 1.12f;
                 Projectile.velocity += (homing.Center - Projectile.Center).normalize() * homingStrength;
                 Projectile.velocity *= 0.96f;
             }
-            if (Projectile.timeLeft < 60)
-            {
+            if (Projectile.timeLeft < 60) {
                 Projectile.Opacity -= 1 / 60f;
             }
         }
-        public Color TrailColor(float completionRatio, Vector2 vertex)
-        {
+        public Color TrailColor(float completionRatio, Vector2 vertex) {
             Color color = (Projectile.ai[1] == 1 ? Color.Lerp(new Color(255, 120, 130), new Color(255, 160, 170), completionRatio) : Color.Lerp(Color.White, Color.Gold, completionRatio)) * (1 - completionRatio) * Projectile.Opacity;
             return color;
         }
 
-        public float TrailWidth(float completionRatio, Vector2 vertex)
-        {
+        public float TrailWidth(float completionRatio, Vector2 vertex) {
             float widthInterpolant = Utils.GetLerpValue(0f, 0.25f, completionRatio, true) * Utils.GetLerpValue(1.1f, 0.7f, completionRatio, true);
             return MathHelper.SmoothStep(8f, 20f, widthInterpolant);
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (Projectile.ai[1] == 1)
-            {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            if (Projectile.ai[1] == 1) {
                 target.AddBuff(ModContent.BuffType<ElementalMix>(), 400);
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityEntropy:ArtAttack"].SetShaderTexture(CEExtraAssets.SylvestaffStreakAsset);
             GameShaders.Misc["CalamityEntropy:ArtAttack"].Apply();
@@ -84,8 +69,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.spriteBatch.ExitShaderRegion();
 
             Color color = Color.LightGoldenrodYellow;
-            if (Projectile.ai[1] == 1)
-            {
+            if (Projectile.ai[1] == 1) {
                 color = new Color(255, 160, 185);
             }
             color.A = 0;

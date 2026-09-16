@@ -12,12 +12,10 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class Theostring : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
@@ -28,22 +26,18 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.netImportant = true;
         }
 
-        public override void AI()
-        {
-            if (Projectile.GetOwner().dead)
-            {
+        public override void AI() {
+            if (Projectile.GetOwner().dead) {
                 Projectile.Kill();
                 return;
             }
-            if (!Projectile.GetOwner().GetModPlayer<VanityModPlayer>().TheocracyMark)
-            {
+            if (!Projectile.GetOwner().GetModPlayer<VanityModPlayer>().TheocracyMark) {
                 return;
             }
             Projectile.timeLeft = 5;
             var player = Projectile.owner.ToPlayer();
             Projectile.Center = player.MountedCenter + Vector2.UnitY * player.gfxOffY + new Vector2(-26 * Projectile.ai[0], -16).RotatedBy(player.fullRotation + player.headRotation) - player.velocity;
-            if (rope == null)
-            {
+            if (rope == null) {
                 rope = new Rope(Projectile.Center, 6, 5, new Vector2(0, 0.1f), 0.2f, 30, false);
             }
             rope.gravity = new Vector2(Main.windSpeedCurrent * 0.16f * (0.4f + 0.6f * (float)(Math.Cos(Main.GameUpdateCount * 0.1f) + 1) * 0.5f), 0.1f);
@@ -52,10 +46,8 @@ namespace CalamityEntropy.Content.Projectiles
             var points = rope.GetPoints();
             odp.Clear();
             odp.Add(points[0]);
-            for (int i = 1; i < points.Count; i++)
-            {
-                for (float j = 0.25f; j <= 1f; j += 0.25f)
-                {
+            for (int i = 1; i < points.Count; i++) {
+                for (float j = 0.25f; j <= 1f; j += 0.25f) {
                     odp.Add(Vector2.Lerp(points[i - 1], points[i], j));
                 }
 
@@ -63,12 +55,10 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public Rope rope = null;
         public List<Vector2> odp = new List<Vector2>();
-        public override bool? CanDamage()
-        {
+        public override bool? CanDamage() {
             return false;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             var gdv = Main.graphics.GraphicsDevice;
 
             Color cl = Color.Lerp(Color.Black, Color.White, Projectile.ai[0] / 30f);
@@ -77,13 +67,11 @@ namespace CalamityEntropy.Content.Projectiles
 
             c = 0;
 
-            Vector2 calP(Vector2 org, float zoom)
-            {
+            Vector2 calP(Vector2 org, float zoom) {
                 Vector2 scrs = Main.ScreenSize.ToVector2() / 2f;
                 return scrs + (org - scrs) / zoom;
             }
-            if (odp.Count > 1)
-            {
+            if (odp.Count > 1) {
                 Main.spriteBatch.End();
                 EffectLoader.PreparePixelShader(gdv);
                 int xp = Projectile.GetOwner().direction * -4 - 2;
@@ -98,8 +86,7 @@ namespace CalamityEntropy.Content.Projectiles
                 ve.Add(new ColoredVertex(calP(new Vector2(xp, 0) + odp[0] - Main.screenPosition + (odp[1] - odp[0]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 3, Main.GameViewMatrix.Zoom.X),
                       new Vector3((float)0, 0, 1),
                       b));
-                for (int i = 1; i < odp.Count; i++)
-                {
+                for (int i = 1; i < odp.Count; i++) {
                     c += 1f / odp.Count;
                     ve.Add(new ColoredVertex(calP(new Vector2(xp, 0) + odp[i] - Main.screenPosition + (odp[i] - odp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 3, Main.GameViewMatrix.Zoom.X),
                           new Vector3((float)(i + 1) / odp.Count, 1, 1),
@@ -112,8 +99,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                 SpriteBatch sb = Main.spriteBatch;
                 GraphicsDevice gd = gdv;
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     Main.spriteBatch.End();
                     Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null);
 

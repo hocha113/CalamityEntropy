@@ -9,13 +9,11 @@ namespace CalamityEntropy.Content.Items.Ammo
 {
     public class NegentropyBullet : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.ResearchUnlockCount = 99;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 8;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 8;
@@ -29,8 +27,7 @@ namespace CalamityEntropy.Content.Items.Ammo
             Item.ammo = AmmoID.Bullet;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe(999)
                 .AddIngredient<VoidBar>()
                 .AddTile<VoidWellTile>()

@@ -21,59 +21,48 @@ namespace CalamityEntropy.Content.Projectiles.Pets.DoG
         public int counter = 0;
         public bool say = true;
         public float sayCount = 0;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             Main.projPet[Projectile.type] = true;
             base.SetStaticDefaults();
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.CloneDefaults(ProjectileID.ZephyrFish);
             Projectile.aiStyle = -1;
             Projectile.tileCollide = false;
             Projectile.width = 64;
             Projectile.height = 64;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             bool hat = Projectile.owner.ToPlayer().Entropy().PetsHat;
-            if (Main.gameMenu)
-            {
+            if (Main.gameMenu) {
                 Texture2D txd = Frame1.Value;
                 Main.EntitySpriteDraw(txd, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, new Vector2(txd.Width, txd.Height) / 2, Projectile.scale, SpriteEffects.FlipHorizontally, 0);
 
                 return false;
             }
             Texture2D tx;
-            if (hat)
-            {
+            if (hat) {
                 tx = HatFrames[(counter / 6) % HatFrames.Length];
             }
-            else
-            {
+            else {
                 //无帽版共 5 帧:首帧 + 后 4 帧,按下标拼回原来的取帧顺序
                 int frame = (counter / 6) % (FramesRest.Length + 1);
                 tx = frame == 0 ? Frame1.Value : FramesRest[frame - 1];
             }
-            if (Projectile.velocity.X > -2 && Projectile.velocity.X < 2f)
-            {
-                if (Main.player[Projectile.owner].Center.X > Projectile.Center.X)
-                {
+            if (Projectile.velocity.X > -2 && Projectile.velocity.X < 2f) {
+                if (Main.player[Projectile.owner].Center.X > Projectile.Center.X) {
                     Projectile.direction = 1;
                 }
-                else
-                {
+                else {
                     Projectile.direction = -1;
                 }
             }
-            if (Projectile.direction == -1)
-            {
+            if (Projectile.direction == -1) {
                 Main.EntitySpriteDraw(tx, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, new Vector2(tx.Width, tx.Height) / 2, Projectile.scale, SpriteEffects.FlipHorizontally, 0);
 
             }
-            else
-            {
+            else {
                 Main.EntitySpriteDraw(tx, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, new Vector2(tx.Width, tx.Height) / 2, Projectile.scale, SpriteEffects.None, 0);
             }
 
@@ -82,15 +71,12 @@ namespace CalamityEntropy.Content.Projectiles.Pets.DoG
 
         }
         public bool std = false;
-        void MoveToTarget(Vector2 targetPos)
-        {
-            if (CEUtils.getDistance(Projectile.Center, targetPos) > 1400)
-            {
+        void MoveToTarget(Vector2 targetPos) {
+            if (CEUtils.getDistance(Projectile.Center, targetPos) > 1400) {
                 Projectile.Center = Main.player[Projectile.owner].Center;
             }
             Projectile.rotation = MathHelper.ToRadians((Projectile.velocity.X * 1.4f));
-            if (CEUtils.getDistance(Projectile.Center, targetPos) > 34)
-            {
+            if (CEUtils.getDistance(Projectile.Center, targetPos) > 34) {
                 Vector2 px = targetPos - Projectile.Center;
                 px.Normalize();
                 Projectile.velocity += px * 0.84f;
@@ -98,45 +84,37 @@ namespace CalamityEntropy.Content.Projectiles.Pets.DoG
                 Projectile.velocity *= 0.935f;
 
             }
-            else
-            {
+            else {
                 Projectile.velocity *= 0.8f;
 
             }
-            if (Projectile.velocity.X > 0)
-            {
+            if (Projectile.velocity.X > 0) {
                 Projectile.direction = 1;
             }
-            else
-            {
+            else {
                 Projectile.direction = -1;
             }
 
         }
-        public override bool PreAI()
-        {
+        public override bool PreAI() {
             Player player = Main.player[Projectile.owner];
 
             player.zephyrfish = false;
 
             return true;
         }
-        public static string ConvertToUnicodeString(string text)
-        {
+        public static string ConvertToUnicodeString(string text) {
             string result = "";
-            foreach (char c in text)
-            {
+            foreach (char c in text) {
                 result += "\\u" + ((int)c).ToString("x4");
             }
             return result;
         }
-        public override void AI()
-        {
+        public override void AI() {
             counter++;
             Player player = Main.player[Projectile.owner];
             MoveToTarget(player.Center + new Vector2(0, -60) + new Vector2(-30 * player.direction, 0));
-            if (!player.dead && (player.HasBuff(ModContent.BuffType<DevourerAndTheApostles>()) || player.HasBuff(ModContent.BuffType<DoGBuff>())))
-            {
+            if (!player.dead && (player.HasBuff(ModContent.BuffType<DevourerAndTheApostles>()) || player.HasBuff(ModContent.BuffType<DoGBuff>()))) {
                 Projectile.timeLeft = 2;
             }
 

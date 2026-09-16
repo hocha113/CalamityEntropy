@@ -18,8 +18,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidEchoProj
         internal static Asset<Texture2D> Part2Tex;
         [VaultLoaden("CalamityEntropy/Content/Projectiles/VoidEchoProj/VoidEcho")]
         internal static Asset<Texture2D> MarkTex;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Magic;
             Projectile.width = 32;
             Projectile.height = 32;
@@ -31,28 +30,23 @@ namespace CalamityEntropy.Content.Projectiles.VoidEchoProj
             Projectile.scale = 1.2f;
         }
         public bool right = true;
-        public override void AI()
-        {
+        public override void AI() {
             Player player = Projectile.owner.ToPlayer();
             Projectile.Center = player.Center + player.gfxOffY * Vector2.UnitY;
             right = player.direction == 1;
-            if (!player.HeldItem.IsAir && player.HeldItem.type == ModContent.ItemType<VoidEcho>())
-            {
+            if (!player.HeldItem.IsAir && player.HeldItem.type == ModContent.ItemType<VoidEcho>()) {
                 Projectile.timeLeft = 2;
             }
         }
 
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return false;
         }
         float counter = 0;
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             counter++;
             Player player = Projectile.owner.ToPlayer();
             Vector2 drawpos = Projectile.owner.ToPlayer().Center + player.gfxOffY * Vector2.UnitY + new Vector2(0, -44);
@@ -61,8 +55,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidEchoProj
             SpriteBatch sb = Main.spriteBatch;
 
             SpriteEffects ef = SpriteEffects.None;
-            if (!right)
-            {
+            if (!right) {
                 ef = SpriteEffects.FlipHorizontally;
             }
 

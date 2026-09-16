@@ -1,5 +1,4 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Graphics.Shaders;
@@ -16,10 +15,8 @@ namespace CalamityEntropy.Core.Graphics
         /// 给 MiscShaderData 设置采样贴图。灾厄原版直写私有字段 _uImageX(靠 publicizer),
         /// 本仓库无 publicizer, 改走 tML 公开的 UseImageX, 效果完全等价。
         /// </summary>
-        public static MiscShaderData SetShaderTexture(this MiscShaderData shader, Asset<Texture2D> texture, int index = 1)
-        {
-            return index switch
-            {
+        public static MiscShaderData SetShaderTexture(this MiscShaderData shader, Asset<Texture2D> texture, int index = 1) {
+            return index switch {
                 0 => shader.UseImage0(texture),
                 2 => shader.UseImage2(texture),
                 _ => shader.UseImage1(texture),
@@ -27,15 +24,13 @@ namespace CalamityEntropy.Core.Graphics
         }
 
         /// <summary>切到 Immediate 批次, 使后续 Draw 逐个应用着色器。</summary>
-        public static void EnterShaderRegion(this SpriteBatch spriteBatch, BlendState newBlendState = null, Effect effect = null, Matrix? matrix = null)
-        {
+        public static void EnterShaderRegion(this SpriteBatch spriteBatch, BlendState newBlendState = null, Effect effect = null, Matrix? matrix = null) {
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, newBlendState ?? BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, effect, matrix ?? Main.GameViewMatrix.TransformationMatrix);
         }
 
         /// <summary>回到默认 Deferred/AlphaBlend 批次。</summary>
-        public static void ExitShaderRegion(this SpriteBatch spriteBatch, Matrix? matrix = null)
-        {
+        public static void ExitShaderRegion(this SpriteBatch spriteBatch, Matrix? matrix = null) {
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, matrix ?? Main.GameViewMatrix.TransformationMatrix);
         }

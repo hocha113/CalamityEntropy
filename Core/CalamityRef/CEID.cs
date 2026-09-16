@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Terraria.ModLoader;
 
@@ -404,16 +404,13 @@ namespace CalamityEntropy.Core.CalamityRef
         public static int Rarity_Turquoise => Get();
         #endregion
 
-        private static int Get([CallerMemberName] string name = "")
-        {
-            if (idCache.TryGetValue(name, out int cached))
-            {
+        private static int Get([CallerMemberName] string name = "") {
+            if (idCache.TryGetValue(name, out int cached)) {
                 return cached;
             }
 
             int split = name.IndexOf('_');
-            if (split <= 0 || split >= name.Length - 1)
-            {
+            if (split <= 0 || split >= name.Length - 1) {
                 LogBadKey(name);
                 return 0;
             }
@@ -423,46 +420,39 @@ namespace CalamityEntropy.Core.CalamityRef
             int result = 0;
             bool found = false;
 
-            switch (prefix)
-            {
+            switch (prefix) {
                 case "Item":
-                    if (ModContent.TryFind(CalName, typeName, out ModItem modItem))
-                    {
+                    if (ModContent.TryFind(CalName, typeName, out ModItem modItem)) {
                         result = modItem.Type;
                         found = true;
                     }
                     break;
                 case "NPC":
-                    if (ModContent.TryFind(CalName, typeName, out ModNPC modNPC))
-                    {
+                    if (ModContent.TryFind(CalName, typeName, out ModNPC modNPC)) {
                         result = modNPC.Type;
                         found = true;
                     }
                     break;
                 case "Proj":
-                    if (ModContent.TryFind(CalName, typeName, out ModProjectile modProj))
-                    {
+                    if (ModContent.TryFind(CalName, typeName, out ModProjectile modProj)) {
                         result = modProj.Type;
                         found = true;
                     }
                     break;
                 case "Tile":
-                    if (ModContent.TryFind(CalName, typeName, out ModTile modTile))
-                    {
+                    if (ModContent.TryFind(CalName, typeName, out ModTile modTile)) {
                         result = modTile.Type;
                         found = true;
                     }
                     break;
                 case "Buff":
-                    if (ModContent.TryFind(CalName, typeName, out ModBuff modBuff))
-                    {
+                    if (ModContent.TryFind(CalName, typeName, out ModBuff modBuff)) {
                         result = modBuff.Type;
                         found = true;
                     }
                     break;
                 case "Rarity":
-                    if (ModContent.TryFind(CalName, typeName, out ModRarity modRarity))
-                    {
+                    if (ModContent.TryFind(CalName, typeName, out ModRarity modRarity)) {
                         result = modRarity.Type;
                         found = true;
                     }
@@ -472,50 +462,41 @@ namespace CalamityEntropy.Core.CalamityRef
                     return 0;
             }
 
-            if (found || cacheMisses)
-            {
+            if (found || cacheMisses) {
                 idCache[name] = result;
             }
-            if (!found)
-            {
+            if (!found) {
                 LogMiss(prefix, typeName);
             }
             return result;
         }
 
-        private static void LogBadKey(string name)
-        {
-            if (!loggedKeys.Add("bad|" + name))
-            {
+        private static void LogBadKey(string name) {
+            if (!loggedKeys.Add("bad|" + name)) {
                 return;
             }
             CalamityEntropy inst = CalamityEntropy.Instance;
             inst?.Logger.Warn("[CEID] 非法属性名: " + name);
         }
 
-        private static void LogMiss(string prefix, string typeName)
-        {
+        private static void LogMiss(string prefix, string typeName) {
             //无灾厄时未命中是预期行为,不打日志
-            if (!ModLoader.TryGetMod(CalName, out _))
-            {
+            if (!ModLoader.TryGetMod(CalName, out _)) {
                 return;
             }
             string key = prefix + "|" + typeName;
-            if (!loggedKeys.Add(key))
-            {
+            if (!loggedKeys.Add(key)) {
                 return;
             }
             CalamityEntropy inst = CalamityEntropy.Instance;
             inst?.Logger.Warn("[CEID] 未命中 " + prefix + ": CalamityMod/" + typeName);
         }
 
-        internal static void SealMissCache()
-        {
+        internal static void SealMissCache() {
             cacheMisses = true;
         }
 
-        internal static void UnLoadData()
-        {
+        internal static void UnLoadData() {
             idCache.Clear();
             loggedKeys.Clear();
             cacheMisses = false;

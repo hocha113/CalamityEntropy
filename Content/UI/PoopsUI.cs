@@ -16,24 +16,20 @@ namespace CalamityEntropy.Content.UI
         private static Asset<Texture2D> holdTex;
         public static float holdAnmj = 0;
         public static float holdAnm = 0;
-        public static void Draw()
-        {
+        public static void Draw() {
             Vector2 pos = new Vector2(880, 40);
             int maxShow = 9;
             Vector2 drawPos = pos;
             Texture2D frame = frameTex.Value;
             List<Poop> poops = Main.LocalPlayer.Entropy().poops;
-            for (int i = 0; i < maxShow; i++)
-            {
+            for (int i = 0; i < maxShow; i++) {
                 Main.spriteBatch.Draw(frame, drawPos, null, Color.White, 0, Vector2.Zero, 2, SpriteEffects.None, 0);
                 drawPos.X += 48;
             }
 
             drawPos = pos;
-            for (int i = 0; i < maxShow; i++)
-            {
-                if (i < poops.Count)
-                {
+            for (int i = 0; i < maxShow; i++) {
+                if (i < poops.Count) {
                     Texture2D tex = poops[i].getTexture();
                     Main.spriteBatch.Draw(tex, drawPos + new Vector2(24, 24), null, Color.White, 0, tex.Size() / 2, 2, SpriteEffects.None, 0);
                     drawPos.X += 48;
@@ -42,8 +38,7 @@ namespace CalamityEntropy.Content.UI
             float hrot = (float)holdAnm * 0.1f;
             float scale = 1 + holdAnm;
             Main.spriteBatch.UseBlendState_UI(BlendState.NonPremultiplied);
-            if (Main.LocalPlayer.Entropy().PoopHold is not null)
-            {
+            if (Main.LocalPlayer.Entropy().PoopHold is not null) {
                 Texture2D texpoop = Main.LocalPlayer.Entropy().PoopHold.getTexture();
                 Main.spriteBatch.Draw(texpoop, pos + new Vector2(24 + maxShow * 48, 24) + new Vector2(0, 8).RotatedBy(hrot), null, Color.White, hrot, texpoop.Size() / 2, 1 * scale, SpriteEffects.None, 0);
             }
@@ -52,8 +47,7 @@ namespace CalamityEntropy.Content.UI
             Main.spriteBatch.UseBlendState_UI(BlendState.AlphaBlend);
             holdAnm += holdAnmj;
             holdAnmj -= 0.04f;
-            if (holdAnm < 0)
-            {
+            if (holdAnm < 0) {
                 holdAnm = 0;
                 holdAnmj = 0;
             }

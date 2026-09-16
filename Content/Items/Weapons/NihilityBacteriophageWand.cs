@@ -12,18 +12,15 @@ namespace CalamityEntropy.Content.Items.Weapons
 {
     public class NihilityBacteriophageWand : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ItemID.Sets.GamepadWholeScreenUseRange[Item.type] = true;
             ItemID.Sets.LockOnIgnoresCollision[Item.type] = true;
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             tooltips.IntegrateHotkey(CEKeybinds.CommandMinions);
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 300;
             Item.DamageType = DamageClass.Summon;
             Item.width = 90;
@@ -42,8 +39,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.buffType = ModContent.BuffType<NihilityBacteriophageBuff>();
             Item.rare = ModContent.RarityType<NihilityBlue>();
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             player.AddBuff(Item.buffType, 3);
             int projectile = Projectile.NewProjectile(source, Main.MouseWorld, velocity, type, Item.damage, knockback, player.whoAmI, 0, 1, 0);
             Main.projectile[projectile].originalDamage = Item.damage;

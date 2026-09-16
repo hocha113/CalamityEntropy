@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Buffs.PortsDoT;
+﻿using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
 using CalamityEntropy.Core.CalamityRef;
@@ -37,8 +37,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         public const int RetaliationStarDamage = 130;
         public const int RetaliationStarCount = 12;
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 86;
             Item.height = 86;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
@@ -49,12 +48,10 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             // 两个时代整方法二分,不叠加。装灾厄时配方要求交出阿斯加德之庇护与神之壁垒
             // 两件屠龙后成品盾,效果若停在 4.0 平衡案那套,合成即降级,是进度陷阱。
-            if (CERef.Has)
-            {
+            if (CERef.Has) {
                 ApplyCalamityEraEffects(player);
                 return;
             }
@@ -68,23 +65,19 @@ namespace CalamityEntropy.Content.Items.Accessories
             player.aggro += 600;
         }
 
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             // 装灾厄整段换成灾厄时代键,无灾厄不碰,Items.OdinsRefuge.Tooltip 保持 4.0 原文
             if (!CERef.Has)
                 return;
             string cal = Mod.GetLocalization("OdinsRefugeCal").Value;
             int insertAt = -1;
-            for (int i = 0; i < tooltips.Count; i++)
-            {
-                if (tooltips[i].Name.StartsWith("Tooltip"))
-                {
+            for (int i = 0; i < tooltips.Count; i++) {
+                if (tooltips[i].Name.StartsWith("Tooltip")) {
                     insertAt = i;
                     break;
                 }
             }
-            for (int i = tooltips.Count - 1; i >= 0; i--)
-            {
+            for (int i = tooltips.Count - 1; i >= 0; i--) {
                 if (tooltips[i].Name.StartsWith("Tooltip"))
                     tooltips.RemoveAt(i);
             }
@@ -92,8 +85,7 @@ namespace CalamityEntropy.Content.Items.Accessories
                 insertAt = tooltips.Count;
             string[] lines = cal.Replace("\r\n", "\n").Split('\n');
             int offset = 0;
-            for (int i = 0; i < lines.Length; i++)
-            {
+            for (int i = 0; i < lines.Length; i++) {
                 string line = lines[i].Trim();
                 if (line.Length == 0)
                     continue;
@@ -110,8 +102,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         /// 二是 DashID 会把冲刺交回灾厄的冲刺系统,与本仓 4.0 自有的 Core/Dash 抢同一份
         /// 双击输入,而这个冲突在 3.33 时并不存在(那时还没有自有冲刺框架)。</para>
         /// </summary>
-        private static void ApplyCalamityEraEffects(Player player)
-        {
+        private static void ApplyCalamityEraEffects(Player player) {
             // 神圣屏障格挡:两个时代共有,配方两侧也都要交神圣斗篷
             player.Entropy().holyMantle = true;
             // 阿斯加德之庇护:免疫击退与盾击冲刺
@@ -128,8 +119,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
 
         /// <summary>与原版十字章护身符(ItemID.AnkhCharm, Player.cs type 1612)同一组减益。</summary>
-        public static void ApplyAnkhCharmImmune(Player player)
-        {
+        public static void ApplyAnkhCharmImmune(Player player) {
             player.buffImmune[BuffID.Weak] = true;
             player.buffImmune[BuffID.BrokenArmor] = true;
             player.buffImmune[BuffID.Bleeding] = true;
@@ -142,10 +132,8 @@ namespace CalamityEntropy.Content.Items.Accessories
             player.buffImmune[BuffID.Stoned] = true;
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_AsgardianAegis, CEID.Item_RampartofDeities))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_AsgardianAegis, CEID.Item_RampartofDeities)) {
                 CreateRecipe().
                 AddIngredient(CEID.Item_AsgardianAegis, 1).
                 AddIngredient(CEID.Item_RampartofDeities, 1).
@@ -182,27 +170,23 @@ namespace CalamityEntropy.Content.Items.Accessories
         /// <summary>长冲刺:速度撑满大半程再收尾,与阿扎弗盾冲同一条曲线。</summary>
         public override float Curve => 1.6f;
 
-        public override void OnStart(Player player, CEDashState state)
-        {
+        public override void OnStart(Player player, CEDashState state) {
             CEUtils.PlaySound("Dash2", Main.rand.NextFloat(0.85f, 1.05f), player.Center, 6, 0.55f);
             Vector2 back = -state.Direction;
-            for (int i = 0; i < 12; i++)
-            {
+            for (int i = 0; i < 12; i++) {
                 Dust dust = Dust.NewDustPerfect(player.Center + CEUtils.randomPointInCircle(14), DustID.FrostStaff,
                     back.RotatedByRandom(0.5f) * Main.rand.NextFloat(3f, 9f), 0, default, Main.rand.NextFloat(1.1f, 1.6f));
                 dust.noGravity = true;
             }
         }
 
-        public override void OnVisuals(Player player, CEDashState state)
-        {
+        public override void OnVisuals(Player player, CEDashState state) {
             // 霜与金的双色残迹,强度随冲刺进度收束
             float intensity = 1f - state.Progress;
             Vector2 axis = state.Direction;
             Vector2 side = axis.RotatedBy(MathHelper.PiOver2);
             int dustCount = 1 + (int)(2 * intensity);
-            for (int i = 0; i < dustCount; i++)
-            {
+            for (int i = 0; i < dustCount; i++) {
                 Dust frost = Dust.NewDustPerfect(player.Center + side * Main.rand.NextFloat(-16f, 16f) - axis * 20f,
                     DustID.FrostStaff, -player.velocity * Main.rand.NextFloat(0.1f, 0.5f), 0, default, Main.rand.NextFloat(1.2f, 1.8f));
                 frost.noGravity = true;
@@ -213,8 +197,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             }
         }
 
-        public override void OnHit(Player player, NPC npc, CEDashState state, ref CEDashHit hit)
-        {
+        public override void OnHit(Player player, NPC npc, CEDashState state, ref CEDashHit hit) {
             if (state.HitCount == 1)
                 ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Vector2.Zero, 5));
             CEUtils.PlaySound("metalhit", Main.rand.NextFloat(0.8f, 1.1f), npc.Center);

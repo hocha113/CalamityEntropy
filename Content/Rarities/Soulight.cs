@@ -6,8 +6,7 @@ namespace CalamityEntropy.Content.Rarities
     {
         public override Color RarityColor => new Color(220, 240, 255);
 
-        public override int GetPrefixedRarity(int offset, float valueMult) => offset switch
-        {
+        public override int GetPrefixedRarity(int offset, float valueMult) => offset switch {
             _ => Type,
         };
     }

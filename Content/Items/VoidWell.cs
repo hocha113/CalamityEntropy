@@ -1,16 +1,15 @@
 ﻿using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items
 {
     public class VoidWell : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 62;
             Item.height = 48;
             Item.maxStack = 9999;
@@ -24,10 +23,8 @@ namespace CalamityEntropy.Content.Items
             Item.rare = ModContent.RarityType<VoidPurple>();
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_VoidCondenser))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_VoidCondenser)) {
                 CreateRecipe()
                 .AddIngredient(CEID.Item_VoidCondenser)
                 .AddIngredient(ModContent.ItemType<VoidScales>(), 10)

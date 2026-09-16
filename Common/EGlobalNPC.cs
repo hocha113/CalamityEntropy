@@ -1,4 +1,4 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.DamageClasses;
@@ -30,20 +30,16 @@ using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using ReLogic.Graphics;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using static Terraria.ModLoader.ModContent;
 
 namespace CalamityEntropy.Common
 {
@@ -65,42 +61,34 @@ namespace CalamityEntropy.Common
         public float damageMul = 1;
         public int AnimaTrapped = 0;
         public int[] tfriendlyNPCHitCooldown = new int[201];
-        public override bool AppliesToEntity(NPC entity, bool lateInstantiation)
-        {
+        public override bool AppliesToEntity(NPC entity, bool lateInstantiation) {
             return true;
         }
-        public float DebuffDamageMult()
-        {
+        public float DebuffDamageMult() {
             float r = 1;
-            foreach (Player player in Main.ActivePlayers)
-            {
-                if (player.Entropy().hasAcc("Leyla"))
-                {
+            foreach (Player player in Main.ActivePlayers) {
+                if (player.Entropy().hasAcc("Leyla")) {
                     // 2026-08-31 平衡案:莱拉去成长,固定+50% debuff伤害
                     r += Leyla.DoTBonus;
                 }
             }
             return r;
         }
-        public override void UpdateLifeRegen(NPC npc, ref int damage)
-        {
+        public override void UpdateLifeRegen(NPC npc, ref int damage) {
             // 原生重实现：原先靠 IL 钩灾厄 DoT 管线应用减益伤害倍率，现直接放大负生命回复。
             // 乘区链定稿（已核实）：GlobalNPC 按 FullName 字母序执行，EDamageOverTimeNPC 恒先于本类，
             // 其自乘已删除——原版减益与本模组 DotBuff 的倍率统一由此处全局放大（各乘一次，无重叠）；
             // PortsDoT 自研 DoT 由 CEDoTGlobalNPC 自乘（Core 命名空间字母序晚于本类，不吃本处放大）。
             float dotMult = DebuffDamageMult();
-            if (dotMult > 1f && npc.lifeRegen < 0)
-            {
+            if (dotMult > 1f && npc.lifeRegen < 0) {
                 npc.lifeRegen = (int)(npc.lifeRegen * dotMult);
                 // 跳字随倍率同步放大，保持显示与实际伤害一致（全局放大只改 lifeRegen 不改跳字）
                 damage = (int)(damage * dotMult);
             }
         }
-        public static void RemoveAllTags(NPC npc)
-        {
+        public static void RemoveAllTags(NPC npc) {
             npc.GetGlobalNPC<WhipDebuffNPC>().Tags.Clear();
-            for (int i = 0; i < NPC.maxBuffs; i++)
-            {
+            for (int i = 0; i < NPC.maxBuffs; i++) {
                 if (npc.buffTime[i] <= 0)
                     continue;
                 if (BuffID.Sets.IsATagBuff[npc.buffType[i]])
@@ -130,8 +118,7 @@ namespace CalamityEntropy.Common
         public int friendFinderOwner = 0;
         public float TDRCounter = 3 * 60 * 60;
         public int HitCounter = 0;
-        public static float DamageReduceMult(NPC npc)
-        {
+        public static float DamageReduceMult(NPC npc) {
             float mult = 1;
 
             if (npc.HasBuff<Koishi>())
@@ -155,21 +142,17 @@ namespace CalamityEntropy.Common
 
             return mult;
         }
-        public override void SetupTravelShop(int[] shop, ref int nextSlot)
-        {
-            if (Main.rand.NextBool(4))
-            {
+        public override void SetupTravelShop(int[] shop, ref int nextSlot) {
+            if (Main.rand.NextBool(4)) {
                 shop[nextSlot] = ModContent.ItemType<ExquisiteBookmarkHolder>();
                 nextSlot++;
             }
-            if (Main.rand.NextBool(10))
-            {
+            if (Main.rand.NextBool(10)) {
                 shop[nextSlot] = ModContent.ItemType<BigShotsWing>();
                 nextSlot++;
             }
         }
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             //---如果希望注册原版NPC，解除下面的注释查看效果---///
             //VaultUtils.LoadenNPCStaticImmunityData(
             //    npcSourceID: NPCID.TheDestroyer,
@@ -179,34 +162,27 @@ namespace CalamityEntropy.Common
 
             //---如果希望手动调整源NPC的无敌帧，使用 VaultUtils.SetStaticImmunity，在合适的时机将无敌帧设置为0即可取消无敌状态---//
         }
-        public List<Vector2> getAbyssalCirclePointsRelative(NPC npc, float distAdd = 0, float c = 1)
-        {
+        public List<Vector2> getAbyssalCirclePointsRelative(NPC npc, float distAdd = 0, float c = 1) {
             float dist = (npc.width + npc.height) / 2f + 30 - (float)Math.Cos(Main.GlobalTimeWrappedHourly) * 12 + distAdd;
             List<Vector2> points = new List<Vector2>();
-            for (int i = 0; i <= 60; i++)
-            {
+            for (int i = 0; i <= 60; i++) {
                 points.Add(new Vector2(dist, 0).RotatedBy(MathHelper.ToRadians(i * 6 - 80 * c * Main.GlobalTimeWrappedHourly)));
             }
             return points;
         }
-        public override bool? CanBeCaughtBy(NPC npc, Item item, Player player)
-        {
-            if (npc.type == NPCID.FairyCritterBlue || npc.type == NPCID.FairyCritterGreen || npc.type == NPCID.FairyCritterPink)
-            {
+        public override bool? CanBeCaughtBy(NPC npc, Item item, Player player) {
+            if (npc.type == NPCID.FairyCritterBlue || npc.type == NPCID.FairyCritterGreen || npc.type == NPCID.FairyCritterPink) {
                 return true;
             }
 
             return base.CanBeCaughtBy(npc, item, player);
         }
-        public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
-        {
-            if (needExitShader)
-            {
+        public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) {
+            if (needExitShader) {
                 Main.spriteBatch.End();
                 Main.spriteBatch.begin_();
             }
-            if (npc.Entropy().StareOfAbyssLevel > 0)
-            {
+            if (npc.Entropy().StareOfAbyssLevel > 0) {
 
                 float alpha = npc.Entropy().StareOfAbyssLevel / 12f;
                 Main.spriteBatch.End();
@@ -217,8 +193,7 @@ namespace CalamityEntropy.Common
                     List<Vector2> points = npc.Entropy().getAbyssalCirclePointsRelative(npc, -50);
                     List<Vector2> pointsOutside = npc.Entropy().getAbyssalCirclePointsRelative(npc, 50);
                     int i;
-                    for (i = 0; i < points.Count; i++)
-                    {
+                    for (i = 0; i < points.Count; i++) {
                         ve.Add(new ColoredVertex(npc.Center - Main.screenPosition + points[i],
                               new Vector3((float)i / points.Count, 1, 1),
                               Color.SkyBlue * 0.66f * alpha));
@@ -229,8 +204,7 @@ namespace CalamityEntropy.Common
                     }
                     SpriteBatch sb = Main.spriteBatch;
                     GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                    if (ve.Count >= 3)
-                    {
+                    if (ve.Count >= 3) {
                         Texture2D tx = AbyssalCircleTex.Value;
                         gd.Textures[0] = tx;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
@@ -241,8 +215,7 @@ namespace CalamityEntropy.Common
                     List<Vector2> points = npc.Entropy().getAbyssalCirclePointsRelative(npc, -50, -1);
                     List<Vector2> pointsOutside = npc.Entropy().getAbyssalCirclePointsRelative(npc, 50, -1);
                     int i;
-                    for (i = 0; i < points.Count; i++)
-                    {
+                    for (i = 0; i < points.Count; i++) {
                         ve.Add(new ColoredVertex(npc.Center - Main.screenPosition + points[i],
                               new Vector3((float)i / points.Count, 1, 1),
                               Color.SkyBlue * 0.66f * alpha));
@@ -253,8 +226,7 @@ namespace CalamityEntropy.Common
                     }
                     SpriteBatch sb = Main.spriteBatch;
                     GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                    if (ve.Count >= 3)
-                    {
+                    if (ve.Count >= 3) {
                         Texture2D tx = AbyssalCircleTex.Value;
                         gd.Textures[0] = tx;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
@@ -268,19 +240,14 @@ namespace CalamityEntropy.Common
         public int LastLife = -1;
         public int StickByMissile = 0;
         public float MissileDamageAddition = 0;
-        public override void PostAI(NPC npc)
-        {
+        public override void PostAI(NPC npc) {
             Lifetime++;
-            if (Lifetime > 3 * 60 * 60 && npc.ModNPC != null && npc.ModNPC is FriendFindNPC)
-            {
+            if (Lifetime > 3 * 60 * 60 && npc.ModNPC != null && npc.ModNPC is FriendFindNPC) {
                 npc.active = false;
             }
-            if (StickByMissile > 0)
-            {
-                foreach (Projectile proj in Main.ActiveProjectiles)
-                {
-                    if (proj.ModProjectile != null && proj.ModProjectile is BaseMissileProj bmp)
-                    {
+            if (StickByMissile > 0) {
+                foreach (Projectile proj in Main.ActiveProjectiles) {
+                    if (proj.ModProjectile != null && proj.ModProjectile is BaseMissileProj bmp) {
                         MissileDamageAddition += bmp.StickDamageAddition;
                     }
                 }
@@ -288,105 +255,84 @@ namespace CalamityEntropy.Common
             if (LastLife < 0)
                 LastLife = npc.life;
 
-            if (npc.HasBuff<LifeOppress>())
-            {
-                if (npc.life > LastLife && !npc.dontTakeDamage)
-                {
+            if (npc.HasBuff<LifeOppress>()) {
+                if (npc.life > LastLife && !npc.dontTakeDamage) {
                     npc.life = LastLife;
                 }
             }
 
-            if (npc.life >= 0)
-            {
+            if (npc.life >= 0) {
                 LastLife = npc.life;
             }
             HitCounter++;
-            if (TDRCounter > 0)
-            {
+            if (TDRCounter > 0) {
                 TDRCounter -= 0.75f;
                 if (TDRCounter < 0)
                     TDRCounter = 0;
             }
             noelctime--;
-            if (deusBloodOut > 0 && !npc.dontTakeDamage)
-            {
+            if (deusBloodOut > 0 && !npc.dontTakeDamage) {
                 int dmgApply = (int)(deusBloodOut * 0.01f + 1);
-                if (dmgApply > deusBloodOut)
-                {
+                if (dmgApply > deusBloodOut) {
                     dmgApply = deusBloodOut;
                 }
                 deusBloodOut -= dmgApply;
                 dmgApply *= 6;
                 (npc.realLife >= 0 ? npc.realLife.ToNPC() : npc).life -= dmgApply;
-                if ((npc.realLife >= 0 ? npc.realLife.ToNPC() : npc).life < 1)
-                {
+                if ((npc.realLife >= 0 ? npc.realLife.ToNPC() : npc).life < 1) {
                     (npc.realLife >= 0 ? npc.realLife.ToNPC() : npc).life = 1;
                 }
-                if ((npc.realLife >= 0 ? npc.realLife.ToNPC() : npc).life <= 5)
-                {
+                if ((npc.realLife >= 0 ? npc.realLife.ToNPC() : npc).life <= 5) {
                     //deusBloodOut = 0;
                 }
             }
-            for (int i = 0; i < tfriendlyNPCHitCooldown.Length; i++)
-            {
-                if (tfriendlyNPCHitCooldown[i] > 0)
-                {
+            for (int i = 0; i < tfriendlyNPCHitCooldown.Length; i++) {
+                if (tfriendlyNPCHitCooldown[i] > 0) {
                     tfriendlyNPCHitCooldown[i]--;
                 }
             }
-            if (StareOfAbyssTime > 0)
-            {
+            if (StareOfAbyssTime > 0) {
                 StareOfAbyssTime--;
             }
-            if (StareOfAbyssTime <= 0)
-            {
+            if (StareOfAbyssTime <= 0) {
                 StareOfAbyssLevel = 0;
             }
-            if (EclipsedImprintTime > 0)
-            {
+            if (EclipsedImprintTime > 0) {
                 EclipsedImprintTime--;
             }
-            if (EclipsedImprintTime <= 0)
-            {
+            if (EclipsedImprintTime <= 0) {
                 EclipsedImprintLevel = 0;
             }
 
-            if (applyMarkedOfDeath > 0)
-            {
+            if (applyMarkedOfDeath > 0) {
                 // 自研移植的死亡标记（debuff-map：PortsDoT 同短名，受击伤害 ×1.1）
                 npc.AddBuff(ModContent.BuffType<MarkedforDeath>(), applyMarkedOfDeath);
                 applyMarkedOfDeath = 0;
             }
-            if (plrOldPos.HasValue)
-            {
+            if (plrOldPos.HasValue) {
                 Main.player[0].position = plrOldPos.Value;
                 plrOldPos = null;
             }
-            if (plrOldVel.HasValue)
-            {
+            if (plrOldVel.HasValue) {
                 Main.player[0].velocity = plrOldVel.Value;
                 plrOldVel = null;
             }
-            if (plrOldPos2.HasValue)
-            {
+            if (plrOldPos2.HasValue) {
                 Main.player[0].position = plrOldPos2.Value;
                 plrOldPos2 = null;
             }
-            if (plrOldVel2.HasValue)
-            {
+            if (plrOldVel2.HasValue) {
                 Main.player[0].velocity = plrOldVel2.Value;
                 plrOldVel2 = null;
             }
-            if (!ToFriendly)
-            {
+            if (!ToFriendly) {
                 ModContent.GetInstance<EModSys>().LastPlayerVel = Main.player[0].velocity;
                 ModContent.GetInstance<EModSys>().LastPlayerPos = Main.player[0].Center;
 
             }
         }
         public static int TamedDmgMul = 16;
-        public override void SendExtraAI(NPC npc, BitWriter bitWriter, BinaryWriter binaryWriter)
-        {
+        public override void SendExtraAI(NPC npc, BitWriter bitWriter, BinaryWriter binaryWriter) {
             /*binaryWriter.Write(StareOfAbyssLevel);
             binaryWriter.Write(StareOfAbyssTime);
             binaryWriter.Write(EclipsedImprintLevel);
@@ -396,38 +342,30 @@ namespace CalamityEntropy.Common
             binaryWriter.Write(VoidTouchTime);
             */
         }
-        public override bool? CanBeHitByProjectile(NPC npc, Projectile projectile)
-        {
-            if (npc.type == ModContent.NPCType<PrimordialWyrmNPC>() && projectile.friendly)
-            {
+        public override bool? CanBeHitByProjectile(NPC npc, Projectile projectile) {
+            if (npc.type == ModContent.NPCType<PrimordialWyrmNPC>() && projectile.friendly) {
                 return false;
             }
             return null;
         }
-        public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot)
-        {
+        public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot) {
             if (target.Entropy().immune > 0)
                 return false;
-            if (target.ownedProjectileCounts[ModContent.ProjectileType<TSSlash>()] > 0)
-            {
+            if (target.ownedProjectileCounts[ModContent.ProjectileType<TSSlash>()] > 0) {
                 return false;
             }
-            if (AnimaTrapped > 0)
-            {
+            if (AnimaTrapped > 0) {
                 return false;
             }
             return base.CanHitPlayer(npc, target, ref cooldownSlot);
         }
-        public override bool CanHitNPC(NPC npc, NPC target)
-        {
-            if (AnimaTrapped > 0)
-            {
+        public override bool CanHitNPC(NPC npc, NPC target) {
+            if (AnimaTrapped > 0) {
                 return false;
             }
             return base.CanHitNPC(npc, target);
         }
-        public override void ReceiveExtraAI(NPC npc, BitReader bitReader, BinaryReader binaryReader)
-        {
+        public override void ReceiveExtraAI(NPC npc, BitReader bitReader, BinaryReader binaryReader) {
             /*StareOfAbyssLevel = binaryReader.ReadInt32();
             StareOfAbyssTime = binaryReader.ReadInt32();
             EclipsedImprintLevel = binaryReader.ReadInt32();
@@ -436,16 +374,13 @@ namespace CalamityEntropy.Common
              VoidTouchTime = binaryReader.ReadInt32();*/
         }
         public bool ffoFlag = false;
-        public static void setFriendly(int id, int owner = 0)
-        {
-            if (id.ToNPC().Entropy().ToFriendly)
-            {
+        public static void setFriendly(int id, int owner = 0) {
+            if (id.ToNPC().Entropy().ToFriendly) {
                 return;
             }
             id.ToNPC().Entropy().ToFriendly = true;
             id.ToNPC().Entropy().f_owner = owner;
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
+            if (Main.netMode == NetmodeID.MultiplayerClient) {
                 ModPacket p = CalamityEntropy.Instance.GetPacket();
                 p.Write((byte)CEMessageType.TurnFriendly);
                 p.Write(id);
@@ -457,45 +392,36 @@ namespace CalamityEntropy.Common
         public bool friendlyDecLife = true;
         public int counter = 0;
         public int Decrease20DR = 0;
-        public override bool PreAI(NPC npc)
-        {
+        public override bool PreAI(NPC npc) {
             if (HungryTagged > 0)
                 HungryTagged--;
             if (Decrease20DR > 0)
                 Decrease20DR--;
             StickByMissile--;
             MissileDamageAddition = 0;
-            if (npc.ModNPC != null && npc.ModNPC is FriendFindNPC ff)
-            {
-                if (npc.localAI[3] > 0)
-                {
+            if (npc.ModNPC != null && npc.ModNPC is FriendFindNPC ff) {
+                if (npc.localAI[3] > 0) {
                     friendFinderOwner = (int)npc.localAI[3] - 1;
                     npc.localAI[3] = 0;
                     ffoFlag = true;
                 }
-                if (ffoFlag)
-                {
+                if (ffoFlag) {
                     float slots = 0;
-                    foreach (NPC n in Main.ActiveNPCs)
-                    {
-                        if (n.ModNPC is FriendFindNPC)
-                        {
+                    foreach (NPC n in Main.ActiveNPCs) {
+                        if (n.ModNPC is FriendFindNPC) {
                             slots += 1;
                         }
                     }
-                    if (slots > friendFinderOwner.ToPlayer().maxMinions + friendFinderOwner.ToPlayer().Entropy().ffDecSlot)
-                    {
+                    if (slots > friendFinderOwner.ToPlayer().maxMinions + friendFinderOwner.ToPlayer().Entropy().ffDecSlot) {
                         npc.active = false;
                         return false;
                     }
                 }
             }
             counter++;
-            if (npc.Entropy().EclipsedImprintLevel > 0)
-            {
+            if (npc.Entropy().EclipsedImprintLevel > 0) {
                 int c = 16 - npc.Entropy().EclipsedImprintLevel;
-                if (counter % c == 0)
-                {
+                if (counter % c == 0) {
                     //PRT_AbyssalLine日蚀印记光环,lx/xadd/spawnColor spawn后直赋
                     var __prt = PRTLoader.NewParticle<PRT_AbyssalLine>(npc.Center, Vector2.Zero, Color.White, 1).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, CEUtils.randomRot());
                     __prt.lx = 1.2f;
@@ -578,40 +504,32 @@ namespace CalamityEntropy.Common
                     } 
                 }
             }*/
-            if (npc.Entropy().daTarget && npc.realLife == -1)
-            {
+            if (npc.Entropy().daTarget && npc.realLife == -1) {
                 npc.velocity *= 0;
                 return false;
             }
             dscd--;
             vtnoparticle--;
-            if (npc.Entropy().VoidTouchTime > 0)
-            {
-                if (vtnoparticle <= 0 && false)
-                {
-                    for (int i = 0; i < 1; i++)
-                    {
+            if (npc.Entropy().VoidTouchTime > 0) {
+                if (vtnoparticle <= 0 && false) {
+                    for (int i = 0; i < 1; i++) {
                         var rd = Main.rand;
                         var p = PRTLoader.NewParticle<PRT_Void>(npc.Center, new Vector2((float)((rd.NextDouble() - 0.5) * 6), (float)((rd.NextDouble() - 0.5) * 6)), Color.White, 1f);
                         p.Opacity = 0.5f;
                     }
                 }
-                if (Main.GameUpdateCount % 20 == 0 && !npc.dontTakeDamage)
-                {
+                if (Main.GameUpdateCount % 20 == 0 && !npc.dontTakeDamage) {
                     NPC.HitInfo hit = npc.CalculateHitInfo((int)(26 * npc.Entropy().VoidTouchLevel * (1 - npc.Entropy().VoidTouchDR)), 0, false, 0, DamageClass.Generic, false, 0);
                     hit.HideCombatText = true;
                     int damageDone = npc.StrikeNPC(hit, false, false);
                     CombatText.NewText(npc.getRect(), new Color(148, 148, 255), damageDone);
-                    if (Main.netMode == NetmodeID.MultiplayerClient)
-                    {
+                    if (Main.netMode == NetmodeID.MultiplayerClient) {
                         NetMessage.SendStrikeNPC(npc, hit);
                     }
 
                 }
-                if (!(npc.ModNPC is VoidCultist))
-                {
-                    if (!npc.boss)
-                    {
+                if (!(npc.ModNPC is VoidCultist)) {
+                    if (!npc.boss) {
                         npc.velocity *= 0.96f;
                     }
                 }
@@ -619,30 +537,23 @@ namespace CalamityEntropy.Common
                 Dust.NewDust(npc.position, npc.width, npc.height, DustID.CorruptSpray, (float)r.NextDouble() * 2 - 1, (float)r.NextDouble() * 2 - 1);
                 npc.Entropy().VoidTouchTime = VoidTouchTime - 1;
             }
-            if (npc.Entropy().VoidTouchTime > 0)
-            {
+            if (npc.Entropy().VoidTouchTime > 0) {
                 npc.AddBuff(ModContent.BuffType<VoidTouch>(), npc.Entropy().VoidTouchTime);
             }
-            else
-            {
+            else {
                 npc.Entropy().VoidTouchLevel = 0;
             }
 
             return base.PreAI(npc);
         }
-        public override void ModifyIncomingHit(NPC npc, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyIncomingHit(NPC npc, ref NPC.HitModifiers modifiers) {
             modifiers.SourceDamage += MissileDamageAddition;
-            if (npc.active)
-            {
-                if (npc.HasBuff<HeatDeath>())
-                {
+            if (npc.active) {
+                if (npc.HasBuff<HeatDeath>()) {
                     modifiers.FinalDamage *= 1.1f;
                 }
-                if (modifiers.DamageType != null && modifiers.DamageType.CountsAsClass(NoDRMelee.Instance))
-                {
-                    if (modifiers.FinalDamage.Multiplicative < 1 && modifiers.FinalDamage.Multiplicative > 0)
-                    {
+                if (modifiers.DamageType != null && modifiers.DamageType.CountsAsClass(NoDRMelee.Instance)) {
+                    if (modifiers.FinalDamage.Multiplicative < 1 && modifiers.FinalDamage.Multiplicative > 0) {
                         modifiers.FinalDamage /= modifiers.FinalDamage.Multiplicative;
                     }
                 }
@@ -650,57 +561,44 @@ namespace CalamityEntropy.Common
             // 原生重实现：原先通过 IL 把 DamageReduceMult 乘进灾厄 DR 属性，
             // 现改为按等效比例直接放大受击伤害（mult 每降 1% 即多受 1% 伤害）
             float drMult = DamageReduceMult(npc);
-            if (drMult < 1f)
-            {
+            if (drMult < 1f) {
                 modifiers.FinalDamage *= 2f - drMult;
             }
         }
 
-        public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers) {
             // 原生重实现：鞭类 tag 增伤与强制暴击原先经 IL 钩灾厄的 ModifyHitByProjectile 触发，
             // 灾厄钩子拆除后改由本钩子直接调用
             npc.GetGlobalNPC<WhipDebuffNPC>().ModifyHitByProj(npc, projectile, ref modifiers);
 
             modifiers.FinalDamage += (npc.Entropy().VoidTouchLevel) * 0.01f * (1 - npc.Entropy().VoidTouchDR);
-            if (projectile.owner >= 0 && projectile.friendly)
-            {
-                if (projectile.GetOwner().Entropy().CritDamage != null)
-                {
-                    foreach (var v in projectile.GetOwner().Entropy().CritDamage)
-                    {
-                        if (projectile.DamageType.CountsAsClass(v.Key) || v.Key.CountsAsClass(DamageClass.Generic))
-                        {
+            if (projectile.owner >= 0 && projectile.friendly) {
+                if (projectile.GetOwner().Entropy().CritDamage != null) {
+                    foreach (var v in projectile.GetOwner().Entropy().CritDamage) {
+                        if (projectile.DamageType.CountsAsClass(v.Key) || v.Key.CountsAsClass(DamageClass.Generic)) {
                             modifiers.CritDamage += v.Value - 1;
                         }
                     }
                 }
-                if (projectile.GetOwner().Entropy().hasAcc("HEATDEATH"))
-                {
+                if (projectile.GetOwner().Entropy().hasAcc("HEATDEATH")) {
                     npc.AddBuff(ModContent.BuffType<HeatDeath>(), 8 * 60);
                 }
-                if (projectile.owner.ToPlayer().Entropy().nihShell)
-                {
+                if (projectile.owner.ToPlayer().Entropy().nihShell) {
                     modifiers.CritDamage += NihilityShell.CirtDamageAddition;
                 }
-                if (projectile.owner.ToPlayer().Entropy().devouringCard)
-                {
+                if (projectile.owner.ToPlayer().Entropy().devouringCard) {
                     modifiers.ArmorPenetration += npc.defense * DevouringCard.ArmorPene;
                 }
-                if (projectile.GetOwner().Entropy().hasAcc(SmartScope.ID))
-                {
+                if (projectile.GetOwner().Entropy().hasAcc(SmartScope.ID)) {
                     modifiers.FinalDamage *= 0.75f;
                 }
             }
-            if (projectile.owner >= 0)
-            {
-                if (projectile.owner.ToPlayer().Entropy().VFSet)
-                {
+            if (projectile.owner >= 0) {
+                if (projectile.owner.ToPlayer().Entropy().VFSet) {
                     // 潜行系统退役：原潜伏攻击额外充能分支移除，统一按普通命中充能
                     // 2026-08-31 平衡案:虚湮吞天盔额外充能随职业奖励重做退役
                     projectile.owner.ToPlayer().Entropy().VoidCharge += 0.008f;
-                    if (projectile.owner.ToPlayer().Entropy().VoidCharge > 1)
-                    {
+                    if (projectile.owner.ToPlayer().Entropy().VoidCharge > 1) {
                         projectile.owner.ToPlayer().Entropy().VoidCharge = 1;
                     }
                 }
@@ -708,37 +606,28 @@ namespace CalamityEntropy.Common
             critDamage = modifiers.CritDamage;
         }
         public int HungryTagged = 0;
-        public override void ModifyHitByItem(NPC npc, Player player, Item item, ref NPC.HitModifiers modifiers)
-        {
-            if (player.Entropy().devouringCard)
-            {
+        public override void ModifyHitByItem(NPC npc, Player player, Item item, ref NPC.HitModifiers modifiers) {
+            if (player.Entropy().devouringCard) {
                 modifiers.ArmorPenetration += npc.defense * DevouringCard.ArmorPene;
             }
-            if (player.Entropy().hasAcc("HEATDEATH"))
-            {
+            if (player.Entropy().hasAcc("HEATDEATH")) {
                 npc.AddBuff(ModContent.BuffType<HeatDeath>(), 8 * 60);
             }
-            if (player.Entropy().nihShell)
-            {
+            if (player.Entropy().nihShell) {
                 modifiers.CritDamage += NihilityShell.CirtDamageAddition;
             }
-            if (player.Entropy().CritDamage != null)
-            {
-                foreach (var v in player.Entropy().CritDamage)
-                {
-                    if (item.DamageType.CountsAsClass(v.Key) || v.Key.CountsAsClass(DamageClass.Generic))
-                    {
+            if (player.Entropy().CritDamage != null) {
+                foreach (var v in player.Entropy().CritDamage) {
+                    if (item.DamageType.CountsAsClass(v.Key) || v.Key.CountsAsClass(DamageClass.Generic)) {
                         modifiers.CritDamage += v.Value - 1;
                     }
                 }
             }
             modifiers.FinalDamage += (npc.Entropy().VoidTouchLevel) * 0.05f * (1 - npc.Entropy().VoidTouchDR);
-            if (player.Entropy().VFSet)
-            {
+            if (player.Entropy().VFSet) {
                 player.Entropy().VoidCharge += 0.008f;
 
-                if (player.Entropy().VoidCharge > 1)
-                {
+                if (player.Entropy().VoidCharge > 1) {
                     player.Entropy().VoidCharge = 1;
                 }
             }
@@ -746,190 +635,145 @@ namespace CalamityEntropy.Common
             critDamage = modifiers.CritDamage;
         }
 
-        public static bool AddVoidTouch(NPC nPC, int time, float level, int maxTime = 600, int maxLevel = 10)
-        {
-            if (nPC.Entropy().VoidTouchDR == 1)
-            {
+        public static bool AddVoidTouch(NPC nPC, int time, float level, int maxTime = 600, int maxLevel = 10) {
+            if (nPC.Entropy().VoidTouchDR == 1) {
                 return false;
             }
-            if (nPC.Entropy().VoidTouchTime < maxTime)
-            {
+            if (nPC.Entropy().VoidTouchTime < maxTime) {
                 nPC.Entropy().VoidTouchTime += (int)(time * 1.4f);
-                if (nPC.Entropy().VoidTouchTime > maxTime)
-                {
+                if (nPC.Entropy().VoidTouchTime > maxTime) {
                     nPC.Entropy().VoidTouchTime = maxTime;
                 }
             }
-            if (nPC.Entropy().VoidTouchLevel < maxLevel)
-            {
+            if (nPC.Entropy().VoidTouchLevel < maxLevel) {
                 nPC.Entropy().VoidTouchLevel += level / 10;
-                if (nPC.Entropy().VoidTouchLevel > maxLevel)
-                {
+                if (nPC.Entropy().VoidTouchLevel > maxLevel) {
                     nPC.Entropy().VoidTouchLevel = maxLevel;
                 }
             }
             return true;
         }
-        public static bool AddVoidTouch(Player nPC, int time, int level, int maxTime = 600, int maxLevel = 10)
-        {
+        public static bool AddVoidTouch(Player nPC, int time, int level, int maxTime = 600, int maxLevel = 10) {
             nPC.AddBuff(ModContent.BuffType<VoidTouch>(), maxTime);
             return true;
         }
-        public static ReLogic.Content.Asset<Texture2D> Request(string p)
-        {
+        public static ReLogic.Content.Asset<Texture2D> Request(string p) {
             return ModContent.Request<Texture2D>(p);
         }
-        public override void DrawEffects(NPC npc, ref Color drawColor)
-        {
-            if (npc.Entropy().daTarget)
-            {
+        public override void DrawEffects(NPC npc, ref Color drawColor) {
+            if (npc.Entropy().daTarget) {
                 drawColor = Color.Black;
             }
         }
         // 灾厄 NPC 掉落注入已整体拆除，并已按 bookmark-rehang.md 重挂（见方法末尾重挂段；无映射条目的物品另有表外增补裁定）
-        public override void ModifyNPCLoot(NPC npc, NPCLoot npcLoot)
-        {
+        public override void ModifyNPCLoot(NPC npc, NPCLoot npcLoot) {
             // 掉落规则全部为 tML 原生写法：Common = 无条件 1/n，ByCondition(NotExpert) = 仅普通模式（原灾厄掉落扩展的等价改写）
             List<int> osseousRemainsDropEnemies = new List<int>() { 174, 101, 94, 173, -22, -23, 181, 6, -11, -12 };
-            if (osseousRemainsDropEnemies.Contains(npc.type))
-            {
+            if (osseousRemainsDropEnemies.Contains(npc.type)) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<OsseousRemains>(), 3, 6, 8));
             }
-            if (npc.type == NPCID.MoonLordCore)
-            {
+            if (npc.type == NPCID.MoonLordCore) {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<MoonlightCore>(), 3));
-                if (!CERef.Has)
-                {
+                if (!CERef.Has) {
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Nothing>(), 3));
                     npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsMasterMode(), ModContent.ItemType<DeusCore>()));
                 }
             }
-            if (npc.type == NPCID.GoblinSorcerer)
-            {
+            if (npc.type == NPCID.GoblinSorcerer) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Tarnish>(), 3));
             }
-            if (!CERef.Has && npc.type == NPCID.BloodNautilus)
-            {
+            if (!CERef.Has && npc.type == NPCID.BloodNautilus) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Fool>(), 5));
             }
-            if (npc.type == NPCID.WallofFlesh)
-            {
+            if (npc.type == NPCID.WallofFlesh) {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<HungryLantern>(), 5));
             }
-            if (npc.type == NPCID.BrainofCthulhu)
-            {
+            if (npc.type == NPCID.BrainofCthulhu) {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<CreeperWand>(), 3));
             }
-            if (npc.type == NPCID.SkeletronHead)
-            {
+            if (npc.type == NPCID.SkeletronHead) {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<OblivionSkull>()));
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkSagittarius>()));
             }
-            if (npc.type == NPCID.KingSlime)
-            {
+            if (npc.type == NPCID.KingSlime) {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<ExquisiteCrown>(), 3));
-                if (!CERef.Has)
-                {
+                if (!CERef.Has) {
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<EntityCard>(), 3));
                 }
             }
-            if (npc.type == NPCID.EyeofCthulhu)
-            {
+            if (npc.type == NPCID.EyeofCthulhu) {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<RottenFangs>(), 3));
-                if (!CERef.Has)
-                {
+                if (!CERef.Has) {
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<WisperCard>(), 3));
                 }
             }
-            if (npc.type == NPCID.Deerclops)
-            {
+            if (npc.type == NPCID.Deerclops) {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BookmarkSnowgrave>(), 5));
-                if (!CERef.Has)
-                {
+                if (!CERef.Has) {
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Frail>(), 3));
                 }
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAries>(), 3));
             }
-            if (npc.type == NPCID.Paladin)
-            {
+            if (npc.type == NPCID.Paladin) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<DevouringCard>(), 2));
-                if (!CERef.Has)
-                {
+                if (!CERef.Has) {
                     npcLoot.Add(ItemDropRule.ByCondition(new PostMoonLord(), ModContent.ItemType<AnimaSola>(), 20));
                 }
             }
-            if (npc.type == NPCID.Golem)
-            {
+            if (npc.type == NPCID.Golem) {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<MourningCard>(), 2));
             }
-            if (npc.type == NPCID.DungeonSpirit)
-            {
+            if (npc.type == NPCID.DungeonSpirit) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<RequiemCard>(), 16));
             }
-            if (npc.type == NPCID.BigMimicHallow)
-            {
+            if (npc.type == NPCID.BigMimicHallow) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<PurificationCard>(), 2));
             }
-            if (npc.type == NPCID.Plantera)
-            {
+            if (npc.type == NPCID.Plantera) {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<LashingBramblerod>(), 5, 1, 1, 3));
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<MutantBulb>(), 5, 1, 1, 2));
-                if (!CERef.Has)
-                {
+                if (!CERef.Has) {
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAquarius>(), 3));
                 }
             }
-            if (npc.type == NPCID.WyvernHead)
-            {
+            if (npc.type == NPCID.WyvernHead) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<VetrasylsEye>(), 20));
-                if (!CERef.Has)
-                {
+                if (!CERef.Has) {
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAerialite>(), 10));
                 }
             }
-            if (npc.boss)
-            {
+            if (npc.boss) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkPerfection>(), 30));
             }
-            if (npc.type == NPCID.QueenSlimeBoss)
-            {
+            if (npc.type == NPCID.QueenSlimeBoss) {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<Crystedge>(), 4));
             }
             // —— 以下为脱离灾厄重挂（bookmark-rehang.md：原灾厄 Boss 掉落改挂自然敌怪 / 自有 Boss）——
-            if (npc.type == NPCID.Vulture || npc.type == NPCID.Antlion || npc.type == NPCID.WalkingAntlion || npc.type == NPCID.FlyingAntlion || npc.type == NPCID.TombCrawlerHead)
-            {
-                if (!CERef.Has)
-                {
+            if (npc.type == NPCID.Vulture || npc.type == NPCID.Antlion || npc.type == NPCID.WalkingAntlion || npc.type == NPCID.FlyingAntlion || npc.type == NPCID.TombCrawlerHead) {
+                if (!CERef.Has) {
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkLeo>(), 30));
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<DustyWhistle>(), 25));
                 }
             }
-            if (!CERef.Has && npc.type == NPCID.TombCrawlerHead)
-            {
+            if (!CERef.Has && npc.type == NPCID.TombCrawlerHead) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<AntlionShell>(), 3));
             }
-            if (npc.type == NPCID.AnomuraFungus || npc.type == NPCID.MushiLadybug || npc.type == NPCID.FungiBulb || npc.type == NPCID.GiantFungiBulb || npc.type == NPCID.FungoFish || npc.type == NPCID.ZombieMushroom || npc.type == NPCID.ZombieMushroomHat)
-            {
-                if (!CERef.Has)
-                {
+            if (npc.type == NPCID.AnomuraFungus || npc.type == NPCID.MushiLadybug || npc.type == NPCID.FungiBulb || npc.type == NPCID.GiantFungiBulb || npc.type == NPCID.FungoFish || npc.type == NPCID.ZombieMushroom || npc.type == NPCID.ZombieMushroomHat) {
+                if (!CERef.Has) {
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkSpore>(), 40));
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BlueFlatTopMushroom>(), 40));
                 }
                 npcLoot.Add(ItemDropRule.ByCondition(new IsNight(), ModContent.ItemType<StarlitScaleDust>(), 4, 1, 3));
             }
-            if (!CERef.Has && npc.type == NPCID.Shark)
-            {
+            if (!CERef.Has && npc.type == NPCID.Shark) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<TerrorOfAbyss>(), 100));
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsHardmode(), ModContent.ItemType<AbyssalPiercer>(), 50));
             }
-            if (!CERef.Has && (npc.type == NPCID.Shark || npc.type == NPCID.Squid || npc.type == NPCID.SeaSnail || npc.type == NPCID.PinkJellyfish))
-            {
+            if (!CERef.Has && (npc.type == NPCID.Shark || npc.type == NPCID.Squid || npc.type == NPCID.SeaSnail || npc.type == NPCID.PinkJellyfish)) {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsHardmode(), ModContent.ItemType<ToyRock>(), 40));
             }
-            if (npc.type == NPCID.CultistBoss)
-            {
-                if (!CERef.Has)
-                {
+            if (npc.type == NPCID.CultistBoss) {
+                if (!CERef.Has) {
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacrificalMask>()));
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacredStone>(), 3));
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkProfaned>()));
@@ -940,147 +784,116 @@ namespace CalamityEntropy.Common
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BlazingSwirlblade>(), 3));
                 }
             }
-            if (!CERef.Has && npc.type == NPCID.Crab)
-            {
+            if (!CERef.Has && npc.type == NPCID.Crab) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkCancer>(), 100));
             }
-            if (!CERef.Has && (npc.type == NPCID.IceElemental || npc.type == NPCID.IcyMerman || npc.type == NPCID.IceTortoise || npc.type == NPCID.ArmoredViking || npc.type == NPCID.Wolf))
-            {
+            if (!CERef.Has && (npc.type == NPCID.IceElemental || npc.type == NPCID.IcyMerman || npc.type == NPCID.IceTortoise || npc.type == NPCID.ArmoredViking || npc.type == NPCID.Wolf)) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkIce>(), 40));
             }
-            if (!CERef.Has && npc.type == NPCID.IceGolem)
-            {
+            if (!CERef.Has && npc.type == NPCID.IceGolem) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<FrostboundCage>(), 5));
             }
-            if (!CERef.Has && npc.type == NPCID.RedDevil)
-            {
+            if (!CERef.Has && npc.type == NPCID.RedDevil) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<EvilFriend>(), 20));
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkBrimstone>(), 50));
             }
-            if (!CERef.Has && npc.type == NPCID.Lavabat)
-            {
+            if (!CERef.Has && npc.type == NPCID.Lavabat) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<FriendBox>(), 100));
             }
-            if (npc.type == ModContent.NPCType<Content.NPCs.Cruiser.CruiserHead>())
-            {
+            if (npc.type == ModContent.NPCType<Content.NPCs.Cruiser.CruiserHead>()) {
                 // 龙牙 3.33 的原挂点是灾厄始源妖龙,脱灾时改挂巡游者。装灾厄时挂回去(见下方 NPC_PrimordialWyrmHead 分支),
                 // 这里加门消除双来源;无灾厄仍由巡游者出,数量与掉率一字未动
-                if (!CERef.Has)
-                {
+                if (!CERef.Has) {
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<WyrmTooth>(), 1, 65, 80));
                     npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkCosmic>(), 2));
                 }
             }
-            if (npc.type == NPCID.BoneLee)
-            {
+            if (npc.type == NPCID.BoneLee) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkBlackKnife>(), 10));
             }
-            if (!CERef.Has && npc.type == NPCID.Unicorn)
-            {
+            if (!CERef.Has && npc.type == NPCID.Unicorn) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkCapricorn>(), 50));
             }
-            if (!CERef.Has && npc.type == NPCID.TheDestroyer)
-            {
+            if (!CERef.Has && npc.type == NPCID.TheDestroyer) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkOfNight>(), 2));
             }
-            if (npc.type == NPCID.Clinger)
-            {
+            if (npc.type == NPCID.Clinger) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkSulphurous>(), 50));
             }
-            if (!CERef.Has && (npc.type == NPCID.DesertScorpionWalk || npc.type == NPCID.DesertScorpionWall))
-            {
+            if (!CERef.Has && (npc.type == NPCID.DesertScorpionWalk || npc.type == NPCID.DesertScorpionWall)) {
                 npcLoot.Add(ItemDropRule.ByCondition(new PostPlantera(), ModContent.ItemType<BookMarkScorpio>(), 50));
             }
             RegisterCalamityNpcLoot(npc, npcLoot);
         }
 
-        private static void RegisterCalamityNpcLoot(NPC npc, NPCLoot npcLoot)
-        {
-            if (!CERef.Has)
-            {
+        private static void RegisterCalamityNpcLoot(NPC npc, NPCLoot npcLoot) {
+            if (!CERef.Has) {
                 return;
             }
-            if (CEID.NPC_HiveMind > 0 && npc.type == CEID.NPC_HiveMind)
-            {
+            if (CEID.NPC_HiveMind > 0 && npc.type == CEID.NPC_HiveMind) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<MindCorruptor>(), 3));
             }
-            if (CEID.NPC_PerforatorHive > 0 && npc.type == CEID.NPC_PerforatorHive)
-            {
+            if (CEID.NPC_PerforatorHive > 0 && npc.type == CEID.NPC_PerforatorHive) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SinewLash>(), 3));
             }
-            if (CEID.NPC_RavagerBody > 0 && npc.type == CEID.NPC_RavagerBody)
-            {
+            if (CEID.NPC_RavagerBody > 0 && npc.type == CEID.NPC_RavagerBody) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacrificalMask>()));
             }
-            if (CEID.NPC_ProfanedGuardianCommander > 0 && npc.type == CEID.NPC_ProfanedGuardianCommander)
-            {
+            if (CEID.NPC_ProfanedGuardianCommander > 0 && npc.type == CEID.NPC_ProfanedGuardianCommander) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<LavaPancake>(), 2));
             }
-            if (CEID.NPC_BrimstoneElemental > 0 && npc.type == CEID.NPC_BrimstoneElemental)
-            {
+            if (CEID.NPC_BrimstoneElemental > 0 && npc.type == CEID.NPC_BrimstoneElemental) {
                 //普通模式对齐袋期望 1/2,专家/大师走袋避免双掉
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BookMarkBrimstone>(), 2));
             }
-            if (CEID.NPC_Providence > 0 && npc.type == CEID.NPC_Providence)
-            {
+            if (CEID.NPC_Providence > 0 && npc.type == CEID.NPC_Providence) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<HellBohea>(), 2));
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SacredStone>(), 3));
                 //普通模式对齐袋期望 3/5,专家/大师走袋避免双掉
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BookMarkProfaned>(), 5, 1, 1, 3));
             }
-            if (CEID.NPC_CeaselessVoid > 0 && npc.type == CEID.NPC_CeaselessVoid)
-            {
+            if (CEID.NPC_CeaselessVoid > 0 && npc.type == CEID.NPC_CeaselessVoid) {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BottleDarkMatter>(), 4));
             }
-            if (CEID.NPC_Yharon > 0 && npc.type == CEID.NPC_Yharon)
-            {
+            if (CEID.NPC_Yharon > 0 && npc.type == CEID.NPC_Yharon) {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BookMarkAuric>(), 4));
                 npcLoot.Add(ItemDropRule.ByCondition(new PreMoonLordCondition(), ModContent.ItemType<FlowingLight>()));
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<Vitalfeather>(), 4));
             }
-            if (CEID.NPC_SupremeCalamitas > 0 && npc.type == CEID.NPC_SupremeCalamitas)
-            {
+            if (CEID.NPC_SupremeCalamitas > 0 && npc.type == CEID.NPC_SupremeCalamitas) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<TheFilthyContractWithMammon>(), 3));
             }
-            if (CEID.NPC_DevourerofGodsHead > 0 && npc.type == CEID.NPC_DevourerofGodsHead)
-            {
+            if (CEID.NPC_DevourerofGodsHead > 0 && npc.type == CEID.NPC_DevourerofGodsHead) {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BookmarkCosmic>(), 3));
             }
-            if (CEID.NPC_EidolonWyrmHead > 0 && npc.type == CEID.NPC_EidolonWyrmHead)
-            {
+            if (CEID.NPC_EidolonWyrmHead > 0 && npc.type == CEID.NPC_EidolonWyrmHead) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAbyss>(), 2));
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Nothing>(), 2));
             }
-            if (CEID.NPC_PrimordialWyrmHead > 0 && npc.type == CEID.NPC_PrimordialWyrmHead)
-            {
+            if (CEID.NPC_PrimordialWyrmHead > 0 && npc.type == CEID.NPC_PrimordialWyrmHead) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookmarkMarivium>()));
                 // 3.33 原挂点,数量与掉率照抄;巡游者那条同时被 !CERef.Has 门住
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<WyrmTooth>(), 1, 65, 80));
             }
-            if (CEID.NPC_GiantClam > 0 && npc.type == CEID.NPC_GiantClam)
-            {
+            if (CEID.NPC_GiantClam > 0 && npc.type == CEID.NPC_GiantClam) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkSunkenSea>()));
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<EntityCard>()));
             }
-            if (CEID.NPC_DesertScourgeHead > 0 && npc.type == CEID.NPC_DesertScourgeHead)
-            {
+            if (CEID.NPC_DesertScourgeHead > 0 && npc.type == CEID.NPC_DesertScourgeHead) {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<AntlionShell>(), 3));
             }
-            if (CEID.NPC_Crabulon > 0 && npc.type == CEID.NPC_Crabulon)
-            {
+            if (CEID.NPC_Crabulon > 0 && npc.type == CEID.NPC_Crabulon) {
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BookmarkSpore>(), 3));
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<BookMarkCancer>(), 3));
                 npcLoot.Add(ItemDropRule.ByCondition(new Conditions.NotExpert(), ModContent.ItemType<WisperCard>(), 2));
             }
-            if (CEID.NPC_Cryogen > 0 && npc.type == CEID.NPC_Cryogen)
-            {
+            if (CEID.NPC_Cryogen > 0 && npc.type == CEID.NPC_Cryogen) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<FrostboundCage>(), 3));
             }
             if ((CEID.NPC_ToxicMinnow > 0 && npc.type == CEID.NPC_ToxicMinnow)
                 || (CEID.NPC_CannonballJellyfish > 0 && npc.type == CEID.NPC_CannonballJellyfish)
                 || (CEID.NPC_Sulflounder > 0 && npc.type == CEID.NPC_Sulflounder)
-                || (CEID.NPC_Toxicatfish > 0 && npc.type == CEID.NPC_Toxicatfish))
-            {
+                || (CEID.NPC_Toxicatfish > 0 && npc.type == CEID.NPC_Toxicatfish)) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<TerrorOfAbyss>(), 24));
             }
             if ((CEID.NPC_DevilFish > 0 && npc.type == CEID.NPC_DevilFish)
@@ -1088,24 +901,19 @@ namespace CalamityEntropy.Common
                 || (CEID.NPC_ToxicMinnow > 0 && npc.type == CEID.NPC_ToxicMinnow)
                 || (CEID.NPC_LuminousCorvina > 0 && npc.type == CEID.NPC_LuminousCorvina)
                 || (CEID.NPC_Viperfish > 0 && npc.type == CEID.NPC_Viperfish)
-                || (CEID.NPC_OarfishHead > 0 && npc.type == CEID.NPC_OarfishHead))
-            {
+                || (CEID.NPC_OarfishHead > 0 && npc.type == CEID.NPC_OarfishHead)) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<ToyRock>(), 50));
             }
-            if (CEID.NPC_Viperfish > 0 && npc.type == CEID.NPC_Viperfish)
-            {
+            if (CEID.NPC_Viperfish > 0 && npc.type == CEID.NPC_Viperfish) {
                 npcLoot.Add(ItemDropRule.ByCondition(new AquaticScourgeDownedCondition(), ModContent.ItemType<AbyssalPiercer>(), 5));
             }
-            if (CEID.NPC_GiantSquid > 0 && npc.type == CEID.NPC_GiantSquid)
-            {
+            if (CEID.NPC_GiantSquid > 0 && npc.type == CEID.NPC_GiantSquid) {
                 npcLoot.Add(ItemDropRule.ByCondition(new AquaticScourgeDownedCondition(), ModContent.ItemType<AbyssalPiercer>(), 2));
             }
-            if (CEID.NPC_Eidolist > 0 && npc.type == CEID.NPC_Eidolist)
-            {
+            if (CEID.NPC_Eidolist > 0 && npc.type == CEID.NPC_Eidolist) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Fool>(), 3));
             }
-            if (CEID.NPC_SlimeGodCore > 0 && npc.type == CEID.NPC_SlimeGodCore)
-            {
+            if (CEID.NPC_SlimeGodCore > 0 && npc.type == CEID.NPC_SlimeGodCore) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Frail>()));
             }
         }
@@ -1115,13 +923,11 @@ namespace CalamityEntropy.Common
 
         public static readonly List<DebuffDisplayEntry> ExternalDebuffs = [];
 
-        public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
-        {
+        public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) {
             // 原挂靠灾厄血条体系的 Boss 头顶 debuff 图标列表已整体退役（含灾厄全局实例读取与灾厄贴图）
             needExitShader = false;
             List<Effect> shaders = new List<Effect>();
-            if (npc.HasBuff<SoulDisorder>())
-            {
+            if (npc.HasBuff<SoulDisorder>()) {
                 Effect shader = SoulDiscorderShader;
                 shader.Parameters["strength"].SetValue(1);
                 shader.Parameters["f1"].SetValue((float)npc.frame.Y / npc.getTexture().Height);
@@ -1130,10 +936,8 @@ namespace CalamityEntropy.Common
                 shader.Parameters["colorMap"].SetValue(SoulDiscorderColorMapTex.Value);
                 shaders.Add(shader);
             }
-            if (npc.HasBuff<HeatDeath>())
-            {
-                if (hdStrength < 1)
-                {
+            if (npc.HasBuff<HeatDeath>()) {
+                if (hdStrength < 1) {
                     hdStrength += 0.01f;
                 }
                 Effect shader = HeatDeathShader;
@@ -1142,22 +946,18 @@ namespace CalamityEntropy.Common
                 shader.Parameters["maxColor"].SetValue((Color.Lerp(new Color(170, 0, 250), Color.DarkRed, (float)(Math.Cos(Main.GlobalTimeWrappedHourly * 2) * 0.5f + 0.5f))).ToVector4());
                 shaders.Add(shader);
             }
-            else
-            {
-                if (hdStrength > 0)
-                {
+            else {
+                if (hdStrength > 0) {
                     hdStrength -= 0.01f;
                 }
             }
-            if (WhiteLerp > 0)
-            {
+            if (WhiteLerp > 0) {
                 WhiteLerp -= 1 / 5f;
                 Effect shader = CEEffectAssets.WhiteTrans;
                 shader.Parameters["strength"].SetValue(WhiteLerp);
                 shaders.Add(shader);
             }
-            if (shaders.Count > 0)
-            {
+            if (shaders.Count > 0) {
                 spriteBatch.End();
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shaders[0], Main.GameViewMatrix.TransformationMatrix);
                 shaders[shaders.Count - 1].CurrentTechnique.Passes[0].Apply();
@@ -1180,18 +980,13 @@ namespace CalamityEntropy.Common
         }
         public float hdStrength = 0;
         public bool needExitShader = false;
-        public override void HitEffect(NPC npc, NPC.HitInfo hit)
-        {
-            if (npc.life <= 0)
-            {
-                if (!Main.dedServ)
-                {
-                    if (npc.HasBuff<FlamingBlood>())
-                    {
+        public override void HitEffect(NPC npc, NPC.HitInfo hit) {
+            if (npc.life <= 0) {
+                if (!Main.dedServ) {
+                    if (npc.HasBuff<FlamingBlood>()) {
                         // 原灾厄穿孔者巢死亡音效为字段引用，sound-map 未收录该条：以原版血肉爆裂音近似定稿
                         SoundEngine.PlaySound(SoundID.NPCDeath12 with { Pitch = 0.4f }, npc.Center);
-                        for (int i = 0; i < 90; i++)
-                        {
+                        for (int i = 0; i < 90; i++) {
                             PRTLoader.NewParticle<PRT_BloodCal>(npc.Center, CEUtils.randomPointInCircle(22), Color.Red, Main.rand.NextFloat(0.6f, 1)).Configure(16);
                         }
                         PRTLoader.NewParticle<PRT_CustomPulse>(npc.Center, Vector2.Zero, new Color(255, 24, 24), 0.01f).Configure("CalamityEntropy/Assets/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.01f, 0.15f, 28);
@@ -1199,14 +994,10 @@ namespace CalamityEntropy.Common
                 }
             }
         }
-        public override void OnHitNPC(NPC npc, NPC target, NPC.HitInfo hit)
-        {
-            if (CEID.NPC_Trasher > 0 && npc.type == CEID.NPC_Trasher && target.life <= 0)
-            {
-                if (target.type == NPCID.Turtle || target.type == NPCID.TurtleJungle)
-                {
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
+        public override void OnHitNPC(NPC npc, NPC target, NPC.HitInfo hit) {
+            if (CEID.NPC_Trasher > 0 && npc.type == CEID.NPC_Trasher && target.life <= 0) {
+                if (target.type == NPCID.Turtle || target.type == NPCID.TurtleJungle) {
+                    if (Main.netMode != NetmodeID.MultiplayerClient) {
                         int i = Item.NewItem(target.GetSource_Death(), target.getRect(), new Item(ModContent.ItemType<SusiesBracelet>()));
                         CEUtils.SyncItem(i);
                     }
@@ -1214,10 +1005,8 @@ namespace CalamityEntropy.Common
             }
         }
 
-        public override void OnKill(NPC npc)
-        {
-            if (npc.HasBuff<FlamingBlood>())
-            {
+        public override void OnKill(NPC npc) {
+            if (npc.HasBuff<FlamingBlood>()) {
                 bool spawnExp = true;
                 int dmg = (int)(npc.lifeMax * 0.15f);
                 if (dmg > 100)
@@ -1226,162 +1015,122 @@ namespace CalamityEntropy.Common
                     dmg = 20;
                 if (npc.lifeMax < 40)
                     dmg = 10;
-                if (npc.realLife >= 0 || npc.type == NPCID.EaterofWorldsBody || npc.type == NPCID.EaterofWorldsTail)
-                {
+                if (npc.realLife >= 0 || npc.type == NPCID.EaterofWorldsBody || npc.type == NPCID.EaterofWorldsTail) {
                     spawnExp = Main.rand.NextBool(20);
                     dmg = 2;
                 }
                 var plr = Main.player[Player.FindClosest(npc.Center, 100000, 100000)];
-                if (spawnExp)
-                {
+                if (spawnExp) {
                     var p = CEUtils.SpawnExplotionFriendly(npc.GetSource_Death(), plr, npc.Center, dmg, 200, DamageClass.Summon);
-                    if (p.ModProjectile is CommonExplotionFriendly cef)
-                    {
-                        void onhit(NPC npc)
-                        {
+                    if (p.ModProjectile is CommonExplotionFriendly cef) {
+                        void onhit(NPC npc) {
                             npc.AddBuff<FlamingBlood>(16 * 60);
                         }
                         cef.modifyHitAction = onhit;
                     }
                 }
             }
-            if (npc.type == NPCID.WallofFlesh)
-            {
-                for (int i = 0; i < 32; i++)
-                {
+            if (npc.type == NPCID.WallofFlesh) {
+                for (int i = 0; i < 32; i++) {
                     float rot;
                     rot = CEUtils.randomRot();
                     Main.item[Item.NewItem(npc.GetSource_Death(), npc.Center + rot.ToRotationVector2() * 128, new Item(ItemID.SoulofLight, 2))].velocity = rot.ToRotationVector2() * Main.rand.NextFloat(2, 32);
                     Main.item[Item.NewItem(npc.GetSource_Death(), npc.Center + rot.ToRotationVector2() * 128, new Item(ItemID.SoulofNight, 2))].velocity = rot.ToRotationVector2() * Main.rand.NextFloat(2, 32);
                 }
             }
-            if ((Main.player[Player.FindClosest(npc.Center, 1000000, 1000000)].ZoneCrimson || Main.player[Player.FindClosest(npc.Center, 1000000, 1000000)].ZoneCorrupt) && Main.player[Player.FindClosest(npc.Center, 1000000, 1000000)].Center.Y > Main.worldSurface + 256)
-            {
-                if (Main.rand.NextBool(54))
-                {
+            if ((Main.player[Player.FindClosest(npc.Center, 1000000, 1000000)].ZoneCrimson || Main.player[Player.FindClosest(npc.Center, 1000000, 1000000)].ZoneCorrupt) && Main.player[Player.FindClosest(npc.Center, 1000000, 1000000)].Center.Y > Main.worldSurface + 256) {
+                if (Main.rand.NextBool(54)) {
                     Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<BitternessCard>()));
                 }
             }
-            if (!npc.friendly && npc.lifeMax > 20)
-            {
-                if (Main.bloodMoon)
-                {
-                    if (Main.rand.NextBool(800))
-                    {
+            if (!npc.friendly && npc.lifeMax > 20) {
+                if (Main.bloodMoon) {
+                    if (Main.rand.NextBool(800)) {
                         Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<CrimsonNight>()));
                     }
                     // 原灾厄掉落的两张邪恶卡已改挂专属 Boss 掉落（批次I）
                 }
                 Player n = null;
                 Player h = null;
-                foreach (Player plr in Main.player)
-                {
-                    if (plr.active && CEUtils.getDistance(plr.Center, npc.Center) < 4000)
-                    {
-                        if (plr.ZoneHallow)
-                        {
+                foreach (Player plr in Main.player) {
+                    if (plr.active && CEUtils.getDistance(plr.Center, npc.Center) < 4000) {
+                        if (plr.ZoneHallow) {
                             n = plr;
                         }
-                        if (plr.Center.Y / 16 > Main.UnderworldLayer)
-                        {
+                        if (plr.Center.Y / 16 > Main.UnderworldLayer) {
                             h = plr;
                         }
                     }
                 }
-                if (n != null)
-                {
-                    if (Main.rand.NextBool(70))
-                    {
+                if (n != null) {
+                    if (Main.rand.NextBool(70)) {
                         Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<HolyMantle>()));
                     }
-                    if (Main.rand.NextBool(80) && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
-                    {
+                    if (Main.rand.NextBool(80) && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3) {
                         Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<TheRevelation>()));
                     }
                 }
-                if (h != null)
-                {
-                    if (Main.rand.NextBool(60) && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
-                    {
+                if (h != null) {
+                    if (Main.rand.NextBool(60) && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3) {
                         Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<MawOfTheVoid>()));
                     }
                 }
             }
-            if (ToFriendly)
-            {
+            if (ToFriendly) {
                 Main.player[Main.player.Length - 1].active = false;
             }
-            if (npc.boss)
-            {
-                if (Main.dedServ)
-                {
+            if (npc.boss) {
+                if (Main.dedServ) {
                     ModPacket pack = Mod.GetPacket();
                     pack.Write((byte)CEMessageType.BossKilled);
                     // 灾厄脱钩后不存在灾厄 Boss，原「非灾厄 Boss」判定恒为真（接收端目前也未消费该值）
                     pack.Write(true);
                     pack.Send();
                 }
-                else
-                {
+                else {
 
                 }
-                if (lostSoulDrop)
-                {
-                    foreach (Projectile p in Main.projectile)
-                    {
-                        if (p.active && p.ModProjectile is LostSoulProj ls)
-                        {
-                            if (ls.hideVisualTime <= 0 && npc.realLife < 0)
-                            {
+                if (lostSoulDrop) {
+                    foreach (Projectile p in Main.projectile) {
+                        if (p.active && p.ModProjectile is LostSoulProj ls) {
+                            if (ls.hideVisualTime <= 0 && npc.realLife < 0) {
                                 ls.bosses.Add(npc.whoAmI);
                             }
                         }
                     }
                 }
             }
-            if (npc.type == NPCID.SkeletronHead)
-            {
+            if (npc.type == NPCID.SkeletronHead) {
                 Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<WisdomCard>()));
 
             }
-            if (npc.type == NPCID.SkeletronPrime)
-            {
+            if (npc.type == NPCID.SkeletronPrime) {
                 Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<TemperanceCard>()));
             }
 
-            if (npc.type == NPCID.Retinazer || npc.type == NPCID.Spazmatism)
-            {
+            if (npc.type == NPCID.Retinazer || npc.type == NPCID.Spazmatism) {
                 Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<Perplexed>()));
             }
-            if (npc.type == NPCID.GiantWormHead)
-            {
-                if (Main.rand.NextDouble() < 0.04f)
-                {
+            if (npc.type == NPCID.GiantWormHead) {
+                if (Main.rand.NextDouble() < 0.04f) {
                     Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<CannedCarrion>(), 1));
                 }
             }
-            if (npc.type == NPCID.WyvernHead)
-            {
-                if (Main.rand.NextDouble() < 0.02f)
-                {
+            if (npc.type == NPCID.WyvernHead) {
+                if (Main.rand.NextDouble() < 0.02f) {
                     Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<DreamCatcher>(), 1));
                 }
             }
-            if (npc.type == NPCID.Harpy || npc.type == NPCID.WyvernHead)
-            {
-                if (Main.rand.NextDouble() < 0.012f)
-                {
+            if (npc.type == NPCID.Harpy || npc.type == NPCID.WyvernHead) {
+                if (Main.rand.NextDouble() < 0.012f) {
                     Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<LightningPendant>(), 1));
                 }
             }
-            if (npc.type == NPCID.Wraith || npc.type == NPCID.PossessedArmor)
-            {
-                if (Main.rand.NextDouble() < 0.02f)
-                {
+            if (npc.type == NPCID.Wraith || npc.type == NPCID.PossessedArmor) {
+                if (Main.rand.NextDouble() < 0.02f) {
                     Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<SoulCandle>(), 1));
                 }
-                if (Main.rand.NextDouble() < 0.02f)
-                {
+                if (Main.rand.NextDouble() < 0.02f) {
                     Item.NewItem(npc.GetSource_Death(), npc.getRect(), new Item(ModContent.ItemType<LostSoul>(), 1));
                 }
             }
@@ -1416,60 +1165,45 @@ namespace CalamityEntropy.Common
         public bool lostSoulDrop = true;
         public int deusBloodOut = 0;
         public int noelctime = 0;
-        public void onHurt(NPC npc, int damage, Player player, Entity source, NPC.HitInfo hit)
-        {
-            if (player != null && player.Entropy().hasAcc("Leyla"))
-            {
+        public void onHurt(NPC npc, int damage, Player player, Entity source, NPC.HitInfo hit) {
+            if (player != null && player.Entropy().hasAcc("Leyla")) {
                 var l = Leyla.ApplyBuffType();
-                foreach (int i in l)
-                {
+                foreach (int i in l) {
                     if (Main.rand.NextBool(10))
                         npc.AddBuff(i, Main.rand.Next(60, 300));
                 }
 
             }
-            if (npc.life <= 0)
-            {
-                if (player != null && player.Entropy().goldenRock != null && player.Entropy().goldenRock.ModItem is GoldenRock gr)
-                {
+            if (npc.life <= 0) {
+                if (player != null && player.Entropy().goldenRock != null && player.Entropy().goldenRock.ModItem is GoldenRock gr) {
                     gr.price += int.Min(5000, (int)npc.value) + npc.lifeMax / 5;
                 }
             }
             HitCounter = 0;
-            if (player != null)
-            {
+            if (player != null) {
                 player.Entropy().lastHitTarget = npc;
-                if (player.Entropy().NihilitySet)
-                {
-                    if (CECooldowns.CheckCD("NihilityLasers", 150))
-                    {
+                if (player.Entropy().NihilitySet) {
+                    if (CECooldowns.CheckCD("NihilityLasers", 150)) {
                         player.Entropy().ShootLaserTime = 20;
                     }
                 }
-                if (player.Entropy().LifeStealP > 0 && player.statLife < player.statLifeMax2 && CECooldowns.CheckCD("LifeStealHealFloat"))
-                {
+                if (player.Entropy().LifeStealP > 0 && player.statLife < player.statLifeMax2 && CECooldowns.CheckCD("LifeStealHealFloat")) {
                     player.Entropy().HealFloat(player.statLifeMax2 * player.Entropy().LifeStealP);
                 }
-                if (player.Entropy().hasAcc("VastLV5") && hit.Crit)
-                {
+                if (player.Entropy().hasAcc("VastLV5") && hit.Crit) {
                     npc.AddBuff<SoulDisorder>(360);
                 }
                 // 崇拜圣物/疾风腕刃/诡雷盒的旧投掷命中接线已整体退役，新效果由饰品文件自含实现
-                if (player.Entropy().grudgeCard)
-                {
-                    if (Main.rand.NextBool(4) && !CECooldowns.HasCooldown("GrudgeCD"))
-                    {
+                if (player.Entropy().grudgeCard) {
+                    if (Main.rand.NextBool(4) && !CECooldowns.HasCooldown("GrudgeCD")) {
                         CECooldowns.AddCooldown("GrudgeCD", GrudgeCard.TriggerCooldown);
                         Projectile.NewProjectile(player.GetSource_FromThis(), npc.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(4, 5), ModContent.ProjectileType<HealingSpirit>(), 0, 0, player.whoAmI);
                     }
                 }
-                if (player.Entropy().heartOfStorm)
-                {
+                if (player.Entropy().heartOfStorm) {
                     // 2026-08-31 平衡案:重做为命中目标时召唤闪电,内置冷却1秒,基础伤害800
-                    if (source is not Projectile srcProj || srcProj.type != ModContent.ProjectileType<ElectricLaser>())
-                    {
-                        if (CECooldowns.CheckBMProc("HeartOfStormBolt", 60))
-                        {
+                    if (source is not Projectile srcProj || srcProj.type != ModContent.ProjectileType<ElectricLaser>()) {
+                        if (CECooldowns.CheckBMProc("HeartOfStormBolt", 60)) {
                             int boltDamage = (int)player.GetTotalDamage(DamageClass.Generic).ApplyTo(800);
                             Projectile.NewProjectile(player.GetSource_FromThis(), npc.Center - new Vector2(0, 480), Vector2.Zero, ModContent.ProjectileType<ElectricLaser>(), boltDamage, 0, player.whoAmI, npc.Center.X, npc.Center.Y, 0);
                         }
@@ -1477,48 +1211,38 @@ namespace CalamityEntropy.Common
                 }
             }
         }
-        public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damageDone) {
             onHurt(npc, damageDone, player, null, hit);
-            if (player.Entropy().deusCoreBloodOut > 0 && player.Entropy().bloodTrCD <= 0)
-            {
+            if (player.Entropy().deusCoreBloodOut > 0 && player.Entropy().bloodTrCD <= 0) {
                 int btransfer = (int)MathHelper.Min(player.Entropy().deusCoreBloodOut, player.Entropy().deusCoreBloodOut / 13 + 1);
-                if (btransfer > 120)
-                {
+                if (btransfer > 120) {
                     btransfer = 120;
                 }
                 player.Entropy().bloodTrCD = 42;
                 player.Entropy().deusCoreBloodOut -= btransfer;
                 deusBloodOut += btransfer * 5;
             }
-            if (player.Entropy().nihShell)
-            {
+            if (player.Entropy().nihShell) {
                 NihilityShell.checkDamage(player, hit);
             }
-            if (player.Entropy().ConfuseCard && !npc.boss)
-            {
+            if (player.Entropy().ConfuseCard && !npc.boss) {
                 npc.AddBuff(ModContent.BuffType<Deceive>(), 420);
             }
-            if (player.Entropy().AttackVoidTouch > 0)
-            {
+            if (player.Entropy().AttackVoidTouch > 0) {
                 float vt = player.Entropy().AttackVoidTouch * 10;
                 AddVoidTouch(npc, (int)(vt * 120), vt, 600, (int)Math.Round(vt * 8));
             }
             player.Entropy().damageRecord += damageDone;
-            if (player.Entropy().brokenAnkh && player.Entropy().damageRecord > 420)
-            {
+            if (player.Entropy().brokenAnkh && player.Entropy().damageRecord > 420) {
                 player.Entropy().damageRecord = 0;
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
+                if (Main.netMode != NetmodeID.MultiplayerClient) {
                     int i = Item.NewItem(player.GetSource_FromThis(), player.getRect(), new Item(ModContent.ItemType<PoopPickup>()), false, true);
                     Main.item[i].noGrabDelay = 100;
-                    if (!Main.dedServ)
-                    {
+                    if (!Main.dedServ) {
                         CEUtils.PlaySound("fart", 1, player.Center);
                     }
                 }
-                else
-                {
+                else {
                     ModPacket packet = Mod.GetPacket();
                     packet.Write((byte)CEMessageType.SpawnItem);
                     packet.Write(player.whoAmI);
@@ -1529,24 +1253,17 @@ namespace CalamityEntropy.Common
             }
         }
 
-        public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone) {
             Player sourcePlr = null;
-            if (projectile.friendly)
-            {
+            if (projectile.friendly) {
                 Player player = projectile.owner.ToPlayer();
                 sourcePlr = player;
 
-                if (ProjectileID.Sets.IsAWhip[projectile.type])
-                {
-                    if (player.Entropy().ashesCore)
-                    {
-                        foreach (Projectile proj in Main.ActiveProjectiles)
-                        {
-                            if (proj.owner == player.whoAmI && proj.type == AshesCore.ProjType)
-                            {
-                                if (CECooldowns.CheckCD("AshesFireball", 20))
-                                {
+                if (ProjectileID.Sets.IsAWhip[projectile.type]) {
+                    if (player.Entropy().ashesCore) {
+                        foreach (Projectile proj in Main.ActiveProjectiles) {
+                            if (proj.owner == player.whoAmI && proj.type == AshesCore.ProjType) {
+                                if (CECooldowns.CheckCD("AshesFireball", 20)) {
                                     var vc = (npc.Center - proj.Center).normalize();
                                     CEUtils.PlaySound("YharonFireball1", 0.9f, npc.Center);
                                     CEUtils.PlaySound("YharonFireball1", 0.9f, npc.Center);
@@ -1557,51 +1274,40 @@ namespace CalamityEntropy.Common
                         }
                     }
                 }
-                if (player.Entropy().deusCoreBloodOut > 0 && player.Entropy().bloodTrCD <= 0)
-                {
+                if (player.Entropy().deusCoreBloodOut > 0 && player.Entropy().bloodTrCD <= 0) {
                     int btransfer = (int)MathHelper.Min(player.Entropy().deusCoreBloodOut, player.Entropy().deusCoreBloodOut / 13 + 1);
-                    if (btransfer > 120)
-                    {
+                    if (btransfer > 120) {
                         btransfer = 120;
                     }
                     player.Entropy().bloodTrCD = 42;
                     player.Entropy().deusCoreBloodOut -= btransfer;
                     deusBloodOut += btransfer * 5;
                 }
-                if (player.Entropy().ConfuseCard && !npc.boss)
-                {
+                if (player.Entropy().ConfuseCard && !npc.boss) {
                     npc.AddBuff(ModContent.BuffType<Deceive>(), 420);
                 }
-                if (projectile.owner != -1)
-                {
-                    if (projectile.owner.ToPlayer().active)
-                    {
-                        if (projectile.owner.ToPlayer().Entropy().AttackVoidTouch > 0)
-                        {
+                if (projectile.owner != -1) {
+                    if (projectile.owner.ToPlayer().active) {
+                        if (projectile.owner.ToPlayer().Entropy().AttackVoidTouch > 0) {
                             float vt = projectile.owner.ToPlayer().Entropy().AttackVoidTouch * 10;
                             AddVoidTouch(npc, (int)(vt * 120), vt, 600, (int)Math.Round(vt * 8));
                         }
                     }
                 }
-                if (player.Entropy().nihShell)
-                {
+                if (player.Entropy().nihShell) {
                     NihilityShell.checkDamage(player, hit);
                 }
                 player.Entropy().damageRecord += damageDone;
-                if (player.Entropy().brokenAnkh && player.Entropy().damageRecord > 420)
-                {
+                if (player.Entropy().brokenAnkh && player.Entropy().damageRecord > 420) {
                     player.Entropy().damageRecord = 0;
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
+                    if (Main.netMode != NetmodeID.MultiplayerClient) {
                         int i = Item.NewItem(player.GetSource_FromThis(), player.getRect(), new Item(ModContent.ItemType<PoopPickup>()), false, true);
                         Main.item[i].noGrabDelay = 100;
-                        if (!Main.dedServ)
-                        {
+                        if (!Main.dedServ) {
                             CEUtils.PlaySound("fart", 1, player.Center);
                         }
                     }
-                    else
-                    {
+                    else {
                         ModPacket packet = Mod.GetPacket();
                         packet.Write((byte)CEMessageType.SpawnItem);
                         packet.Write(player.whoAmI);
@@ -1613,8 +1319,7 @@ namespace CalamityEntropy.Common
             }
             onHurt(npc, damageDone, sourcePlr, projectile, hit);
         }
-        public override void OnSpawn(NPC npc, IEntitySource source)
-        {
+        public override void OnSpawn(NPC npc, IEntitySource source) {
             /*if(source is EntitySource_Parent esource)
             {
                 if(esource.Entity is NPC np)
@@ -1637,28 +1342,22 @@ namespace CalamityEntropy.Common
         }
 
 
-        public override void ModifyShop(NPCShop shop)
-        {
-            if (shop.NpcType == NPCID.Clothier)
-            {
+        public override void ModifyShop(NPCShop shop) {
+            if (shop.NpcType == NPCID.Clothier) {
                 shop.Add(ModContent.ItemType<Barren>());
             }
-            if (shop.NpcType == 17)
-            {
+            if (shop.NpcType == 17) {
                 shop.Add(ModContent.ItemType<SoyMilk>(), new Condition(Mod.GetLocalization("DownedBoss2").Value, () => NPC.downedBoss2));
                 shop.Add(ModContent.ItemType<BrillianceCard>());
             }
             // 大法师手镜 3.33 就挂在灾厄永冻大法师的货架上且无门槛,装灾厄时挂回去
-            if (CEID.NPC_Archmage > 0 && shop.NpcType == CEID.NPC_Archmage)
-            {
+            if (CEID.NPC_Archmage > 0 && shop.NpcType == CEID.NPC_Archmage) {
                 shop.Add(ModContent.ItemType<ArchmagesHandmirror>());
             }
-            if (shop.NpcType == 108)
-            {
+            if (shop.NpcType == 108) {
                 // 命运之绳与大法师手镜原挂灾厄大法师货架,脱钩时随该 NPC 一并删除,现重挂到原版巫师
                 shop.Add(ModContent.ItemType<ThreadOfFate>());
-                if (!CERef.Has)
-                {
+                if (!CERef.Has) {
                     // 无灾厄时的替代货架。原门槛是月亮领主,与 3.33 的无门槛差得太远,降到肉山后
                     shop.Add(ModContent.ItemType<ArchmagesHandmirror>(), Condition.Hardmode);
                 }
@@ -1681,13 +1380,11 @@ namespace CalamityEntropy.Common
                 AddSoulCard<PurificationCard>(shop);
                 AddSoulCard<RequiemCard>(shop);
             }
-            if (shop.NpcType == 20)
-            {
+            if (shop.NpcType == 20) {
                 shop.Add(ModContent.ItemType<Confuse>());
             }
         }
-        public static void AddSoulCard<T>(NPCShop shop) where T : ModItem
-        {
+        public static void AddSoulCard<T>(NPCShop shop) where T : ModItem {
             shop.Add(ModContent.ItemType<T>(), new Condition(CalamityEntropy.Instance.GetLocalization("HaveSoulDeck"), () => Main.LocalPlayer.Entropy().soulDeckInInv));
         }
     }

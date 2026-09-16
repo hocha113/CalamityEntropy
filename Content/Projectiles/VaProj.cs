@@ -1,11 +1,9 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Core.Graphics;
-using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
@@ -24,12 +22,10 @@ namespace CalamityEntropy.Content.Projectiles
         public bool htd = false;
         public float exps = 0;
         public Vector2 dscp = Vector2.Zero;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 44;
             Projectile.height = 44;
@@ -46,8 +42,7 @@ namespace CalamityEntropy.Content.Projectiles
         public int counter = 0;
         public bool std = false;
         public int homingTime = 60;
-        public override void AI()
-        {
+        public override void AI() {
             /*if (!std)
             {
                 std = true;
@@ -63,57 +58,46 @@ namespace CalamityEntropy.Content.Projectiles
                 }
             }*/
             counter++;
-            if (Projectile.ai[0] == 0)
-            {
+            if (Projectile.ai[0] == 0) {
                 angle = Projectile.velocity.ToRotation();
             }
-            if (speed < 0)
-            {
+            if (speed < 0) {
                 angle = (Projectile.Center - Main.player[Projectile.owner].Center).ToRotation();
-                if (CEUtils.getDistance(Projectile.Center, Main.player[Projectile.owner].Center) < Projectile.velocity.Length() * 1.12f)
-                {
+                if (CEUtils.getDistance(Projectile.Center, Main.player[Projectile.owner].Center) < Projectile.velocity.Length() * 1.12f) {
                     Projectile.Kill();
                 }
             }
 
-            if (!htd)
-            {
+            if (!htd) {
                 Dust.NewDust(Projectile.Center, 16, 16, DustID.MagicMirror, Projectile.velocity.X * -0.1f, Projectile.velocity.Y * -0.1f);
                 Dust.NewDust(Projectile.Center, 16, 16, DustID.MagicMirror, Projectile.velocity.X * -0.1f, Projectile.velocity.Y * -0.1f);
-                if (counter % 14 == 0)
-                {
+                if (counter % 14 == 0) {
                 }
             }
 
             Projectile.ai[0]++;
-            if (htd)
-            {
-                if (odp.Count > 0)
-                {
+            if (htd) {
+                if (odp.Count > 0) {
                     odp.RemoveAt(0);
                     odr.RemoveAt(0);
 
                 }
-                if (odp.Count > 0)
-                {
+                if (odp.Count > 0) {
                     odp.RemoveAt(0);
                     odr.RemoveAt(0);
                 }
                 Projectile.velocity = Vector2.Zero;
             }
-            else
-            {
+            else {
                 odp.Add(Projectile.Center);
                 odr.Add(Projectile.rotation);
-                if (odp.Count > 64)
-                {
+                if (odp.Count > 64) {
                     odp.RemoveAt(0);
                     odr.RemoveAt(0);
                 }
 
                 NPC target = Projectile.FindTargetWithinRange(1800, false);
-                if (target != null && CEUtils.getDistance(target.Center, Projectile.Center) < 200 && counter > 16)
-                {
+                if (target != null && CEUtils.getDistance(target.Center, Projectile.Center) < 200 && counter > 16) {
                     homingTime = 0;
                     Projectile.velocity *= 0.9f;
                     Vector2 v = target.Center - Projectile.Center;
@@ -125,34 +109,27 @@ namespace CalamityEntropy.Content.Projectiles
             exps *= 0.9f;
             Projectile.rotation = Projectile.velocity.ToRotation();
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            if (htd)
-            {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+            if (htd) {
                 return false;
             }
             return base.Colliding(projHitbox, targetHitbox);
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (!htd)
-            {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            if (!htd) {
                 float sparkCount = 12;
-                for (int i = 0; i < sparkCount; i++)
-                {
+                for (int i = 0; i < sparkCount; i++) {
                     Vector2 sparkVelocity2 = new Vector2(16, 0).RotatedByRandom(3.14159f) * Main.rand.NextFloat(0.5f, 1.8f);
                     int sparkLifetime2 = Main.rand.Next(20, 24);
                     float sparkScale2 = Main.rand.NextFloat(0.95f, 1.8f);
                     Color sparkColor2 = Color.DarkBlue;
 
                     float velc = 0.6f;
-                    if (Main.rand.NextBool())
-                    {
+                    if (Main.rand.NextBool()) {
                         //PRT_AltSpark跟LineCal随机混用,旧Calamity spark/Lines二选一
                         PRTLoader.NewParticle<PRT_AltSpark>(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f) + Projectile.velocity * 1.2f, sparkVelocity2 * velc, sparkColor2, sparkScale2 * 1).Configure(false, (int)(sparkLifetime2 * 1));
                     }
-                    else
-                    {
+                    else {
                         //LineCal Configure(false,lifetime)对齐Calamity LineParticle
                         PRTLoader.NewParticle<PRT_LineCal>(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f) + Projectile.velocity * 1.2f, sparkVelocity2 * velc, Main.rand.NextBool() ? Color.Purple : Color.Purple, sparkScale2 * 1).Configure(false, (int)(sparkLifetime2 * 1));
                     }
@@ -166,19 +143,16 @@ namespace CalamityEntropy.Content.Projectiles
             }
         }
         public int tofs;
-        public Color TrailColor(float completionRatio, Vector2 vertex)
-        {
+        public Color TrailColor(float completionRatio, Vector2 vertex) {
             Color result = new Color(30, 40, 75);
             return result * completionRatio;
         }
 
-        public float TrailWidth(float completionRatio, Vector2 vertex)
-        {
+        public float TrailWidth(float completionRatio, Vector2 vertex) {
             return MathHelper.Lerp(0, 24 * Projectile.scale, completionRatio);
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             odp.Add(Projectile.Center);
             odr.Add(Projectile.rotation);
             Color cl = Color.Lerp(Color.Black, Color.White, Projectile.ai[0] / 30f);
@@ -186,8 +160,7 @@ namespace CalamityEntropy.Content.Projectiles
 
 
             c = 0;
-            if (odp.Count > 1)
-            {
+            if (odp.Count > 1) {
                 Main.spriteBatch.End();
 
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
@@ -199,8 +172,7 @@ namespace CalamityEntropy.Content.Projectiles
                 ve.Add(new ColoredVertex(odp[0] - Main.screenPosition + (odp[1] - odp[0]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 4,
                       new Vector3((float)0, 0, 1),
                       b));
-                for (int i = 1; i < odp.Count; i++)
-                {
+                for (int i = 1; i < odp.Count; i++) {
 
 
                     c += 1f / odp.Count;
@@ -215,8 +187,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                 SpriteBatch sb = Main.spriteBatch;
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     Texture2D tx = CEExtraAssets.rvslash;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);

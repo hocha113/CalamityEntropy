@@ -1,19 +1,17 @@
-﻿using CalamityEntropy.Content.Items;
-using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class HadopelagicEchoII : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 126;
             Item.height = 66;
             Item.damage = 12500;
@@ -33,17 +31,14 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.ArmorPenetration = 100;
         }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             return false;
         }
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddCalOrOwn(CEID.Item_EidolicWail, ItemID.ChargedBlasterCannon)
                 .AddIngredient<WyrmTooth>(12)

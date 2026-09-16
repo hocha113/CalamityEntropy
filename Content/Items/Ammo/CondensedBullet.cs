@@ -1,20 +1,18 @@
 ﻿using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Ammo
 {
     public class CondensedBullet : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.ResearchUnlockCount = 99;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 6;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 8;
@@ -28,10 +26,8 @@ namespace CalamityEntropy.Content.Items.Ammo
             Item.ammo = AmmoID.Bullet;
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_PurifiedGel))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_PurifiedGel)) {
                 CreateRecipe(50)
                 .AddIngredient(CEID.Item_PurifiedGel)
                 .AddTile(TileID.WorkBenches)

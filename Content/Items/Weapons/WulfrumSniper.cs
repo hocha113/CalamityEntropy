@@ -3,6 +3,7 @@ using CalamityEntropy.Content.Items.Armor.NihTwins;
 using CalamityEntropy.Content.Items.Weapons.Miracle;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -13,7 +14,6 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -21,12 +21,10 @@ namespace CalamityEntropy.Content.Items.Weapons
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-        public override bool RangedPrefix()
-        {
+        public override bool RangedPrefix() {
             return true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 134;
             Item.height = 38;
             Item.damage = 34;
@@ -46,38 +44,31 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useAmmo = AmmoID.Bullet;
             Item.crit = 8;
         }
-        public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
-        {
+        public override void ModifyWeaponDamage(Player player, ref StatModifier damage) {
             if (Main.zenithWorld)
                 damage *= 160;
         }
 
-        public override Vector2? HoldoutOffset()
-        {
+        public override Vector2? HoldoutOffset() {
             return new Vector2(0, 0);
         }
 
         public int ShootCount = 0;
         #region Shooting
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            if (ShootCount < 5)
-            {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
+            if (ShootCount < 5) {
                 Projectile.NewProjectile(source, position + velocity.SafeNormalize(Vector2.Zero) * 50, velocity, type, damage, knockback, player.whoAmI);
                 ShootCount++;
             }
-            else
-            {
+            else {
                 Item.noUseGraphic = true;
                 ShootCount = 0;
                 Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<WulfrumSniperSpecialAttack>(), damage, knockback, player.whoAmI, 0, Item.scale);
             }
             return false;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_EnergyCore, CEID.Item_WulfrumMetalScrap, CEID.Item_MeldBlob, CEID.Item_AstralBar))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_EnergyCore, CEID.Item_WulfrumMetalScrap, CEID.Item_MeldBlob, CEID.Item_AstralBar)) {
                 CreateRecipe()
                 .AddIngredient(CEID.Item_EnergyCore, 2)
                 .AddIngredient(CEID.Item_WulfrumMetalScrap, 8)
@@ -104,8 +95,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         #region Animations
         public override void HoldItem(Player player) => player.Entropy().MouseWorldListener = true;
 
-        public override void UseStyle(Player player, Rectangle heldItemFrame)
-        {
+        public override void UseStyle(Player player, Rectangle heldItemFrame) {
             player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
@@ -119,8 +109,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             base.UseStyle(player, heldItemFrame);
         }
 
-        public override void UseItemFrame(Player player)
-        {
+        public override void UseItemFrame(Player player) {
             player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
 
             float animProgress = 1 - player.itemTime / (float)player.itemTimeMax;
@@ -129,8 +118,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 rotation += (-0.15f) * (float)Math.Pow((0.5f - animProgress) / 0.5f, 2) * player.direction;
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
 
-            if (animProgress > 0.5f)
-            {
+            if (animProgress > 0.5f) {
                 float backArmRotation = rotation + 0.52f * player.direction;
 
                 Player.CompositeArmStretchAmount stretch = ((float)Math.Sin(MathHelper.Pi * (animProgress - 0.5f) / 0.36f)).ToStretchAmount();
@@ -138,8 +126,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             }
 
         }
-        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-        {
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback) {
             position += new Vector2(0, -8 * player.direction).RotatedBy((player.Entropy().MouseWorld - player.Center).ToRotation());
         }
         #endregion
@@ -147,52 +134,42 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class WulfrumSniperSpecialAttack : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/WulfrumSniper";
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Ranged, false, -1);
             Projectile.timeLeft = 60;
         }
-        public override bool? CanDamage()
-        {
+        public override bool? CanDamage() {
             return false;
         }
         public int counter = 0;
         public float offset = 0;
         public bool thrown = false;
-        public override void AI()
-        {
-            if (Projectile.GetOwner().dead)
-            {
+        public override void AI() {
+            if (Projectile.GetOwner().dead) {
                 Projectile.Kill();
                 return;
             }
             Projectile.scale = Projectile.ai[1];
-            if (counter == 0 || counter == 16)
-            {
+            if (counter == 0 || counter == 16) {
                 offset = -12;
                 CEUtils.PlaySound("gunshot_small" + Main.rand.Next(1, 4).ToString(), 1, Projectile.Center);
             }
-            if (counter == 20)
-            {
+            if (counter == 20) {
                 thrown = true;
                 Projectile.GetOwner().HeldItem.noUseGraphic = false;
                 Vector2 fpos = Projectile.Center + Projectile.velocity.normalize() * 18 * Projectile.scale;
-                for (int i = 0; i < 12; i++)
-                {
+                for (int i = 0; i < 12; i++) {
                     //EParticle→PRT,EMediumSmoke Configure+PRTDrawMode AlphaBlend
                     //PRTDrawMode AlphaBlend桶,枪口烟别走Additive会糊
                     PRTLoader.NewParticle<PRT_EMediumSmoke>(fpos, Projectile.velocity.normalize().RotatedByRandom(1) * Main.rand.NextFloat(2, 9), Color.Lerp(new Color(255, 255, 0), Color.White, (float)Main.rand.NextDouble()), Main.rand.NextFloat(0.7f, 1f)).Configure(1, true, PRTDrawModeEnum.AlphaBlend, CEUtils.randomRot());
                 }
                 CEUtils.PlaySound("chainsaw_break", 1.4f, Projectile.Center);
-                if (Main.myPlayer == Projectile.owner)
-                {
+                if (Main.myPlayer == Projectile.owner) {
                     int type = ModContent.ProjectileType<SniperWulfrumScrap>();
-                    for (int i = 0; i < 4; i++)
-                    {
+                    for (int i = 0; i < 4; i++) {
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), fpos, Projectile.velocity.normalize().RotatedByRandom(0.16f) * Main.rand.NextFloat(36, 42), type, (int)(Projectile.damage * 0.7f), Projectile.knockBack, Projectile.owner);
                     }
-                    if (Main.zenithWorld)
-                    {
+                    if (Main.zenithWorld) {
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), fpos, Projectile.velocity.normalize() * 12, ModContent.ProjectileType<Blackhole>(), (int)(Projectile.damage * 0.2f), Projectile.knockBack, Projectile.owner, 0, -1);
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), fpos, Projectile.velocity.normalize() * 256, ModContent.ProjectileType<AbyssalCrack>(), (int)(Projectile.damage * 0.2f), Projectile.knockBack, Projectile.owner, 0, -1);
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), fpos, Projectile.velocity.normalize() * 16, ModContent.ProjectileType<VENihilityLaser>(), (int)(Projectile.damage * 0.2f), Projectile.knockBack, Projectile.owner, 0, -1);
@@ -201,8 +178,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 Projectile.GetOwner().velocity -= Projectile.velocity.normalize() * 8;
                 Projectile.velocity = Projectile.velocity.RotatedBy(-2.7f * Projectile.GetOwner().direction).RotatedByRandom(0.32f).normalize() * 12;
             }
-            if (!thrown)
-            {
+            if (!thrown) {
                 Projectile.timeLeft = 200;
                 Projectile.StickToPlayer();
                 Projectile.GetOwner().SetHandRot(Projectile.rotation);
@@ -212,8 +188,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 if (counter >= 19)
                     Projectile.position += CEUtils.randomPointInCircle(2);
             }
-            else
-            {
+            else {
                 Projectile.velocity.Y += 0.36f;
                 Projectile.rotation += Projectile.velocity.X * 0.003f;
             }
@@ -221,36 +196,29 @@ namespace CalamityEntropy.Content.Items.Weapons
             counter++;
             if (Main.myPlayer == Projectile.owner && !Main.mouseLeft)
                 flag = false;
-            if (counter == 20)
-            {
+            if (counter == 20) {
                 if (Main.myPlayer != Projectile.owner || !Main.mouseLeft || flag)
                     counter--;
-                else
-                {
+                else {
                     CEUtils.SyncProj(Projectile.whoAmI);
                 }
             }
         }
         public bool flag = true;
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(counter);
         }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             counter = reader.ReadInt32();
         }
         public int dir = 1;
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return thrown;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Projectile.spriteDirection = dir;
             var tx = Projectile.GetTexture();
-            if (thrown)
-            {
+            if (thrown) {
                 tx = this.getTextureAlt("Alt2");
             }
             else if (counter > 8)
@@ -264,33 +232,27 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class SniperWulfrumScrap : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Ranged, true, 1);
             Projectile.timeLeft = 480;
             Projectile.width = Projectile.height = 16;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center - Projectile.velocity, Projectile.Center, targetHitbox, Projectile.height);
         }
-        public override void AI()
-        {
-            if (Projectile.localAI[2]++ > 6)
-            {
+        public override void AI() {
+            if (Projectile.localAI[2]++ > 6) {
                 Projectile.velocity.Y += 0.3f;
                 Projectile.velocity *= 0.998f;
             }
             Projectile.rotation += Projectile.velocity.X * 0.01f;
         }
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             for (int i = 0; i < 16; i++)
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Stone);
             SoundEngine.PlaySound(SoundID.Dig, Projectile.Center);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             int type = ItemID.IronBar;
             Main.instance.LoadItem(type);
             Texture2D tex = TextureAssets.Item[type].Value;

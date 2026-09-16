@@ -1,17 +1,15 @@
-﻿using CalamityEntropy.Content.Items;
-using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items
 {
     public class GodSlayerRocket : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             AmmoID.Sets.IsSpecialist[Type] = true;
             AmmoID.Sets.SpecificLauncherAmmoProjectileMatches[ItemID.RocketLauncher].Add(Type, ModContent.ProjectileType<GodSlayerRocketProjectile>());
             AmmoID.Sets.SpecificLauncherAmmoProjectileMatches[ItemID.GrenadeLauncher].Add(Type, ModContent.ProjectileType<GodSlayerRocketProjectile>());
@@ -20,8 +18,7 @@ namespace CalamityEntropy.Content.Items
             AmmoID.Sets.SpecificLauncherAmmoProjectileMatches[ItemID.Celeb2].Add(Type, ProjectileID.Celeb2Rocket);
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 24;
             Item.height = 24;
             Item.maxStack = 9999;
@@ -31,10 +28,8 @@ namespace CalamityEntropy.Content.Items
             Item.damage = 125;
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_CosmiliteBar, CEID.Item_CoreofCalamity, CEID.Tile_CosmicAnvil))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_CosmiliteBar, CEID.Item_CoreofCalamity, CEID.Tile_CosmicAnvil)) {
                 CreateRecipe(250).AddIngredient(CEID.Item_CosmiliteBar, 5).AddIngredient(CEID.Item_CoreofCalamity, 1).AddTile(CEID.Tile_CosmicAnvil).Register();
                 return;
             }

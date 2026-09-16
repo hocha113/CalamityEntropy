@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Cruiser.Core;
+﻿using CalamityEntropy.Content.NPCs.Cruiser.Core;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -14,47 +14,38 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
     {
         public override CruiserStateIndex StateIndex => CruiserStateIndex.StayAwayAndShootVoidStar;
 
-        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx)
-        {
+        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
             Vector2 dir = (player.Center - npc.Center).normalize();
 
-            if (npc.velocity.Length() < CruiserDirector.StayAwaySpeedCap)
-            {
+            if (npc.velocity.Length() < CruiserDirector.StayAwaySpeedCap) {
                 npc.velocity *= CruiserDirector.StayAwayAccel;
             }
-            else
-            {
+            else {
                 npc.velocity *= CruiserDirector.StayAwayDrag;
             }
 
             ctx.ChangeCounter++;
-            if (ctx.ChangeCounter == CruiserDirector.StayAwayWhipCue)
-            {
+            if (ctx.ChangeCounter == CruiserDirector.StayAwayWhipCue) {
                 ctx.TailWhipCue = true;
                 MarkNetUpdate(ctx);
             }
-            if (ctx.ChangeCounter > CruiserDirector.StayAwayTurnStart)
-            {
+            if (ctx.ChangeCounter > CruiserDirector.StayAwayTurnStart) {
                 npc.velocity = Vector2.Lerp(npc.velocity, dir * npc.velocity.Length(), CruiserDirector.StayAwayTurnLerp);
-                if (npc.velocity.Length() < CruiserDirector.StayAwaySpeedCap)
-                {
+                if (npc.velocity.Length() < CruiserDirector.StayAwaySpeedCap) {
                     npc.velocity *= CruiserDirector.StayAwayTurnAccel;
                 }
             }
-            if (ctx.ChangeCounter > CruiserDirector.StayAwayPushStart)
-            {
-                if (npc.velocity.Length() < CruiserDirector.StayAwaySpeedCap)
-                {
+            if (ctx.ChangeCounter > CruiserDirector.StayAwayPushStart) {
+                if (npc.velocity.Length() < CruiserDirector.StayAwaySpeedCap) {
                     npc.velocity *= CruiserDirector.StayAwayPushAccel;
                 }
                 npc.velocity += dir * CruiserDirector.StayAwayPushThrust;
                 npc.velocity = Vector2.Lerp(npc.velocity, dir * npc.velocity.Length(), CruiserDirector.StayAwayPushLerp);
                 npc.velocity *= CruiserDirector.StayAwayPushDrag;
             }
-            if (ctx.ChangeCounter > CruiserDirector.StayAwayDuration)
-            {
+            if (ctx.ChangeCounter > CruiserDirector.StayAwayDuration) {
                 return NextAttack(ctx);
             }
             return null;

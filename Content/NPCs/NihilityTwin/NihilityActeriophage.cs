@@ -1,4 +1,4 @@
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Biomes;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items;
@@ -71,13 +71,11 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         #endregion
 
         #region 定义
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.npcFrameCount[NPC.type] = 1;
             NPCID.Sets.MustAlwaysDraw[NPC.type] = true;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
-            {
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers() {
                 Scale = 0.65f,
                 PortraitScale = 0.7f,
                 CustomTexturePath = "CalamityEntropy/Assets/Extra/NABes",
@@ -94,39 +92,33 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             NPCID.Sets.NoMultiplayerSmoothingByType[Type] = true;
         }
 
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
-        {
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry) {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityEntropy.NihilityTwinBestiary")
             });
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             NPC.boss = true;
             //ai[3] 归状态机占用,必须关掉原版 AI 分支
             NPC.aiStyle = -1;
             NPC.width = 140;
             NPC.height = 140;
             NPC.damage = 106;
-            if (Main.expertMode)
-            {
+            if (Main.expertMode) {
                 NPC.damage += 2;
             }
-            if (Main.masterMode)
-            {
+            if (Main.masterMode) {
                 NPC.damage += 2;
             }
             NPC.defense = 75;
             NPC.lifeMax = 360000;
             //装灾厄读死亡/复仇,缺席仍走大师/专家兜底
-            if (CECal.IsDeathMode)
-            {
+            if (CECal.IsDeathMode) {
                 NPC.damage += 5;
             }
-            else if (CECal.IsRevengeance)
-            {
+            else if (CECal.IsRevengeance) {
                 NPC.damage += 4;
             }
             NPC.HitSound = SoundID.NPCHit4;
@@ -143,36 +135,29 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
 
         // 原灾厄全局 DR=0.15 的本地等效;公有字段供血条等外部读取
         public float DamageReduction = 0.15f;
-        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers) {
             modifiers.FinalDamage *= 1f - DamageReduction;
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) {
             target.AddBuff(ModContent.BuffType<VoidVirus>(), 360);
         }
 
-        public override bool CheckActive()
-        {
+        public override bool CheckActive() {
             return false;
         }
 
-        public override void BossHeadRotation(ref float rotation)
-        {
+        public override void BossHeadRotation(ref float rotation) {
             rotation = NPC.rotation + MathHelper.PiOver2;
         }
 
-        public override void OnSpawn(IEntitySource source)
-        {
+        public override void OnSpawn(IEntitySource source) {
         }
         #endregion
 
         #region 状态机装配
-        private void EnsureContext()
-        {
-            Context ??= new NihilityStateContext
-            {
+        private void EnsureContext() {
+            Context ??= new NihilityStateContext {
                 Npc = NPC,
                 Owner = this,
             };
@@ -180,19 +165,16 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             Context.Owner = this;
         }
 
-        private void InitializeStateMachine()
-        {
+        private void InitializeStateMachine() {
             EnsureContext();
-            if (NPC.ai[2] < 1f)
-            {
+            if (NPC.ai[2] < 1f) {
                 NPC.ai[2] = 1f;
             }
             stateMachine = new NpcStateMachine<NihilityStateContext>(Context);
             CEBossHost.HookStateSwapAdoption(netMotion, stateMachine);
 
             IVaultState<NihilityStateContext> initial = null;
-            if (VaultUtils.isClient)
-            {
+            if (VaultUtils.isClient) {
                 initial = VaultStateRegistry<NihilityStateContext>.Create((int)NPC.ai[3]);
             }
             //原代码的 aitype 初值是 3(一阶段悬停爆发),不是整备;照搬
@@ -206,38 +188,30 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         /// 原代码不校验槽位里的东西还是不是细胞,这里补一次类型与存活校验:
         /// 槽位被回收后继续往里写速度会砸到陌生 NPC 身上
         /// </summary>
-        private void EnsureCell()
-        {
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                if (spawnCell)
-                {
+        private void EnsureCell() {
+            if (Main.netMode != NetmodeID.MultiplayerClient) {
+                if (spawnCell) {
                     spawnCell = false;
-                    if (NPC.realLife < 0)
-                    {
+                    if (NPC.realLife < 0) {
                         SpawnCellAndZenithClone();
                     }
                 }
                 //原代码用 Main.GameUpdateCount % 5 轮询,这一支只在权威端跑,不构成跨端分叉
                 if (Main.GameUpdateCount % NihilityDirector.CellRespawnPollFrames == 0
-                    && (cell == null || !cell.active) && NPC.realLife < 0)
-                {
+                    && (cell == null || !cell.active) && NPC.realLife < 0) {
                     SpawnCellAndZenithClone(cloneToo: false);
                 }
             }
 
-            if (cell == null && cellIndex >= 0)
-            {
+            if (cell == null && cellIndex >= 0) {
                 cell = cellIndex.ToNPC();
             }
-            if (cell != null && (!cell.active || cell.ModNPC is not ChaoticCell))
-            {
+            if (cell != null && (!cell.active || cell.ModNPC is not ChaoticCell)) {
                 cell = null;
             }
         }
 
-        private void SpawnCellAndZenithClone(bool cloneToo = true)
-        {
+        private void SpawnCellAndZenithClone(bool cloneToo = true) {
             int n = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<ChaoticCell>());
             n.ToNPC().realLife = NPC.whoAmI;
             n.ToNPC().netUpdate = true;
@@ -246,14 +220,12 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             NPC.netUpdate = true;
             NPC.netSpam = NihilityDirector.NetSpamClampTo;
 
-            if (cloneToo && Main.zenithWorld)
-            {
+            if (cloneToo && Main.zenithWorld) {
                 int n2 = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<NihilityActeriophage>());
                 n2.ToNPC().realLife = NPC.whoAmI;
                 n2.ToNPC().netUpdate = true;
                 n2.ToNPC().position += CEUtils.randomPointInCircle(NihilityDirector.ZenithCloneScatter);
-                if (n2.ToNPC().ModNPC is NihilityActeriophage na)
-                {
+                if (n2.ToNPC().ModNPC is NihilityActeriophage na) {
                     na.cell = cell;
                     na.cellIndex = cellIndex;
                 }
@@ -261,58 +233,48 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         }
         #endregion
 
-        public override void AI()
-        {
+        public override void AI() {
             EnsureContext();
-            if (stateMachine == null)
-            {
+            if (stateMachine == null) {
                 InitializeStateMachine();
             }
 
             bool client = VaultUtils.isClient;
-            if (client)
-            {
+            if (client) {
                 netMotion.BeginFrame(NPC);
                 CEBossHost.AdoptTimingAtFrameStart(netMotion, stateMachine);
             }
 
             // 天顶分身与本体同类型,必须每帧清掉 boss 标记,否则每只各顶一根血条
             // 联机不单独同步该位:realLife 是原版字段,中途加入的客户端进 AI 后也会落到 false
-            if (NPC.realLife >= 0)
-            {
+            if (NPC.realLife >= 0) {
                 NPC.boss = false;
             }
 
             EnsureCell();
 
-            if (spawnAnm > 0)
-            {
+            if (spawnAnm > 0) {
                 UpdateSpawnAnimation();
-                if (client)
-                {
+                if (client) {
                     netMotion.EndFrame(NPC);
                 }
                 return;
             }
 
-            if (cell == null)
-            {
+            if (cell == null) {
                 //细胞缺席时整棵状态树都没有第二个支点,原代码会在这里空引用;直接跳过这一帧
-                if (client)
-                {
+                if (client) {
                     netMotion.EndFrame(NPC);
                 }
                 return;
             }
 
             Context.FrameCounter++;
-            if (rope == null)
-            {
+            if (rope == null) {
                 rope = new Rope(NPC.Center, cell.Center, NihilityDirector.RopeSegments, 0, new Vector2(0, 0f),
                     NihilityDirector.RopeStiffness, NihilityDirector.RopeIterations, false);
             }
-            if (!Main.dedServ)
-            {
+            if (!Main.dedServ) {
                 Main.LocalPlayer.Entropy().NihSky = NihilityDirector.NihSkyRefresh;
             }
             NPC.localAI[0]++;
@@ -320,24 +282,20 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             FindTarget();
             UpdateContextFacts();
 
-            if (Context.TargetValid)
-            {
+            if (Context.TargetValid) {
                 escapeCounter = 0;
                 EvaluateGlobalTransitions();
-                if (Context.Phase >= 2 && ropeLerp > 0)
-                {
+                if (Context.Phase >= 2 && ropeLerp > 0) {
                     ropeLerp -= 1f;
                 }
             }
             Context.BeginFrameDefaults();
             //脱战也要走 Update:客户端靠这里的 NetSync 收权威端换态。状态体本身见 RequiresTarget,没目标不跑
             stateMachine.Update();
-            if (Context.TargetValid)
-            {
+            if (Context.TargetValid) {
                 SettleDeclarations();
             }
-            else
-            {
+            else {
                 UpdateEscapeMotion();
             }
 
@@ -346,31 +304,25 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             NPC.velocity *= NihilityDirector.GlobalDrag;
             UpdateRope();
 
-            if (client)
-            {
+            if (client) {
                 netMotion.EndFrame(NPC);
             }
-            else
-            {
+            else {
                 CEBossHost.Heartbeat(NPC);
             }
         }
 
         /// <summary>出场演出:两端焊在一起不动,屏震包络逐帧涨。状态机不推进</summary>
-        private void UpdateSpawnAnimation()
-        {
+        private void UpdateSpawnAnimation() {
             spawnAnm--;
             shake += NihilityDirector.SpawnShakeRise;
-            if (cell != null)
-            {
+            if (cell != null) {
                 cell.Center = NPC.Center;
                 cell.velocity *= 0;
                 NPC.velocity *= 0;
                 // 原灾厄全局屏震(逐帧置强度)改自有 ScreenShaker:复用同一震动实例并逐帧刷新振幅
-                if (!Main.dedServ)
-                {
-                    if (spawnShake == null || !spawnShake.active)
-                    {
+                if (!Main.dedServ) {
+                    if (spawnShake == null || !spawnShake.active) {
                         spawnShake = new ScreenShaker.ScreenShake(Vector2.Zero, 0);
                         ScreenShaker.AddShake(spawnShake);
                     }
@@ -379,17 +331,14 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             }
         }
 
-        private void FindTarget()
-        {
-            if (!NPC.HasValidTarget)
-            {
+        private void FindTarget() {
+            if (!NPC.HasValidTarget) {
                 NPC.TargetClosest(false);
             }
             targetPlayer = NPC.HasValidTarget ? NPC.target.ToPlayer() : null;
         }
 
-        private void UpdateContextFacts()
-        {
+        private void UpdateContextFacts() {
             Context.Npc = NPC;
             Context.Owner = this;
             Context.Target = targetPlayer;
@@ -403,19 +352,15 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         /// 阶段本身是同步血量的纯函数,各端自行落位(<c>ai[2]</c> 随后也会被快照覆盖成同值);
         /// 无敌帧必须各端各写(受击判定跑在各自机器上);只有换态收归权威端
         /// </summary>
-        private void EvaluateGlobalTransitions()
-        {
-            if (Context.Phase != 1 || NPC.life >= NPC.lifeMax / NihilityDirector.Phase2LifeDivisor)
-            {
+        private void EvaluateGlobalTransitions() {
+            if (Context.Phase != 1 || NPC.life >= NPC.lifeMax / NihilityDirector.Phase2LifeDivisor) {
                 return;
             }
-            foreach (Player plr in Main.ActivePlayers)
-            {
+            foreach (Player plr in Main.ActivePlayers) {
                 plr.Entropy().immune = NihilityDirector.Phase2GraceFrames;
             }
             Context.Phase = 2;
-            if (!VaultUtils.isClient)
-            {
+            if (!VaultUtils.isClient) {
                 Context.Num1 = 0;
                 stateMachine.ChangeState(new NihilityRegroupState());
             }
@@ -426,24 +371,19 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         /// 一阶段那句带 <c>aitype != 4</c> 豁免,二阶段那句没有,合起来就是
         /// 「只有一阶段 1/4 号与二阶段 1 号保留自旋,其余每帧清零」。脱战时这两句都不执行,所以自旋量会冻住
         /// </summary>
-        private void SettleDeclarations()
-        {
-            if (!Context.KeepRotSpeed)
-            {
+        private void SettleDeclarations() {
+            if (!Context.KeepRotSpeed) {
                 Context.RotSpeed = 0f;
             }
         }
 
-        private void UpdateEscapeMotion()
-        {
-            if (cell != null)
-            {
+        private void UpdateEscapeMotion() {
+            if (cell != null) {
                 cell.velocity += (NPC.Center - cell.Center) * NihilityDirector.EscapeCellPull;
             }
             NPC.velocity.Y -= NihilityDirector.EscapeRiseAccel;
             escapeCounter++;
-            if (escapeCounter > NihilityDirector.EscapeDespawnFrames && !VaultUtils.isClient)
-            {
+            if (escapeCounter > NihilityDirector.EscapeDespawnFrames && !VaultUtils.isClient) {
                 //原代码在各端都直接置 active = false,客户端会自己把 Boss 抹掉;下线收归权威端
                 NPC.active = false;
                 NPC.netUpdate = true;
@@ -452,10 +392,8 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             NPC.rotation = NPC.velocity.ToRotation();
         }
 
-        private void UpdateRope()
-        {
-            if (ropeLerp <= 0 || rope == null || cell == null)
-            {
+        private void UpdateRope() {
+            if (ropeLerp <= 0 || rope == null || cell == null) {
                 return;
             }
             Vector2 rend = Vector2.Lerp(buttom, cell.Center, ropeLerp);
@@ -467,8 +405,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
 
         #region 状态可用的小件
         /// <summary>额外推一次绳索求解(自旋狙击每帧多推两次)。纯绘制</summary>
-        public void TickRope()
-        {
+        public void TickRope() {
             rope?.Update();
         }
 
@@ -476,22 +413,18 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         /// 直写细胞位置(蓄力焊接、对撞对齐这类瞬移)。顺手丢掉细胞纠偏器的旧预测,
         /// 免得下一包把「直写造成的位移」当成失步
         /// </summary>
-        public void PlaceCell(Vector2 center)
-        {
-            if (cell == null)
-            {
+        public void PlaceCell(Vector2 center) {
+            if (cell == null) {
                 return;
             }
             cell.Center = center;
-            if (cell.ModNPC is ChaoticCell cc)
-            {
+            if (cell.ModNPC is ChaoticCell cc) {
                 cc.ForgetPrediction();
             }
         }
 
         /// <summary>直写本体位置(对撞对齐)。同样要丢掉旧预测</summary>
-        public void TeleportBody(Vector2 center)
-        {
+        public void TeleportBody(Vector2 center) {
             NPC.Center = center;
             netMotion.ForgetPrediction();
         }
@@ -502,14 +435,12 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         /// 定长块,顺序固定在这一处:计时 → 持久累加量 → 锁存标量 → 部件索引。
         /// 字节数是编译期常量(3 int + 6 float + 3 int = 48 B):不许加运行时条件决定写不写某个字段
         /// </summary>
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             EnsureContext();
             int stateId = (int)NPC.ai[3];
             int timer = 0;
             int counter = 0;
-            if (stateMachine?.CurrentState is NihilityStateBase state)
-            {
+            if (stateMachine?.CurrentState is NihilityStateBase state) {
                 stateId = state.StateId;
                 timer = state.Timer;
                 counter = state.Counter;
@@ -529,13 +460,11 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             writer.Write(cellIndex);
         }
 
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             EnsureContext();
             int localStateId = -1;
             int localTimer = 0;
-            if (stateMachine?.CurrentState is NihilityStateBase state)
-            {
+            if (stateMachine?.CurrentState is NihilityStateBase state) {
                 localStateId = state.StateId;
                 localTimer = state.Timer;
             }
@@ -553,8 +482,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             spawnAnm = reader.ReadInt32();
 
             cellIndex = reader.ReadInt32();
-            if (cellIndex >= 0)
-            {
+            if (cellIndex >= 0) {
                 NPC candidate = cellIndex.ToNPC();
                 cell = candidate != null && candidate.active && candidate.ModNPC is ChaoticCell ? candidate : null;
             }
@@ -564,41 +492,34 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         /// 帧计数型标量:容差内不动本地值,对齐 <see cref="CEBossNetMotion.AdoptTimer"/> 的口径。
         /// 硬对齐会让 <c>Num1 == N</c> 那一类一次性拍被跳过或重放(能量球、激光、对撞都靠等值判定起拍)
         /// </summary>
-        private static int AdoptCounter(int local, int synced)
-        {
+        private static int AdoptCounter(int local, int synced) {
             return CEBossNetMotion.AdoptTimer(local, synced);
         }
 
-        private static float AdoptScalar(float local, float synced)
-        {
+        private static float AdoptScalar(float local, float synced) {
             return System.Math.Abs(synced - local) > CEBossNetMotion.TimerTolerance ? synced : local;
         }
         #endregion
 
         #region 掉落
-        public override void OnKill()
-        {
+        public override void OnKill() {
             NPC.SetEventFlagCleared(ref EDownedBosses.downedNihilityTwin, -1);
-            if (cell != null)
-            {
+            if (cell != null) {
                 cell.StrikeInstantKill();
             }
         }
 
-        public override void BossLoot(ref int potionType)
-        {
+        public override void BossLoot(ref int potionType) {
             potionType = ModContent.ItemType<VoidHealingPotion>();
         }
 
-        public override void ModifyNPCLoot(NPCLoot npcLoot)
-        {
+        public override void ModifyNPCLoot(NPCLoot npcLoot) {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<NihilityTwinBag>()));
 
             // 深渊亡魂移除后,幽渊魂髓与深渊书签改由本 Boss 承接(数量与概率照搬旧掉落表);
             // 与旧主人一样不挂 NotExpert,专家模式下也照常掉,不进宝袋
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<WraithSoulEssence>(), 1, 15, 25));
-            if (!CERef.Has)
-            {
+            if (!CERef.Has) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAbyss>(), 2));
             }
 

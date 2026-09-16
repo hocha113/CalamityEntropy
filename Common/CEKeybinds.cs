@@ -13,8 +13,7 @@ namespace CalamityEntropy.Common
         public static ModKeybind PoopHoldHotKey { get; set; }
         public static ModKeybind CommandMinions { get; set; }
         public static ModKeybind AcropolisMechTransformation { get; set; }
-        public override void Load()
-        {
+        public override void Load() {
             VetrasylsEyeBlockHotKey = KeybindLoader.RegisterKeybind(Mod, "VetrasylsEyeBlock", "C");
             RuneDashHotKey = KeybindLoader.RegisterKeybind(Mod, "RuneDash", "K");
             CommandMinions = KeybindLoader.RegisterKeybind(Mod, "CommandMinions", "N");
@@ -26,14 +25,12 @@ namespace CalamityEntropy.Common
             string Isaac1 = Path.Combine(MyGameFolder, "Binding of Isaac Repentance").Replace("/", "\\");
             string Isaac2 = Path.Combine(MyGameFolder, "Binding of Isaac Repentance+").Replace("/", "\\");
             bool isaac = Directory.Exists(Isaac1) || Directory.Exists(Isaac2);
-            if (isaac)
-            {
+            if (isaac) {
                 CEKeybinds.ThrowPoopHotKey = KeybindLoader.RegisterKeybind(Mod, "ThrowPoop", "LeftAlt");
                 CEKeybinds.PoopHoldHotKey = KeybindLoader.RegisterKeybind(Mod, "KeepPoop", "Q");
             }
         }
-        public override void Unload()
-        {
+        public override void Unload() {
             ThrowPoopHotKey = null;
             PoopHoldHotKey = null;
         }

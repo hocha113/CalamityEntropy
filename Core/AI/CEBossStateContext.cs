@@ -1,4 +1,4 @@
-using InnoVault.StateMachines;
+﻿using InnoVault.StateMachines;
 using System;
 using Terraria;
 
@@ -31,13 +31,10 @@ namespace CalamityEntropy.Core.AI
         /// 阶段,映射 <c>ai[2]</c> 同步槽,所以客户端不必额外过线就能读到。
         /// 下限钳到 1,免得生成首帧 ai 槽还是 0 时算出个 0 阶段
         /// </summary>
-        public int Phase
-        {
+        public int Phase {
             get => Npc == null ? 1 : Math.Max(1, (int)Npc.ai[2]);
-            set
-            {
-                if (Npc != null)
-                {
+            set {
+                if (Npc != null) {
                     Npc.ai[2] = value;
                 }
             }
@@ -53,8 +50,7 @@ namespace CalamityEntropy.Core.AI
         /// 每帧默认值:把全部声明通道清回安全默认,包络量自衰减。
         /// 子类覆写时先调 <c>base.BeginFrameDefaults()</c>
         /// </summary>
-        public virtual void BeginFrameDefaults()
-        {
+        public virtual void BeginFrameDefaults() {
         }
     }
 }

@@ -1,19 +1,16 @@
-﻿using CalamityEntropy.Content.Items;
-using CalamityEntropy.Content.Items.Weapons;
-using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class PowerOfTyrant : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 500;
             Item.crit = 16;
             Item.DamageType = DamageClass.Melee;
@@ -33,14 +30,11 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.shoot = ModContent.ProjectileType<PoTProj>();
             Item.shootSpeed = 6f;
         }
-        public override bool CanUseItem(Player player)
-        {
+        public override bool CanUseItem(Player player) {
             return player.ownedProjectileCounts[ModContent.ProjectileType<PoTProj>()] < 1;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_DefiledGreatsword, CEID.Item_NightmareFuel))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_DefiledGreatsword, CEID.Item_NightmareFuel)) {
                 CreateRecipe().
                 AddIngredient(CEID.Item_DefiledGreatsword, 1).
                 AddIngredient(CEID.Item_NightmareFuel, 10).
@@ -56,8 +50,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 Register();
         }
 
-        public override bool MeleePrefix()
-        {
+        public override bool MeleePrefix() {
             return true;
         }
     }

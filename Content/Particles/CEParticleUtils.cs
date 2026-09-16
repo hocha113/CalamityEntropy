@@ -1,5 +1,4 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
 
@@ -14,12 +13,9 @@ namespace CalamityEntropy.Content.Particles
         internal static float Convert01To010(float value) => (float)Math.Sin(MathHelper.Pi * MathHelper.Clamp(value, 0f, 1f));
 
         //RGB三通道各画一遍,沿direction垂直方向偏移±strength出色差
-        internal static void DrawChromaticAberration(Vector2 direction, float strength, Action<Vector2, Color> drawCall)
-        {
-            for (int i = -1; i <= 1; i++)
-            {
-                Color aberrationColor = i switch
-                {
+        internal static void DrawChromaticAberration(Vector2 direction, float strength, Action<Vector2, Color> drawCall) {
+            for (int i = -1; i <= 1; i++) {
+                Color aberrationColor = i switch {
                     -1 => new Color(255, 0, 0, 0),
                     0 => new Color(0, 255, 0, 0),
                     _ => new Color(0, 0, 255, 0),
@@ -29,8 +25,7 @@ namespace CalamityEntropy.Content.Particles
         }
 
         //End+Begin(Immediate)进shader区,静态方法不做扩展,避免和别处同名扩展撞车
-        internal static void EnterShaderRegion(SpriteBatch spriteBatch, BlendState newBlendState = null, Effect effect = null)
-        {
+        internal static void EnterShaderRegion(SpriteBatch spriteBatch, BlendState newBlendState = null, Effect effect = null) {
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, newBlendState ?? BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, effect, Main.GameViewMatrix.TransformationMatrix);
         }

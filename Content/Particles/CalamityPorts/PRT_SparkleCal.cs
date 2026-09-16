@@ -1,4 +1,4 @@
-using InnoVault.PRT;
+﻿using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -16,8 +16,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             Bloom = default;
             Spin = 0f;
@@ -29,8 +28,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_SparkleCal Configure(Color bloom, int lifetime, float rotationSpeed = 0f, float bloomScale = 1f,
-            bool additiveBlend = true)
-        {
+            bool additiveBlend = true) {
             Bloom = bloom;
             Spin = rotationSpeed;
             BloomScale = bloomScale;
@@ -41,23 +39,20 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 30;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             opacity = (float)Math.Sin(LifetimeCompletion * MathHelper.Pi);   //正弦脉冲,Solar Storm冲击也spawn SparkleCal
             Velocity *= 0.95f;
             Rotation += Spin * (Velocity.X > 0f ? 1f : -1f);
             Lighting.AddLight(Position, Bloom.R / 255f * opacity, Bloom.G / 255f * opacity, Bloom.B / 255f * opacity);
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch) {
             Texture2D starTexture = PRTSharedAssets.Sparkle2.Value;
             Texture2D bloomTexture = PRTSharedAssets.BloomCircle.Value;   //bloom光晕,自制贴图走VaultLoaden
             float properBloomSize = (float)starTexture.Height / bloomTexture.Height;

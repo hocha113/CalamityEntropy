@@ -6,8 +6,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 {
     public class BookMarkLeo : BookMark
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.rare = ItemRarityID.Orange;
             Item.Entropy().stroke = true;
@@ -18,8 +17,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Leo");
         public override Color tooltipColor => Color.LightBlue;
-        public override void ModifyStat(EBookStatModifer modifer)
-        {
+        public override void ModifyStat(EBookStatModifer modifer) {
             modifer.Damage += 0.12f;
             modifer.Size += 0.2f;
         }

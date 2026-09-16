@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -29,8 +29,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public float FireRotation => Mode == ModeFireDown ? MathHelper.PiOver2 : 0f;
         public int Age => (int)Projectile.localAI[1];
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 24;
             Projectile.height = 24;
             Projectile.hostile = false;
@@ -45,24 +44,19 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public override bool ShouldUpdatePosition() => false;
         public override bool? CanDamage() => false;
 
-        public override void AI()
-        {
-            if (Projectile.localAI[0] == 0f)
-            {
+        public override void AI() {
+            if (Projectile.localAI[0] == 0f) {
                 Projectile.localAI[0] = 1f;
                 Projectile.timeLeft = Mode == ModeDecor ? DecorLife : WarnTime + FadeOutTime;
-                if (!Main.dedServ)
-                {
+                if (!Main.dedServ) {
                     CEUtils.PlaySound("vbapear", Main.rand.NextFloat(1.1f, 1.3f), Projectile.Center, 8, 0.5f);
                 }
             }
             Projectile.localAI[1]++;
 
-            if (Mode == ModeDecor)
-            {
+            if (Mode == ModeDecor) {
                 int idx = (int)Projectile.ai[2];
-                if (idx >= 0 && idx < Main.maxNPCs && Main.npc[idx].active)
-                {
+                if (idx >= 0 && idx < Main.maxNPCs && Main.npc[idx].active) {
                     float ang = Projectile.ai[1] + Age * 0.08f;
                     Projectile.Center = Main.npc[idx].Center + ang.ToRotationVector2() * 130f;
                 }
@@ -72,28 +66,22 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
 
             //出现 8 帧放大,预警期轻微上下浮动,发射后 12 帧收缩消失
-            if (Age <= WarnTime)
-            {
+            if (Age <= WarnTime) {
                 Projectile.scale = MathHelper.Clamp(Age / 8f, 0f, 1f);
             }
-            else
-            {
+            else {
                 Projectile.scale = MathHelper.Clamp(Projectile.timeLeft / (float)FadeOutTime, 0f, 1f);
             }
             Projectile.rotation = (float)Math.Sin(Age * 0.15f) * 0.08f;
             Lighting.AddLight(Projectile.Center, WarnColor.ToVector3() * 0.4f * Projectile.scale);
 
-            if (Age == WarnTime)
-            {
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
+            if (Age == WarnTime) {
+                if (Main.netMode != NetmodeID.MultiplayerClient) {
                     float width = 24f * (Main.getGoodWorld ? 1.5f : 1f);
                     Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, FireRotation.ToRotationVector2(), ModContent.ProjectileType<VDSporeLaser>(), Projectile.damage, 0f, Main.myPlayer, BeamLength, width);
                 }
-                if (!Main.dedServ)
-                {
-                    for (int i = 0; i < 8; i++)
-                    {
+                if (!Main.dedServ) {
+                    for (int i = 0; i < 8; i++) {
                         Vector2 v = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(2f, 5f);
                         PRTLoader.NewParticle<PRT_GlowSpark>(Projectile.Center, v, WarnColor, Main.rand.NextFloat(0.5f, 0.9f))
                             .Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), 18);
@@ -102,20 +90,17 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = TextureAssets.Projectile[Type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition;
             Texture2D glow = CEUtils.getExtraTex("Glow");
 
             Main.spriteBatch.UseAdditive();
-            if (Mode != ModeDecor && Age < WarnTime)
-            {
+            if (Mode != ModeDecor && Age < WarnTime) {
                 //预警线:随蓄力变亮变实,末尾 15 帧闪一下
                 float charge = Age / (float)WarnTime;
                 float alpha = 0.25f + 0.55f * charge;
-                if (WarnTime - Age < 15)
-                {
+                if (WarnTime - Age < 15) {
                     alpha += 0.3f * (float)Math.Sin(Age * 1.2f);
                 }
                 Vector2 dir = FireRotation.ToRotationVector2();
@@ -124,8 +109,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 CEUtils.drawLine(Projectile.Center, end, Color.White * (0.35f * charge), 1.5f);
                 Main.spriteBatch.Draw(glow, drawPos, null, WarnColor * (0.5f + 0.5f * charge), 0f, glow.Size() / 2f, (0.18f + 0.12f * charge) * Projectile.scale, SpriteEffects.None, 0f);
             }
-            else
-            {
+            else {
                 Main.spriteBatch.Draw(glow, drawPos, null, WarnColor * 0.5f, 0f, glow.Size() / 2f, 0.18f * Projectile.scale, SpriteEffects.None, 0f);
             }
             CEUtils.ReSetToEndShader();
@@ -153,21 +137,17 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public float Width => Projectile.ai[1] > 0 ? Projectile.ai[1] : 24f;
         public Vector2 Dir => Projectile.velocity.SafeNormalize(Vector2.UnitX);
 
-        public override void SetExtraDefaults()
-        {
+        public override void SetExtraDefaults() {
             Projectile.width = 16;
             Projectile.height = 16;
         }
 
         public override bool ShouldUpdatePosition() => false;
 
-        public override void AI()
-        {
-            if (Projectile.localAI[0] == 0f)
-            {
+        public override void AI() {
+            if (Projectile.localAI[0] == 0f) {
                 Projectile.localAI[0] = 1f;
-                if (!Main.dedServ)
-                {
+                if (!Main.dedServ) {
                     CEUtils.PlaySound("void_laser", Main.rand.NextFloat(1.2f, 1.4f), Projectile.Center, 8, 0.55f);
                     Vector2 mid = Projectile.Center + Dir * Math.Min(Length * 0.5f, 600f);
                     CEUtils.SetShake(mid, 2.5f, 1500f);
@@ -177,17 +157,14 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Lighting.AddLight(Projectile.Center + Dir * 200f, BeamColor.ToVector3() * 0.6f);
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            if (Projectile.timeLeft < Lifetime - DamageFrames)
-            {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+            if (Projectile.timeLeft < Lifetime - DamageFrames) {
                 return false;
             }
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Dir * Length, targetHitbox, (int)Width);
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             float life = Projectile.timeLeft / (float)Lifetime;
             //前 6 帧全宽,之后按剩余寿命收窄淡出
             float shrink = Projectile.timeLeft >= Lifetime - DamageFrames ? 1f : life / ((Lifetime - DamageFrames) / (float)Lifetime);

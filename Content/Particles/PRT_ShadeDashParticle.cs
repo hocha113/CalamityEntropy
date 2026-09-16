@@ -22,8 +22,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/ShadeDashParticle";
 
         public PRT_ShadeDashParticle Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -33,8 +32,7 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 14;
@@ -43,19 +41,16 @@ namespace CalamityEntropy.Content.Particles
         //AI里自己Position+=Velocity,框架再补一次就双倍位移
         public override bool ShouldUpdatePosition() => false;
 
-        public override void AI()
-        {
+        public override void AI() {
             //PRTLoader先Time++再进AI,首帧Time已是1,Time==0永远不成立;
             //用odpl为空判首帧。漏了这步Rotation停在Configure的0,速度被拍成(len,0),不论冲刺朝向全往右飞
             bool firstTick = odpl.Count == 0;
-            if (firstTick)
-            {
+            if (firstTick) {
                 Rotation = Velocity.ToRotation();
                 Lifetime += 8;
             }
             int ac = firstTick ? 8 : 1;
-            for (int i = 0; i < ac; i++)
-            {
+            for (int i = 0; i < ac; i++) {
                 Position += Velocity;
                 Opacity = 1f - LifetimeCompletion;
                 Velocity = Rotation.ToRotationVector2() * Velocity.Length();
@@ -64,28 +59,24 @@ namespace CalamityEntropy.Content.Particles
                 c += 0.46f;
                 odpl.Insert(0, Position + Velocity.RotatedBy(MathHelper.PiOver2).normalize() * Scale * 13);
                 odpr.Insert(0, Position - Velocity.RotatedBy(MathHelper.PiOver2).normalize() * Scale * 13);
-                if (odpl.Count > TL)
-                {
+                if (odpl.Count > TL) {
                     odpl.RemoveAt(odpl.Count - 1);
                     odpr.RemoveAt(odpr.Count - 1);
                 }
             }
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Texture2D trail = PRTSharedAssets.ShadeDashParticle.Value;
             List<ColoredVertex> ve = new List<ColoredVertex>();
             //TriangleStrip:左右轨成对塞顶点,UV的y=1/0区分内外边,x沿弧长0→1给shader采样
             //primitive数=ve.Count-2,不是ve.Count,抄XNA文档抄错了一度画不出带子
-            for (int i = 0; i < odpr.Count; i++)
-            {
+            for (int i = 0; i < odpr.Count; i++) {
                 Color b = new Color(220, 200, 255);
                 ve.Add(new ColoredVertex(odpl[i] - Main.screenPosition, new Vector3(i / ((float)odpl.Count - 1), 1, 1), b));
                 ve.Add(new ColoredVertex(odpr[i] - Main.screenPosition, new Vector3(i / ((float)odpr.Count - 1), 0, 1), b));
             }
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 var gd = Main.graphics.GraphicsDevice;
                 Effect shader = PRTSharedAssets.ShadeDashParticleShader.Value;
                 //TriangleStrip+ShadeDashParticle.fx走Immediate,进来时PRT批次是开着的得先End

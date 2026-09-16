@@ -1,7 +1,5 @@
 ﻿using CalamityEntropy.Assets.Register;
-using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -15,8 +13,7 @@ namespace CalamityEntropy.Content.Projectiles
 
         public float TileCollisionYThreshold => Projectile.ai[0];
 
-        public bool HasCollidedWithGround
-        {
+        public bool HasCollidedWithGround {
             get => Projectile.ai[1] == 1f;
             set => Projectile.ai[1] = value.ToInt();
         }
@@ -27,15 +24,13 @@ namespace CalamityEntropy.Content.Projectiles
 
         public const float MaxFallSpeed = 24f;
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 14;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 86;
             Projectile.height = 130;
             Projectile.netImportant = true;
@@ -47,13 +42,11 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.sentry = true;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             if (SquishFactor <= 0f)
                 SquishFactor = 1f;
 
-            if (Projectile.velocity.Y == 0f && !HasCollidedWithGround)
-            {
+            if (Projectile.velocity.Y == 0f && !HasCollidedWithGround) {
                 PerformGroundCollisionEffects();
                 HasCollidedWithGround = true;
                 Projectile.netUpdate = true;
@@ -66,20 +59,16 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.frameCounter++;
             if (!HasCollidedWithGround)
                 Projectile.frame = Projectile.frameCounter / 6 % 5;
-            else
-            {
+            else {
                 Projectile.velocity.X = 0f;
                 if (Projectile.frame < 5)
                     Projectile.frame = 5;
-                if (Projectile.frameCounter % 8 == 7)
-                {
+                if (Projectile.frameCounter % 8 == 7) {
                     Projectile.frame++;
 
-                    if (Projectile.frame == 8)
-                    {
+                    if (Projectile.frame == 8) {
                         SoundEngine.PlaySound(new Terraria.Audio.SoundStyle("CalamityEntropy/Assets/Sounds/steam"), Projectile.Top);
-                        if (Main.myPlayer == Projectile.owner)
-                        {
+                        if (Main.myPlayer == Projectile.owner) {
                             // 灾厄 Ares 核弹改为原版敌对火箭，保留"朝玩家直飞并爆炸"的惩罚语义
                             int type = ProjectileID.RocketSkeleton;
                             Vector2 gaussNukeVelocity = Vector2.Normalize(Main.LocalPlayer.Center - Projectile.Center) * 16;
@@ -98,14 +87,12 @@ namespace CalamityEntropy.Content.Projectiles
                 Projectile.velocity.Y = MaxFallSpeed;
         }
 
-        public void PerformGroundCollisionEffects()
-        {
+        public void PerformGroundCollisionEffects() {
             SquishFactor = 1.4f;
 
             int dustID = 182;
             int dustCount = 54;
-            for (int i = 0; i < dustCount; i += 2)
-            {
+            for (int i = 0; i < dustCount; i += 2) {
                 float pairSpeed = Main.rand.NextFloat(0.5f, 16f);
                 Dust d = Dust.NewDustDirect(Projectile.Bottom, 0, 0, dustID);
                 d.velocity = Vector2.UnitX * pairSpeed;
@@ -123,8 +110,7 @@ namespace CalamityEntropy.Content.Projectiles
             CEUtils.SetShake(Projectile.Center, 4.5f, 1800);
         }
 
-        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
-        {
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI) {
             overPlayers.Add(index);
         }
 
@@ -132,14 +118,12 @@ namespace CalamityEntropy.Content.Projectiles
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
 
-        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
-        {
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac) {
             fallThrough = false;
             return true;
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D glowmask = CEExtraAssets.AtlasMunitionsDropPodGlow;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);

@@ -1,8 +1,8 @@
-using System;
-using CalamityEntropy.Content.Items.Accessories;
+﻿using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -13,8 +13,7 @@ namespace CalamityEntropy.Content.Projectiles
     public class WelkingShield : ModProjectile
     {
         public SoundStyle sound = new SoundStyle("CalamityEntropy/Assets/Sounds/flashback");
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 32;
             Projectile.height = 32;
             Projectile.friendly = true;
@@ -23,18 +22,15 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.light = 0.4f;
 
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
         public bool flag = true;
         public int btime = 16;
         public float rp = 2;
 
-        public override void AI()
-        {
-            if (flag)
-            {
+        public override void AI() {
+            if (flag) {
                 flag = false;
                 CEUtils.PlaySound("vshield", 1, Projectile.Center);
             }
@@ -43,25 +39,19 @@ namespace CalamityEntropy.Content.Projectiles
             btime--;
             Player plr = Projectile.GetOwner();
             Projectile.Center = plr.Center;
-            if (btime < 0)
-            {
+            if (btime < 0) {
                 Projectile.Opacity -= 0.1f;
-                if (Projectile.Opacity <= 0)
-                {
+                if (Projectile.Opacity <= 0) {
                     Projectile.Kill();
                 }
             }
-            else
-            {
+            else {
                 Vector2 p1 = Projectile.Center + new Vector2(50, -70).RotatedBy(Projectile.rotation);
                 Vector2 p2 = Projectile.Center + new Vector2(50, 70).RotatedBy(Projectile.rotation);
-                foreach (NPC n in Main.ActiveNPCs)
-                {
-                    if (!n.friendly && CEUtils.LineThroughRect(p1, p2, n.Hitbox, 56))
-                    {
+                foreach (NPC n in Main.ActiveNPCs) {
+                    if (!n.friendly && CEUtils.LineThroughRect(p1, p2, n.Hitbox, 56)) {
                         Projectile.GetOwner().Entropy().immune = 20;
-                        if (!n.dontTakeDamage)
-                        {
+                        if (!n.dontTakeDamage) {
                             n.SimpleStrikeNPC(56, Projectile.velocity.X > 0 ? 1 : -1, true, 20, DamageClass.Melee);
                             n.velocity = (n.Center - Projectile.GetOwner().Center).normalize() * (n.velocity.Length() * 2 + n.velocity.Length() > 0.01f ? 12 : 0);
                         }
@@ -71,16 +61,14 @@ namespace CalamityEntropy.Content.Projectiles
                 }
             }
         }
-        public void Block()
-        {
+        public void Block() {
             btime = 0;
             rp = 0;
             Projectile.GetOwner().velocity = Projectile.rotation.ToRotationVector2() * -4;
             Projectile.GetOwner().Entropy().immune = 46;
             CalamityEntropy.Instance.screenShakeAmp = 4;
             Projectile.GetOwner().Entropy().vShieldCD = VetrasylsEye.GetShieldCooldown().ApplyCdDec(Projectile.GetOwner());
-            if (!Main.dedServ)
-            {
+            if (!Main.dedServ) {
                 SoundEngine.PlaySound(sound, Projectile.Center);
             }
 
@@ -92,12 +80,10 @@ namespace CalamityEntropy.Content.Projectiles
             __prt.lx = 0.44f;
         }
         public override string Texture => "CalamityEntropy/Assets/Extra/WelkinShield";
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return false;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Projectile.GetTexture();
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Color.White * Projectile.Opacity, Projectile.rotation + (Projectile.velocity.X > 0 ? -1 : 1) * rp, tex.Size() * 0.5f, Projectile.Opacity, SpriteEffects.None);
             return false;
@@ -107,12 +93,9 @@ namespace CalamityEntropy.Content.Projectiles
     {
         public override bool InstancePerEntity => true;
         public bool friendly = false;
-        public override void OnSpawn(Projectile projectile, IEntitySource source)
-        {
-            if (source is EntitySource_Parent ep && ep.Entity is Projectile pj)
-            {
-                if (pj.GetGlobalProjectile<WelkingShieldGProj>().friendly)
-                {
+        public override void OnSpawn(Projectile projectile, IEntitySource source) {
+            if (source is EntitySource_Parent ep && ep.Entity is Projectile pj) {
+                if (pj.GetGlobalProjectile<WelkingShieldGProj>().friendly) {
                     friendly = true;
                     projectile.friendly = true;
                     projectile.hostile = false;
@@ -120,8 +103,7 @@ namespace CalamityEntropy.Content.Projectiles
                 }
             }
         }
-        private static void ReflectProjectile(Projectile projectile, Projectile shield, Player owner)
-        {
+        private static void ReflectProjectile(Projectile projectile, Projectile shield, Player owner) {
             projectile.velocity = shield.velocity.normalize() * projectile.velocity.Length();
             projectile.hostile = false;
             projectile.friendly = true;
@@ -130,16 +112,11 @@ namespace CalamityEntropy.Content.Projectiles
             projectile.GetGlobalProjectile<WelkingShieldGProj>().friendly = true;
         }
 
-        public override bool CanHitPlayer(Projectile projectile, Player target)
-        {
-            if (projectile.damage > 0 && projectile.hostile && projectile.Colliding(projectile.getRect(), target.getRect()) && target.ownedProjectileCounts[ModContent.ProjectileType<WelkingShield>()] > 0)
-            {
-                foreach (Projectile proj in Main.ActiveProjectiles)
-                {
-                    if (proj.ModProjectile is WelkingShield ws && ws.btime > 0)
-                    {
-                        if (CEUtils.GetAngleBetweenVectors(proj.velocity, projectile.Center - proj.Center) < MathHelper.ToRadians(65))
-                        {
+        public override bool CanHitPlayer(Projectile projectile, Player target) {
+            if (projectile.damage > 0 && projectile.hostile && projectile.Colliding(projectile.getRect(), target.getRect()) && target.ownedProjectileCounts[ModContent.ProjectileType<WelkingShield>()] > 0) {
+                foreach (Projectile proj in Main.ActiveProjectiles) {
+                    if (proj.ModProjectile is WelkingShield ws && ws.btime > 0) {
+                        if (CEUtils.GetAngleBetweenVectors(proj.velocity, projectile.Center - proj.Center) < MathHelper.ToRadians(65)) {
                             ReflectProjectile(projectile, proj, target);
                             ws.Block();
                             return false;
@@ -150,18 +127,12 @@ namespace CalamityEntropy.Content.Projectiles
             return base.CanHitPlayer(projectile, target);
         }
 
-        public override bool PreAI(Projectile projectile)
-        {
-            foreach (var target in Main.ActivePlayers)
-            {
-                if (projectile.damage > 0 && projectile.hostile && projectile.Colliding(projectile.getRect(), target.getRect().Center.ToVector2().getRectCentered(136, 136)) && target.ownedProjectileCounts[ModContent.ProjectileType<WelkingShield>()] > 0)
-                {
-                    foreach (Projectile proj in Main.ActiveProjectiles)
-                    {
-                        if (proj.ModProjectile is WelkingShield ws && ws.btime > 0)
-                        {
-                            if (CEUtils.GetAngleBetweenVectors(proj.velocity, projectile.Center - proj.Center) < MathHelper.ToRadians(65))
-                            {
+        public override bool PreAI(Projectile projectile) {
+            foreach (var target in Main.ActivePlayers) {
+                if (projectile.damage > 0 && projectile.hostile && projectile.Colliding(projectile.getRect(), target.getRect().Center.ToVector2().getRectCentered(136, 136)) && target.ownedProjectileCounts[ModContent.ProjectileType<WelkingShield>()] > 0) {
+                    foreach (Projectile proj in Main.ActiveProjectiles) {
+                        if (proj.ModProjectile is WelkingShield ws && ws.btime > 0) {
+                            if (CEUtils.GetAngleBetweenVectors(proj.velocity, projectile.Center - proj.Center) < MathHelper.ToRadians(65)) {
                                 ReflectProjectile(projectile, proj, target);
                                 ws.Block();
                                 break;

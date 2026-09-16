@@ -1,4 +1,4 @@
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -9,8 +9,7 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
     public class TemperanceCard : ModItem
     {
         public static int MinionsAddition = 1;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 22;
             Item.height = 22;
             Item.value = Item.buyPrice(gold: 5);
@@ -19,17 +18,14 @@ namespace CalamityEntropy.Content.Items.Accessories.Cards
 
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.maxMinions += MinionsAddition;
             player.GetModPlayer<EModPlayer>().temperanceCard = true;
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             tooltips.Replace("[T]", MinionsAddition);
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
         }
     }
 }

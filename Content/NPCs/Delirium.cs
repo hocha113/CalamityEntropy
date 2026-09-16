@@ -13,8 +13,7 @@ namespace CalamityEntropy.Content.NPCs
 {
     public class Delirium : ModNPC
     {
-        public override bool IsLoadingEnabled(Mod mod)
-        {
+        public override bool IsLoadingEnabled(Mod mod) {
             return false;
         }
         // 变身池删除全部灾厄 Boss 条目，保留原版与自有 Boss（本 NPC 目前处于停用状态）
@@ -39,19 +38,16 @@ namespace CalamityEntropy.Content.NPCs
             ModContent.NPCType<TheProphet>()
         };
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             this.HideFromBestiary();
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             NPC.friendly = false;
             NPC.damage = 300;
             NPC.lifeMax = 3400000;
 
         }
-        public override void OnSpawn(IEntitySource source)
-        {
+        public override void OnSpawn(IEntitySource source) {
             NPC.netUpdate = true;
             NPC.netSpam = 0;
             int npc = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, npcTurns[Main.rand.Next(npcTurns.Count)]);
@@ -76,15 +72,13 @@ namespace CalamityEntropy.Content.NPCs
         public bool delirium = false;
         public int counter = 0;
         public int damage = 0;
-        public override GlobalNPC Clone(NPC from, NPC to)
-        {
+        public override GlobalNPC Clone(NPC from, NPC to) {
             var n = to.GetGlobalNPC<DeliriumGlobalNPC>();
             n.delirium = delirium;
             n.counter = counter;
             return n;
         }
-        public override void SendExtraAI(NPC npc, BitWriter bitWriter, BinaryWriter binaryWriter)
-        {
+        public override void SendExtraAI(NPC npc, BitWriter bitWriter, BinaryWriter binaryWriter) {
             /* binaryWriter.Write(delirium);
              binaryWriter.Write(counter);
              binaryWriter.Write(npc.lifeMax);
@@ -92,8 +86,7 @@ namespace CalamityEntropy.Content.NPCs
              binaryWriter.Write(npc.damage);*/
         }
 
-        public override void ReceiveExtraAI(NPC npc, BitReader bitReader, BinaryReader binaryReader)
-        {
+        public override void ReceiveExtraAI(NPC npc, BitReader bitReader, BinaryReader binaryReader) {
             /*delirium = binaryReader.ReadBoolean();
             counter = binaryReader.ReadInt32();
             npc.lifeMax = binaryReader.ReadInt32();
@@ -101,8 +94,7 @@ namespace CalamityEntropy.Content.NPCs
             npc.damage = binaryReader.ReadInt32();*/
         }
 
-        public override bool CheckActive(NPC npc)
-        {
+        public override bool CheckActive(NPC npc) {
             return !delirium;
         }
     }

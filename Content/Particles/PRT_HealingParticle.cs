@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/HealingParticle";
 
         public PRT_HealingParticle Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -25,22 +24,19 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 46;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             //尾26帧乘0.9收尾,不是1f-LifetimeCompletion那套
             if (Lifetime - Time < 26)
                 Opacity *= 0.9f;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Color clr = Color;
             if (!Glow)
                 clr = Lighting.GetColor((int)(Position.X / 16), (int)(Position.Y / 16), clr);

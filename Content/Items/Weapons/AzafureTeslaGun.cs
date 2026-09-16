@@ -1,18 +1,17 @@
 ﻿using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class AzafureTeslaGun : ModItem, IAzafureEnhancable
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 25;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 194;
@@ -28,10 +27,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.shoot = ModContent.ProjectileType<TeslaBall>();
             Item.shootSpeed = 6;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_DubiousPlating, CEID.Item_AerialiteBar))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_DubiousPlating, CEID.Item_AerialiteBar)) {
                 CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(4)
                 .AddIngredient(CEID.Item_DubiousPlating, 8)
@@ -51,8 +48,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         #region Animations
         public override void HoldItem(Player player) => player.Entropy().MouseWorldListener = true;
 
-        public override void UseStyle(Player player, Rectangle heldItemFrame)
-        {
+        public override void UseStyle(Player player, Rectangle heldItemFrame) {
             player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
@@ -63,8 +59,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             CEUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
             base.UseStyle(player, heldItemFrame);
         }
-        public override void UseItemFrame(Player player)
-        {
+        public override void UseItemFrame(Player player) {
             player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
             float rotation = (player.Center - player.Entropy().MouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);

@@ -7,8 +7,7 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
 {
     public class DivineRadience : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 44;
             Item.height = 44;
             Item.damage = 32;
@@ -27,12 +26,10 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
             Item.mana = 10;
             Item.DamageType = DamageClass.Magic;
         }
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ItemID.CrystalBall)
                 .AddIngredient(ItemID.SoulofLight, 20)

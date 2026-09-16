@@ -19,8 +19,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/Sn2";
 
         public PRT_SlashDarkRed Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -30,15 +29,13 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 16;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             float remaining = 1f - LifetimeCompletion;
             sW = float.Lerp(sW, 0, remaining * 0.1f);
             Velocity *= 0.9f;
@@ -47,25 +44,21 @@ namespace CalamityEntropy.Content.Particles
                 Opacity = 1;
         }
 
-        public void DrawSlash(float width, float HeightMult, float scale, float rotation, Color color, Vector2 center, SpriteBatch sb)
-        {
+        public void DrawSlash(float width, float HeightMult, float scale, float rotation, Color color, Vector2 center, SpriteBatch sb) {
             List<ColoredVertex> ve = new List<ColoredVertex>();
             List<Vector2> p1 = new List<Vector2>();
             List<Vector2> p2 = new List<Vector2>();
-            for (float i = -MathHelper.PiOver2; i <= MathHelper.PiOver2; i += MathHelper.Pi / 26f)
-            {
+            for (float i = -MathHelper.PiOver2; i <= MathHelper.PiOver2; i += MathHelper.Pi / 26f) {
                 p2.Add(((i * 1f).ToRotationVector2() * width * new Vector2(1, HeightMult)).RotatedBy(rotation));
                 p1.Add(((i * 1f).ToRotationVector2() * width * new Vector2(1 - scale, HeightMult)).RotatedBy(rotation));
             }
             //内外弧成对顶点+TriangleStrip拉月牙,贴图是白图——颜色全靠顶点Color传进去
-            for (int i = 0; i < p1.Count; i++)
-            {
+            for (int i = 0; i < p1.Count; i++) {
                 Color b = color;
                 ve.Add(new ColoredVertex(center - Main.screenPosition + p1[i], new Vector3(i / ((float)p1.Count - 1), 1, 1), b));
                 ve.Add(new ColoredVertex(center - Main.screenPosition + p2[i], new Vector3(i / ((float)p1.Count - 1), 0, 1), b));
             }
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 var gd = Main.graphics.GraphicsDevice;
                 gd.Textures[0] = PRTExtraTextures.White.Value;
                 //没shader,Immediate+白图+图元,primitive数照旧是ve.Count-2
@@ -73,15 +66,13 @@ namespace CalamityEntropy.Content.Particles
             }
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             //第一遍PreDraw:8个45°扇形铺外圈,DrawSlash里TriangleStrip+白图
             //必须先End PRT批次再Immediate,图元不吃Deferred里的排队
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, PRTRender.GetBlendStateFor(PRTDrawMode), SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             float scale = sW;
-            for (float r = 0; r < 359; r += 45)
-            {
+            for (float r = 0; r < 359; r += 45) {
                 float rot = r.ToRadians();
                 DrawSlash(Scale * 128, height, scale * scw, Rotation, Color * Opacity, Position + r.ToRotationVector2() * 2, sb);
             }
@@ -90,8 +81,7 @@ namespace CalamityEntropy.Content.Particles
             return false;
         }
 
-        public override void PostDraw(SpriteBatch sb)
-        {
+        public override void PostDraw(SpriteBatch sb) {
             //第二遍PostDraw:旧DrawEffect,colorInside黑色内芯叠在PreDraw外圈上面
             //两趟顺序反了内芯会被八瓣盖死;池化复用若带着脏sW/scw也会炸,所以不开CanPool
             Color clr = Color;

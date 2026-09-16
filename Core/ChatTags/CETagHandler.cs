@@ -1,5 +1,4 @@
-using Microsoft.Xna.Framework;
-using Terraria.ModLoader;
+﻿using Terraria.ModLoader;
 using Terraria.UI.Chat;
 
 namespace CalamityEntropy.Core.ChatTags
@@ -18,13 +17,11 @@ namespace CalamityEntropy.Core.ChatTags
         /// <inheritdoc cref="ITagHandler.Parse"/>
         public abstract TextSnippet Parse(string text, Color baseColor = new(), string options = null);
 
-        public virtual void Load(Mod mod)
-        {
+        public virtual void Load(Mod mod) {
             ChatManager.Register<TSelf>(TagNames);
         }
 
-        public virtual void Unload()
-        {
+        public virtual void Unload() {
             // 无需反注册：tML 卸载模组后会重建 ChatManager 的标签表
         }
     }

@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
 using System;
 using Terraria;
@@ -22,8 +22,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public int TotalLife => (int)Math.Max(Projectile.ai[1], 20f);
         public float GlowMult => Projectile.ai[2] > 0f ? Projectile.ai[2] : 1f;
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 20;
             Projectile.height = 20;
             Projectile.hostile = false;
@@ -39,8 +38,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public override bool ShouldUpdatePosition() => false;
 
         /// <summary>开合程度:前 25% 展开,最后 25% 收拢</summary>
-        public float Openness()
-        {
+        public float Openness() {
             float total = TotalLife;
             float age = total - Projectile.timeLeft;
             float open = MathHelper.Clamp(age / (total * 0.25f), 0f, 1f);
@@ -48,25 +46,20 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             return Math.Min(open, close);
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             //首帧同步寿命(客户端拿到的 timeLeft 是 SetDefaults 的 60,按 ai[1] 重定)
-            if (Projectile.localAI[0] == 0f)
-            {
+            if (Projectile.localAI[0] == 0f) {
                 Projectile.localAI[0] = 1f;
                 Projectile.timeLeft = TotalLife;
-                if (!Main.dedServ)
-                {
+                if (!Main.dedServ) {
                     CEUtils.PlaySound("portal_emerge", Mode == ModeDash ? 1.2f : 0.9f, Projectile.Center, 4, 0.8f);
                 }
             }
-            if (Projectile.velocity != Vector2.Zero)
-            {
+            if (Projectile.velocity != Vector2.Zero) {
                 Projectile.rotation = Projectile.velocity.ToRotation();
             }
             Lighting.AddLight(Projectile.Center, VoidDestroyerNPC.VoidPurple.ToVector3() * 0.8f * Openness());
-            if (!Main.dedServ && Main.rand.NextBool(2))
-            {
+            if (!Main.dedServ && Main.rand.NextBool(2)) {
                 float ang = Projectile.rotation + MathHelper.PiOver2;
                 float extent = Mode == ModeDash ? 90f : 70f;
                 Vector2 pos = Projectile.Center + ang.ToRotationVector2() * Main.rand.NextFloat(-extent, extent) * Openness();
@@ -79,8 +72,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 
         public override bool? CanDamage() => false;
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             float size = Mode == ModeDash ? 120f : 90f;
             VoidDestroyerNPC.DrawPortalAt(Projectile.Center, Openness(), Projectile.rotation, size, Main.screenPosition, GlowMult);
             return false;

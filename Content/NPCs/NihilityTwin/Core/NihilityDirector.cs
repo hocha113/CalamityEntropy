@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.NihilityTwin.Core
 {
@@ -404,12 +404,9 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.Core
         public const int SplitRoll = 4;
 
         /// <summary>阶段 + 掷点 → 状态索引。两个阶段的 0~6 是两套完全不同的招</summary>
-        public static NihilityStateIndex StateFor(int phase, int roll)
-        {
-            if (phase >= 2)
-            {
-                return roll switch
-                {
+        public static NihilityStateIndex StateFor(int phase, int roll) {
+            if (phase >= 2) {
+                return roll switch {
                     0 => NihilityStateIndex.P2DashVolley,
                     1 => NihilityStateIndex.P2CellCannon,
                     2 => NihilityStateIndex.P2DashSpiral,
@@ -419,8 +416,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.Core
                     _ => NihilityStateIndex.P2EnergyBall,
                 };
             }
-            return roll switch
-            {
+            return roll switch {
                 0 => NihilityStateIndex.P1Rush,
                 1 => NihilityStateIndex.P1SpinSnipe,
                 2 => NihilityStateIndex.P1CellLance,
@@ -432,13 +428,10 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.Core
         }
 
         /// <summary>场上小细胞数量。只有权威端会问它(选招裁决用)</summary>
-        public static int CountSmallCells(int smallCellType)
-        {
+        public static int CountSmallCells(int smallCellType) {
             int sum = 0;
-            foreach (NPC n in Main.ActiveNPCs)
-            {
-                if (n.type == smallCellType)
-                {
+            foreach (NPC n in Main.ActiveNPCs) {
+                if (n.type == smallCellType) {
                     sum++;
                 }
             }

@@ -1,20 +1,18 @@
-using CalamityEntropy.Common;
-using CalamityEntropy.Content.Items;
+﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items.Armor;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
     public class ReincarnationBadge : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 98;
             Item.height = 60;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
@@ -22,21 +20,17 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.accessory = true;
 
         }
-        public override void ModifyTooltips(List<TooltipLine> list)
-        {
+        public override void ModifyTooltips(List<TooltipLine> list) {
             // 脱离灾厄:灾厄动态饰品键位并入自有 AccessoryAbilityHotKey(player-api.md §2)
             list.Replace("[KEY]", EModPlayer.AccessoryAbilityHotKey.TooltipKeyHint());
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.Entropy().reincarnationBadge = true;
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_AscendantInsignia, CEID.Item_AscendantSpiritEssence, CEID.Tile_CosmicAnvil))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_AscendantInsignia, CEID.Item_AscendantSpiritEssence, CEID.Tile_CosmicAnvil)) {
                 CreateRecipe().AddIngredient(CEID.Item_AscendantInsignia)
                 .AddIngredient(CEID.Item_AscendantSpiritEssence, 4)
                 .AddTile(CEID.Tile_CosmicAnvil).Register();

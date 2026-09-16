@@ -14,38 +14,31 @@ namespace CalamityEntropy.Core
         internal static Dictionary<int, Asset<Texture2D>> trailTextures;
         internal static Dictionary<int, Asset<Texture2D>> gradientTextures;
         internal static Dictionary<int, Asset<Texture2D>> glowTextures;
-        void ICELoader.LoadData()
-        {
+        void ICELoader.LoadData() {
             Swings = [];
             SwingFullNameToType = [];
             trailTextures = [];
             gradientTextures = [];
             glowTextures = [];
         }
-        void ICELoader.SetupData()
-        {
+        void ICELoader.SetupData() {
             Swings = VaultUtils.GetDerivedInstances<BaseSwing>();
-            foreach (var swing in Swings)
-            {
+            foreach (var swing in Swings) {
                 string pathValue = swing.GetType().Name;
                 int type = CalamityEntropy.Instance.Find<ModProjectile>(pathValue).Type;
                 SwingFullNameToType.Add(pathValue, type);
             }
         }
-        void ICELoader.LoadAsset()
-        {
-            foreach (var swing in Swings)
-            {
+        void ICELoader.LoadAsset() {
+            foreach (var swing in Swings) {
                 string path1 = swing.trailTexturePath;
                 string path2 = swing.gradientTexturePath;
                 string path3 = swing.GlowTexturePath;
 
-                if (path1 == "")
-                {
+                if (path1 == "") {
                     path1 = EffectLoader.AssetPath + "MotionTrail3";
                 }
-                if (path2 == "")
-                {
+                if (path2 == "") {
                     path2 = EffectLoader.AssetPath + "NullEffectColorBar";
                 }
 
@@ -54,14 +47,12 @@ namespace CalamityEntropy.Core
                 trailTextures.TryAdd(type, CEUtils.GetT2DAsset(path1));
                 gradientTextures.TryAdd(type, CEUtils.GetT2DAsset(path2));
 
-                if (path3 != "")
-                {
+                if (path3 != "") {
                     glowTextures.TryAdd(type, CEUtils.GetT2DAsset(path3));
                 }
             }
         }
-        void ICELoader.UnLoadData()
-        {
+        void ICELoader.UnLoadData() {
             Swings = null;
             SwingFullNameToType = null;
             trailTextures = null;

@@ -1,8 +1,8 @@
-using CalamityEntropy.Content.Items;
-using CalamityEntropy.Content.Tiles;
-using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -11,7 +11,6 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator
 {
@@ -19,12 +18,10 @@ namespace CalamityEntropy.Content.Items.Donator
     {
         public string DonatorName => "Reficul";
 
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 52;
             Item.height = 52;
             Item.damage = 225;
@@ -45,39 +42,30 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public bool Active = false;
         public int UsingTime = 0;
-        public override void UpdateInventory(Player player)
-        {
-            if (!Active && Item.favorited)
-            {
+        public override void UpdateInventory(Player player) {
+            if (!Active && Item.favorited) {
                 Active = true;
                 player.Hurt(PlayerDeathReason.ByPlayerItem(player.whoAmI, Item), 20, 0);
                 Item.favorited = false;
             }
-            if (Active)
-            {
+            if (Active) {
                 TextureAssets.Item[Type] = CEUtils.getExtraTexAsset("TheFilthyContractWithMammonActive");
-                if (player.Entropy().UsingItemCounter > 0 && player.HeldItem == Item)
-                {
+                if (player.Entropy().UsingItemCounter > 0 && player.HeldItem == Item) {
                     UsingTime++;
                 }
-                if (UsingTime > 0 && player.Entropy().UsingItemCounter > 0 && player.HeldItem != Item)
-                {
+                if (UsingTime > 0 && player.Entropy().UsingItemCounter > 0 && player.HeldItem != Item) {
                     Active = false;
                 }
 
             }
-            else
-            {
+            else {
                 TextureAssets.Item[Type] = CEUtils.getExtraTexAsset("TheFilthyContractWithMammon");
-                if (UsingTime > 0)
-                {
+                if (UsingTime > 0) {
                     int dmg = UsingTime / 6;
-                    if (dmg < 6)
-                    {
+                    if (dmg < 6) {
                         dmg = 6;
                     }
-                    if (dmg > 666)
-                    {
+                    if (dmg > 666) {
                         dmg = 666;
                     }
                     player.Hurt(PlayerDeathReason.ByPlayerItem(player.whoAmI, Item), dmg, 0);
@@ -85,22 +73,18 @@ namespace CalamityEntropy.Content.Items.Donator
                 }
             }
         }
-        public override bool CanUseItem(Player player)
-        {
+        public override bool CanUseItem(Player player) {
             return Active;
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
             return false;
         }
-        public override bool AltFunctionUse(Player player)
-        {
+        public override bool AltFunctionUse(Player player) {
             return true;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ItemID.SpellTome)
                 .AddIngredient<VoidBar>(5)
@@ -112,70 +96,53 @@ namespace CalamityEntropy.Content.Items.Donator
 
     public class FilthyCircle : ModProjectile
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Magic, false, -1);
             Projectile.width = Projectile.height = 64;
 
         }
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             return false;
         }
         public bool r = true;
         public static SoundStyle AltSound = new SoundStyle("CalamityEntropy/Assets/Sounds/lasershoot");
-        public override void AI()
-        {
-            if (Projectile.localAI[0]++ == 0)
-            {
+        public override void AI() {
+            if (Projectile.localAI[0]++ == 0) {
                 Projectile.rotation = Projectile.velocity.ToRotation();
             }
             Player player = Projectile.GetOwner();
-            if (Main.myPlayer == Projectile.owner && Main.mouseRight && r)
-            {
+            if (Main.myPlayer == Projectile.owner && Main.mouseRight && r) {
                 player.channel = true;
             }
-            else
-            {
+            else {
                 r = false;
             }
-            if (player.channel)
-            {
+            if (player.channel) {
                 if (alpha < 1)
                     alpha += 0.05f;
-                if (alpha >= 1)
-                {
-                    if (Main.myPlayer == Projectile.owner)
-                    {
-                        if (player.altFunctionUse == 2)
-                        {
-                            if (Projectile.ai[1]++ % 5 == 0)
-                            {
+                if (alpha >= 1) {
+                    if (Main.myPlayer == Projectile.owner) {
+                        if (player.altFunctionUse == 2) {
+                            if (Projectile.ai[1]++ % 5 == 0) {
                                 AltSound.Volume = 0.2f;
                                 SoundEngine.PlaySound(AltSound, Projectile.Center);
                                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + Projectile.velocity * 2 + Projectile.velocity.RotatedBy(MathHelper.PiOver2).normalize() * Main.rand.NextFloat(-64, 64) + Projectile.velocity * 2, Projectile.velocity * 3, ModContent.ProjectileType<FilthyShootAlt>(), Projectile.damage * 4, Projectile.knockBack, Projectile.owner);
                             }
                         }
-                        else
-                        {
-                            if (Projectile.ai[1]++ % 2 == 0)
-                            {
+                        else {
+                            if (Projectile.ai[1]++ % 2 == 0) {
                                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 2, ModContent.ProjectileType<FilthyProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner); ;
                             }
                         }
                     }
                 }
             }
-            else
-            {
-                if (alpha > 0)
-                {
+            else {
+                if (alpha > 0) {
                     alpha -= 0.1f;
                 }
-                else
-                {
-                    if (Projectile.owner == Main.myPlayer)
-                    {
+                else {
+                    if (Projectile.owner == Main.myPlayer) {
                         Projectile.Kill();
                     }
                 }
@@ -189,8 +156,7 @@ namespace CalamityEntropy.Content.Items.Donator
             Projectile.velocity = Projectile.rotation.ToRotationVector2() * 16;
         }
         public float alpha;
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D circle = Projectile.GetTexture();
             float angle = Main.GameUpdateCount * 0.18f;
             float size = (int)(alpha * 160);
@@ -227,8 +193,7 @@ namespace CalamityEntropy.Content.Items.Donator
     {
         public PRT_StarTrailParticle trail;
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Magic, false, -1);
             Projectile.width = Projectile.height = 64;
             Projectile.timeLeft = 120;
@@ -236,10 +201,8 @@ namespace CalamityEntropy.Content.Items.Donator
             Projectile.localNPCHitCooldown = -1;
         }
         public Vector2 tOfs;
-        public override void AI()
-        {
-            if (trail == null)
-            {
+        public override void AI() {
+            if (trail == null) {
                 tOfs = CEUtils.randomPointInCircle(36);
                 //PRT_StarTrailParticle maxLength spawn后赋,轨迹类不开CanPool
                 trail = PRTLoader.NewParticle<PRT_StarTrailParticle>(Projectile.Center + tOfs, Projectile.velocity, Color.DarkRed, 1f);
@@ -252,48 +215,39 @@ namespace CalamityEntropy.Content.Items.Donator
             Vector2 ver = Projectile.velocity;
             PRTLoader.NewParticle<PRT_Light>(Projectile.Center + CEUtils.randomPointInCircle(32 * Projectile.scale), ver, Color.Red, Main.rand.NextFloat(2f, 4f))
                 .Configure(1f, lifetime: 140);
-            if (Main.rand.NextBool())
-            {
+            if (Main.rand.NextBool()) {
                 PRTLoader.NewParticle<PRT_LineCal>(Projectile.Center + Projectile.velocity * 4 + CEUtils.randomPointInCircle(32), Projectile.velocity, Color.DarkRed, Main.rand.NextFloat(1, 2)).Configure(false, 32);
             }
-            else
-            {
+            else {
                 PRTLoader.NewParticle<PRT_SparkCal>(Projectile.Center + CEUtils.randomPointInCircle(32), Projectile.velocity, Color.Red, Main.rand.NextFloat(0.6f, 1.2f)).Configure(true, 50);
             }
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            for (int i = 0; i < 2; i++)
-            {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            for (int i = 0; i < 2; i++) {
                 float r = CEUtils.randomRot();
                 PRTLoader.NewParticle<PRT_LineCal>(Projectile.Center + r.ToRotationVector2() * -160, r.ToRotationVector2() * 32, Color.Red, Main.rand.NextFloat(1, 2)).Configure(false, 32);
             }
             CEUtils.PlaySound("nvspark", 1, target.Center, 10, 0.7f);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             return false;
         }
     }
     public class FilthyShootAlt : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Magic, false, 1);
             Projectile.width = Projectile.height = 32;
             Projectile.timeLeft = 140;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             return false;
         }
-        public override void AI()
-        {
-            for (int i = 0; i < 10; i++)
-            {
+        public override void AI() {
+            for (int i = 0; i < 10; i++) {
                 var smoke = PRTLoader.NewParticle<PRT_Smoke>(Projectile.Center + Projectile.velocity * (i / 10f) + CEUtils.randomPointInCircle(6), CEUtils.randomPointInCircle(0.5f), Color.Red, Main.rand.NextFloat(0.06f, 0.09f));
                 smoke.timeleftmax = 26;
                 smoke.Lifetime = 26;
@@ -305,8 +259,7 @@ namespace CalamityEntropy.Content.Items.Donator
             }
             Lighting.AddLight(Projectile.Center, 0.25f, 0f, 0f);
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             Color impactColor = Color.Red;
             float impactParticleScale = 3;
             PRTLoader.NewParticle<PRT_SparkleCal>(Projectile.Center, Vector2.Zero, impactColor, impactParticleScale).Configure(Color.OrangeRed, 14, 0f, 3f);

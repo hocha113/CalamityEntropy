@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.AI;
+﻿using CalamityEntropy.Core.AI;
 using InnoVault.StateMachines;
 using Terraria;
 using Terraria.ModLoader;
@@ -63,14 +63,12 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.Core
         /// </summary>
         public int BodyTimer { get; private set; }
 
-        public override void OnEnter(SpiritFountainStateContext ctx)
-        {
+        public override void OnEnter(SpiritFountainStateContext ctx) {
             base.OnEnter(ctx);
             BodyTimer = 0;
         }
 
-        public sealed override IVaultState<SpiritFountainStateContext> OnUpdate(SpiritFountainStateContext ctx)
-        {
+        public sealed override IVaultState<SpiritFountainStateContext> OnUpdate(SpiritFountainStateContext ctx) {
             IVaultState<SpiritFountainStateContext> next = RunBody(ctx);
             //状态体自己可能动过 Timer(转阶段的额外自增、十字斩的原地归零),所以在它跑完之后取值
             BodyTimer = Timer;
@@ -92,8 +90,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.Core
         /// 所以新状态的首个执行帧读到的是 1 而不是 0。宿主的续跑链在判定为「延后」时调它
         /// </para>
         /// </summary>
-        public void AdoptDeferredEntry()
-        {
+        public void AdoptDeferredEntry() {
             Timer++;
         }
 
@@ -110,8 +107,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.Core
         /// 客户端不生成(守卫在 <see cref="SpiritFountain.Shoot"/> 里,与原代码同一处)
         /// </summary>
         protected static void Shoot<T>(SpiritFountainStateContext ctx, Vector2 pos, Vector2 velocity,
-            float damageMult = 1f, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile
-        {
+            float damageMult = 1f, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile {
             ctx.Owner?.Shoot(ModContent.ProjectileType<T>(), pos, velocity, damageMult, ai0, ai1, ai2);
         }
 

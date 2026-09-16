@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.NPCs.Acropolis.Core;
 using CalamityEntropy.Core.AI;
 using InnoVault;
@@ -27,8 +27,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
     /// </summary>
     public class Harpoon : ModNPC
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.npcFrameCount[NPC.type] = 1;
             NPCID.Sets.MustAlwaysDraw[NPC.type] = true;
             // 图鉴隐藏:原灾厄隐藏扩展的原版等价写法
@@ -37,8 +36,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             NPCID.Sets.NoMultiplayerSmoothingByType[Type] = true;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             NPC.aiStyle = -1;
             NPC.width = 30;
             NPC.height = 30;
@@ -71,22 +69,18 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         /// <summary>出膛时的速度快照,扎墙时顺着它再插进去一段</summary>
         public Vector2 sVel = Vector2.Zero;
 
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
-        {
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) {
             return owner != null && owner.boss && !OnLauncher;
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo) {
             target.AddBuff(ModContent.BuffType<MechanicalTrauma>(), 180);
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             CEBossHost.RunAnchoredPartFrame(NPC);
             PullCD--;
-            if (NPC.localAI[1]++ == 0)
-            {
+            if (NPC.localAI[1]++ == 0) {
                 //原代码两个分支都写的 velocity.X,笔误照搬
                 if (NPC.velocity.X == 0)
                     NPC.velocity.X = 0.02f;
@@ -94,16 +88,14 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                     NPC.velocity.X = 0.02f;
             }
             AcropolisMachine am = OwnerMachine;
-            if (NPC.ai[0] < 0 || owner == null || !owner.active || am == null)
-            {
+            if (NPC.ai[0] < 0 || owner == null || !owner.active || am == null) {
                 NPC.active = false;
                 return;
             }
             NPC.scale = owner.scale;
             NPC.damage = owner.damage;
 
-            if (OnLauncher)
-            {
+            if (OnLauncher) {
                 NPC.Center = am.HarpoonPos;
                 NPC.rotation = am.harpoon.Seg2Rot;
                 Stuck = false;
@@ -112,24 +104,20 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                 return;
             }
 
-            if (sVel == Vector2.Zero)
-            {
+            if (sVel == Vector2.Zero) {
                 sVel = NPC.velocity;
             }
             NPC.rotation = (NPC.Center - ChainTail(am)).ToRotation();
 
-            if (!Stuck && Back-- < 0)
-            {
+            if (!Stuck && Back-- < 0) {
                 //回收:朝枪口加速并阻尼,够近就挂回架上
                 NPC.noTileCollide = true;
                 NPC.velocity += (am.HarpoonPos - NPC.Center).normalize() * AcropolisDirector.HarpoonReturnAccel * NPC.scale;
                 NPC.velocity *= AcropolisDirector.HarpoonReturnDrag;
-                if (CEUtils.getDistance(NPC.Center, am.HarpoonPos) <= NPC.velocity.Length() + AcropolisDirector.HarpoonReturnCatchPad)
-                {
+                if (CEUtils.getDistance(NPC.Center, am.HarpoonPos) <= NPC.velocity.Length() + AcropolisDirector.HarpoonReturnCatchPad) {
                     OnLauncher = true;
                     NPC.velocity *= 0;
-                    if (!VaultUtils.isClient)
-                    {
+                    if (!VaultUtils.isClient) {
                         NPC.netUpdate = true;
                         owner.netUpdate = true;
                     }
@@ -137,8 +125,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                 return;
             }
 
-            if (!owner.HasValidTarget)
-            {
+            if (!owner.HasValidTarget) {
                 return;
             }
             Player target = owner.target.ToPlayer();
@@ -150,8 +137,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                 && CEUtils.getDistance(owner.Center, NPC.Center) > AcropolisDirector.StickOwnerToHarpoonMin
                 && CEUtils.getDistance(NPC.Center, target.Center) < AcropolisDirector.StickHarpoonToTargetMax
                 && CEUtils.CheckSolidTile(NPC.getRect())
-                && !Stuck && !am.Jumping && PullCD <= 0)
-            {
+                && !Stuck && !am.Jumping && PullCD <= 0) {
                 PullCD = AcropolisDirector.PullCooldownFrames;
                 Stuck = true;
                 NPC.Center += sVel.normalize() * AcropolisDirector.StickPenetration;
@@ -160,24 +146,20 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                 owner.netUpdate = true;
             }
 
-            if (!Stuck)
-            {
+            if (!Stuck) {
                 return;
             }
             //拽拉本身各端都跑:请求里写的三个量全部过线,客户端照样把本体拖过去
             NPC.velocity *= 0;
-            if (CEUtils.getDistance(owner.Center, NPC.Center) > AcropolisDirector.PullReleaseDistance)
-            {
+            if (CEUtils.getDistance(owner.Center, NPC.Center) > AcropolisDirector.PullReleaseDistance) {
                 am.RequestHarpoonPull();
                 Back = 5;
             }
-            else
-            {
+            else {
                 Back = -1;
                 Stuck = false;
                 am.ReleaseHarpoonPull();
-                if (!VaultUtils.isClient)
-                {
+                if (!VaultUtils.isClient) {
                     NPC.netUpdate = true;
                     owner.netUpdate = true;
                 }
@@ -189,8 +171,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             => am.HarpoonPos - am.harpoon.Seg2Rot.ToRotationVector2() * AcropolisDirector.HarpoonChainTail * NPC.scale;
 
         /// <summary>定长块。原版这个实体完全没有 ExtraAI,五个状态字段从不过线</summary>
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(OnLauncher);
             writer.Write(Stuck);
             writer.Write(Back);
@@ -198,8 +179,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             writer.WriteVector2(sVel);
         }
 
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             OnLauncher = reader.ReadBoolean();
             Stuck = reader.ReadBoolean();
             Back = reader.ReadInt32();
@@ -210,14 +190,12 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
 
         public override bool CheckActive() => owner == null || !owner.active;
 
-        public override bool ModifyCollisionData(Rectangle victimHitbox, ref int immunityCooldownSlot, ref MultipliableFloat damageMultiplier, ref Rectangle npcHitbox)
-        {
+        public override bool ModifyCollisionData(Rectangle victimHitbox, ref int immunityCooldownSlot, ref MultipliableFloat damageMultiplier, ref Rectangle npcHitbox) {
             npcHitbox = npcHitbox.Center.ToVector2().getRectCentered((npcHitbox.Width * NPC.scale), (npcHitbox.Height * NPC.scale));
             return true;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) {
             AcropolisMachine am = OwnerMachine;
             if (OnLauncher || am == null)
                 return false;
@@ -225,8 +203,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             Texture2D harpoonOutline = AcropolisMachine.harpoonOutlineTex.Value;
             CEUtils.drawChain(NPC.Center, ChainTail(am), 18, "CalamityEntropy/Content/NPCs/Acropolis/HarpoonChain");
             Texture2D harpoon3 = NPC.getTexture();
-            for (float r = 0; r <= 360; r += 60)
-            {
+            for (float r = 0; r <= 360; r += 60) {
                 Main.EntitySpriteDraw(harpoonOutline, MathHelper.ToRadians(r).ToRotationVector2() * 2 + NPC.Center - Main.screenPosition, null, Color.OrangeRed, NPC.rotation, new Vector2(70, harpoon3.Height / 2f), NPC.scale, am.dir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);
             }
             Main.EntitySpriteDraw(harpoon3, NPC.Center - Main.screenPosition, null, drawColor, NPC.rotation, new Vector2(70, harpoon3.Height / 2f), NPC.scale, am.dir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);

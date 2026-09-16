@@ -38,11 +38,9 @@ namespace CalamityEntropy.Core
         /// 基础的位置
         /// </summary>
         public Vector2 ShakePosition = ShakePosition;
-        public void Update()
-        {
+        public void Update() {
             float Shake = MathHelper.Lerp(ShakeStrength, 0, EasingHandler.EaseOutCubic(ShakeTime / (float)ShakeLifeTime));
-            if (UseDiatanceFade)
-            {
+            if (UseDiatanceFade) {
                 //计算与本地玩家的距离
                 Player player = Main.LocalPlayer;
 
@@ -57,19 +55,16 @@ namespace CalamityEntropy.Core
     public class ScreenShakeSystem : ModSystem
     {
         public static readonly List<ScreenShakeInfo> ScreenShakes = [];
-        public override void ModifyScreenPosition()
-        {
+        public override void ModifyScreenPosition() {
             if (ScreenShakes.Count == 0)
                 return;
 
-            foreach (ScreenShakeInfo shake in ScreenShakes)
-            {
+            foreach (ScreenShakeInfo shake in ScreenShakes) {
                 shake.Update();
             }
             ScreenShakes.RemoveAll(s => s.ShakeTime >= s.ShakeLifeTime);
         }
-        public static void AddScreenShakes(Vector2 shakePosition, float shakeStrength, int shakeLifeTime, float shakeDirection, float randomAngleoffset = MathHelper.TwoPi, bool useDistanceFade = true, int ShakeEffectDistance = 1000)
-        {
+        public static void AddScreenShakes(Vector2 shakePosition, float shakeStrength, int shakeLifeTime, float shakeDirection, float randomAngleoffset = MathHelper.TwoPi, bool useDistanceFade = true, int ShakeEffectDistance = 1000) {
             ScreenShakeInfo screenShakeInfo = new ScreenShakeInfo(shakePosition, shakeStrength, shakeLifeTime, shakeDirection, randomAngleoffset, useDistanceFade, ShakeEffectDistance);
             ScreenShakes.Add(screenShakeInfo);
         }

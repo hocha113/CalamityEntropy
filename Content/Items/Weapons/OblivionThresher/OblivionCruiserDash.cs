@@ -19,14 +19,12 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
         internal static Asset<Texture2D> CruiserJawUpTex;
         [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawDown2")]
         internal static Asset<Texture2D> CruiserJawDownTex;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
         float mouthRot = 60f;
         public bool bite = false;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 128;
             Projectile.height = 128;
@@ -43,18 +41,15 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
         public Vector2 spawnPos;
         public float spawnRot = 0;
         public float alphaPor = 1;
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return Projectile.Center.getRectCentered(200 * Projectile.scale, 200 * Projectile.scale).Intersects(targetHitbox);
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             EGlobalNPC.AddVoidTouch(target, 90, 3.6f, 1000, 16);
         }
         float counter = 0;
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void AI()
-        {
+        public override void AI() {
             counter++;
             Player player = Projectile.owner.ToPlayer();
             Projectile.rotation = Projectile.velocity.ToRotation();
@@ -64,25 +59,18 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
             mouthRot *= 0.88f;
             spawnParticles();
             int t = ModContent.ProjectileType<OblivionThresherShoot>();
-            foreach (var p in Main.ActiveProjectiles)
-            {
-                if (p.owner == Projectile.owner && p.type == t)
-                {
-                    if (p.ModProjectile is OblivionThresherShoot ots)
-                    {
-                        if (p.ai[0] >= 1f && p.localAI[1] > 80 && p.Colliding(p.Hitbox, Projectile.Hitbox))
-                        {
+            foreach (var p in Main.ActiveProjectiles) {
+                if (p.owner == Projectile.owner && p.type == t) {
+                    if (p.ModProjectile is OblivionThresherShoot ots) {
+                        if (p.ai[0] >= 1f && p.localAI[1] > 80 && p.Colliding(p.Hitbox, Projectile.Hitbox)) {
                             player.velocity = -Projectile.velocity * 0.2f;
                             p.Kill();
-                            foreach (var kh in Main.ActiveProjectiles)
-                            {
-                                if (kh.owner == Projectile.owner && kh.ModProjectile is OblivionThresherHoldout)
-                                {
+                            foreach (var kh in Main.ActiveProjectiles) {
+                                if (kh.owner == Projectile.owner && kh.ModProjectile is OblivionThresherHoldout) {
                                     kh.Kill();
                                 }
                             }
-                            if (Projectile.owner == Main.myPlayer)
-                            {
+                            if (Projectile.owner == Main.myPlayer) {
                                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), player.Center, Projectile.velocity, ModContent.ProjectileType<OblivionThresherHoldout>(), (int)(Projectile.damage * 2.5f), Projectile.knockBack, Projectile.owner);
                                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), player.Center, Projectile.velocity, ModContent.ProjectileType<OblivionThresherShootAlt>(), (int)(Projectile.damage * 0.75f), Projectile.knockBack, Projectile.owner);
                             }
@@ -94,16 +82,13 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
                 }
             }
         }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
             modifiers.SourceDamage *= 1;
             modifiers.FinalDamage *= 2;
         }
-        public void spawnParticles()
-        {
+        public void spawnParticles() {
             var r = Main.rand;
-            for (int i = 0; i < 2; i++)
-            {
+            for (int i = 0; i < 2; i++) {
                 //PRT_Void走EffectLoader void RT,vd/ad字段Configure前直赋
                 //EParticle VoidParticles→PRT_Void,数值迁移一个不改
                 var p = PRTLoader.NewParticle<PRT_Void>(Projectile.Center - Projectile.rotation.ToRotationVector2() * 60, new Vector2((float)((r.NextDouble() - 0.5) * .3), (float)((r.NextDouble() - 0.5) * 1.3)), Color.White, 1f);
@@ -111,8 +96,7 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
                 p.Opacity = 0.9f * (1 - Projectile.timeLeft / 24f);
                 p.ad = 0.013f;
             }
-            for (int i = 0; i < 2; i++)
-            {
+            for (int i = 0; i < 2; i++) {
                 //第二组Void带velocity偏移,vd/ad直赋+Configure对齐旧VoidParticles
                 var p = PRTLoader.NewParticle<PRT_Void>(Projectile.Center - Projectile.rotation.ToRotationVector2() * 60 - Projectile.velocity * 0.5f, new Vector2((float)((r.NextDouble() - 0.5) * .3), (float)((r.NextDouble() - 0.5) * 1.3)), Color.White, 1f);
                 p.shape = 4;
@@ -120,15 +104,13 @@ namespace CalamityEntropy.Content.Items.Weapons.OblivionThresher
                 p.ad = 0.013f;
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             lightColor = Color.White;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Vector2 vtodraw = Projectile.Center;
             SpriteBatch spriteBatch = Main.spriteBatch;
             float alpha = 1;
-            if (Projectile.timeLeft < 10)
-            {
+            if (Projectile.timeLeft < 10) {
                 alpha = (float)Projectile.timeLeft / 10f;
             }
             Texture2D txd = CruiserHeadTex.Value;

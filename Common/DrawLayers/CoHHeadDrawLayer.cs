@@ -3,9 +3,7 @@ using CalamityEntropy.Content.Items.Vanity;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System.Collections.Generic;
 using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CoHHeadDrawLayer.Common.DrawLayers
@@ -16,8 +14,7 @@ namespace CoHHeadDrawLayer.Common.DrawLayers
         [VaultLoaden("CalamityEntropy/Content/Items/Vanity/CrystalofHeart_Hair")]
         internal static Asset<Texture2D> HairTex;
 
-        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
-        {
+        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) {
             if (drawInfo.drawPlayer.dead)
                 return false;
             return drawInfo.drawPlayer.head == EquipLoader.GetEquipSlot(Mod, "CrystalofHeart", EquipType.Head);
@@ -25,13 +22,11 @@ namespace CoHHeadDrawLayer.Common.DrawLayers
 
         public override bool IsHeadLayer => true;
 
-        public override Position GetDefaultPosition()
-        {
+        public override Position GetDefaultPosition() {
             return new AfterParent(PlayerDrawLayers.Head);
         }
 
-        protected override void Draw(ref PlayerDrawSet drawInfo)
-        {
+        protected override void Draw(ref PlayerDrawSet drawInfo) {
             var player = drawInfo.drawPlayer;
             var mp = player.GetModPlayer<VanityModPlayer>();
             Texture2D texture = HairTex.Value;

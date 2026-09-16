@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Apsychos.Core;
+﻿using CalamityEntropy.Content.NPCs.Apsychos.Core;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -13,8 +13,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.States
     {
         public override ApsychosStateIndex StateIndex => ApsychosStateIndex.MoveToTarget;
 
-        public override IVaultState<ApsychosStateContext> OnUpdate(ApsychosStateContext ctx)
-        {
+        public override IVaultState<ApsychosStateContext> OnUpdate(ApsychosStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
             float enrange = ctx.Enrange;
@@ -31,12 +30,10 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.States
                 ApsychosDirector.ApproachNearDistance, ApsychosDirector.ApproachFarDistance,
                 ApsychosDirector.ApproachThrustNear, ApsychosDirector.ApproachThrustFar);
             npc.velocity += npc.rotation.ToRotationVector2() * spd * enrange;
-            if (ctx.TargetDistance < ApsychosDirector.ApproachCloseDistance)
-            {
+            if (ctx.TargetDistance < ApsychosDirector.ApproachCloseDistance) {
                 Timer++;
             }
-            if (Timer > ApsychosDirector.ApproachDurationBase / enrange)
-            {
+            if (Timer > ApsychosDirector.ApproachDurationBase / enrange) {
                 return NextAttack(ctx);
             }
             return null;

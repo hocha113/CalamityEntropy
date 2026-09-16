@@ -13,8 +13,7 @@ namespace CalamityEntropy.Common.DrawLayers
         [VaultLoaden("CalamityEntropy/Content/Items/Vanity/TsumugisHood_Hood")]
         internal static Asset<Texture2D> HoodTex;
 
-        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
-        {
+        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) {
             var drawPlayer = drawInfo.drawPlayer;
             if (drawPlayer.dead)
                 return false;
@@ -23,13 +22,11 @@ namespace CalamityEntropy.Common.DrawLayers
 
         public override bool IsHeadLayer => true;
 
-        public override Position GetDefaultPosition()
-        {
+        public override Position GetDefaultPosition() {
             return new AfterParent(PlayerDrawLayers.Head);
         }
 
-        protected override void Draw(ref PlayerDrawSet drawInfo)
-        {
+        protected override void Draw(ref PlayerDrawSet drawInfo) {
             var player = drawInfo.drawPlayer;
             Texture2D texture;
             Vector2 headPos;

@@ -9,8 +9,7 @@ namespace CalamityEntropy.Content.Tiles
 {
     public class CruiserTrophyTile : ModTile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.tileFrameImportant[Type] = true;
             Main.tileLavaDeath[Type] = true;
             Main.tileSpelunker[Type] = true;
@@ -27,14 +26,11 @@ namespace CalamityEntropy.Content.Tiles
             DustType = 7;
             AnimationFrameHeight = 74;
         }
-        public override void AnimateTile(ref int frame, ref int frameCounter)
-        {
+        public override void AnimateTile(ref int frame, ref int frameCounter) {
             frameCounter++;
-            if (frameCounter % 5 == 0)
-            {
+            if (frameCounter % 5 == 0) {
                 frame++;
-                if (frame >= 5)
-                {
+                if (frame >= 5) {
                     frame = 0;
                 }
             }

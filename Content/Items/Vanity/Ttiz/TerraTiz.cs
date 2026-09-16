@@ -1,10 +1,10 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items.Donator;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Vanity.Ttiz
 {
@@ -12,18 +12,15 @@ namespace CalamityEntropy.Content.Items.Vanity.Ttiz
     {
         public string DonatorName => "鈴夕";
 
-        public override void Load()
-        {
-            if (Main.netMode != NetmodeID.Server)
-            {
+        public override void Load() {
+            if (Main.netMode != NetmodeID.Server) {
                 EquipLoader.AddEquipTexture(Mod, $"{Mod.Name.ToString()}/Content/Items/Vanity/Ttiz/{Name}_Head", EquipType.Head, this);
                 EquipLoader.AddEquipTexture(Mod, $"{Mod.Name.ToString()}/Content/Items/Vanity/Ttiz/{Name}_Body", EquipType.Body, this);
                 EquipLoader.AddEquipTexture(Mod, $"{Mod.Name.ToString()}/Content/Items/Vanity/Ttiz/{Name}_Legs", EquipType.Legs, this);
             }
         }
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             if (Main.netMode == NetmodeID.Server)
                 return;
             int equipSlotHead = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
@@ -35,8 +32,7 @@ namespace CalamityEntropy.Content.Items.Vanity.Ttiz
             ArmorIDs.Legs.Sets.HidesBottomSkin[equipSlotLegs] = true;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 50;
             Item.height = 46;
             Item.accessory = true;
@@ -45,21 +41,17 @@ namespace CalamityEntropy.Content.Items.Vanity.Ttiz
             Item.rare = ModContent.RarityType<ShiningViolet>();
         }
 
-        public override void UpdateVanity(Player player)
-        {
+        public override void UpdateVanity(Player player) {
             player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            if (!hideVisual)
-            {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
+            if (!hideVisual) {
                 player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             }
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddCalOrOwn(CEID.Item_NightmareFuel, ItemID.SpookyWood)
                 .AddIngredient(ItemID.GoldBar, 5)
@@ -67,8 +59,7 @@ namespace CalamityEntropy.Content.Items.Vanity.Ttiz
                 .Register();
         }
 
-        public bool OwnAble(Player player, ref int count)
-        {
+        public bool OwnAble(Player player, ref int count) {
             string s = PGetPlayer.RemoveCharAndToLower(player.name);
             return s == "yumekibou" || s == "ilta";
         }

@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
+﻿using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using InnoVault.StateMachines;
 using System;
 using Terraria;
@@ -18,8 +18,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         public override bool RunsDuringBlink => true;
         public override int TimeoutFrames => int.MaxValue;
 
-        public override void OnEnter(VDStateContext ctx)
-        {
+        public override void OnEnter(VDStateContext ctx) {
             base.OnEnter(ctx);
             ctx.BlinkTimer = 0;
             ctx.QueuedChainState = -1;
@@ -29,12 +28,10 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             MarkNetUpdate(ctx);
         }
 
-        public override IVDState OnUpdate(VDStateContext ctx)
-        {
+        public override IVDState OnUpdate(VDStateContext ctx) {
             Timer++;
             NPC npc = ctx.Npc;
-            if (ctx.TargetValid)
-            {
+            if (ctx.TargetValid) {
                 DeclareHoldRelative(ctx, new Vector2(0f, -300f), 0.06f, 0.2f, 18f);
             }
             float progress = MathHelper.Clamp(Timer / (float)VDDirector.ShieldUpDuration, 0f, 1f);
@@ -42,23 +39,19 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             ctx.CoreGlow = Math.Max(ctx.CoreGlow, progress);
             VDScreenFx.ReportVignette(0.35f * progress);
 
-            if (Timer == 1)
-            {
+            if (Timer == 1) {
                 VDVfx.Sound("VoidAnticipation", 1.2f, npc.Center, 2);
             }
-            if (Timer % 3 == 0 && Timer < VDDirector.ShieldUpDuration - 6)
-            {
+            if (Timer % 3 == 0 && Timer < VDDirector.ShieldUpDuration - 6) {
                 ConvergeSparks(ctx, new Color(220, 170, 255), 120f, 260f, 0.1f);
             }
-            if (Timer == VDDirector.ShieldUpDuration - 4)
-            {
+            if (Timer == VDDirector.ShieldUpDuration - 4) {
                 VDVfx.Sound("VoidAttack", 1.1f, npc.Center, 2);
                 VDVfx.Shake(npc.Center, 8f);
                 VDVfx.SparkBurst(npc.Center, new Color(220, 170, 255), 40, 6f, 16f, 40);
             }
 
-            if (Timer >= VDDirector.ShieldUpDuration)
-            {
+            if (Timer >= VDDirector.ShieldUpDuration) {
                 ctx.ForcedNextState = (int)VDStateIndex.AnnihilationCannon;
                 ctx.AttackIndex = 1;
                 ctx.AttackCooldown = 0;

@@ -7,8 +7,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 {
     public class BookMarkPisces : BookMark
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.rare = ItemRarityID.Orange;
             Item.Entropy().stroke = true;
@@ -19,8 +18,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Pisces");
         public override Color tooltipColor => Color.LightBlue;
-        public override EBookProjectileEffect getEffect()
-        {
+        public override EBookProjectileEffect getEffect() {
             return new PiscesBMEffect();
         }
     }
@@ -28,8 +26,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     /// <summary>双鱼座书签(2026-08-31 平衡案重做):命中敌怪时在其位置召唤一个小型克苏鲁旋风(固定伤害100)。</summary>
     public class PiscesBMEffect : EBookProjectileEffect
     {
-        public override void OnHitNPC(Projectile projectile, NPC target, int damageDone)
-        {
+        public override void OnHitNPC(Projectile projectile, NPC target, int damageDone) {
             Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center, Vector2.Zero,
                 ModContent.ProjectileType<PiscesWhirlwind>(), FixedDamage(projectile.GetOwner(), 100, projectile.DamageType), projectile.knockBack, projectile.owner);
         }
@@ -39,8 +36,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     public class PiscesWhirlwind : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 70;
             Projectile.height = 140;
             Projectile.friendly = true;
@@ -52,12 +48,10 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 20;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.velocity = new Vector2(0, -0.4f);
             // 旋风体:分层旋绕的水雾
-            for (int i = 0; i < 3; i++)
-            {
+            for (int i = 0; i < 3; i++) {
                 float h = Main.rand.NextFloat();
                 float radius = 12 + h * 26;
                 float ang = Main.GameUpdateCount * 0.35f + h * MathHelper.TwoPi;
@@ -67,10 +61,8 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             }
             Lighting.AddLight(Projectile.Center, 0.1f, 0.25f, 0.4f);
             // 轻微向内牵引非Boss敌怪
-            foreach (NPC n in Main.ActiveNPCs)
-            {
-                if (!n.friendly && !n.boss && !n.dontTakeDamage && n.knockBackResist > 0 && CEUtils.getDistance(n.Center, Projectile.Center) < 180)
-                {
+            foreach (NPC n in Main.ActiveNPCs) {
+                if (!n.friendly && !n.boss && !n.dontTakeDamage && n.knockBackResist > 0 && CEUtils.getDistance(n.Center, Projectile.Center) < 180) {
                     n.velocity += (Projectile.Center - n.Center).SafeNormalize(Vector2.Zero) * 0.3f * n.knockBackResist;
                 }
             }

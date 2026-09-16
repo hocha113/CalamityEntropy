@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
@@ -123,8 +123,7 @@ namespace CalamityEntropy.Core.Dash
         public virtual bool CanBeEnhanced => true;
 
         /// <summary>冲刺结尾速度:水平冲刺衔接跑速,竖直冲刺留一点余速。</summary>
-        public virtual float EndSpeed(Player player, Vector2 direction)
-        {
+        public virtual float EndSpeed(Player player, Vector2 direction) {
             if (direction.Y != 0f)
                 return 4f;
             return MathHelper.Clamp(Math.Max(player.accRunSpeed, player.maxRunSpeed), 3f, 9f);

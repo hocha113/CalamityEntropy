@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.AI;
+﻿using CalamityEntropy.Core.AI;
 
 namespace CalamityEntropy.Content.NPCs.SpiritFountain.Core
 {
@@ -120,8 +120,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.Core
         /// 每帧默认值。四个声明通道全部回落;<see cref="DontTakeDmg"/> 与 <see cref="SetPos"/> 是跨帧闸,
         /// 三个表现累加量由状态自己推进,都不在这里动
         /// </summary>
-        public override void BeginFrameDefaults()
-        {
+        public override void BeginFrameDefaults() {
             base.BeginFrameDefaults();
             EyeAlphaTarget = SpiritFountainDirector.EyeAlphaIdle;
             StareAtLocalPlayer = true;

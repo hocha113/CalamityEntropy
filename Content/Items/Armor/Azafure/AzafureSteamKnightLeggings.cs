@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -7,8 +7,7 @@ namespace CalamityEntropy.Content.Items.Armor.Azafure
     [AutoloadEquip(EquipType.Legs)]
     public class AzafureSteamKnightLeggings : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 34;
             Item.height = 18;
             Item.value = Item.buyPrice(gold: 20);
@@ -16,11 +15,9 @@ namespace CalamityEntropy.Content.Items.Armor.Azafure
             Item.rare = ItemRarityID.Pink;
         }
 
-        public override void UpdateEquip(Player player)
-        {
+        public override void UpdateEquip(Player player) {
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient<AzafureHeavyLeggings>()
                 .AddIngredient(ItemID.ChlorophyteBar, 16)

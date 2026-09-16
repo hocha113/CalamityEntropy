@@ -20,8 +20,7 @@ namespace CalamityEntropy.Common
         //虚空驱逐舰(月后 T2)
         public static bool downedVoidDestroyer = false;
         public static Point ForbiddenArchiveCenter = new Point(-1, -1);
-        public override void ClearWorld()
-        {
+        public override void ClearWorld() {
             EntropyMode = false;
             downedCruiser = false;
             downedNihilityTwin = false;
@@ -34,58 +33,45 @@ namespace CalamityEntropy.Common
             downedVoidDestroyer = false;
         }
 
-        public override void SaveWorldData(TagCompound tag)
-        {
-            if (EntropyMode)
-            {
+        public override void SaveWorldData(TagCompound tag) {
+            if (EntropyMode) {
                 tag["EntropyMode"] = true;
             }
-            if (TDR)
-            {
+            if (TDR) {
                 tag["TDR"] = true;
             }
-            if (downedCruiser)
-            {
+            if (downedCruiser) {
                 tag["downedCruiser"] = true;
             }
-            if (downedNihilityTwin)
-            {
+            if (downedNihilityTwin) {
                 tag["downedNihilityTwin"] = true;
             }
-            if (downedProphet)
-            {
+            if (downedProphet) {
                 tag["downedProphet"] = true;
             }
-            if (downedLuminaris)
-            {
+            if (downedLuminaris) {
                 tag["downedLuminaris"] = true;
             }
-            if (downedAcropolis)
-            {
+            if (downedAcropolis) {
                 tag["downedAcropolis"] = true;
             }
-            if (downedPrimordialWyrm)
-            {
+            if (downedPrimordialWyrm) {
                 tag["downedPrimordialWyrm"] = true;
             }
-            if (downedApsychos)
-            {
+            if (downedApsychos) {
                 tag["downedApsychos"] = true;
             }
-            if (downedVoidDestroyer)
-            {
+            if (downedVoidDestroyer) {
                 tag["downedVoidDestroyer"] = true;
             }
             tag["DungeonArchiveCenterX"] = ForbiddenArchiveCenter.X;
             tag["DungeonArchiveCenterY"] = ForbiddenArchiveCenter.Y;
         }
-        public static Vector2 GetDungeonArchiveCenterPos()
-        {
+        public static Vector2 GetDungeonArchiveCenterPos() {
             return ForbiddenArchiveCenter.ToVector2() * 16 + new Vector2(8, 1288);
         }
 
-        public override void LoadWorldData(TagCompound tag)
-        {
+        public override void LoadWorldData(TagCompound tag) {
             downedCruiser = tag.ContainsKey("downedCruiser");
             downedNihilityTwin = tag.ContainsKey("downedNihilityTwin");
             EntropyMode = tag.ContainsKey("EntropyMode");
@@ -96,18 +82,15 @@ namespace CalamityEntropy.Common
             downedPrimordialWyrm = tag.ContainsKey("downedPrimordialWyrm");
             downedVoidDestroyer = tag.ContainsKey("downedVoidDestroyer");
             TDR = tag.ContainsKey("TDR");
-            if (tag.ContainsKey("DungeonArchiveCenterX") && tag.ContainsKey("DungeonArchiveCenterY"))
-            {
+            if (tag.ContainsKey("DungeonArchiveCenterX") && tag.ContainsKey("DungeonArchiveCenterY")) {
                 ForbiddenArchiveCenter = new(tag.GetInt("DungeonArchiveCenterX"), tag.GetInt("DungeonArchiveCenterY"));
             }
-            else
-            {
+            else {
                 ForbiddenArchiveCenter = new(-1, -1);
             }
         }
 
-        public override void NetSend(BinaryWriter writer)
-        {
+        public override void NetSend(BinaryWriter writer) {
             var flags = new BitsByte();
             var flags2 = new BitsByte();
             //flags[1] 是已移除的深渊亡魂旧位,留空不复用,其余位序保持不变
@@ -128,8 +111,7 @@ namespace CalamityEntropy.Common
             writer.Write(ForbiddenArchiveCenter.Y);
         }
 
-        public override void NetReceive(BinaryReader reader)
-        {
+        public override void NetReceive(BinaryReader reader) {
             BitsByte flags = reader.ReadByte();
             BitsByte flags2 = reader.ReadByte();
 

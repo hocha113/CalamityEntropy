@@ -9,13 +9,11 @@ namespace CalamityEntropy.Content.Items
 {
     public class GiantBoulder : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.ResearchUnlockCount = 10;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
             Item.useAnimation = 30;
@@ -30,15 +28,13 @@ namespace CalamityEntropy.Content.Items
             Item.height = 160;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe().AddIngredient(ItemID.Boulder, 20)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
 
-        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
+        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale) {
             CEUtils.DrawInventoryCustomScale(
                 spriteBatch,
                 texture: TextureAssets.Item[Type].Value,

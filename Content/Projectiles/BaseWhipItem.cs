@@ -12,12 +12,10 @@ namespace CalamityEntropy.Content.Projectiles
         public virtual float TagCritChance => 0;
         public virtual int TagTime => 4 * 60;
 
-        public override bool CanShoot(Player player)
-        {
+        public override bool CanShoot(Player player) {
             return player.ownedProjectileCounts[Item.shoot] == 0;
         }
-        public override bool MeleePrefix()
-        {
+        public override bool MeleePrefix() {
             return true;
         }
     }

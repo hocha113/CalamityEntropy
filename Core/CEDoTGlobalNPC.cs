@@ -1,7 +1,6 @@
+﻿using CalamityEntropy.Content.Buffs.PortsDoT;
 using System;
 using System.Collections.Generic;
-using CalamityEntropy.Content.Buffs.PortsDoT;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -46,21 +45,17 @@ namespace CalamityEntropy.Core
         /// <summary>buffType → 结算参数；由 PortsDoT 各 ModBuff 在 SetStaticDefaults 注册</summary>
         public static readonly Dictionary<int, CEDoTEntry> Registry = new Dictionary<int, CEDoTEntry>();
 
-        public static void Register(int buffType, CEDoTEntry entry)
-        {
+        public static void Register(int buffType, CEDoTEntry entry) {
             Registry[buffType] = entry;
         }
 
-        public override void Unload()
-        {
+        public override void Unload() {
             Registry.Clear();
         }
 
-        public override void UpdateLifeRegen(NPC npc, ref int damage)
-        {
+        public override void UpdateLifeRegen(NPC npc, ref int damage) {
             float dotMult = 0f;
-            for (int i = 0; i < NPC.maxBuffs; i++)
-            {
+            for (int i = 0; i < NPC.maxBuffs; i++) {
                 if (npc.buffTime[i] <= 0 || !Registry.TryGetValue(npc.buffType[i], out var entry))
                     continue;
 
@@ -88,14 +83,12 @@ namespace CalamityEntropy.Core
             }
         }
 
-        private static bool IsWetTarget(NPC npc)
-        {
+        private static bool IsWetTarget(NPC npc) {
             return npc.wet || npc.honeyWet || npc.dripping
                 || npc.HasBuff<CrushDepth>() || npc.HasBuff<HadopelagicPressure>();
         }
 
-        public override void ModifyIncomingHit(NPC npc, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyIncomingHit(NPC npc, ref NPC.HitModifiers modifiers) {
             if (npc.HasBuff<ArmorCrunch>())
                 modifiers.Defense.Flat -= ArmorCrunch.DefenseReduction;
             if (npc.HasBuff<Crumbling>())
@@ -104,8 +97,7 @@ namespace CalamityEntropy.Core
                 modifiers.SourceDamage *= MarkedforDeath.DamageTakenMult;
         }
 
-        public override void PostAI(NPC npc)
-        {
+        public override void PostAI(NPC npc) {
             float slow = 1f;
             if (npc.HasBuff<TemporalSadness>())
                 slow += 0.2f;

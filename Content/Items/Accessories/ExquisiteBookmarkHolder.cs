@@ -1,4 +1,4 @@
-using InnoVault;
+﻿using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
@@ -13,8 +13,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/Extra2")]
         internal static Texture2D SlotTex;
         public static float MAGECRIT = 5;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 18;
             Item.height = 30;
             Item.rare = ItemRarityID.Blue;
@@ -22,15 +21,13 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.value = Item.buyPrice(0, 8, 42, 0);
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.Entropy().AdditionalBookmarkSlot += 1;
             player.GetCritChance(DamageClass.Magic) += MAGECRIT;
             if (!Main.dedServ)
                 player.Entropy().BookmarkHolderSpecialTextures.Add(SlotTex);
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             tooltips.Replace("[S]", MAGECRIT.ToString());
         }
     }

@@ -27,8 +27,7 @@ namespace CalamityEntropy.Content.Projectiles
         [VaultLoaden("CalamityEntropy/Content/Projectiles/NetherChainWhite")]
         internal static Asset<Texture2D> ChainWhiteTex;
         public List<Vector2> odp = new List<Vector2>();
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 136;
             Projectile.height = 136;
@@ -49,24 +48,20 @@ namespace CalamityEntropy.Content.Projectiles
         float l = 0;
         bool soundplay = false;
         int counter = 0;
-        public override bool? CanHitNPC(NPC target)
-        {
-            if (counter < 30)
-            {
+        public override bool? CanHitNPC(NPC target) {
+            if (counter < 30) {
                 return false;
             }
             return null;
         }
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(Projectile.localAI[0]);
             writer.Write(Projectile.localAI[1]);
             writer.Write(channel);
             writer.WriteVector2(mousePos);
             writer.Write(chainToMouse);
         }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             Projectile.localAI[0] = reader.ReadSingle();
             Projectile.localAI[1] = reader.ReadSingle();
             channel = reader.ReadBoolean();
@@ -75,25 +70,20 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public bool channel = false;
         public bool chainToMouse = false;
-        public override void AI()
-        {
-            if (counter1 % 6 == 0)
-            {
+        public override void AI() {
+            if (counter1 % 6 == 0) {
                 bool flag = false;
-                if ((odp.Count < 2 || CEUtils.getDistance(odp[odp.Count - 1], Projectile.Center) > 46))
-                {
+                if ((odp.Count < 2 || CEUtils.getDistance(odp[odp.Count - 1], Projectile.Center) > 46)) {
                     flag = true;
                     odp.Add(Projectile.Center);
                 }
-                if (odp.Count > 14 || (!flag && odp.Count > 0))
-                {
+                if (odp.Count > 14 || (!flag && odp.Count > 0)) {
                     odp.RemoveAt(0);
                 }
             }
             counter++;
             counter1++;
-            if (rope == null)
-            {
+            if (rope == null) {
                 rope = new Rope(Projectile.owner.ToPlayer().Center, Projectile.Center, 92, 0, new Vector2(0, 0), 0.02f, 32, false);
             }
             rope.segmentLength = CEUtils.getDistance(Projectile.Center, Projectile.owner.ToPlayer().Center) / 92f;
@@ -102,46 +92,36 @@ namespace CalamityEntropy.Content.Projectiles
             rope.Update();
             List<Vector2> p = rope.GetPoints();
             Projectile.rotation = (p[p.Count - 1].GetSymmetryPoint(Projectile.owner.ToPlayer().Center, Projectile.Center) - p[p.Count - 2].GetSymmetryPoint(Projectile.owner.ToPlayer().Center, Projectile.Center)).ToRotation();
-            if (chainToMouse)
-            {
+            if (chainToMouse) {
                 Projectile.rotation = (Projectile.Center - mousePos).ToRotation();
             }
             Player player = Projectile.owner.ToPlayer();
             Projectile.timeLeft = 3;
-            if (Main.myPlayer == Projectile.owner)
-            {
-                if (mousePos != Main.MouseWorld)
-                {
+            if (Main.myPlayer == Projectile.owner) {
+                if (mousePos != Main.MouseWorld) {
                     Projectile.netUpdate = true;
                     mousePos = Main.MouseWorld;
                 }
             }
-            if (player.channel)
-            {
+            if (player.channel) {
                 channel = true;
             }
             player.channel = channel;
-            if (Main.myPlayer == Projectile.owner)
-            {
-                if (Main.mouseLeft && !channel)
-                {
+            if (Main.myPlayer == Projectile.owner) {
+                if (Main.mouseLeft && !channel) {
                     channel = true;
                     Projectile.netUpdate = true;
                 }
-                if (!Main.mouseLeft && channel)
-                {
+                if (!Main.mouseLeft && channel) {
                     channel = false;
                     player.channel = false;
                     Projectile.netUpdate = true;
                 }
             }
-            if (!player.channel)
-            {
-                if (Projectile.ai[0] == 0)
-                {
+            if (!player.channel) {
+                if (Projectile.ai[0] == 0) {
                     Projectile.Center = player.Center;
-                    if (Main.myPlayer == Projectile.owner)
-                    {
+                    if (Main.myPlayer == Projectile.owner) {
                         Projectile.velocity = (Main.MouseWorld - Projectile.Center).normalize() * 16;
 
                         Projectile.netUpdate = true;
@@ -151,58 +131,46 @@ namespace CalamityEntropy.Content.Projectiles
                 }
             }
             Projectile.localAI[1] *= 0.98f;
-            if (Projectile.ai[0] == 1)
-            {
-                if (player.channel && Projectile.ai[2] > 68 && Projectile.localAI[2] == 0)
-                {
+            if (Projectile.ai[0] == 1) {
+                if (player.channel && Projectile.ai[2] > 68 && Projectile.localAI[2] == 0) {
                     l = l + (length - l) * 0.1f;
                     rotspeed += (0.1f - rotspeed) * 0.01f;
                     Vector2 targetpos = mousePos + new Vector2(l, 0).RotatedBy((Projectile.Center - mousePos).ToRotation() + rotspeed * player.direction * 0.76f);
                     Projectile.velocity = targetpos - Projectile.Center;
                     float a = (Projectile.Center - player.Center).ToRotation();
-                    if (a < 0)
-                    {
+                    if (a < 0) {
                         soundplay = true;
                     }
-                    else
-                    {
-                        if (soundplay)
-                        {
+                    else {
+                        if (soundplay) {
                             soundplay = false;
-                            if (Main.rand.NextBool(2))
-                            {
+                            if (Main.rand.NextBool(2)) {
                                 CEUtils.PlaySound("spin1", 1f, Projectile.Center, volume: CEUtils.WeapSound);
                             }
-                            else
-                            {
+                            else {
                                 CEUtils.PlaySound("spin2", 1f, Projectile.Center, volume: CEUtils.WeapSound);
                             }
                         }
                     }
-                    if (!chainToMouse)
-                    {
+                    if (!chainToMouse) {
                         chainToMouse = true;
                         Projectile.localAI[1] = 1;
                         Projectile.netUpdate = true;
-                        foreach (var pt in p)
-                        {
+                        foreach (var pt in p) {
                             //TrailSparkParticle跟TrailParticle成对spawn,旧trail+spark一套
                             PRTLoader.NewParticle<PRT_TrailSparkParticle>(pt, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(-8, 8), Color.White, 1).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);
 
                         }
                     }
                 }
-                else
-                {
-                    if (chainToMouse)
-                    {
+                else {
+                    if (chainToMouse) {
                         Projectile.localAI[2] = 1;
                         chainToMouse = false;
                         Projectile.localAI[0] = 10 * Projectile.MaxUpdates;
                         Projectile.localAI[1] = 1;
                         Projectile.netUpdate = true;
-                        foreach (var pt in p)
-                        {
+                        foreach (var pt in p) {
                             //TrailSparkParticle跟TrailParticle成对spawn,旧trail+spark一套
                             PRTLoader.NewParticle<PRT_TrailSparkParticle>(pt, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(-8, 8), Color.White, 1).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);
 
@@ -210,64 +178,50 @@ namespace CalamityEntropy.Content.Projectiles
                     }
 
                     Projectile.ai[2]++;
-                    if (Projectile.ai[2] > 36)
-                    {
+                    if (Projectile.ai[2] > 36) {
                         Projectile.velocity *= 0.98f;
                     }
-                    if (Projectile.ai[2] == 50)
-                    {
+                    if (Projectile.ai[2] == 50) {
                         Projectile.localAI[0] = 16 * Projectile.MaxUpdates;
                     }
-                    if (Projectile.localAI[0] > 0)
-                    {
+                    if (Projectile.localAI[0] > 0) {
                         Projectile.localAI[0]--;
                         Projectile.velocity *= 0.994f;
                     }
-                    else
-                    {
-                        if (Projectile.ai[2] > 50)
-                        {
+                    else {
+                        if (Projectile.ai[2] > 50) {
                             Projectile.velocity = (player.Center - Projectile.Center).normalize() * (Projectile.velocity.Length() + 0.3f);
-                            if (Projectile.Distance(player.Center) < Projectile.velocity.Length() * 1.1f)
-                            {
+                            if (Projectile.Distance(player.Center) < Projectile.velocity.Length() * 1.1f) {
                                 Projectile.Kill();
                             }
                         }
                     }
                 }
             }
-            else
-            {
-                if (counter1 > 2)
-                {
+            else {
+                if (counter1 > 2) {
                     l = l + (length - l) * 0.1f;
                     rotspeed += (0.1f - rotspeed) * 0.01f;
                     Vector2 targetpos = player.Center + new Vector2(l, 0).RotatedBy((Projectile.Center - player.Center).ToRotation() + rotspeed * player.direction * 0.76f);
                     Projectile.velocity = targetpos - Projectile.Center;
                 }
                 float a = (Projectile.Center - player.Center).ToRotation();
-                if (a < 0)
-                {
+                if (a < 0) {
                     soundplay = true;
                 }
-                else
-                {
-                    if (soundplay)
-                    {
+                else {
+                    if (soundplay) {
                         soundplay = false;
-                        if (Main.rand.NextBool(2))
-                        {
+                        if (Main.rand.NextBool(2)) {
                             CEUtils.PlaySound("spin1", 1f, Projectile.Center, volume: CEUtils.WeapSound);
                         }
-                        else
-                        {
+                        else {
                             CEUtils.PlaySound("spin2", 1f, Projectile.Center, volume: CEUtils.WeapSound);
                         }
                     }
                 }
             }
-            if (Main.myPlayer == Projectile.owner)
-            {
+            if (Main.myPlayer == Projectile.owner) {
                 length = chainToMouse ? 240 : 180;
             }
             player.itemTime = 2;
@@ -277,18 +231,15 @@ namespace CalamityEntropy.Content.Projectiles
                 player.direction = (Main.MouseWorld.X > player.Center.X ? 1 : -1);
         }
         Rope rope;
-        public List<Vector2> GP(float distAdd = 0, float c = 1)
-        {
+        public List<Vector2> GP(float distAdd = 0, float c = 1) {
             float dist = distAdd;
             List<Vector2> points = new List<Vector2>();
-            for (int i = 0; i <= 60; i++)
-            {
+            for (int i = 0; i <= 60; i++) {
                 points.Add(new Vector2(dist, 0).RotatedBy(MathHelper.ToRadians(i * 6 - 80 * c * Main.GlobalTimeWrappedHourly)));
             }
             return points;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityEntropy:ArtAttack"].SetShaderTexture(CEExtraAssets.Streak2Asset);
             GameShaders.Misc["CalamityEntropy:ArtAttack"].Apply();
@@ -304,8 +255,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
             Player player = Projectile.owner.ToPlayer();
-            if (chainToMouse)
-            {
+            if (chainToMouse) {
                 {
                     float alpha = 0.8f;
                     Main.spriteBatch.End();
@@ -316,8 +266,7 @@ namespace CalamityEntropy.Content.Projectiles
                         List<Vector2> points = GP(0);
                         List<Vector2> pointsOutside = GP(84);
                         int i;
-                        for (i = 0; i < points.Count; i++)
-                        {
+                        for (i = 0; i < points.Count; i++) {
                             ve.Add(new ColoredVertex(mousePos - Main.screenPosition + points[i],
                                   new Vector3((float)i / points.Count, 1, 0.99f),
                                   Color.SkyBlue * 0.66f * alpha));
@@ -328,8 +277,7 @@ namespace CalamityEntropy.Content.Projectiles
                         }
                         SpriteBatch sb = Main.spriteBatch;
                         GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                        if (ve.Count >= 3)
-                        {
+                        if (ve.Count >= 3) {
                             Texture2D tx = CEExtraAssets.AbyssalCircle2;
                             gd.Textures[0] = tx;
                             gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
@@ -340,8 +288,7 @@ namespace CalamityEntropy.Content.Projectiles
                         List<Vector2> points = GP(0, -1);
                         List<Vector2> pointsOutside = GP(84, -1);
                         int i;
-                        for (i = 0; i < points.Count; i++)
-                        {
+                        for (i = 0; i < points.Count; i++) {
                             ve.Add(new ColoredVertex(mousePos - Main.screenPosition + points[i],
                                   new Vector3((float)i / points.Count, 1, 0.99f),
                                   Color.SkyBlue * 0.66f * alpha));
@@ -352,8 +299,7 @@ namespace CalamityEntropy.Content.Projectiles
                         }
                         SpriteBatch sb = Main.spriteBatch;
                         GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                        if (ve.Count >= 3)
-                        {
+                        if (ve.Count >= 3) {
                             Texture2D tx = CEExtraAssets.AbyssalCircle2;
                             gd.Textures[0] = tx;
                             gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
@@ -375,17 +321,14 @@ namespace CalamityEntropy.Content.Projectiles
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 List<ColoredVertex> ve2 = new List<ColoredVertex>();
                 Color b = lightColor;
-                if (!chainToMouse)
-                {
+                if (!chainToMouse) {
                     points.Insert(0, Projectile.owner.ToPlayer().Center);
                     points.Add(Projectile.Center);
                 }
                 float lc = 1;
                 float jn = 0;
-                if (!chainToMouse)
-                {
-                    for (int i = 1; i < points.Count - 1; i++)
-                    {
+                if (!chainToMouse) {
+                    for (int i = 1; i < points.Count - 1; i++) {
                         jn += CEUtils.getDistance(points[i - 1], points[i]) / (float)90 * lc;
 
                         ve.Add(new ColoredVertex(points[i].GetSymmetryPoint(Projectile.owner.ToPlayer().Center, Projectile.Center) - Main.screenPosition + (points[i] - points[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 25 * lc,
@@ -404,8 +347,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                     SpriteBatch sb = Main.spriteBatch;
                     GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                    if (ve.Count >= 3)
-                    {
+                    if (ve.Count >= 3) {
                         gd.Textures[0] = ChainTex.Value;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
 
@@ -413,8 +355,7 @@ namespace CalamityEntropy.Content.Projectiles
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve2.ToArray(), 0, ve2.Count - 2);
                     }
                 }
-                else
-                {
+                else {
                     Texture2D c = ChainTex.Value;
                     Texture2D c2 = ChainWhiteTex.Value;
                     Main.EntitySpriteDraw(c, mousePos - Main.screenPosition, new Rectangle(0, 0, (int)CEUtils.getDistance(Projectile.Center, mousePos), c.Height), Color.White, (Projectile.Center - mousePos).ToRotation(), new Vector2(0, c.Height / 2), 1, SpriteEffects.None, 0);
@@ -439,29 +380,23 @@ namespace CalamityEntropy.Content.Projectiles
             }
         }
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
+        public override bool OnTileCollide(Vector2 oldVelocity) {
             return false;
         }
-        public Color TrailColor(float completionRatio, Vector2 vertex)
-        {
+        public Color TrailColor(float completionRatio, Vector2 vertex) {
             Color result = new Color(160, 160, 255);
             return result * completionRatio;
         }
-        public Color TrailColor2(float completionRatio, Vector2 vertex)
-        {
+        public Color TrailColor2(float completionRatio, Vector2 vertex) {
             Color result = new Color(255, 255, 255);
             return result * completionRatio;
         }
-        public float TrailWidth(float completionRatio, Vector2 vertex)
-        {
+        public float TrailWidth(float completionRatio, Vector2 vertex) {
             return MathHelper.Lerp(0, 122 * Projectile.scale, completionRatio);
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             EGlobalNPC.AddVoidTouch(target, 60, 2, 600, 16);
-            if (Projectile.ai[2] < 74 && !channel)
-            {
+            if (Projectile.ai[2] < 74 && !channel) {
                 Projectile.velocity *= -0.5f;
                 Projectile.localAI[0] = 16 * Projectile.MaxUpdates;
                 float s = Utils.Remap(Main.LocalPlayer.Distance(target.Center), 1600, 300, 0f, 8);
@@ -474,14 +409,11 @@ namespace CalamityEntropy.Content.Projectiles
             }
 
         }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            if (!chainToMouse && !channel && Projectile.ai[2] < 74)
-            {
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
+            if (!chainToMouse && !channel && Projectile.ai[2] < 74) {
                 modifiers.SourceDamage *= 4f;
             }
-            if (chainToMouse)
-            {
+            if (chainToMouse) {
                 modifiers.SourceDamage *= 0.7f;
             }
         }

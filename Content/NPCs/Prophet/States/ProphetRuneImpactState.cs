@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Prophet.Core;
+﻿using CalamityEntropy.Content.NPCs.Prophet.Core;
 using CalamityEntropy.Content.Projectiles.Prophet;
 using InnoVault.StateMachines;
 using Terraria;
@@ -19,8 +19,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
     {
         public override ProphetStateIndex StateIndex => ProphetStateIndex.RuneImpact;
 
-        protected override void RunAttack(ProphetStateContext ctx)
-        {
+        protected override void RunAttack(ProphetStateContext ctx) {
             NPC npc = ctx.Npc;
             Player target = ctx.Target;
             int phase = ctx.Phase;
@@ -28,26 +27,20 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
 
             bool orbit = true;
             //原代码写的是 if (余数 > 20) { 空块 } else { ... };这里直接取反,语义一致
-            if (cd > ProphetDirector.ImpactActiveAbove)
-            {
-                if (cd % ProphetDirector.ImpactPeriod <= ProphetDirector.ImpactFireRemainder)
-                {
+            if (cd > ProphetDirector.ImpactActiveAbove) {
+                if (cd % ProphetDirector.ImpactPeriod <= ProphetDirector.ImpactFireRemainder) {
                     orbit = false;
-                    if (cd % ProphetDirector.ImpactPeriod == ProphetDirector.ImpactFireRemainder)
-                    {
+                    if (cd % ProphetDirector.ImpactPeriod == ProphetDirector.ImpactFireRemainder) {
                         int damage = ProjDamage(ctx);
                         Vector2 aim = (target.Center - npc.Center).normalize();
                         float spread = phase == 1 ? ProphetDirector.ImpactSpreadP1 : ProphetDirector.ImpactSpreadP2;
                         int layers = phase == 1 ? ProphetDirector.ImpactLayersP1 : ProphetDirector.ImpactLayersP2;
                         //判定是 <=,所以含正中那一发共 layers + 1 层
-                        for (int i = 0; i <= layers; i++)
-                        {
-                            if (i == 0)
-                            {
+                        for (int i = 0; i <= layers; i++) {
+                            if (i == 0) {
                                 Shoot<ProphetLightning>(ctx, npc.Center, aim * ProphetDirector.ImpactBoltSpeed, damage, 4);
                             }
-                            else
-                            {
+                            else {
                                 Shoot<ProphetLightning>(ctx, npc.Center,
                                     aim.RotatedBy(i * spread) * ProphetDirector.ImpactBoltSpeed, damage, 4);
                                 Shoot<ProphetLightning>(ctx, npc.Center,
@@ -59,8 +52,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
                 }
             }
 
-            if (orbit)
-            {
+            if (orbit) {
                 npc.velocity = (target.Center + (npc.Center - target.Center).normalize() * ProphetDirector.ImpactOrbitRadius
                     - npc.Center) * ProphetDirector.ImpactOrbitLerp;
                 npc.rotation = CEUtils.RotateTowardsAngle(npc.rotation, npc.velocity.ToRotation(),

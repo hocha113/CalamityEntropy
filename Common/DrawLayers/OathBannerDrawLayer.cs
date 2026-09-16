@@ -1,8 +1,6 @@
-﻿using CalamityEntropy.Content.Items.Accessories;
-using InnoVault;
+﻿using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
@@ -14,20 +12,17 @@ namespace CalamityEntropy.Common.DrawLayers
         [VaultLoaden("CalamityEntropy/Content/Items/Accessories/Oath/OathBannerHoldout")]
         internal static Asset<Texture2D> BannerTex;
 
-        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
-        {
+        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) {
             if (drawInfo.drawPlayer.dead)
                 return false;
             return drawInfo.drawPlayer.Entropy().oathBannerVisual;
         }
 
-        public override Position GetDefaultPosition()
-        {
+        public override Position GetDefaultPosition() {
             return new BeforeParent(PlayerDrawLayers.Wings);
         }
 
-        protected override void Draw(ref PlayerDrawSet drawInfo)
-        {
+        protected override void Draw(ref PlayerDrawSet drawInfo) {
             var player = drawInfo.drawPlayer;
             Texture2D tex = BannerTex.Value;
             int MaxFrame = 8;

@@ -8,8 +8,7 @@ namespace CalamityEntropy.Content.Tiles
 {
     public class TheHeatDeath : ModTile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.tileSolid[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileBrick[Type] = true;
@@ -21,8 +20,7 @@ namespace CalamityEntropy.Content.Tiles
             AddMapEntry(new Color(150, 0, 0));
             RegisterItemDrop(ModContent.ItemType<BlessingHeatDeath>());
         }
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
+        public override void PostDraw(int i, int j, SpriteBatch spriteBatch) {
             Lighting.AddLight(new Vector2(i, j) * 16, 0.2f, 0.05f, 0.05f);
         }
     }

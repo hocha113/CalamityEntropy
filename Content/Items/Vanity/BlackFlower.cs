@@ -1,25 +1,22 @@
 ﻿using CalamityEntropy.Common;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Vanity
 {
     public class BlackFlower : ModItem, IVanitySkin, IGetFromStarterBag
     {
-        public override void Load()
-        {
-            if (Main.netMode != NetmodeID.Server)
-            {
+        public override void Load() {
+            if (Main.netMode != NetmodeID.Server) {
                 EquipLoader.AddEquipTexture(Mod, $"{Mod.Name.ToString()}/Content/Items/Vanity/{Name}_Head", EquipType.Head, this);
                 EquipLoader.AddEquipTexture(Mod, $"{Mod.Name.ToString()}/Content/Items/Vanity/{Name}_Body", EquipType.Body, this);
                 EquipLoader.AddEquipTexture(Mod, $"{Mod.Name.ToString()}/Content/Items/Vanity/{Name}_Legs", EquipType.Legs, this);
             }
         }
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             if (Main.netMode == NetmodeID.Server)
                 return;
 
@@ -34,8 +31,7 @@ namespace CalamityEntropy.Content.Items.Vanity
             ArmorIDs.Legs.Sets.HidesBottomSkin[equipSlotLegs] = true;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 30;
             Item.height = 30;
 
@@ -47,23 +43,18 @@ namespace CalamityEntropy.Content.Items.Vanity
             Item.rare = ItemRarityID.Red;
         }
 
-        public override void UpdateVanity(Player player)
-        {
+        public override void UpdateVanity(Player player) {
             player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            if (!hideVisual)
-            {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
+            if (!hideVisual) {
                 player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             }
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_BloodOrb))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_BloodOrb)) {
                 CreateRecipe()
                 .AddIngredient(ItemID.Sunflower)
                 .AddIngredient(CEID.Item_BloodOrb, 2)
@@ -90,8 +81,7 @@ namespace CalamityEntropy.Content.Items.Vanity
                 .Register();
         }
 
-        public bool OwnAble(Player player, ref int count)
-        {
+        public bool OwnAble(Player player, ref int count) {
             return StartBagGItem.NameContains(player, "tlipoca");
         }
     }

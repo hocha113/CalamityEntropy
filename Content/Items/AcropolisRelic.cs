@@ -7,8 +7,7 @@ namespace CalamityEntropy.Content.Items
 {
     public class AcropolisRelic : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.DefaultToPlaceableTile(ModContent.TileType<AcropolisRelicTile>(), 0);
 
             Item.width = 30;

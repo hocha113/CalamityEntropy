@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,23 +13,20 @@ namespace CalamityEntropy.Content.Items.Accessories.Oath
         public static float BuffDamageAddition = 0.09f;
         public static int AggroBonus = 800;
         public static int TeamBuffRange = 3200;
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             tooltips.Replace("[MSD]", MoveSpeedDecrease.ToPercent());
             tooltips.Replace("[DR]", TeamDefense.ToString());
             tooltips.Replace("[REG]", TeamLifeRegenSec);
             tooltips.Replace("[DMG]", BuffDamageAddition.ToPercent());
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 62;
             Item.height = 56;
             Item.accessory = true;
             Item.value = Item.buyPrice(gold: 20);
             Item.rare = ItemRarityID.Pink;
         }
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.Entropy().oathBanner = true;
             player.Entropy().oathBannerVisual = !hideVisual;
             player.aggro += AggroBonus;
@@ -38,16 +35,14 @@ namespace CalamityEntropy.Content.Items.Accessories.Oath
             player.GetDamage(DamageClass.Generic) += BuffDamageAddition;
             player.Entropy().moveSpeed -= MoveSpeedDecrease;
         }
-        public override void UpdateVanity(Player player)
-        {
+        public override void UpdateVanity(Player player) {
             player.Entropy().oathBannerVisual = true;
         }
         // 只留钴蓝薙刀这一条。原先并存的昆古尼尔那条档位不对等(它本身要 18 神圣锭,薙刀只要 10 钴锭),
         // 在合成表里看着像两套互斥方案,实际都是原版材料,没有任何联动门控,反而让玩家以为走错了版本。
         // 少了昆古尼尔,"薙刀合战旗 → 微光拆出昆古尼尔 → 微光拆出 18 神圣锭"那条刷锭循环也一并没了,
         // 但禁用拆解保留,免得后面再加配方时又踩回去。
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe().
                 AddIngredient(ItemID.CobaltNaginata).
                 AddIngredient(ItemID.SoulofNight, 8).
@@ -58,15 +53,13 @@ namespace CalamityEntropy.Content.Items.Accessories.Oath
     }
     public class OathofCommand : ModBuff
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.debuff[Type] = false;
             Main.buffNoSave[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = false;
             Main.buffNoTimeDisplay[Type] = true;
         }
-        public override void Update(Player player, ref int buffIndex)
-        {
+        public override void Update(Player player, ref int buffIndex) {
             player.GetDamage(DamageClass.Generic) += OathBanner.BuffDamageAddition;
             player.statDefense += OathBanner.TeamDefense;
             player.lifeRegen += OathBanner.TeamLifeRegenSec * 2;

@@ -1,4 +1,4 @@
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Cooldowns;
 using CalamityEntropy.Content.Items.Armor;
 using CalamityEntropy.Content.Particles;
@@ -34,13 +34,11 @@ namespace CalamityEntropy.Content.Items.Accessories
         public int FallingFrame => 0;
         public int MaxFrame => 5;
         public int SlowFallingFrame => 5;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(wTime, HorSpeed, AccMul, false, 20, 2.8f);
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.width = 22;
             Item.height = 20;
@@ -49,19 +47,16 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.accessory = true;
 
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             tooltips.Replace("[CD]", (DashCooldownTicks / 60).ToString());
             // 脱离灾厄:灾厄 IntegrateHotkey 扩展改自有键名提示
             tooltips.Replace("[KEY]", CEKeybinds.RuneDashHotKey.TooltipKeyHint());
         }
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.Entropy().addEquip("RuneWing", !hideVisual);
             player.GetModPlayer<CEDashPlayer>().Offer(CEDashRegistry.Get<SoarRuneDash>());
         }
-        public override void UpdateVanity(Player player)
-        {
+        public override void UpdateVanity(Player player) {
             player.Entropy().addEquipVisual("RuneWing");
         }
 
@@ -88,16 +83,14 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public override float EndSpeed(Player player, Vector2 direction) => 4f;
 
-        public override Vector2? HotkeyDirection(Player player)
-        {
+        public override Vector2? HotkeyDirection(Player player) {
             Vector2 toMouse = Main.MouseWorld - player.Center;
             return toMouse == Vector2.Zero ? new Vector2(player.direction, 0f) : toMouse;
         }
 
         public override bool CanStart(Player player) => !player.HasCooldown(RuneDashCD.ID);
 
-        public override void OnStart(Player player, CEDashState state)
-        {
+        public override void OnStart(Player player, CEDashState state) {
             if (!state.Remote)
                 player.AddCooldown(RuneDashCD.ID, RuneWing.DashCooldownTicks);
             CEUtils.PlaySound("RuneDash", 1, player.Center);
@@ -109,10 +102,8 @@ namespace CalamityEntropy.Content.Items.Accessories
             state.EffectData = trail;
         }
 
-        public override void OnVisuals(Player player, CEDashState state)
-        {
-            if (state.EffectData is not PRT_ProminenceTrail trail || !trail.active)
-            {
+        public override void OnVisuals(Player player, CEDashState state) {
+            if (state.EffectData is not PRT_ProminenceTrail trail || !trail.active) {
                 trail = PRTLoader.NewParticle<PRT_ProminenceTrail>(player.Center, Vector2.Zero, Color.White, 5f)
                     .Configure(1, true, PRTDrawModeEnum.AlphaBlend, 0);
                 trail.color1 = Color.DeepSkyBlue;
@@ -127,8 +118,7 @@ namespace CalamityEntropy.Content.Items.Accessories
                 trail.AddPoint(from + step * f);
             trail.Lifetime = trail.Time + 13;
 
-            for (int i = 0; i < 3; i++)
-            {
+            for (int i = 0; i < 3; i++) {
                 PRTLoader.NewParticle<PRT_RuneParticle>(player.Center + CEUtils.randomVec(26), CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(-0.6f, 0.6f), Color.White, 1)
                     .Configure(1, true, PRTDrawModeEnum.AlphaBlend, 0);
             }

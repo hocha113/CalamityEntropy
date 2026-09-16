@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.AI;
+﻿using CalamityEntropy.Core.AI;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -64,13 +64,10 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.Core
         /// 原 <c>NPC.ai[0]</c>:一阶段 0 号的追击窗倒计时。<b>仍然住在 <c>ai[0]</c></b>,
         /// 原版同步槽白送一次同步,不必再进 ExtraAI
         /// </summary>
-        public float ChaseTimer
-        {
+        public float ChaseTimer {
             get => Npc == null ? 0f : Npc.ai[0];
-            set
-            {
-                if (Npc != null)
-                {
+            set {
+                if (Npc != null) {
                     Npc.ai[0] = value;
                 }
             }
@@ -80,13 +77,10 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.Core
         /// 原 <c>counter</c>(<c>NPC.ai[1]</c>):永不归零的全局帧计数,一堆 <c>counter % N</c> 射速门都读它。
         /// 走原版同步槽,两端天然一致
         /// </summary>
-        public int FrameCounter
-        {
+        public int FrameCounter {
             get => Npc == null ? 0 : (int)Npc.ai[1];
-            set
-            {
-                if (Npc != null)
-                {
+            set {
+                if (Npc != null) {
                     Npc.ai[1] = value;
                 }
             }
@@ -111,8 +105,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.Core
         /// 每帧默认值。只回落 <see cref="KeepRotSpeed"/>——其余都是持久事实,
         /// 原代码也不在换招时清(<c>prepareAiChange</c> 只动 <c>aicounter</c> 与 <c>aitype</c>)
         /// </summary>
-        public override void BeginFrameDefaults()
-        {
+        public override void BeginFrameDefaults() {
             base.BeginFrameDefaults();
             KeepRotSpeed = false;
         }

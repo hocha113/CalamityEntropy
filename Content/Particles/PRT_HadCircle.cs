@@ -13,8 +13,7 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             CScale = 1f;
             Glow = true;
@@ -24,8 +23,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/HadCircle";
 
         public PRT_HadCircle Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -35,16 +33,14 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             remaining = 16;   //自己数16tick到0 Kill,跟Lifetime到点是两套钟
             if (Lifetime <= 0)
                 Lifetime = 20;   //Lifetime只是兜底,真死亡看remaining
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             if (remaining > 8)
                 remaining -= 2;
             else if (remaining > 0)
@@ -58,8 +54,7 @@ namespace CalamityEntropy.Content.Particles
             Scale = t * 0.94f * CScale;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             //Glow关走方块光照,NonPremultiplied只乘A
             Texture2D tex = PRTLoader.PRT_IDToTexture[ID];
             Color clr = Color;
@@ -82,8 +77,7 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             CScale = 1f;
             scale2 = 1f;
@@ -93,8 +87,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/BloomRing";
 
         public PRT_HadCircle2 Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -104,21 +97,18 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 16;   //旧默认16,纯LifetimeCompletion驱动
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Opacity = 1f - LifetimeCompletion;   //旧剩余比例1→0
             Scale = LifetimeCompletion * 2.4f * CScale;   //越大环扩得越快
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             //BloomRing叠两层是Calamity原值,删一层变薄一圈
             Texture2D tex = PRTLoader.PRT_IDToTexture[ID];
             float drawScale = Scale * scale2;

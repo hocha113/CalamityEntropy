@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Rarities;
+﻿using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -7,8 +7,7 @@ namespace CalamityEntropy.Content.Items.Potions
 {
     public class VoidManaPotion : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.ResearchUnlockCount = 30;
             ItemID.Sets.DrinkParticleColors[Type] = new Color[3]
             {
@@ -18,16 +17,14 @@ namespace CalamityEntropy.Content.Items.Potions
             };
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.DefaultToFood(24, 32, 0, 0, true);
             Item.healMana = 350;
             Item.value = Item.sellPrice(silver: 10);
             Item.rare = ModContent.RarityType<NihilityBlue>();
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe(15)
                 .AddIngredient(ItemID.SuperManaPotion, 15)
                 .AddIngredient(ItemID.LunarBar)

@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -6,8 +6,7 @@ namespace CalamityEntropy.Content.Items.Accessories.SoulCards
 {
     public class MourningCard : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 22;
             Item.height = 22;
             Item.value = Item.buyPrice(gold: 5);
@@ -15,8 +14,7 @@ namespace CalamityEntropy.Content.Items.Accessories.SoulCards
             Item.accessory = true;
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.Entropy().mourningCard = true;
         }
     }

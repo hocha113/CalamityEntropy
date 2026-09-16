@@ -1,6 +1,6 @@
 ﻿using CalamityEntropy.Common;
-using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
 using System;
@@ -11,12 +11,10 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class MercyShoot : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Magic;
             Projectile.width = 46;
             Projectile.height = 46;
@@ -29,24 +27,19 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.localNPCHitCooldown = 16;
             Projectile.ArmorPenetration = 256;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 360);
             int boost = Projectile.owner.ToPlayer().Entropy().WeaponBoost;
-            if (boost > 0)
-            {
+            if (boost > 0) {
                 EGlobalNPC.AddVoidTouch(target, 5, boost * 0.2f, 800, 10 + 6 * boost);
             }
         }
         Color? colorset = null;
-        public override void AI()
-        {
+        public override void AI() {
             Projectile projectile = Projectile;
-            if (colorset == null)
-            {
+            if (colorset == null) {
                 colorset = Color.Lerp(Color.Red, new Color(170, 50, 50), (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f));
-                if (Projectile.owner.ToPlayer().Entropy().WeaponBoost > 0)
-                {
+                if (Projectile.owner.ToPlayer().Entropy().WeaponBoost > 0) {
                     colorset = Color.Lerp(Color.Purple, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f));
                 }
             }
@@ -56,8 +49,7 @@ namespace CalamityEntropy.Content.Projectiles
             //形体HeavySmokeCal+发光EHeavySmoke两层,后者AdditiveBlend走Configure(类头有写)
             PRTLoader.NewParticle<PRT_HeavySmokeCal>(projectile.Center + direction * 46f, smokeSpeed + projectile.velocity, color, Main.rand.NextFloat(0.6f, 1.2f)).Configure(0.8f, 20, 0, false, 0, true);
 
-            if (Main.rand.NextBool(2))
-            {
+            if (Main.rand.NextBool(2)) {
                 //EHeavySmoke AdditiveBlend+Spin/HueShift字段,Configure只管opacity和分桶
                 var smokeGlow = PRTLoader.NewParticle<PRT_EHeavySmoke>(
                     projectile.Center + direction * 46f,
@@ -73,8 +65,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
 
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             return false;
         }
     }

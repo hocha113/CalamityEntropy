@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.AI;
+﻿using CalamityEntropy.Core.AI;
 using InnoVault.StateMachines;
 using Terraria;
 using Terraria.ID;
@@ -73,10 +73,8 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.Core
         /// 击退固定 4,owner 传 -1。客户端不生成
         /// </summary>
         protected static void Shoot<T>(ApsychosStateContext ctx, Vector2 pos, Vector2 velocity,
-            float damageMult = 1f, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile
-        {
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
+            float damageMult = 1f, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile {
+            if (Main.netMode == NetmodeID.MultiplayerClient) {
                 return;
             }
             NPC npc = ctx.Npc;

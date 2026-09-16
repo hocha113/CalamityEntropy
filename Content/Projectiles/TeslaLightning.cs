@@ -1,6 +1,6 @@
-using CalamityEntropy.Assets.Register;
-using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Utilities;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,12 +15,10 @@ namespace CalamityEntropy.Content.Projectiles
     {
         public Vector2 endPos;
         List<Vector2> points = null;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 1;
             Projectile.height = 1;
@@ -33,45 +31,35 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.ArmorPenetration = 12;
             Projectile.timeLeft = 16;
         }
-        public override void AI()
-        {
-            if (Projectile.localAI[0] == 0)
-            {
+        public override void AI() {
+            if (Projectile.localAI[0] == 0) {
                 CEUtils.PlaySound("spark", 1, Projectile.Center, 1);
             }
             Vector2 end = new Vector2(Projectile.ai[0], Projectile.ai[1]);
-            if (points == null || Projectile.localAI[0] % 5 == 0)
-            {
+            if (points == null || Projectile.localAI[0] % 5 == 0) {
                 points = LightningGenerator.GenerateLightning(Projectile.Center, end, 36, 6);
             }
             Projectile.localAI[0]++;
         }
         public override string Texture => "CalamityEntropy/Assets/Extra/white";
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             if (points == null) return false;
-            for (int i = 1; i < points.Count; i++)
-            {
-                if (CEUtils.LineThroughRect(points[i - 1], points[i], targetHitbox, 4))
-                {
+            for (int i = 1; i < points.Count; i++) {
+                if (CEUtils.LineThroughRect(points[i - 1], points[i], targetHitbox, 4)) {
                     return true;
                 }
             }
             return false;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (Projectile.ai[2] == 1)
-            {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            if (Projectile.ai[2] == 1) {
                 target.AddBuff(ModContent.BuffType<GalvanicCorrosion>(), 240);
             }
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tx = CEExtraAssets.MegaStreakBacking2;
-            if (points == null)
-            {
+            if (points == null) {
                 return false;
             }
             float width = Projectile.timeLeft / 16f;
@@ -85,8 +73,7 @@ namespace CalamityEntropy.Content.Projectiles
             ve.Add(new ColoredVertex(points[0] - Main.screenPosition + (points[1] - points[0]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 16 * width,
                   new Vector3(0, 0, 1),
                   b));
-            for (int i = 1; i < points.Count; i++)
-            {
+            for (int i = 1; i < points.Count; i++) {
                 ve.Add(new ColoredVertex(points[i] - Main.screenPosition + (points[i] - points[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 16 * width,
                       new Vector3((float)(i + 1) / points.Count, 1, 1),
                     b));
@@ -94,8 +81,7 @@ namespace CalamityEntropy.Content.Projectiles
                       new Vector3((float)(i + 1) / points.Count, 0, 1),
                       b));
             }
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 gd.Textures[0] = tx;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
             }
@@ -107,8 +93,7 @@ namespace CalamityEntropy.Content.Projectiles
             ve.Add(new ColoredVertex(points[0] - Main.screenPosition + (points[1] - points[0]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 10 * width,
                   new Vector3(0, 0, 1),
                   b));
-            for (int i = 1; i < points.Count; i++)
-            {
+            for (int i = 1; i < points.Count; i++) {
                 ve.Add(new ColoredVertex(points[i] - Main.screenPosition + (points[i] - points[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 10 * width,
                       new Vector3((float)(i + 1) / points.Count, 1, 1),
                     b));
@@ -116,8 +101,7 @@ namespace CalamityEntropy.Content.Projectiles
                       new Vector3((float)(i + 1) / points.Count, 0, 1),
                       b));
             }
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 gd.Textures[0] = tx;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
             }
@@ -129,13 +113,11 @@ namespace CalamityEntropy.Content.Projectiles
     {
         public Vector2 endPos;
         List<Vector2> points = null;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 12000;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Magic;
             Projectile.width = 1;
             Projectile.height = 1;
@@ -148,11 +130,9 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.ArmorPenetration = 12;
             Projectile.timeLeft = 16;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Vector2 end = new Vector2(Projectile.ai[0], Projectile.ai[1]);
-            if (Projectile.localAI[0] == 0)
-            {
+            if (Projectile.localAI[0] == 0) {
                 CEUtils.PlaySound("spark", 1, Projectile.Center, 1);
                 //PRT_ShineParticle FollowOwner字段spawn后赋,Configure只管Additive和lifetime
                 PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.White, 0.16f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 18);
@@ -163,38 +143,30 @@ namespace CalamityEntropy.Content.Projectiles
 
             }
 
-            if (points == null || Projectile.localAI[0] % 5 == 0)
-            {
+            if (points == null || Projectile.localAI[0] % 5 == 0) {
                 points = LightningGenerator.GenerateLightning(Projectile.Center, end, 36, 6);
             }
             Projectile.localAI[0]++;
         }
         public override string Texture => "CalamityEntropy/Assets/Extra/white";
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             if (points == null) return false;
-            for (int i = 1; i < points.Count; i++)
-            {
-                if (CEUtils.LineThroughRect(points[i - 1], points[i], targetHitbox, 4))
-                {
+            for (int i = 1; i < points.Count; i++) {
+                if (CEUtils.LineThroughRect(points[i - 1], points[i], targetHitbox, 4)) {
                     return true;
                 }
             }
             return false;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (Projectile.ai[2] == 1)
-            {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            if (Projectile.ai[2] == 1) {
                 target.AddBuff(ModContent.BuffType<GalvanicCorrosion>(), 240);
             }
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tx = CEExtraAssets.MegaStreakBacking2;
-            if (points == null)
-            {
+            if (points == null) {
                 return false;
             }
             float width = Projectile.timeLeft / 16f;
@@ -202,8 +174,7 @@ namespace CalamityEntropy.Content.Projectiles
             GraphicsDevice gd = Main.graphics.GraphicsDevice;
             List<ColoredVertex> ve = new List<ColoredVertex>();
             Color b = new Color(240, 240, 255);
-            if (Projectile.ai[2] == 1)
-            {
+            if (Projectile.ai[2] == 1) {
                 b = Color.Red;
             }
             ve.Add(new ColoredVertex(points[0] - Main.screenPosition + (points[1] - points[0]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 16 * width,
@@ -212,8 +183,7 @@ namespace CalamityEntropy.Content.Projectiles
             ve.Add(new ColoredVertex(points[0] - Main.screenPosition + (points[1] - points[0]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 16 * width,
                   new Vector3(0, 0, 1),
                   b));
-            for (int i = 1; i < points.Count; i++)
-            {
+            for (int i = 1; i < points.Count; i++) {
                 ve.Add(new ColoredVertex(points[i] - Main.screenPosition + (points[i] - points[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 16 * width,
                       new Vector3((float)(i + 1) / points.Count, 1, 1),
                     b));
@@ -221,8 +191,7 @@ namespace CalamityEntropy.Content.Projectiles
                       new Vector3((float)(i + 1) / points.Count, 0, 1),
                       b));
             }
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 gd.Textures[0] = tx;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
             }
@@ -234,8 +203,7 @@ namespace CalamityEntropy.Content.Projectiles
             ve.Add(new ColoredVertex(points[0] - Main.screenPosition + (points[1] - points[0]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 7 * width,
                   new Vector3(0, 0, 1),
                   b));
-            for (int i = 1; i < points.Count; i++)
-            {
+            for (int i = 1; i < points.Count; i++) {
                 ve.Add(new ColoredVertex(points[i] - Main.screenPosition + (points[i] - points[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 7 * width,
                       new Vector3((float)(i + 1) / points.Count, 1, 1),
                     b));
@@ -243,8 +211,7 @@ namespace CalamityEntropy.Content.Projectiles
                       new Vector3((float)(i + 1) / points.Count, 0, 1),
                       b));
             }
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 gd.Textures[0] = tx;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
             }

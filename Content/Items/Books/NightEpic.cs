@@ -1,18 +1,17 @@
 ﻿using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Books
 {
     public class NightEpic : EntropyBook
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.damage = 56;
             Item.useAnimation = Item.useTime = 18;
@@ -27,10 +26,8 @@ namespace CalamityEntropy.Content.Items.Books
         public override int HeldProjectileType => ModContent.ProjectileType<NightEpicHeld>();
         public override int SlotCount => 3;
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_AstralBar, CEID.Item_StarblightSoot))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_AstralBar, CEID.Item_StarblightSoot)) {
                 CreateRecipe().AddIngredient<RedemptionBible>()
                 .AddIngredient(CEID.Item_AstralBar, 8)
                 .AddIngredient(CEID.Item_StarblightSoot, 6)
@@ -51,14 +48,12 @@ namespace CalamityEntropy.Content.Items.Books
         public override string PageAnimationPath => "CalamityEntropy/Content/Items/Books/Textures/NightEpic/NightEpicPage";
         public override string UIOpenAnimationPath => "CalamityEntropy/Content/Items/Books/Textures/NightEpic/NightEpicUI";
 
-        public override bool Shoot()
-        {
+        public override bool Shoot() {
             base.Shoot();
             return base.Shoot();
         }
 
-        public override EBookStatModifer getBaseModifer()
-        {
+        public override EBookStatModifer getBaseModifer() {
             var mdf = base.getBaseModifer();
             mdf.Homing += 1f;
             mdf.HomingRange += 0.8f;

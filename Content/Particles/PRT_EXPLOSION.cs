@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/EXPLOSION";
 
         public PRT_EXPLOSION Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -25,20 +24,17 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 96;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             frame++;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Texture2D tex = PRTLoader.PRT_IDToTexture[ID];
             //spritesheet 11列×多行,每格240×135,frame每tick+1不按LifetimeCompletion切
             Rectangle rect = new Rectangle(frame % 11 * 240, frame / 11 * 135, 240, 135);
@@ -55,8 +51,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/EXPLOSIONCOSMIC";
 
         public PRT_EXPLOSIONCOSMIC Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -66,20 +61,17 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 96;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             frame++;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Texture2D tex = PRTLoader.PRT_IDToTexture[ID];
             Rectangle rect = new Rectangle(frame % 11 * 240, frame / 11 * 135, 240, 135);
             sb.Draw(tex, Position - Main.screenPosition, rect, Color, Rotation, new Vector2(120, 135 / 2f), Scale, SpriteEffects.None, 0);

@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Cruiser.Core;
+﻿using CalamityEntropy.Content.NPCs.Cruiser.Core;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.Cruiser;
 using InnoVault.StateMachines;
@@ -29,14 +29,12 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
     {
         public override CruiserStateIndex StateIndex => CruiserStateIndex.BiteAndDash;
 
-        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx)
-        {
+        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
             IVaultState<CruiserStateContext> next = null;
 
-            if (ctx.ChangeCounter == 0)
-            {
+            if (ctx.ChangeCounter == 0) {
                 //清场:自家三种散弹一律抹掉,免得拖拽段被自己的弹幕糊满
                 List<int> clearTypes = new List<int>
                 {
@@ -44,82 +42,66 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
                     ModContent.ProjectileType<VoidResidue>(),
                     ModContent.ProjectileType<VoidSpike>()
                 };
-                foreach (Projectile p in Main.ActiveProjectiles)
-                {
-                    if (clearTypes.Contains(p.type))
-                    {
+                foreach (Projectile p in Main.ActiveProjectiles) {
+                    if (clearTypes.Contains(p.type)) {
                         p.Kill();
                     }
                 }
                 npc.velocity *= CruiserDirector.BiteApproachDrag;
                 npc.velocity += (player.Center - npc.Center).normalize() * CruiserDirector.BiteApproachThrust;
                 if (CEUtils.getDistance(npc.Center + npc.rotation.ToRotationVector2() * CruiserDirector.BiteGrabOffset,
-                        player.Center) < CruiserDirector.BiteGrabRange)
-                {
+                        player.Center) < CruiserDirector.BiteGrabRange) {
                     ctx.ChangeCounter++;
                     player.velocity *= 0;
                     player.Center = npc.Center + npc.rotation.ToRotationVector2() * CruiserDirector.BiteGrabOffset;
                     MarkNetUpdate(ctx);
                 }
             }
-            else
-            {
+            else {
                 ctx.ChangeCounter++;
-                if (ctx.ChangeCounter < CruiserDirector.BiteDragFrames)
-                {
+                if (ctx.ChangeCounter < CruiserDirector.BiteDragFrames) {
                     ctx.MouthRot += CruiserDirector.BiteMouthRate;
                     npc.velocity = npc.velocity.normalize()
                         * (npc.velocity.Length()
                             + (CruiserDirector.BiteDragSpeedTarget - npc.velocity.Length()) * CruiserDirector.BiteDragSpeedLerp);
 
                     if (CEUtils.getDistance(npc.Center + npc.rotation.ToRotationVector2() * CruiserDirector.BiteGrabOffset,
-                            player.Center) < CruiserDirector.BiteGrabRange)
-                    {
+                            player.Center) < CruiserDirector.BiteGrabRange) {
                         player.velocity *= 0;
                         player.Entropy().immune = CruiserDirector.BiteImmuneFrames;
                         player.Center = npc.Center + npc.rotation.ToRotationVector2() * CruiserDirector.BiteGrabOffset;
                     }
-                    if (!CEUtils.isAir(npc.Center + npc.rotation.ToRotationVector2() * CruiserDirector.BiteWallProbe))
-                    {
+                    if (!CEUtils.isAir(npc.Center + npc.rotation.ToRotationVector2() * CruiserDirector.BiteWallProbe)) {
                         ctx.ChangeCounter = CruiserDirector.BiteWallSkipTo;
                     }
                 }
-                else
-                {
+                else {
                     Vector2 targetPos = player.Center
                         + (npc.Center - player.Center).normalize().RotatedBy(CruiserDirector.BiteOrbitAngle) * CruiserDirector.BiteOrbitRadius;
                     npc.velocity += (targetPos - npc.Center).normalize() * CruiserDirector.BiteOrbitThrust;
                     npc.velocity *= CruiserDirector.BiteOrbitDrag;
-                    if (ctx.ChangeCounter > CruiserDirector.BiteDuration)
-                    {
+                    if (ctx.ChangeCounter > CruiserDirector.BiteDuration) {
                         next = NextAttack(ctx);
                     }
                 }
                 //原代码把这一段写在 if/else 之外,所以计数正好等于 20 那一帧,绕飞与甩出会同帧执行
-                if (ctx.ChangeCounter == CruiserDirector.BiteDragFrames)
-                {
+                if (ctx.ChangeCounter == CruiserDirector.BiteDragFrames) {
                     if (CEUtils.getDistance(npc.Center + npc.rotation.ToRotationVector2() * CruiserDirector.BiteLaunchProbe,
-                            player.Center) < CruiserDirector.BiteGrabRange)
-                    {
+                            player.Center) < CruiserDirector.BiteGrabRange) {
                         player.velocity = npc.velocity * CruiserDirector.BiteLaunchSpeedMult;
                         player.Entropy().CruiserAntiGravTime = CruiserDirector.BiteAntiGravFrames;
                     }
 
-                    if (IsServer)
-                    {
+                    if (IsServer) {
                         int slashType = ModContent.ProjectileType<CruiserSlash>();
-                        for (int i = 1; i < CruiserDirector.BiteSlashRows; i++)
-                        {
-                            for (int j = -(CruiserDirector.BiteSlashColumns - 1); j < CruiserDirector.BiteSlashColumns; j++)
-                            {
-                                if (j == 0)
-                                {
+                        for (int i = 1; i < CruiserDirector.BiteSlashRows; i++) {
+                            for (int j = -(CruiserDirector.BiteSlashColumns - 1); j < CruiserDirector.BiteSlashColumns; j++) {
+                                if (j == 0) {
                                     Shoot(ctx, slashType,
                                         npc.Center + npc.velocity.normalize() * CruiserDirector.BiteSlashSpacing * i,
                                         npc.velocity);
                                 }
-                                else
-                                {
+                                else {
                                     Shoot(ctx, slashType,
                                         npc.Center + npc.velocity.normalize().RotatedBy(CruiserDirector.BiteSlashAngleStep * j)
                                             * CruiserDirector.BiteSlashSpacing * i,

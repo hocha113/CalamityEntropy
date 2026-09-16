@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.LuminarisMoth.Core;
+﻿using CalamityEntropy.Content.NPCs.LuminarisMoth.Core;
 using CalamityEntropy.Content.Projectiles.LuminarisShoots;
 using InnoVault.StateMachines;
 using System;
@@ -22,8 +22,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
     {
         public override LuminarisStateIndex StateIndex => LuminarisStateIndex.RoundShooting;
 
-        public override IVaultState<LuminarisStateContext> OnUpdate(LuminarisStateContext ctx)
-        {
+        public override IVaultState<LuminarisStateContext> OnUpdate(LuminarisStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
             float enrange = ctx.Enrange;
@@ -33,39 +32,32 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
             npc.rotation = 0;
             ctx.AfterImageTime = LuminarisDirector.AfterImageFrames;
 
-            if (c == LuminarisDirector.RoundShootingFrames)
-            {
-                if (IsServer)
-                {
+            if (c == LuminarisDirector.RoundShootingFrames) {
+                if (IsServer) {
                     //绕转方向只在权威端骰,结果随 Num3 过线。客户端拿到之前 Num3 是 0,不会自己转
                     ctx.Num3 = Main.rand.NextBool() ? -1 : 1;
                     MarkNetUpdate(ctx);
                 }
                 ctx.Vec1 = npc.Center;
             }
-            if (c > LuminarisDirector.RoundShootingOrbitFrame && c < LuminarisDirector.RoundShootingFrames)
-            {
+            if (c > LuminarisDirector.RoundShootingOrbitFrame && c < LuminarisDirector.RoundShootingFrames) {
                 //落点每帧按当前左右侧重算,所以入位途中越过玩家会把目标点翻到另一侧
                 npc.Center = Vector2.Lerp(ctx.Vec1,
                     player.Center + new Vector2(LuminarisDirector.RoundShootingApproachX * Math.Sign(npc.Center.X - player.Center.X), LuminarisDirector.RoundShootingApproachY),
                     CEUtils.GetRepeatedCosFromZeroToOne(1 - (c - LuminarisDirector.RoundShootingOrbitFrame) / LuminarisDirector.RoundShootingApproachSpan, 1));
             }
-            if (c == LuminarisDirector.RoundShootingOrbitFrame)
-            {
+            if (c == LuminarisDirector.RoundShootingOrbitFrame) {
                 ctx.Num1 = npc.Center.Distance(player.Center);
                 ctx.Num2 = (npc.Center - player.Center).ToRotation();
             }
-            if (c < LuminarisDirector.RoundShootingOrbitFrame)
-            {
+            if (c < LuminarisDirector.RoundShootingOrbitFrame) {
                 //整条尾迹跟着玩家平移,纯绘制处理:绕转时本体贴着玩家动,尾迹不跟就会被甩在世界坐标上
-                for (int i = 0; i < ctx.Trail.Count; i++)
-                {
+                for (int i = 0; i < ctx.Trail.Count; i++) {
                     ctx.Trail[i] += player.velocity;
                 }
                 ctx.Num2 += LuminarisDirector.RoundShootingOrbitSpeed * ctx.Num3 * enrange;
                 npc.Center = player.Center + ctx.Num2.ToRotationVector2() * ctx.Num1;
-                if (c % (int)(LuminarisDirector.RoundShootingShootIntervalBase / enrange) == 0)
-                {
+                if (c % (int)(LuminarisDirector.RoundShootingShootIntervalBase / enrange) == 0) {
                     CEUtils.PlaySound("bne_hit2", 1, npc.Center);
                     Shoot<LuminarisVortex>(ctx, npc.Center, (player.Center - npc.Center).normalize() * LuminarisDirector.RoundShootingVortexSpeed);
                 }

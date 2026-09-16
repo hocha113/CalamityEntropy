@@ -1,4 +1,4 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
@@ -13,12 +13,10 @@ namespace CalamityEntropy.Content.Projectiles.ApsychosProjs
     public class ApsychosLaser : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) {
             target.AddBuff(BuffID.OnFire3, 180);
         }
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 8000;
         }
@@ -26,8 +24,7 @@ namespace CalamityEntropy.Content.Projectiles.ApsychosProjs
         public int length = 3600;
         public float width = 0;
         public int aicounter = 0;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = false;
@@ -39,65 +36,53 @@ namespace CalamityEntropy.Content.Projectiles.ApsychosProjs
             Projectile.timeLeft = 330;
         }
         public bool st = true;
-        public override void AI()
-        {
+        public override void AI() {
             NPC n = ((int)Projectile.ai[0]).ToNPC();
-            if (!n.active)
-            {
+            if (!n.active) {
                 Projectile.Kill();
                 return;
             }
             Projectile.rotation = n.rotation;
             Projectile.Center = n.Center + n.rotation.ToRotationVector2() * 100 * n.scale;
             Projectile.velocity = Projectile.rotation.ToRotationVector2() * 16;
-            if (st)
-            {
+            if (st) {
                 //PRT_ShineParticle FollowOwner字段spawn后赋,Configure只管Additive和lifetime
                 PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, new Color(255, 255, 255), 0.6f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 15);  //ShineParticle FollowOwner字段spawn后赋,Configure只管Additive和lifetime
                 PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, new Color(160, 160, 255), 0.29f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 15);
                 CEUtils.PlaySound("CrystalBallActive", 0.6f + Main.rand.NextFloat(-0.2f, 0.2f), Projectile.Center, 10, 0.4f);
                 st = false;
             }
-            if (Projectile.timeLeft < 16)
-            {
+            if (Projectile.timeLeft < 16) {
                 width -= 1f / 16f;
             }
-            else
-            {
-                if (aicounter < 60)
-                {
+            else {
+                if (aicounter < 60) {
                     if (width < 0.1f)
                         width += 1f / 100f;
                 }
-                else
-                {
+                else {
                     if (width < 1)
                         width += 1f / 20f;
                 }
             }
             float maxlength = 3800;
-            for (float i = 550; i < maxlength; i += 8)
-            {
+            for (float i = 550; i < maxlength; i += 8) {
                 Vector2 v = Projectile.Center + Projectile.rotation.ToRotationVector2() * i;
                 length = (int)i;
-                if (!CEUtils.inWorld(v) || Main.tile[(int)(v.X / 16), (int)(v.Y / 16)].IsTileSolid())
-                {
+                if (!CEUtils.inWorld(v) || Main.tile[(int)(v.X / 16), (int)(v.Y / 16)].IsTileSolid()) {
                     break;
                 }
             }
 
             aicounter++;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * length, targetHitbox, 50);
         }
-        public override bool? CanDamage()
-        {
+        public override bool? CanDamage() {
             return width >= 0.8f;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             counter++;
             Texture2D tex = CEExtraAssets.DeathRay2;
             Main.spriteBatch.UseBlendState(BlendState.NonPremultiplied, SamplerState.LinearWrap);
@@ -126,8 +111,7 @@ namespace CalamityEntropy.Content.Projectiles.ApsychosProjs
 
             return false;
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
     }

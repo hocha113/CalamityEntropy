@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Cruiser.Core;
+﻿using CalamityEntropy.Content.NPCs.Cruiser.Core;
 using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
 using InnoVault.StateMachines;
@@ -24,23 +24,18 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
     {
         public override CruiserStateIndex StateIndex => CruiserStateIndex.PhaseTransing;
 
-        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx)
-        {
+        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx) {
             NPC npc = ctx.Npc;
-            if (npc.velocity.Length() < CruiserDirector.PhaseTransSpeedFloor)
-            {
+            if (npc.velocity.Length() < CruiserDirector.PhaseTransSpeedFloor) {
                 npc.velocity *= CruiserDirector.PhaseTransAccel;
             }
-            else
-            {
+            else {
                 npc.velocity *= CruiserDirector.PhaseTransDrag;
             }
 
-            if (!Main.dedServ && ctx.Owner != null)
-            {
+            if (!Main.dedServ && ctx.Owner != null) {
                 //每骨节每帧一颗,节数多时能堆几百颗,对齐原转场密度
-                foreach (Vector2 p in ctx.Owner.bodies)
-                {
+                foreach (Vector2 p in ctx.Owner.bodies) {
                     PRT_Void vpt = PRTLoader.NewParticle<PRT_Void>(p,
                         CEUtils.randomPointInCircle(CruiserDirector.PhaseTransParticleScatter), Color.White, 1f);
                     vpt.Opacity = Main.rand.NextFloat(CruiserDirector.PhaseTransParticleOpacityMin, CruiserDirector.PhaseTransParticleOpacityMax);

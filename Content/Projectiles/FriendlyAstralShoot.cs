@@ -1,6 +1,6 @@
 ﻿using CalamityEntropy.Assets.Register;
-using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,16 +15,13 @@ namespace CalamityEntropy.Content.Projectiles
     {
         public List<Vector2> odp = new List<Vector2>();
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 360);
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 32;
             Projectile.height = 32;
             Projectile.friendly = true;
@@ -39,35 +36,29 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.DamageType = DamageClass.Melee;
         }
         public float counter = 0;
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             //DirectionalPulseRing Configure是Calamity ring原构造,scale/rotation/lifetime顺序固定
             PRTLoader.NewParticle<PRT_DirectionalPulseRing>(Projectile.Center, Vector2.Zero, Color.LightBlue, 0.02f).Configure(new Vector2(2f, 2f), 0, 0.85f * 0.4f, 18);
-            for (int i = 0; i < 3; i++)
-            {
+            for (int i = 0; i < 3; i++) {
                 //StarTrailParticle星尘拖尾,旧EParticle StarTrail
                 PRTLoader.NewParticle<PRT_StarTrailParticle>(Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(16, 36), Color.White, Main.rand.NextFloat(0.6f, 1.2f)).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);
             }
             CEUtils.PlaySound(Main.rand.NextBool() ? "scholarStaffImpact" : "scholarStaffImpact2", Main.rand.NextFloat(0.8f, 1.2f), Projectile.Center, volume: CEUtils.WeapSound);
         }
-        public override void AI()
-        {
+        public override void AI() {
             Vector2 gravDir = Projectile.ai[0].ToRotationVector2();
             float gravLength = Projectile.ai[1];
             float gravTime = Projectile.ai[2];
             counter++;
-            if (counter > gravTime)
-            {
+            if (counter > gravTime) {
                 Projectile.velocity += gravDir * gravLength;
             }
             odp.Add(Projectile.Center);
-            if (odp.Count > 16)
-            {
+            if (odp.Count > 16) {
                 odp.RemoveAt(0);
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             var tex = CEExtraAssets.StarTexture_White;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Color color = Projectile.whoAmI % 2 == 0 ? new Color(190, 190, 80) : new Color(116, 200, 180);
@@ -84,23 +75,20 @@ namespace CalamityEntropy.Content.Projectiles
         }
 
 
-        public void drawT()
-        {
+        public void drawT() {
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
             GraphicsDevice gd = Main.graphics.GraphicsDevice;
             odp.Add(Projectile.Center);
-            if (odp.Count > 2)
-            {
+            if (odp.Count > 2) {
                 {
                     List<ColoredVertex> ve = new List<ColoredVertex>();
                     Color b = Projectile.whoAmI % 2 == 0 ? new Color(255, 255, 160) : new Color(160, 255, 220);
 
                     float a = 0;
                     float lr = 0;
-                    for (int i = 1; i < odp.Count; i++)
-                    {
+                    for (int i = 1; i < odp.Count; i++) {
                         a += 1f / (float)odp.Count;
 
                         ve.Add(new ColoredVertex(odp[i] - Main.screenPosition + (odp[i] - odp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 12 * ((i - 1f) / (odp.Count - 2f)),
@@ -113,8 +101,7 @@ namespace CalamityEntropy.Content.Projectiles
                     }
                     a = 1;
 
-                    if (ve.Count >= 3)
-                    {
+                    if (ve.Count >= 3) {
                         Texture2D tx = CEExtraAssets.MegaStreakBacking2;
                         gd.Textures[0] = tx;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
@@ -126,8 +113,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                     float a = 0;
                     float lr = 0;
-                    for (int i = 1; i < odp.Count; i++)
-                    {
+                    for (int i = 1; i < odp.Count; i++) {
                         a += 1f / (float)odp.Count;
 
                         ve.Add(new ColoredVertex(odp[i] - Main.screenPosition + (odp[i] - odp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 8 * ((i - 1f) / (odp.Count - 2f)),
@@ -140,8 +126,7 @@ namespace CalamityEntropy.Content.Projectiles
                     }
                     a = 1;
 
-                    if (ve.Count >= 3)
-                    {
+                    if (ve.Count >= 3) {
                         Texture2D tx = CEExtraAssets.Streak1;
                         gd.Textures[0] = tx;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);

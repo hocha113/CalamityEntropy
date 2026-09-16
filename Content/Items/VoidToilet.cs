@@ -1,15 +1,14 @@
 ﻿using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items
 {
     public class VoidToilet : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 12;
             Item.height = 30;
             Item.maxStack = 9999;
@@ -23,8 +22,7 @@ namespace CalamityEntropy.Content.Items
             Item.rare = ModContent.RarityType<VoidPurple>();
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe().
                 AddIngredient(ItemID.Toilet).
                 AddIngredient<VoidBar>(5).

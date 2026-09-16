@@ -1,4 +1,4 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,14 +12,12 @@ namespace CalamityEntropy.Content.Projectiles.LuminarisShoots
 
     public class LuminarisMinionAstralShoot : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.MinionShot[Type] = true;
         }
         public List<Vector2> odp = new List<Vector2>();
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Summon;
             Projectile.width = 36;
             Projectile.height = 36;
@@ -34,19 +32,15 @@ namespace CalamityEntropy.Content.Projectiles.LuminarisShoots
             Projectile.usesLocalNPCImmunity = true;
         }
         public float counter = 0;
-        public override void AI()
-        {
+        public override void AI() {
             if (counter == 0)
                 CEUtils.PlaySound("ksLand", 2f, Projectile.Center, 2, 0.16f);
             counter++;
-            if (counter > 8)
-            {
+            if (counter > 8) {
                 NPC target = Projectile.FindMinionTarget();
-                if (target != null)
-                {
+                if (target != null) {
                     float homing = 0.4f;
-                    if (CEUtils.getDistance(target.Center, Projectile.Center) < 360)
-                    {
+                    if (CEUtils.getDistance(target.Center, Projectile.Center) < 360) {
                         homing = Utils.Remap(CEUtils.getDistance(target.Center, Projectile.Center), 0, 360, 12, 0.4f);
                     }
                     Projectile.velocity += (target.Center - Projectile.Center).normalize() * homing * 4;
@@ -54,13 +48,11 @@ namespace CalamityEntropy.Content.Projectiles.LuminarisShoots
                 }
             }
             odp.Add(Projectile.Center);
-            if (odp.Count > 6)
-            {
+            if (odp.Count > 6) {
                 odp.RemoveAt(0);
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             var tex = CEExtraAssets.StarTexture_White;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Color color = Projectile.whoAmI % 2 == 0 ? new Color(190, 190, 80) : new Color(116, 200, 180);
@@ -73,29 +65,25 @@ namespace CalamityEntropy.Content.Projectiles.LuminarisShoots
             return false;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             //PRT_DirectionalPulseRing Configure是Calamity ring原构造,scale/rotation/lifetime顺序固定
             PRTLoader.NewParticle<PRT_DirectionalPulseRing>(target.Center, Projectile.velocity * 0.01f, Color.AliceBlue, 0.08f).Configure(new Vector2(0.7f, 1), Projectile.velocity.ToRotation(), 0.36f, 16);  //DirectionalPulseRing Configure是Calamity ring原构造,scale/rotation/lifetime顺序固定
         }
 
-        public void drawT()
-        {
+        public void drawT() {
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
             GraphicsDevice gd = Main.graphics.GraphicsDevice;
             odp.Add(Projectile.Center);
-            if (odp.Count > 2)
-            {
+            if (odp.Count > 2) {
                 {
                     List<ColoredVertex> ve = new List<ColoredVertex>();
                     Color b = Projectile.whoAmI % 2 == 0 ? new Color(255, 255, 160) : new Color(160, 255, 220);
 
                     float a = 0;
                     float lr = 0;
-                    for (int i = 1; i < odp.Count; i++)
-                    {
+                    for (int i = 1; i < odp.Count; i++) {
                         a += 1f / (float)odp.Count;
 
                         ve.Add(new ColoredVertex(odp[i] - Main.screenPosition + (odp[i] - odp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 6 * ((i - 1f) / (odp.Count - 2f)),
@@ -108,8 +96,7 @@ namespace CalamityEntropy.Content.Projectiles.LuminarisShoots
                     }
                     a = 1;
 
-                    if (ve.Count >= 3)
-                    {
+                    if (ve.Count >= 3) {
                         Texture2D tx = CEExtraAssets.MegaStreakBacking2;
                         gd.Textures[0] = tx;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
@@ -121,8 +108,7 @@ namespace CalamityEntropy.Content.Projectiles.LuminarisShoots
 
                     float a = 0;
                     float lr = 0;
-                    for (int i = 1; i < odp.Count; i++)
-                    {
+                    for (int i = 1; i < odp.Count; i++) {
                         a += 1f / (float)odp.Count;
 
                         ve.Add(new ColoredVertex(odp[i] - Main.screenPosition + (odp[i] - odp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 4 * ((i - 1f) / (odp.Count - 2f)),
@@ -135,8 +121,7 @@ namespace CalamityEntropy.Content.Projectiles.LuminarisShoots
                     }
                     a = 1;
 
-                    if (ve.Count >= 3)
-                    {
+                    if (ve.Count >= 3) {
                         Texture2D tx = CEExtraAssets.Streak1;
                         gd.Textures[0] = tx;
                         gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);

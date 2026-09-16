@@ -18,8 +18,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Assets/Extra/Glow2";
 
         public PRT_HomingSpiritParticle Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -29,8 +28,7 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 5;
@@ -39,19 +37,16 @@ namespace CalamityEntropy.Content.Particles
         //子步进在AI里自己Position+=Velocity,关框架自动位移
         public override bool ShouldUpdatePosition() => false;
 
-        public override void AI()
-        {
+        public override void AI() {
             //旧UpdateTimes=6,全库就这类每tick跑6遍子步
-            for (int step = 0; step < 6; step++)
-            {
+            for (int step = 0; step < 6; step++) {
                 if (Opc < 1)
                     Opc += 0.05f;
                 h = 0.6f + Utils.Remap(CEUtils.getDistance(Position, TargetPos), 0, 900, 1, 0);
                 Velocity *= 1f - h * 0.012f;
                 Velocity += (TargetPos - Position).normalize() * 0.056f * h;
                 Position += Velocity;
-                if (CEUtils.getDistance(Position, TargetPos) < Velocity.Length() * 1.1f + 64)
-                {
+                if (CEUtils.getDistance(Position, TargetPos) < Velocity.Length() * 1.1f + 64) {
                     Velocity *= 0;
                     Kill();
                     return;
@@ -65,16 +60,14 @@ namespace CalamityEntropy.Content.Particles
             Lifetime = Time + 5;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             //就一趟Additive拖尾,没有shader也没有TriangleStrip,别跟ShadeDash那套混
             //绘制顺序OldPos[0]→末尾,i越大s越大=越靠近弹头越亮,反了像尾巴点火
             //拖尾固定Additive+TransformationMatrix,End掉PRT批次画完BeginDrawingWithMode还
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             Texture2D tex = PRTExtraTextures.Glow2.Value;
-            for (int i = 0; i < OldPos.Count; i++)
-            {
+            for (int i = 0; i < OldPos.Count; i++) {
                 float s = (1f + i) / OldPos.Count;
                 sb.Draw(tex, OldPos[i] - Main.screenPosition, null, Color * Opc * s, 0, tex.Size() * 0.5f, s * 0.16f, SpriteEffects.None, 0);
             }

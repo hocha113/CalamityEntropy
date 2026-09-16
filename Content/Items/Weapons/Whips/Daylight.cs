@@ -1,9 +1,9 @@
 ﻿using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Whips
 {
@@ -11,12 +11,10 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
     {
         public override int TagDamage => 6;
         public override float TagCritChance => 0;
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             base.ModifyTooltips(tooltips);
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.DefaultToWhip(ModContent.ProjectileType<DaylightProjectile>(), 40, 4, 8f, 30);
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = SoundID.Item130;
@@ -26,8 +24,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
             Item.height = 38;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ItemID.AncientBattleArmorMaterial)
                 .AddCalOrOwn(CEID.Item_EssenceofSunlight, ItemID.SoulofLight, 8)

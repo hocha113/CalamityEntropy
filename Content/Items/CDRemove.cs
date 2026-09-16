@@ -10,8 +10,7 @@ namespace CalamityEntropy.Content.Items
     public class CDRemove : ModItem
     {
         public float CooldownReduce = 0;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.maxStack = 1;
             Item.width = 44;
             Item.height = 44;
@@ -20,50 +19,39 @@ namespace CalamityEntropy.Content.Items
             Item.useStyle = ItemUseStyleID.RaiseLamp;
         }
 
-        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-        {
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup) {
             itemGroup = ContentSamples.CreativeHelper.ItemGroup.EverythingElse;
         }
 
-        public override bool? UseItem(Player player)
-        {
+        public override bool? UseItem(Player player) {
             player.ClearCooldowns();
             return true;
         }
 
-        public override bool CanRightClick()
-        {
+        public override bool CanRightClick() {
             return true;
         }
-        public override void SaveData(TagCompound tag)
-        {
+        public override void SaveData(TagCompound tag) {
             tag["Time"] = CooldownReduce;
         }
-        public override void LoadData(TagCompound tag)
-        {
-            if (tag.TryGet<float>("Time", out float t))
-            {
+        public override void LoadData(TagCompound tag) {
+            if (tag.TryGet<float>("Time", out float t)) {
                 CooldownReduce = t;
             }
         }
-        public override void RightClick(Player player)
-        {
+        public override void RightClick(Player player) {
             CooldownReduce -= 0.25f;
-            if (CooldownReduce < 0)
-            {
+            if (CooldownReduce < 0) {
                 CooldownReduce = 1;
             }
         }
-        public override bool ConsumeItem(Player player)
-        {
+        public override bool ConsumeItem(Player player) {
             return false;
         }
-        public override void UpdateInventory(Player player)
-        {
+        public override void UpdateInventory(Player player) {
             player.Entropy().CooldownTimeMult -= CooldownReduce;
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             tooltips.Replace("[R]", CooldownReduce.ToPercent().ToString());
         }
     }

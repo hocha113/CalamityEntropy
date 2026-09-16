@@ -1,4 +1,4 @@
-using InnoVault.PRT;
+﻿using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -17,8 +17,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             InitialColor = default;
             AffectedByGravity = false;
@@ -33,8 +32,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         public override int InGame_World_MaxCount => 8000;   //Solar Storm爆发段一帧几十粒,拍个大上限防截断
 
         public PRT_GlowSparkCal Configure(bool affectedByGravity, int lifetime, Vector2 squash,
-            bool quickShrink = false, bool glow = true, float shrinkSpeed = 1f)
-        {
+            bool quickShrink = false, bool glow = true, float shrinkSpeed = 1f) {
             AffectedByGravity = affectedByGravity;
             Squash = squash;
             QuickShrink = quickShrink;
@@ -48,35 +46,29 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 30;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Scale *= 0.95f;
             Color = Color.Lerp(InitialColor, Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D));
             Velocity *= 0.95f;
-            if (QuickShrink)
-            {
+            if (QuickShrink) {
                 //QuickShrink拉扁Squash,ShrinkSpeed≠1时按倍率改XY,Cal原版分支
-                if (ShrinkSpeed == 1f)
-                {
+                if (ShrinkSpeed == 1f) {
                     Squash.X *= 0.8f;
                     Squash.Y *= 1.2f;
                 }
-                else
-                {
+                else {
                     Squash.X *= 1f - 0.2f * ShrinkSpeed;
                     Squash.Y *= 1f + 0.2f * ShrinkSpeed;
                 }
             }
 
-            if (Velocity.Length() < 12f && AffectedByGravity)
-            {
+            if (Velocity.Length() < 12f && AffectedByGravity) {
                 Velocity.X *= 0.94f;
                 Velocity.Y += 0.25f;
             }
@@ -84,17 +76,14 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             Rotation = Velocity.ToRotation() + MathHelper.PiOver2;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch) {
             Vector2 drawScale = Squash * Scale;
             Texture2D texture = PRTSharedAssets.GlowSpark.Value;   //GlowSpark贴图,VaultLoaden在SharedAssets
 
             float scaleMult = 1f;
-            if (Main.zenithWorld)
-            {
+            if (Main.zenithWorld) {
                 DateTime day = DateTime.Now;
-                if (day.DayOfWeek == DayOfWeek.Tuesday)
-                {
+                if (day.DayOfWeek == DayOfWeek.Tuesday) {
                     //天顶周二猛犸象,Calamity原版彩蛋,照搬,不是bug别删
                     Texture2D joke = PRTSharedAssets.MammothParticle.Value;
                     scaleMult = MathHelper.Lerp(texture.Size().X / joke.Size().X, texture.Size().Y / joke.Size().Y, 0.5f);
@@ -104,8 +93,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
             spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color, Rotation, texture.Size() * 0.5f,
                 drawScale * scaleMult, SpriteEffects.None, 0f);
-            if (Glowing)
-            {
+            if (Glowing) {
                 spriteBatch.Draw(texture, Position - Main.screenPosition, null,
                     Color.Lerp(Color.White, Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D)),
                     Rotation, texture.Size() * 0.5f, drawScale * new Vector2(0.45f, 1f) * scaleMult, SpriteEffects.None, 0f);

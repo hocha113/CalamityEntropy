@@ -1,17 +1,15 @@
-﻿using CalamityEntropy.Content.Items;
-using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
 {
     public class EyeOfOtherside : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 44;
             Item.height = 44;
             Item.damage = 270;
@@ -30,10 +28,8 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
             Item.mana = 3;
             Item.DamageType = DamageClass.Magic;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_Necroplasm, CEID.Item_RuinousSoul))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_Necroplasm, CEID.Item_RuinousSoul)) {
                 CreateRecipe()
                 .AddIngredient(CEID.Item_Necroplasm, 15)
                 .AddIngredient(CEID.Item_RuinousSoul, 5)
@@ -48,8 +44,7 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
     }

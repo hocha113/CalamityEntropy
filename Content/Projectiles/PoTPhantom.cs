@@ -20,15 +20,13 @@ namespace CalamityEntropy.Content.Projectiles
         List<float> odr = new List<float>();
         public int noSlowTime = 0;
         public float timej = 1f;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 12;
 
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
@@ -41,14 +39,12 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.ArmorPenetration = 80;
             Projectile.timeLeft = 3;
         }
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(rotSpeed);
             writer.Write(live);
         }
 
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             rotSpeed = reader.ReadSingle();
             live = reader.ReadBoolean();
         }
@@ -56,32 +52,25 @@ namespace CalamityEntropy.Content.Projectiles
         public float rotSpeed = 0f;
         public float scale2 = 1.2f;
         public bool live = true;
-        public override void AI()
-        {
+        public override void AI() {
             soundCd--;
             Player owner = Projectile.owner.ToPlayer();
             Projectile.netUpdate = true;
-            if (Projectile.owner == Main.myPlayer)
-            {
-                if (!owner.channel || !(owner.Entropy().pot_amp >= 10))
-                {
+            if (Projectile.owner == Main.myPlayer) {
+                if (!owner.channel || !(owner.Entropy().pot_amp >= 10)) {
                     live = false;
                     return;
                 }
-                else
-                {
+                else {
                     live = true;
                     Projectile.timeLeft = 3;
                 }
             }
-            else
-            {
-                if (live)
-                {
+            else {
+                if (live) {
                     Projectile.timeLeft = 3;
                 }
-                else
-                {
+                else {
                     return;
                 }
             }
@@ -145,12 +134,10 @@ namespace CalamityEntropy.Content.Projectiles
                 ods.RemoveAt(0);
             }*/
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
@@ -168,19 +155,15 @@ namespace CalamityEntropy.Content.Projectiles
             return false;
         }
         public int soundCd = 0;
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (soundCd <= 0)
-            {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            if (soundCd <= 0) {
                 SoundStyle s = new SoundStyle("CalamityEntropy/Assets/Sounds/swing4"); s.Pitch = 1 - timej;
                 SoundEngine.PlaySound(s, Projectile.Center); odr.Clear();
                 soundCd = 2;
             }
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            if (scaleD < 0.6f || rotSpeed == 0)
-            {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+            if (scaleD < 0.6f || rotSpeed == 0) {
                 return false;
             }
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * 170 * Projectile.scale * scaleD * scale2, targetHitbox, 140) || CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + (Projectile.rotation - rotSpeed * 0.5f).ToRotationVector2() * 300 * Projectile.scale * scaleD, targetHitbox, 100);

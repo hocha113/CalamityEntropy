@@ -8,8 +8,7 @@ namespace CalamityEntropy.Content.Items.Donator
     {
         public static NPC target = null;
         public string DonatorName => "a3a4";
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 40;
             Item.height = 40;
             Item.value = Item.buyPrice(gold: 60);
@@ -18,12 +17,10 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         public static string ID = "SmartScope";
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.Entropy().addEquip(ID, !hideVisual);
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ItemID.Wire, 10)
                 .AddIngredient(ItemID.MechanicalLens)

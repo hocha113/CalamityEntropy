@@ -1,31 +1,27 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Cooldowns;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Cooldowns;
 using CalamityEntropy.Core.Graphics;
-using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 namespace CalamityEntropy.Content.Items.Donator
 {
     public class FetalDream : ModItem, IDevItem, IGetFromStarterBag
     {
         public string DevName => "银九";
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_BloodOrb, CEID.Item_Bloodstone))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_BloodOrb, CEID.Item_Bloodstone)) {
                 CreateRecipe()
                 .AddIngredient(ItemID.StoneBlock)
                 .AddIngredient(ItemID.BlackLens, 5)
@@ -58,8 +54,7 @@ namespace CalamityEntropy.Content.Items.Donator
                 .Register();
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 90;
             Item.height = 90;
             Item.damage = 514;
@@ -82,23 +77,18 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.Entropy().strokeColor = Color.DarkGreen;
             Item.Entropy().tooltipStyle = 4;
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            foreach (var tl in tooltips)
-            {
-                if (tl.Mod == "Terraria" && tl.Name == "Damage")
-                {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
+            foreach (var tl in tooltips) {
+                if (tl.Mod == "Terraria" && tl.Name == "Damage") {
                     tl.Text = $"{Main.LocalPlayer.GetWeaponDamage(Item, true).ToString()} {Mod.GetLocalization("FetalDreamDamage").Value}";
                 }
             }
         }
 
-        public bool OwnAble(Player player, ref int count)
-        {
+        public bool OwnAble(Player player, ref int count) {
             return StartBagGItem.NameContains(player, DevName) || StartBagGItem.NameContains(player, "阿九");
         }
-        public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
-        {
+        public override void ModifyWeaponDamage(Player player, ref StatModifier damage) {
             if (player.HasCooldown(FetalDreamCooldown.ID))
                 damage *= 0.0098f;
         }
@@ -106,8 +96,7 @@ namespace CalamityEntropy.Content.Items.Donator
     public class FetalDreamSlash : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Content/Items/Donator/FetalDream";
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
@@ -115,35 +104,28 @@ namespace CalamityEntropy.Content.Items.Donator
             Projectile.timeLeft = 22 * 8;
         }
         public float rScale = 1;
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * 120 * Projectile.scale, targetHitbox, 32);
         }
         public List<Vector2> oldPos = new List<Vector2>();
         public List<float> oldRot = new List<float>();
-        public override void AI()
-        {
+        public override void AI() {
             Player player = Projectile.GetOwner();
-            if (Projectile.localAI[0]++ == 0)
-            {
+            if (Projectile.localAI[0]++ == 0) {
                 Vector2 targetPos = player.Center;
-                if (Main.myPlayer == Projectile.owner)
-                {
+                if (Main.myPlayer == Projectile.owner) {
                     NPC target = CEUtils.FindTarget_HomingProj(Projectile, Main.MouseWorld, 300);
-                    if (target != null)
-                    {
+                    if (target != null) {
                         player.Entropy().screenPos = player.Center;
                         player.Entropy().screenShift = 1;
                         targetPos = target.Center;
-                        while (targetPos.getRectCentered(player.width, player.height).Intersects(target.Hitbox))
-                        {
+                        while (targetPos.getRectCentered(player.width, player.height).Intersects(target.Hitbox)) {
                             targetPos += (target.Center - player.Center).SafeNormalize(Vector2.UnitX) * 4;
                         }
 
                         targetPos += (target.Center - player.Center).SafeNormalize(Vector2.UnitX) * 70;
                         Vector2 centerPoint = (player.Center + targetPos) / 2f + (targetPos - player.Center).normalize().RotatedBy(MathHelper.PiOver2) * CEUtils.getDistance(player.Center, targetPos) * 0.4f;
-                        for (float i = 0; i <= 1; i += 0.1f)
-                        {
+                        for (float i = 0; i <= 1; i += 0.1f) {
                             Vector2 pos = CEUtils.Bezier(new List<Vector2>() { player.position, centerPoint, targetPos }, i);
                             //PRT_PlayerShadowBlack alpha spawn后赋,不开CanPool
                             var p = PRTLoader.NewParticle<PRT_PlayerShadowBlack>(pos, Vector2.Zero, Color.Black, 1);
@@ -154,8 +136,7 @@ namespace CalamityEntropy.Content.Items.Donator
                     }
 
                     player.Center = targetPos;
-                    if (target != null)
-                    {
+                    if (target != null) {
                         Projectile.velocity = new Vector2(Projectile.velocity.Length(), 0).RotatedBy((target.Center - player.Center).ToRotation());
 
                         player.velocity *= 0;
@@ -181,16 +162,14 @@ namespace CalamityEntropy.Content.Items.Donator
             rScale = v.Length();
             odr.Add(Projectile.rotation);
             ods.Add(rScale);
-            if (odr.Count > 42)
-            {
+            if (odr.Count > 42) {
                 odr.RemoveAt(0);
                 ods.RemoveAt(0);
             }
         }
         List<float> odr = new List<float>();
         List<float> ods = new List<float>();
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Vector2.Zero, 6));
             var slash1 = PRTLoader.NewParticle<PRT_DOracleSlash>(target.Center - Projectile.velocity.ToRotation().ToRotationVector2() * 290, Vector2.Zero, new Color(255, 5, 5), 260);
             slash1.centerColor = Color.White;
@@ -203,8 +182,7 @@ namespace CalamityEntropy.Content.Items.Donator
             CEUtils.PlaySound("ystn_hit", 2.7f, target.Center);
             var player = Projectile.GetOwner();
             target.AddBuff<MarkedforDeath>(12 * 60);
-            if (!player.HasCooldown(FetalDreamCooldown.ID))
-            {
+            if (!player.HasCooldown(FetalDreamCooldown.ID)) {
                 CalamityEntropy.FlashEffectStrength = 0.6f;
                 player.AddCooldown(FetalDreamCooldown.ID, 4320);
                 CEUtils.PlaySound("ThunderStrike", Main.rand.NextFloat(0.8f, 1.2f), target.Center, 6, 0.6f);
@@ -219,15 +197,13 @@ namespace CalamityEntropy.Content.Items.Donator
             player.AddBuff(ModContent.BuffType<Koishi>(), 600);
             player.Entropy().DmgAdd20 = 300;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D trail = CEExtraAssets.MotionTrail2;
             List<ColoredVertex> ve = new List<ColoredVertex>();
             float MaxUpdateTimes = Projectile.GetOwner().itemTimeMax * Projectile.MaxUpdates;
             float progress = (Projectile.ai[1] / MaxUpdateTimes);
 
-            for (int i = 0; i < odr.Count; i++)
-            {
+            for (int i = 0; i < odr.Count; i++) {
                 Color b = new Color(220, 255, 200);
                 ve.Add(new ColoredVertex(Projectile.Center - Main.screenPosition + (new Vector2(116 * Projectile.scale * ods[i], 0).RotatedBy(odr[i])),
                       new Vector3((i) / ((float)odr.Count - 1), 1, 1),
@@ -236,8 +212,7 @@ namespace CalamityEntropy.Content.Items.Donator
                       new Vector3((i) / ((float)odr.Count - 1), 0, 1),
                       b));
             }
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 var gd = Main.graphics.GraphicsDevice;
                 SpriteBatch sb = Main.spriteBatch;
                 Effect shader = CEEffectAssets.SwordTrail;
@@ -262,15 +237,13 @@ namespace CalamityEntropy.Content.Items.Donator
     }
     public class Koishi : ModBuff
     {
-        public override void Update(NPC npc, ref int buffIndex)
-        {
+        public override void Update(NPC npc, ref int buffIndex) {
             if (Math.Abs(npc.velocity.X) > 16)
                 npc.velocity.X = 16 * Math.Sign(npc.velocity.X);
             if (Math.Abs(npc.velocity.Y) > 16)
                 npc.velocity.Y = 16 * Math.Sign(npc.velocity.Y);
         }
-        public override void Update(Player player, ref int buffIndex)
-        {
+        public override void Update(Player player, ref int buffIndex) {
             player.GetDamage(DamageClass.Generic) *= 1.05f;
         }
     }

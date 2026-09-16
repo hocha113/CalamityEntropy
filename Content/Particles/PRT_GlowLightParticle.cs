@@ -15,8 +15,7 @@ namespace CalamityEntropy.Content.Particles
         public override bool CanPool => true;
 
         //CanPool复用,HideTime/AlphaShrink/scale2/lightColor都得回默认
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             Glow = true;
             HideTime = 20;
@@ -28,8 +27,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/GlowLight";
 
         public PRT_GlowLightParticle Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -39,15 +37,13 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 60;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             //AlphaShrink走remaining/HideTime,否则scale2吃LifetimeCompletion,两路进度别混
             if (AlphaShrink)
                 Opacity = (Lifetime - Time) / (float)HideTime;
@@ -58,8 +54,7 @@ namespace CalamityEntropy.Content.Particles
             Velocity *= 0.96f;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Texture2D tex = PRTLoader.PRT_IDToTexture[ID];
             sb.Draw(tex, Position - Main.screenPosition, null, lightColor * Opacity, 0, tex.Size() / 2f, Scale * 0.65f * scale2, SpriteEffects.None, 0);
             sb.Draw(tex, Position - Main.screenPosition, null, Color * Opacity, 0, tex.Size() / 2f, Scale * 0.08f * scale2, SpriteEffects.None, 0);

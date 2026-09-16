@@ -19,8 +19,7 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             //CanPool,Glow字段Reset里得登记,跟Configure传的glow不是一回事
             base.Reset();
             Spin = 0f;
@@ -37,8 +36,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_EHeavySmoke Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -48,16 +46,14 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 200;
             Variant = Main.rand.Next(7);
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             //前20%寿命膨胀后衰减,跟HeavySmokeCal同一套AI,只是MercyShoot叠这层做Additive发光
             if (LifetimeCompletion < 0.2f)
                 Scale += 0.01f;
@@ -72,8 +68,7 @@ namespace CalamityEntropy.Content.Particles
             Color *= lerpValue;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Texture2D value = PRTSharedAssets.HeavySmoke.Value;
             int num = (int)Math.Floor((float)Time / ((float)Lifetime / (float)FrameAmount));
             Rectangle rectangle = new Rectangle(80 * Variant, 80 * num, 80, 80);

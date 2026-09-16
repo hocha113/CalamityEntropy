@@ -7,13 +7,11 @@ namespace CalamityEntropy.Content.Items.Ammo
 {
     public class RockBullet : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.ResearchUnlockCount = 20;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 1;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 8;
@@ -28,8 +26,7 @@ namespace CalamityEntropy.Content.Items.Ammo
             Item.ammo = AmmoID.Bullet;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe(5)
                 .AddIngredient(ItemID.StoneBlock)
                 .AddTile(TileID.WorkBenches)

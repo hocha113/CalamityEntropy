@@ -12,21 +12,18 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 {
     public class BookMarkSunkenSea : BookMark
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.rare = ItemRarityID.Orange;
             Item.value = Item.buyPrice(gold: 5);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("SunkenSea");
-        public override EBookProjectileEffect getEffect()
-        {
+        public override EBookProjectileEffect getEffect() {
             return new SunkenSeaBMEffect();
         }
 
         public override Color tooltipColor => Color.SkyBlue;
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ItemID.Diamond, 10)
                 .AddIngredient(ItemID.Glass, 20)
@@ -37,8 +34,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 
     public class SunkenSeaBMEffect : EBookProjectileEffect
     {
-        public override void OnHitNPC(Projectile projectile, NPC target, int damageDone)
-        {
+        public override void OnHitNPC(Projectile projectile, NPC target, int damageDone) {
             Vector2 shotDir = CEUtils.randomRot().ToRotationVector2();
             Projectile.NewProjectile(projectile.GetSource_FromThis(), target.Center + shotDir * 32, shotDir * 6, ModContent.ProjectileType<SunkenAquashard>(), EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 8, projectile.DamageType), projectile.knockBack / 3, projectile.owner).ToProj().DamageType = projectile.DamageType;
             SoundEngine.PlaySound(in SoundID.Item27, projectile.Center);
@@ -49,8 +45,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     public class SunkenAquashard : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = Projectile.height = 12;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Magic;
@@ -58,8 +53,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             Projectile.tileCollide = true;
             Projectile.timeLeft = 300;
         }
-        public override void AI()
-        {
+        public override void AI() {
             if (Projectile.localAI[0]++ > 10)
                 Projectile.velocity.Y += 0.2f;
             Projectile.rotation = Projectile.velocity.ToRotation();
@@ -67,18 +61,15 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             p.lightColor = Color.LightSkyBlue * 0.1f;
             p.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 14);
         }
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             SoundEngine.PlaySound(SoundID.Item27 with { Volume = 0.5f }, Projectile.Center);
-            for (int i = 0; i < 8; i++)
-            {
+            for (int i = 0; i < 8; i++) {
                 Dust d = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonWater);
                 d.noGravity = true;
                 d.velocity = CEUtils.randomPointInCircle(4);
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = CEExtraAssets.Diamond;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, Color.LightSkyBlue, Projectile.rotation, tex.Size() / 2f, new Vector2(2.2f, 0.7f) * 0.1f * Projectile.scale, SpriteEffects.None, 0);

@@ -6,8 +6,7 @@ namespace CalamityEntropy.Content.Buffs.Wyrm
 {
     public class EclipsedImprint : ModBuff
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.buffNoSave[Type] = true;
             BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = true;

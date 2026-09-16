@@ -16,8 +16,7 @@ namespace CalamityEntropy.Content.Particles
         public override bool ShouldUpdatePosition() => false;   //位移在AI里TileCollision算,框架自动+=Velocity会双倍
 
         public PRT_SakuraPetalsParticle Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -27,28 +26,24 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = Main.rand.Next(8 * 60, 14 * 60);
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             int remaining = Lifetime - Time;
             if (remaining % 22 == 0 && Velocity.X != 0)
                 FallThrough = Main.rand.NextBool(5);
-            if (remaining % 40 == 0 && Velocity.X != 0)
-            {
+            if (remaining % 40 == 0 && Velocity.X != 0) {
                 tex++;
                 if (tex > 3)
                     tex = 0;
             }
             if (remaining < 60)
                 Opacity -= 1 / 60f;
-            if (check)
-            {
+            if (check) {
                 check = false;
                 if (CEUtils.CheckSolidTile(Position.getRectCentered(10, 10)))
                     Kill();
@@ -62,8 +57,7 @@ namespace CalamityEntropy.Content.Particles
             Rotation += Velocity.X * 0.02f;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Texture2D texImg = PRTFrameTextures.Sakura(tex);
             Color clr = Color;
             if (!Glow)
@@ -76,8 +70,7 @@ namespace CalamityEntropy.Content.Particles
             return false;
         }
 
-        public override void PostDraw(SpriteBatch sb)
-        {
+        public override void PostDraw(SpriteBatch sb) {
             CEUtils.DrawGlow(Position, Color.Pink * 0.46f * Opacity, 0.54f * Scale);
             //DrawGlow会动SpriteBatch,End完BeginDrawingWithMode按当前PRT桶接回去
             sb.End();

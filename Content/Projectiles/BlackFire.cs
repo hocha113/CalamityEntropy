@@ -11,12 +11,10 @@ namespace CalamityEntropy.Content.Projectiles
     {
         List<Vector2> odp = new List<Vector2>();
         List<float> odr = new List<float>();
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Magic;
             Projectile.width = 40;
             Projectile.height = 40;
@@ -31,28 +29,23 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.MaxUpdates = 9;
         }
 
-        public override void AI()
-        {
-            if (Projectile.ai[0] == 0)
-            {
+        public override void AI() {
+            if (Projectile.ai[0] == 0) {
                 Projectile.velocity *= 0.14f;
             }
             Projectile.ai[0] += 0.1f;
             Projectile.rotation = Projectile.velocity.ToRotation();
-            for (int i = 0; i < 5; i++)
-            {
+            for (int i = 0; i < 5; i++) {
                 odp.Add(Projectile.Center + Projectile.velocity / 4f * i);
                 odr.Add(Projectile.rotation);
-                if (odp.Count > 360)
-                {
+                if (odp.Count > 360) {
                     odp.RemoveAt(0);
                     odr.RemoveAt(0);
                 }
             }
 
             NPC target = Projectile.FindTargetWithinRange(1100, false);
-            if (target != null && Projectile.ai[0] > 8)
-            {
+            if (target != null && Projectile.ai[0] > 8) {
                 Projectile.velocity *= 0.98f;
                 Vector2 v = target.Center - Projectile.Center;
                 v.Normalize();
@@ -64,38 +57,31 @@ namespace CalamityEntropy.Content.Projectiles
         }
         float trailOffset = 0;
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Color cl = Color.Lerp(Color.Black, Color.White, Projectile.ai[0] / 30f);
             float c = 0;
             trailOffset += 0.04f;
 
             c = 0;
-            if (odp.Count > 1)
-            {
+            if (odp.Count > 1) {
                 Main.spriteBatch.End();
 
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = Color.Black;
 
-                for (int i = 1; i < odp.Count; i++)
-                {
+                for (int i = 1; i < odp.Count; i++) {
                     float width = 0;
-                    if (i > 270)
-                    {
+                    if (i > 270) {
                         float x = (float)(i - 270) / 90f;
-                        if (1 - x * x < 0)
-                        {
+                        if (1 - x * x < 0) {
                             width = 0;
                         }
-                        else
-                        {
+                        else {
                             width = (float)Math.Sqrt(1 - x * x);
                         }
                     }
-                    else
-                    {
+                    else {
                         width = 1f - ((float)(270 - i) / 270f);
                     }
 
@@ -110,8 +96,7 @@ namespace CalamityEntropy.Content.Projectiles
                 }
                 SpriteBatch sb = Main.spriteBatch;
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                if (ve.Count >= 4)
-                {
+                if (ve.Count >= 4) {
                     Texture2D tx = TextureAssets.Projectile[Projectile.type].Value;
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);

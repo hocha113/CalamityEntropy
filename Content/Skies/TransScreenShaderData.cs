@@ -6,17 +6,14 @@ namespace CalamityEntropy.Content.Skies
     {
 
         public TransScreenShaderData(string passName)
-            : base(passName)
-        {
+            : base(passName) {
         }
 
 
-        public override void Update(GameTime gameTime)
-        {
+        public override void Update(GameTime gameTime) {
         }
 
-        public override void Apply()
-        {
+        public override void Apply() {
             base.Apply();
         }
     }

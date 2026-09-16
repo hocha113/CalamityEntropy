@@ -15,8 +15,7 @@ namespace CalamityEntropy.Content.Menu
         public override int Music => MusicLoader.GetMusicSlot(Mod, "Assets/Sounds/Music/startmenu");
         public override Asset<Texture2D> Logo => ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Logo");
         public override string DisplayName => Mod.GetLocalization("Menu.Church").Value;
-        public override bool PreDrawLogo(SpriteBatch spriteBatch, ref Vector2 logoDrawCenter, ref float logoRotation, ref float logoScale, ref Color drawColor)
-        {
+        public override bool PreDrawLogo(SpriteBatch spriteBatch, ref Vector2 logoDrawCenter, ref float logoRotation, ref float logoScale, ref Color drawColor) {
             Main.time = 27000;
             Main.dayTime = true;
             Texture2D l1 = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/menu/menu2/1").Value;
@@ -70,15 +69,13 @@ namespace CalamityEntropy.Content.Menu
             Texture2D logo = Logo.Value;
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
-            for (int i = 0; i < 6; i++)
-            {
+            for (int i = 0; i < 6; i++) {
                 var prt = new EMenuAltParticle() { pos = new Vector2(Main.rand.NextFloat(-400, Main.screenWidth), -20), vel = new Vector2(Main.rand.NextFloat(-4, 4), Main.rand.NextFloat(0, 5)) };
                 prt.vel = new Vector2(Main.rand.NextFloat(-0.6f, 0.6f) + 7, 28);
                 particles.Add(prt);
             }
             Texture2D ptex = CEUtils.getExtraTex("Circle");
-            foreach (var p in particles)
-            {
+            foreach (var p in particles) {
                 p.Update();
                 Main.spriteBatch.Draw(ptex, p.pos, new Rectangle(0, 0, ptex.Width / 2, ptex.Height), new Color(30, 30, 120) * p.alpha, p.vel.ToRotation(), ptex.Size() / 2f, new Vector2(100, 2) * p.scale * p.alpha * 0.004f, SpriteEffects.None, 0);
                 Main.spriteBatch.Draw(ptex, p.pos, new Rectangle(ptex.Width / 2, 0, ptex.Width / 2, ptex.Height), new Color(30, 30, 120) * p.alpha, p.vel.ToRotation(), new Vector2(0, ptex.Height / 2), new Vector2(8, 2) * p.scale * p.alpha * 0.004f, SpriteEffects.None, 0);
@@ -87,18 +84,14 @@ namespace CalamityEntropy.Content.Menu
             float rotn = 1.3258f;
             Main.spriteBatch.Draw(noise, new Vector2(Main.screenWidth / 2, -500), new Rectangle((int)(Main.GlobalTimeWrappedHourly * -400), (int)(Main.GlobalTimeWrappedHourly * 32), Main.screenWidth, Main.screenHeight * 2), new Color(3, 3, 7), rotn, new Vector2(0, Main.screenHeight), 2, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(noise, new Vector2(Main.screenWidth / 2, -500), new Rectangle((int)(Main.GlobalTimeWrappedHourly * -230), (int)(Main.GlobalTimeWrappedHourly * -32), Main.screenWidth, Main.screenHeight * 2), new Color(3, 3, 7), rotn, new Vector2(0, Main.screenHeight), 2, SpriteEffects.None, 0);
-            for (int i = particles.Count - 1; i >= 0; i--)
-            {
-                if (particles[i].alpha <= 0 || particles[i].pos.X > Main.screenWidth + 20)
-                {
+            for (int i = particles.Count - 1; i >= 0; i--) {
+                if (particles[i].alpha <= 0 || particles[i].pos.X > Main.screenWidth + 20) {
                     particles.RemoveAt(i);
                 }
             }
-            for (int i = 1; i < 19; i += 3)
-            {
+            for (int i = 1; i < 19; i += 3) {
                 float rot = counter * 0.008f;
-                for (int j = 0; j < 16; j++)
-                {
+                for (int j = 0; j < 16; j++) {
                     spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Logool").Value, logoDrawCenter + rot.ToRotationVector2() * ((float)i * 0.5f), null, Color.LightBlue * 0.15f, logoRotation, logo.Size() / 2, logoScale, SpriteEffects.None, 0);
                     rot += MathHelper.ToRadians(22.5f);
                 }
@@ -109,11 +102,9 @@ namespace CalamityEntropy.Content.Menu
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
 
-            for (int i = 1; i < 10; i++)
-            {
+            for (int i = 1; i < 10; i++) {
                 float rot = 0;
-                for (int j = 0; j < 8; j++)
-                {
+                for (int j = 0; j < 8; j++) {
                     spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Logool").Value, logoDrawCenter + rot.ToRotationVector2() * ((float)i), null, Color.LightBlue * 0.15f, logoRotation, logo.Size() / 2, logoScale, SpriteEffects.None, 0);
                     rot += MathHelper.ToRadians(45);
                 }
@@ -133,8 +124,7 @@ namespace CalamityEntropy.Content.Menu
             public Vector2 vel;
             public float alpha = 1;
             public float scale = Main.rand.NextFloat(0.4f, 1.4f);
-            public void Update()
-            {
+            public void Update() {
                 //vel += new Vector2(0.2f, 0.2f);
                 //vel *= new Vector2(0.99f, 0.98f);
                 alpha -= 0.005f;

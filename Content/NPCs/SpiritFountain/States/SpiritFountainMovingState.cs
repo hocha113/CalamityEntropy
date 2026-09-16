@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.SpiritFountain.Core;
+﻿using CalamityEntropy.Content.NPCs.SpiritFountain.Core;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles.SpiritFountainShoots;
 using InnoVault.PRT;
@@ -24,8 +24,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
     {
         public override SpiritFountainStateIndex StateIndex => SpiritFountainStateIndex.Moving;
 
-        protected override IVaultState<SpiritFountainStateContext> RunBody(SpiritFountainStateContext ctx)
-        {
+        protected override IVaultState<SpiritFountainStateContext> RunBody(SpiritFountainStateContext ctx) {
             NPC npc = ctx.Npc;
             SpiritFountain owner = ctx.Owner;
             float enrage = ctx.Enrage;
@@ -43,50 +42,40 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
             owner.column1.offset.X = float.Lerp(owner.column1.offset.X,
                 (float)Math.Cos(ctx.MCounter) * SpiritFountainDirector.MovingSwayRange * ctx.MAmp,
                 SpiritFountainDirector.MovingOffsetLerp);
-            if (Timer > SpiritFountainDirector.MovingTiltStartFrame)
-            {
+            if (Timer > SpiritFountainDirector.MovingTiltStartFrame) {
                 owner.column1.rotation = (ctx.C1LastPos - owner.column1.offset.X)
                     * (Main.zenithWorld ? SpiritFountainDirector.MovingTiltFactorZenith : SpiritFountainDirector.MovingTiltFactor)
                     * (1 + phase * SpiritFountainDirector.MovingTiltPhaseFactor) - MathHelper.PiOver2;
             }
             owner.column1.alpha = float.Lerp(owner.column1.alpha, SpiritFountainDirector.MovingColumnAlpha, SpiritFountainDirector.MovingColumnAlphaLerp);
 
-            if (phase == 1)
-            {
-                if (ctx.GlobalCounter % (int)(SpiritFountainDirector.MovingP1Interval / enrage) == 0 && IsServer)
-                {
+            if (phase == 1) {
+                if (ctx.GlobalCounter % (int)(SpiritFountainDirector.MovingP1Interval / enrage) == 0 && IsServer) {
                     //随机初速只在权威端骰,结果随弹幕本体过线;客户端不空转 Main.rand
                     Shoot<SpiritBullet>(ctx, npc.Center, CEUtils.randomRot().ToRotationVector2() * SpiritFountainDirector.MovingP1Speed, 1, npc.whoAmI);
                 }
             }
-            if (phase == 2)
-            {
-                if (ctx.GlobalCounter % (int)(SpiritFountainDirector.MovingP2Interval / enrage) == 0)
-                {
+            if (phase == 2) {
+                if (ctx.GlobalCounter % (int)(SpiritFountainDirector.MovingP2Interval / enrage) == 0) {
                     Vector2 dir = (ctx.GlobalCounter * SpiritFountainDirector.MovingP2Phase).ToRotationVector2() * SpiritFountainDirector.MovingP2Speed;
                     Shoot<SpiritBullet>(ctx, npc.Center, dir, 1, npc.whoAmI, SpiritFountainDirector.MovingP2Ai1);
                     Shoot<SpiritBullet>(ctx, npc.Center, -dir, 1, npc.whoAmI, SpiritFountainDirector.MovingP2Ai1);
                 }
             }
-            if (phase == SpiritFountainDirector.MovingDamageablePhase)
-            {
+            if (phase == SpiritFountainDirector.MovingDamageablePhase) {
                 ctx.EyeAlphaTarget = 1;
                 npc.dontTakeDamage = false;
 
-                if (ctx.GlobalCounter % (int)(SpiritFountainDirector.MovingP3Interval / enrage) == 0)
-                {
-                    for (float i = 0; i < SpiritFountainDirector.MovingP3SweepEnd; i += SpiritFountainDirector.MovingP3SweepStep)
-                    {
+                if (ctx.GlobalCounter % (int)(SpiritFountainDirector.MovingP3Interval / enrage) == 0) {
+                    for (float i = 0; i < SpiritFountainDirector.MovingP3SweepEnd; i += SpiritFountainDirector.MovingP3SweepStep) {
                         float rt = ctx.GlobalCounter * SpiritFountainDirector.MovingP3Phase + MathHelper.ToRadians(i);
                         Shoot<SpiritBullet>(ctx, npc.Center - rt.ToRotationVector2() * SpiritFountainDirector.MovingP3Radius / enrage,
                             rt.ToRotationVector2() * SpiritFountainDirector.MovingP3Speed, 1, npc.whoAmI,
                             SpiritFountainDirector.MovingP3Ai1, SpiritFountainDirector.MovingP3Ai2);
-                        if (!IsLocal)
-                        {
+                        if (!IsLocal) {
                             continue;
                         }
-                        for (float d = 0; d < 1; d += SpiritFountainDirector.MovingP3LineStep)
-                        {
+                        for (float d = 0; d < 1; d += SpiritFountainDirector.MovingP3LineStep) {
                             //预警线铺满整条弹道,每 45 度扇面 40 颗量级
                             float dmx = SpiritFountainDirector.MovingP3Radius / enrage;
                             Vector2 top = npc.Center + rt.ToRotationVector2() * (d * dmx);
@@ -101,8 +90,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
                 }
             }
 
-            if (Timer > SpiritFountainDirector.MovingDuration)
-            {
+            if (Timer > SpiritFountainDirector.MovingDuration) {
                 return Advance(ctx, StateIndex);
             }
             return null;

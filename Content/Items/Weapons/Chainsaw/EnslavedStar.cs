@@ -1,15 +1,14 @@
-using CalamityEntropy.Content.Projectiles.Chainsaw;
+﻿using CalamityEntropy.Content.Projectiles.Chainsaw;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
 {
     public class EnslavedStar : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 70;
             Item.DamageType = DamageClass.Melee;
             Item.width = 42;
@@ -28,14 +27,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
             Item.shootSpeed = 1f;
             Item.scale *= 0.66f;
         }
-        public override bool CanUseItem(Player player)
-        {
+        public override bool CanUseItem(Player player) {
             return player.ownedProjectileCounts[Item.shoot] < 1;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_PlagueCellCanister, CEID.Item_ScoriaBar))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_PlagueCellCanister, CEID.Item_ScoriaBar)) {
                 CreateRecipe().
                 AddIngredient<MechanicalChainsaw>().
                 AddIngredient(CEID.Item_PlagueCellCanister, 10).

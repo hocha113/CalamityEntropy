@@ -23,8 +23,7 @@ namespace CalamityEntropy.Core
             Down,
             Sceptre,
         }
-        public sealed override void SetSwingProperty()
-        {
+        public sealed override void SetSwingProperty() {
             Projectile.extraUpdates = 4;
             ownerOrientationLock = true;
             Projectile.usesLocalNPCImmunity = true;
@@ -39,53 +38,43 @@ namespace CalamityEntropy.Core
 
         public virtual void SetKnifeProperty() { }
 
-        public sealed override void Initialize()
-        {
+        public sealed override void Initialize() {
             maxSwingTime = Item.useTime;
             SwingData.maxSwingTime = maxSwingTime;
             toProjCoreMode = (IgnoreImpactBoxSize ? 22 : Projectile.width) / 2f;
-            if (autoSetShoot)
-            {
+            if (autoSetShoot) {
                 ShootSpeed = Item.shootSpeed;
             }
-            if (++SwingIndex > 1)
-            {
+            if (++SwingIndex > 1) {
                 SwingIndex = 0;
             }
             KnifeInitialize();
         }
 
-        public virtual void KnifeInitialize()
-        {
+        public virtual void KnifeInitialize() {
 
         }
 
-        public virtual void WaveUADBehavior()
-        {
+        public virtual void WaveUADBehavior() {
 
         }
 
-        public virtual void SceptreBehavior()
-        {
+        public virtual void SceptreBehavior() {
 
         }
 
-        public virtual void MeleeEffect()
-        {
+        public virtual void MeleeEffect() {
 
         }
 
-        public sealed override void SwingAI()
-        {
-            switch (SwingAIType)
-            {
+        public sealed override void SwingAI() {
+            switch (SwingAIType) {
                 case SwingAITypeEnum.None:
                     SwingBehavior(SwingData);
                     break;
                 case SwingAITypeEnum.UpAndDown:
                     SwingDataStruct swingData = SwingData;
-                    if (SwingIndex == 1)
-                    {
+                    if (SwingIndex == 1) {
                         inDrawFlipdiagonally = true;
                         swingData.starArg += 120;
                         swingData.baseSwingSpeed *= -1;
@@ -121,10 +110,8 @@ namespace CalamityEntropy.Core
             }
         }
 
-        public sealed override void NoServUpdate()
-        {
-            if (Time % updateCount == 0)
-            {
+        public sealed override void NoServUpdate() {
+            if (Time % updateCount == 0) {
                 MeleeEffect();
             }
         }

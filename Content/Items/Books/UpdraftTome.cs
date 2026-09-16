@@ -1,18 +1,17 @@
 ﻿using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Books
 {
     public class UpdraftTome : EntropyBook
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.damage = 35;
             Item.useAnimation = Item.useTime = 23;
@@ -25,10 +24,8 @@ namespace CalamityEntropy.Content.Items.Books
         public override int HeldProjectileType => ModContent.ProjectileType<UpdraftTomeHeld>();
         public override int SlotCount => 2;
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_AerialiteBar))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_AerialiteBar)) {
                 CreateRecipe()
                 .AddIngredient(CEID.Item_AerialiteBar, 6)
                 .AddIngredient<AncientScriptures>()
@@ -60,14 +57,12 @@ namespace CalamityEntropy.Content.Items.Books
         public override string PageAnimationPath => "CalamityEntropy/Content/Items/Books/Textures/UpdraftTome/UpdraftTomePage";
         public override string UIOpenAnimationPath => "CalamityEntropy/Content/Items/Books/Textures/UpdraftTome/UpdraftTomeUI";
 
-        public override void playPageSound()
-        {
+        public override void playPageSound() {
             CEUtils.PlaySound("windpage", 1, Projectile.Center, 6, 0.52f);
         }
 
         public override float randomShootRotMax => 0.14f;
-        public override EBookStatModifer getBaseModifer()
-        {
+        public override EBookStatModifer getBaseModifer() {
             var m = base.getBaseModifer();
             m.Knockback *= 2;
             return m;

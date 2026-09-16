@@ -5,19 +5,15 @@ namespace CalamityEntropy.Content.Buffs
 {
     public abstract class BaseMinionBuff : ModBuff
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.buffNoSave[Type] = true;
             Main.buffNoTimeDisplay[Type] = true;
         }
-        public override void Update(Player player, ref int buffIndex)
-        {
-            if (player.ownedProjectileCounts[ProjType] > 0)
-            {
+        public override void Update(Player player, ref int buffIndex) {
+            if (player.ownedProjectileCounts[ProjType] > 0) {
                 player.buffTime[buffIndex] = 18000;
             }
-            else
-            {
+            else {
                 player.DelBuff(buffIndex);
                 buffIndex--;
             }

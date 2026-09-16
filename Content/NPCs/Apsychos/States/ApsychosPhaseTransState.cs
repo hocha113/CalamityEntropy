@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Apsychos.Core;
+﻿using CalamityEntropy.Content.NPCs.Apsychos.Core;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -13,32 +13,26 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.States
     {
         public override ApsychosStateIndex StateIndex => ApsychosStateIndex.PhaseTrans;
 
-        public override IVaultState<ApsychosStateContext> OnUpdate(ApsychosStateContext ctx)
-        {
+        public override IVaultState<ApsychosStateContext> OnUpdate(ApsychosStateContext ctx) {
             NPC npc = ctx.Npc;
             npc.velocity *= ApsychosDirector.TransDrag;
             ctx.DecayHighLight = false;
 
-            if (Timer < ApsychosDirector.TransRampFrames)
-            {
+            if (Timer < ApsychosDirector.TransRampFrames) {
                 ctx.HighLight += 1f / ApsychosDirector.TransRampFrames;
                 ctx.P2Lerp += 1f / ApsychosDirector.TransRampFrames;
             }
-            else
-            {
+            else {
                 ctx.HighLight *= ApsychosDirector.HighLightDecay;
                 ctx.P2Lerp = 1f;
             }
-            if (Timer > ApsychosDirector.TransRampFrames)
-            {
-                if (ctx.Phase != 2)
-                {
+            if (Timer > ApsychosDirector.TransRampFrames) {
+                if (ctx.Phase != 2) {
                     ctx.Phase = 2;
                     MarkNetUpdate(ctx);
                 }
             }
-            if (Timer > ApsychosDirector.TransDuration)
-            {
+            if (Timer > ApsychosDirector.TransDuration) {
                 return NextAttack(ctx);
             }
             return null;

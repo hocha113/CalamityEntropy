@@ -10,8 +10,7 @@ namespace CalamityEntropy.Content.Tiles
 {
     public class GiantBoulderTile : ModTile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.tileFrameImportant[(int)base.Type] = true;
             Main.tileSolid[(int)base.Type] = true;
             Main.tileNoAttach[(int)base.Type] = false;
@@ -35,25 +34,20 @@ namespace CalamityEntropy.Content.Tiles
             MinPick = 0;
         }
 
-        public override bool IsTileDangerous(int i, int j, Player player)
-        {
+        public override bool IsTileDangerous(int i, int j, Player player) {
             return true;
         }
 
-        public override bool Slope(int i, int j)
-        {
+        public override bool Slope(int i, int j) {
             return false;
         }
-        public override bool CanExplode(int i, int j)
-        {
+        public override bool CanExplode(int i, int j) {
             return false;
         }
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
+        public override void KillMultiTile(int i, int j, int frameX, int frameY) {
             Projectile.NewProjectile(new EntitySource_TileBreak(i, j, null), new Vector2((float)(i + 5), (float)(j + 5)) * 16f, Vector2.Zero, ModContent.ProjectileType<GiantBoulderProj>(), 600, 0f, -1, 0f, 0f, 0f);
         }
-        public override IEnumerable<Item> GetItemDrops(int i, int j)
-        {
+        public override IEnumerable<Item> GetItemDrops(int i, int j) {
             yield return new Item(0, 1, 0);
             yield break;
         }

@@ -13,8 +13,7 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class RedemptionSpear : EBookBaseProjectile
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Projectile.DamageType = DamageClass.Magic;
             Projectile.width = 10;
@@ -25,16 +24,13 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.extraUpdates = 1;
             Projectile.ArmorPenetration = 15;
         }
-        public override void ModifyDamageHitbox(ref Rectangle hitbox)
-        {
+        public override void ModifyDamageHitbox(ref Rectangle hitbox) {
             hitbox = Projectile.Center.getRectCentered(52 * Projectile.scale, 52 * Projectile.scale);
         }
         public PRT_TrailParticle trail = null;
-        public override void AI()
-        {
+        public override void AI() {
             base.AI();
-            if (trail == null)
-            {
+            if (trail == null) {
                 //TrailParticle不开CanPool,odp轨迹List池化会闪上一条
                 trail = PRTLoader.NewParticle<PRT_TrailParticle>(Projectile.Center, Vector2.Zero, Color.Yellow, 2).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);
                 trail.maxLength = 8;
@@ -54,14 +50,12 @@ namespace CalamityEntropy.Content.Projectiles
             CEUtils.AddLight(Projectile.Center, Color.LightGoldenrodYellow);
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Projectile.GetTexture();
             Main.spriteBatch.UseAdditive();
             if (trail != null)
                 trail.DrawTrail(Main.spriteBatch);
-            for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver2)
-            {
+            for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver2) {
                 Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition + i.ToRotationVector2() * 4, null, this.color, Projectile.rotation + MathHelper.PiOver4, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
                 Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition + i.ToRotationVector2() * 4, null, this.color, Projectile.rotation + MathHelper.PiOver4, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             }
@@ -71,13 +65,11 @@ namespace CalamityEntropy.Content.Projectiles
             return false;
         }
         public override Color baseColor => Color.White;
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             base.OnHitNPC(target, hit, damageDone);
             //StrikeParticle redemption spear命中层
             PRTLoader.NewParticle<PRT_StrikeParticle>(Projectile.Center - Projectile.velocity * 7, Projectile.velocity * 3, color, Projectile.scale * 0.6f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, Projectile.velocity.ToRotation());
-            for (int i = 0; i < 24; i++)
-            {
+            for (int i = 0; i < 24; i++) {
                 // 原灾厄SquashDust光珠,用自有GlowOrbCal等效(带重力,金色)
                 Vector2 vel = (new Vector2(35, 35).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.7f)) * Main.rand.NextFloat(0.4f, 1f);
                 PRTLoader.NewParticle<PRT_GlowOrbCal>(Projectile.Center, vel, Color.Goldenrod, Main.rand.NextFloat(2f, 2.5f)).Configure(true, 25);
@@ -85,8 +77,7 @@ namespace CalamityEntropy.Content.Projectiles
             SoundEngine.PlaySound(SoundID.Item96 with { Pitch = 0.6f, Volume = 1f }, Projectile.Center);
         }
 
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             base.OnKill(timeLeft);
             PRTLoader.NewParticle<PRT_RedemptionSpearParticle>(Projectile.Center, Projectile.velocity, Color.White, Projectile.scale).Configure(1, true, PRTDrawModeEnum.AlphaBlend, Projectile.rotation);
         }

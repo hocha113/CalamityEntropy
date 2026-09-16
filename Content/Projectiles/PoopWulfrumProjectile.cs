@@ -7,7 +7,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Effects;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Projectiles
 {
@@ -18,60 +17,47 @@ namespace CalamityEntropy.Content.Projectiles
         public int shieldMax = 100;
         public int shieldCd = 0;
         public int lastTickShield = 100;
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             base.SendExtraAI(writer);
             writer.Write(shield);
         }
 
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             base.ReceiveExtraAI(reader);
             shield = reader.ReadInt32();
         }
-        public override void AI()
-        {
+        public override void AI() {
             base.AI();
-            if (shield > 0)
-            {
+            if (shield > 0) {
                 shieldCd = 10 * 60;
-                if (Projectile.timeLeft % 16 == 0)
-                {
-                    if (shield < shieldMax)
-                    {
+                if (Projectile.timeLeft % 16 == 0) {
+                    if (shield < shieldMax) {
                         shield += 1;
                     }
                 }
-                if (opc < 1)
-                {
+                if (opc < 1) {
                     opc += 0.05f;
                 }
             }
-            else
-            {
+            else {
                 shield = 0;
                 shieldCd--;
-                if (shieldCd <= 0)
-                {
+                if (shieldCd <= 0) {
                     shield = shieldMax;
                 }
-                if (opc > 0)
-                {
+                if (opc > 0) {
                     opc -= 0.05f;
                 }
             }
-            if (shield < lastTickShield)
-            {
+            if (shield < lastTickShield) {
                 SoundEngine.PlaySound(new("CalamityEntropy/Assets/Sounds/RoverDriveHit") { PitchVariance = 0.6f, Volume = 0.6f, MaxInstances = 0 }, Projectile.Center);
             }
             lastTickShield = shield;
         }
         public override bool BreakWhenHitNPC => false;
         float opc = 1;
-        public override void PostDraw(Color lightColor)
-        {
-            if (shield <= 0)
-            {
+        public override void PostDraw(Color lightColor) {
+            if (shield <= 0) {
                 return;
             }
             SpriteBatch spriteBatch = Main.spriteBatch;

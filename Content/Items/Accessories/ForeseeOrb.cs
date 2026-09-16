@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Content.Buffs;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -18,12 +18,10 @@ namespace CalamityEntropy.Content.Items.Accessories
         [VaultLoaden("CalamityEntropy/Content/Items/Accessories/ForeseeOrbBreak")]
         internal static Asset<Texture2D> OrbBreakTex;
         public static float DMG = 0.16f;
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             tooltips.Replace("{DMG}", DMG.ToPercent().ToString());
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 40;
             Item.height = 40;
             Item.value = Item.buyPrice(gold: 60);
@@ -31,21 +29,16 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.accessory = true;
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.Entropy().foreseeOrbItem = Item;
-            if (!player.HasBuff<ShatteredOrb>())
-            {
+            if (!player.HasBuff<ShatteredOrb>()) {
                 player.GetDamage(DamageClass.Generic) += DMG;
             }
-            if (player.whoAmI == Main.myPlayer)
-            {
-                if (player.HasBuff<ShatteredOrb>())
-                {
+            if (player.whoAmI == Main.myPlayer) {
+                if (player.HasBuff<ShatteredOrb>()) {
                     TextureAssets.Item[Type] = OrbBreakTex;
                 }
-                else
-                {
+                else {
                     TextureAssets.Item[Type] = OrbTex;
                 }
             }

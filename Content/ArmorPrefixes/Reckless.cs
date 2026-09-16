@@ -5,20 +5,16 @@ namespace CalamityEntropy.Content.ArmorPrefixes
 {
     public class Reckless : ArmorPrefix
     {
-        public override void UpdateEquip(Player player, Item item)
-        {
+        public override void UpdateEquip(Player player, Item item) {
             player.GetDamage(DamageClass.Generic) += 0.05f;
         }
-        public override Color getColor()
-        {
+        public override Color getColor() {
             return Color.Red;
         }
-        public override int getRollChance()
-        {
+        public override int getRollChance() {
             return 2;
         }
-        public override float AddDefense()
-        {
+        public override float AddDefense() {
             return -0.5f;
         }
     }

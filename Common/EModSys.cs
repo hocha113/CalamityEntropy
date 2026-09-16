@@ -83,8 +83,7 @@ namespace CalamityEntropy.Common
         public Vector2 LastPlayerVel;
         public static int AcropolisDontSpawn = 0;
 
-        public override void OnLocalizationsLoaded()
-        {
+        public override void OnLocalizationsLoaded() {
             // tML 没有模组显示名的本地化入口:Mod.DisplayName 的 setter 是 internal,只在读 build.txt 时写一次。
             // 这里在每次语言(重)加载后按当前语言改写,模组配置列表、配置页标题、加载进度条都读这个属性
             const string key = "Mods.CalamityEntropy.ModNameOverride";
@@ -96,37 +95,28 @@ namespace CalamityEntropy.Common
             // DisplayNameClean 带惰性缓存,不清掉的话配置列表排序与日志里仍是旧名
             typeof(Mod).GetField("displayNameClean", flags)?.SetValue(Mod, null);
         }
-        public static Color GetColorForNPCBossbarFromTexture(Color[] data)
-        {
+        public static Color GetColorForNPCBossbarFromTexture(Color[] data) {
             int pixelCount = 0;
             Dictionary<Color, int> dict = new();
-            foreach (Color clr in data)
-            {
-                if (clr.A != 0)
-                {
-                    if (dict.ContainsKey(clr))
-                    {
+            foreach (Color clr in data) {
+                if (clr.A != 0) {
+                    if (dict.ContainsKey(clr)) {
                         dict[clr]++;
                     }
-                    else
-                    {
+                    else {
                         dict[clr] = 0;
                     }
-                    if (clr.R + clr.G + clr.B >= 80)
-                    {
+                    if (clr.R + clr.G + clr.B >= 80) {
                         dict[clr] += (clr.R + clr.G + clr.B) / 80;
                     }
                     pixelCount++;
                 }
             }
-            if (pixelCount > 0)
-            {
+            if (pixelCount > 0) {
                 Color c = Color.White;
                 int count = 0;
-                foreach (Color color in dict.Keys)
-                {
-                    if (dict[color] > count)
-                    {
+                foreach (Color color in dict.Keys) {
+                    if (dict[color] > count) {
                         count = dict[color];
                         c = color;
                     }
@@ -136,17 +126,13 @@ namespace CalamityEntropy.Common
             return Color.Transparent;
 
         }
-        public override void PostSetupContent()
-        {
+        public override void PostSetupContent() {
             Fruitcake.ammoList = new();
             List<int> AmmoIds = new List<int>();
             // 原对灾厄迫击炮弹药的排除已随灾厄脱钩移除（material-map 无对应条目：该排除仅服务灾厄弹药，脱钩后自然失效）
-            for (int i = 0; i < ItemLoader.ItemCount; i++)
-            {
-                if (ContentSamples.ItemsByType[i].ammo != AmmoID.None)
-                {
-                    if (!AmmoIds.Contains(ContentSamples.ItemsByType[i].ammo))
-                    {
+            for (int i = 0; i < ItemLoader.ItemCount; i++) {
+                if (ContentSamples.ItemsByType[i].ammo != AmmoID.None) {
+                    if (!AmmoIds.Contains(ContentSamples.ItemsByType[i].ammo)) {
                         AmmoIds.Add(ContentSamples.ItemsByType[i].ammo);
                         Fruitcake.ammoList[ContentSamples.ItemsByType[i].ammo] = new();
                     }
@@ -155,8 +141,7 @@ namespace CalamityEntropy.Common
             }
         }
 
-        public static void DrawDriverShield(Player player, float progress, bool active, Vector2 center)
-        {
+        public static void DrawDriverShield(Player player, float progress, bool active, Vector2 center) {
             if (!player.Entropy().DriverShieldVisual)
                 return;
 
@@ -164,13 +149,11 @@ namespace CalamityEntropy.Common
             float scale = player.Entropy().DriverScale;
             Texture2D noise = Noise14Tex.Value;
             Texture2D tex = RectShieldTex.Value;
-            if (player.Entropy().AzafureDriverShieldItem == null && player.Entropy().DriverShieldVisual)
-            {
+            if (player.Entropy().AzafureDriverShieldItem == null && player.Entropy().DriverShieldVisual) {
                 active = true;
                 scale = 2.5f;
             }
-            if (active)
-            {
+            if (active) {
                 float alpha = 0.5f + 0.5f * progress;
                 Main.spriteBatch.Begin(0, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
                 Color clr = Color.Lerp(new Color(190, 40, 40), Color.White, 0.5f + 0.5f * (float)(Math.Sin(Main.GlobalTimeWrappedHourly * 10))) * 0.8f;
@@ -187,8 +170,7 @@ namespace CalamityEntropy.Common
 
                 Main.spriteBatch.End();
             }
-            else
-            {
+            else {
                 float alpha = 0.72f * progress;
                 Main.spriteBatch.Begin(0, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
                 Color clr = Color.Lerp(new Color(255, 100, 100), Color.White, 0.5f + 0.5f * (float)(Math.Sin(Main.GlobalTimeWrappedHourly * 36)));
@@ -201,8 +183,7 @@ namespace CalamityEntropy.Common
                 Main.spriteBatch.End();
             }
         }
-        public static void DrawNihShield(Player player, Vector2 pos, float alpha, float scale)
-        {
+        public static void DrawNihShield(Player player, Vector2 pos, float alpha, float scale) {
             scale *= 0.5f;
             Vector2 center = pos + Vector2.UnitY * player.gfxOffY;
             Effect shader = NihShieldShader;
@@ -222,10 +203,8 @@ namespace CalamityEntropy.Common
 
             Main.spriteBatch.End();
         }
-        public static void DrawVoidShield(Player player, Vector2 pos, float alpha, float scale)
-        {
-            if (player.Entropy().VoidShieldVisual && player.Entropy().VoidCoreItem == null)
-            {
+        public static void DrawVoidShield(Player player, Vector2 pos, float alpha, float scale) {
+            if (player.Entropy().VoidShieldVisual && player.Entropy().VoidCoreItem == null) {
                 alpha = 1;
                 scale = 0.6f;
             }
@@ -239,8 +218,7 @@ namespace CalamityEntropy.Common
             var gd = Main.graphics.GraphicsDevice;
             gd.Textures[1] = CEExtraAssets.Noise_10;
             Texture2D tex = CEExtraAssets.Circle;
-            for (int i = 0; i < 1; i++)
-            {
+            for (int i = 0; i < 1; i++) {
                 float rot = 0.8f;
                 rot *= Main.GlobalTimeWrappedHourly * 2;
                 Main.spriteBatch.End();
@@ -255,52 +233,42 @@ namespace CalamityEntropy.Common
             Main.spriteBatch.End();
         }
         // 原对灾厄「污秽」附魔适用谓词的注入已随灾厄脱钩整体删除（附魔系统属灾厄专有）
-        public override void PostDrawTiles()
-        {
-            foreach (Player player in Main.ActivePlayers)
-            {
+        public override void PostDrawTiles() {
+            foreach (Player player in Main.ActivePlayers) {
                 if (player.dead)
                     continue;
                 EModPlayer mp = player.Entropy();
                 {
 
                     float p = 1;
-                    if (mp.AzafureDriverShieldItem != null)
-                    {
+                    if (mp.AzafureDriverShieldItem != null) {
                         p = (float)mp.DriverShield / AzafureDriverCore.MaxShield;
-                        if (mp.DriverShield <= 0)
-                        {
+                        if (mp.DriverShield <= 0) {
                             p = (float)mp.DriverRecharge / AzafureDriverCore.RechargeTime;
                         }
                     }
                     DrawDriverShield(player, p, mp.DriverShield > 0, player.Center);
                 }
-                if (mp.NihilityShieldEnabled)
-                {
+                if (mp.NihilityShieldEnabled) {
                     float p = mp.NihilityShield / (float)VoidEaterHelmet.MaxShield;
                     float c = mp.NihilityShield > 0 ? 1 : ((float)mp.NihilityRecharge / VoidEaterHelmet.ShieldRecharge) * 0.6f;
                     DrawNihShield(player, player.Center, c * (0.5f + p * 0.5f), mp.NihShieldScale * (0.7f + 0.3f * p));
                 }
-                if (mp.NihArmorRope != null && player.whoAmI < mp.NihTwinArmorConnetPlayer)
-                {
+                if (mp.NihArmorRope != null && player.whoAmI < mp.NihTwinArmorConnetPlayer) {
                     Main.spriteBatch.begin_();
                     mp.DrawNihRope();
                     Main.spriteBatch.End();
                 }
-                if (mp.RatzielShieldTime > 0 && mp.RatzielShield > 0)
-                {
+                if (mp.RatzielShieldTime > 0 && mp.RatzielShield > 0) {
                     Main.spriteBatch.begin_();
                     DrawForce(player, (player.Entropy().RatzielShield / (float)Ratziel.MaxShield(Ratziel.Level())) * 0.6f + 0.4f);
                     Main.spriteBatch.End();
                 }
-                if (mp.VoidShieldVisual)
-                {
+                if (mp.VoidShieldVisual) {
                     float p = 1;
-                    if (mp.VoidCoreItem != null)
-                    {
+                    if (mp.VoidCoreItem != null) {
                         p = (float)mp.VoidShield / VoidCore.MaxShield;
-                        if (mp.VoidShield <= 0)
-                        {
+                        if (mp.VoidShield <= 0) {
                             p = (float)mp.VoidRecharge / VoidCore.ShieldRecharge;
                         }
                     }
@@ -310,20 +278,16 @@ namespace CalamityEntropy.Common
                 }
             }
 
-            if (CalamityEntropy.SetupBossbarClrAuto)
-            {
+            if (CalamityEntropy.SetupBossbarClrAuto) {
                 CalamityEntropy.SetupBossbarClrAuto = false;
-                for (int i = 0; i < NPCLoader.NPCCount; i++)
-                {
-                    if (!EntropyBossbar.bossbarColor.ContainsKey(i) && ContentSamples.NpcsByNetId[i].boss)
-                    {
+                for (int i = 0; i < NPCLoader.NPCCount; i++) {
+                    if (!EntropyBossbar.bossbarColor.ContainsKey(i) && ContentSamples.NpcsByNetId[i].boss) {
                         Main.instance.LoadNPC(i);
                         Texture2D tex = TextureAssets.Npc[i].Value;
                         var pixData = new Color[tex.Width * tex.Height];
                         tex.GetData(pixData);
                         Color c = GetColorForNPCBossbarFromTexture(pixData);
-                        if (c.A > 0)
-                        {
+                        if (c.A > 0) {
                             EntropyBossbar.bossbarColor[i] = c;
                         }
                     }
@@ -336,18 +300,14 @@ namespace CalamityEntropy.Common
 
             List<int> HighLightWallTypes = new List<int>() { 94, 98, 96, 95, 99, 97 };
             DWAlpha = float.Lerp(DWAlpha, NPC.AnyNPCs(sftype) ? 0.2f : (NPC.AnyNPCs(ptype) ? 1 : 0), 0.1f);
-            if (DWAlpha > 0.02f && Config.Instance.TileEffect)
-            {
+            if (DWAlpha > 0.02f && Config.Instance.TileEffect) {
                 DrawWallsHL(HighLightWallTypes);
             }
-            if (mi)
-            {
+            if (mi) {
                 Main.instance.IsMouseVisible = true;
             }
-            if (!Main.dedServ && Main.LocalPlayer.Entropy().hasAcc(SmartScope.ID))
-            {
-                if (SmartScope.target != null)
-                {
+            if (!Main.dedServ && Main.LocalPlayer.Entropy().hasAcc(SmartScope.ID)) {
+                if (SmartScope.target != null) {
                     Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
                     var tx = SSTargetTex.Value;
@@ -355,21 +315,17 @@ namespace CalamityEntropy.Common
                     Main.spriteBatch.End();
                 }
             }
-            if (Main.LocalPlayer.HeldItem.type == ModContent.ItemType<EventideSniper>())
-            {
+            if (Main.LocalPlayer.HeldItem.type == ModContent.ItemType<EventideSniper>()) {
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-                foreach (NPC npc in Main.ActiveNPCs)
-                {
-                    if (!npc.dontTakeDamage && !npc.friendly)
-                    {
+                foreach (NPC npc in Main.ActiveNPCs) {
+                    if (!npc.dontTakeDamage && !npc.friendly) {
                         Main.spriteBatch.Draw(markTex.Value, npc.Center - Main.screenPosition, null, Color.White, 0, markTex.Value.Size() / 2, 1, SpriteEffects.None, 0f);
                     }
                 }
                 Main.spriteBatch.End();
             }
         }
-        public void DrawForce(Player player, float alpha)
-        {
+        public void DrawForce(Player player, float alpha) {
             string key = "Nebula";
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.Transform);
@@ -385,8 +341,7 @@ namespace CalamityEntropy.Common
         public int ptype = -1;
         public int sftype = -1;
         public static List<int> NeedTiles = new List<int>() { 41, 43, 44 };
-        public void DrawWallsHL(List<int> types)
-        {
+        public void DrawWallsHL(List<int> types) {
             Effect shader = CEEffectAssets.WhiteTrans;
 
             shader.CurrentTechnique.Passes[0].Apply();
@@ -410,8 +365,7 @@ namespace CalamityEntropy.Common
             int num4 = (int)((float)num * 0.3f);
             Vector2 vector = new Vector2(offScreenRange, offScreenRange);
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shader, Main.GameViewMatrix.TransformationMatrix);
-            if (true)
-            {
+            if (true) {
                 vector = Vector2.Zero;
             }
             int num5 = (int)((screenPosition.X - vector.X) / 16f - 1f);
@@ -420,44 +374,35 @@ namespace CalamityEntropy.Common
             int num8 = (int)((screenPosition.Y + (float)screenHeight + vector.Y) / 16f) + 5;
             int num9 = offScreenRange / 16;
             int num10 = offScreenRange / 16;
-            if (num5 - num9 < 4)
-            {
+            if (num5 - num9 < 4) {
                 num5 = num9 + 4;
             }
-            if (num6 + num9 > maxTilesX - 4)
-            {
+            if (num6 + num9 > maxTilesX - 4) {
                 num6 = maxTilesX - num9 - 4;
             }
-            if (num7 - num10 < 4)
-            {
+            if (num7 - num10 < 4) {
                 num7 = num10 + 4;
             }
-            if (num8 + num10 > maxTilesY - 4)
-            {
+            if (num8 + num10 > maxTilesY - 4) {
                 num8 = maxTilesY - num10 - 4;
             }
             VertexColors vertices = default(VertexColors);
             Rectangle value = new Rectangle(0, 0, 16, 16);
             int underworldLayer = Main.UnderworldLayer;
             Point screenOverdrawOffset = Main.GetScreenOverdrawOffset();
-            for (int i = num7 - num10 + screenOverdrawOffset.Y; i < num8 + num10 - screenOverdrawOffset.Y; i++)
-            {
-                for (int j = num5 - num9 + screenOverdrawOffset.X; j < num6 + num9 - screenOverdrawOffset.X; j++)
-                {
+            for (int i = num7 - num10 + screenOverdrawOffset.Y; i < num8 + num10 - screenOverdrawOffset.Y; i++) {
+                for (int j = num5 - num9 + screenOverdrawOffset.X; j < num6 + num9 - screenOverdrawOffset.X; j++) {
                     Tile tile = _tileArray[j, i];
                     ushort wall = tile.WallType;
-                    if (!tile.HasUnactuatedTile && tile.WallType > 0 && types.Contains(wall) && NeedTiles.Contains(tile.TileType))
-                    {
+                    if (!tile.HasUnactuatedTile && tile.WallType > 0 && types.Contains(wall) && NeedTiles.Contains(tile.TileType)) {
                         value.X = tile.TileFrameX;
                         value.Y = tile.TileFrameY + Main.tileFrame[tile.TileType] * 0;
 
-                        Texture2D GetTileDrawTexture(Tile tile, int tileX, int tileY)
-                        {
+                        Texture2D GetTileDrawTexture(Tile tile, int tileX, int tileY) {
                             Texture2D result = TextureAssets.Tile[tile.TileType].Value;
                             int wall = tile.TileType;
                             Texture2D texture2D = Main.instance.TilePaintSystem.TryGetTileAndRequestIfNotReady(wall, 0, tile.TileColor);
-                            if (texture2D != null)
-                            {
+                            if (texture2D != null) {
                                 result = texture2D;
                             }
                             return result;
@@ -475,22 +420,17 @@ namespace CalamityEntropy.Common
         }
         public float DWAlpha = 0;
         public static bool sayTip = true;
-        public override void UpdateUI(GameTime gameTime)
-        {
+        public override void UpdateUI(GameTime gameTime) {
             lhBarTarget = float.Lerp(lhBarTarget, ((float)Main.LocalPlayer.statLife / (float)Main.LocalPlayer.statLifeMax2), 0.1f);
             lhBarTarget2 = float.Lerp(lhBarTarget2, lhBarTarget, 0.06f);
 
-            if (Lighting.Mode != Terraria.Graphics.Light.LightMode.Color)
-            {
-                if (sayTip)
-                {
+            if (Lighting.Mode != Terraria.Graphics.Light.LightMode.Color) {
+                if (sayTip) {
                     sayTip = false;
                 }
             }
-            if (!ModContent.GetInstance<Config>().EnableRetroLighting)
-            {
-                if (Lighting.Mode == Terraria.Graphics.Light.LightMode.Retro || Lighting.Mode == Terraria.Graphics.Light.LightMode.Trippy)
-                {
+            if (!ModContent.GetInstance<Config>().EnableRetroLighting) {
+                if (Lighting.Mode == Terraria.Graphics.Light.LightMode.Retro || Lighting.Mode == Terraria.Graphics.Light.LightMode.Trippy) {
                     Lighting.Mode = Terraria.Graphics.Light.LightMode.Color;
                 }
                 Main.WaveQuality = 3;
@@ -498,111 +438,90 @@ namespace CalamityEntropy.Common
 
             noItemUse = false;
             counter += 1f;
-            if (ArmorForgingStationUI.Visible)
-            {
+            if (ArmorForgingStationUI.Visible) {
                 CalamityEntropy.Instance.userInterface?.Update(gameTime);
             }
-            if (ModContent.GetInstance<Config>().EnableRetroLighting && ModContent.GetInstance<Config>().EnablePixelEffect)
-            {
+            if (ModContent.GetInstance<Config>().EnableRetroLighting && ModContent.GetInstance<Config>().EnablePixelEffect) {
                 ModContent.GetInstance<Config>().EnablePixelEffect = false;
             }
         }
 
-        public override void PostUpdateDusts()
-        {
+        public override void PostUpdateDusts() {
             ScreenShaker.Update();
-            if (CalamityEntropy.FlashEffectStrength > 0)
-            {
+            if (CalamityEntropy.FlashEffectStrength > 0) {
                 CalamityEntropy.FlashEffectStrength -= 0.02f;
             }
             CalamityEntropy.blackMaskTime--;
             CalamityEntropy.cutScreen += CalamityEntropy.cutScreenVel;
-            if (CalamityEntropy.cutScreen > 0)
-            {
+            if (CalamityEntropy.cutScreen > 0) {
                 CalamityEntropy.cutScreenVel -= 0.5f;
             }
-            if (CalamityEntropy.cutScreen < 0)
-            {
+            if (CalamityEntropy.cutScreen < 0) {
                 CalamityEntropy.cutScreen = 0;
                 CalamityEntropy.cutScreenVel = 0;
             }
         }
 
-        public override void PostUpdatePlayers()
-        {
+        public override void PostUpdatePlayers() {
             if (AcropolisDontSpawn > 0)
                 AcropolisDontSpawn--;
             CECooldowns.Update();
             EBookUI.update();
-            if (CalamityEntropy.noMusTime > 0)
-            {
+            if (CalamityEntropy.noMusTime > 0) {
                 CalamityEntropy.noMusTime--;
                 Main.curMusic = 0;
                 Main.newMusic = 0;
-                for (int i = 0; i < Main.musicFade.Length; i++)
-                {
+                for (int i = 0; i < Main.musicFade.Length; i++) {
                     Main.musicFade[i] = 0;
                 }
             }
 
             bool rCtrl = Keyboard.GetState().IsKeyDown(Keys.RightControl);
-            if (!rCtrlLast && rCtrl)
-            {
+            if (!rCtrlLast && rCtrl) {
 
             }
             rCtrlLast = rCtrl;
 
 
-            if (!Main.playerInventory)
-            {
-                if (ArmorForgingStationUI.Visible)
-                {
+            if (!Main.playerInventory) {
+                if (ArmorForgingStationUI.Visible) {
                     CalamityEntropy.Instance.armorForgingStationUI.close();
                 }
                 ArmorForgingStationUI.Visible = false;
 
             }
             escLast = Keyboard.GetState().IsKeyDown(Keys.Escape);
-            if (!Main.dedServ)
-            {
-                if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.N))
-                {
-                    if (!prd)
-                    {
+            if (!Main.dedServ) {
+                if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.N)) {
+                    if (!prd) {
                         prd = true;
                         mi = !mi;
                     }
                 }
-                else
-                {
+                else {
                     prd = false;
                 }
             }
 
             LoopSoundManager.update();
         }
-        public void drawChargeBar(Vector2 center, float prog, Color color)
-        {
+        public void drawChargeBar(Vector2 center, float prog, Color color) {
             Texture2D bar = ChargeBarTex.Value;
             Main.spriteBatch.Draw(bar, center, new Rectangle(0, 0, 54, 12), Color.White, 0, new Vector2(27, 6), 1, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(bar, center, new Rectangle(0, 12, (int)Math.Round(54 * prog), 12), color, 0, new Vector2(27, 6), 1, SpriteEffects.None, 0);
         }
-        public void drawChargeBarNoback(Vector2 center, float prog, Color color)
-        {
+        public void drawChargeBarNoback(Vector2 center, float prog, Color color) {
             Texture2D bar = ChargeBarTex.Value;
             Main.spriteBatch.Draw(bar, center, new Rectangle(0, 12, (int)Math.Round(54 * prog), 12), color, 0, new Vector2(27, 6), 1, SpriteEffects.None, 0);
         }
-        public void drawXythBar()
-        {
-            if (Main.LocalPlayer.HeldItem.ModItem is Xytheron xr)
-            {
+        public void drawXythBar() {
+            if (Main.LocalPlayer.HeldItem.ModItem is Xytheron xr) {
                 float prog = xr.charge / 20f;
                 Vector2 Center = Main.ScreenSize.ToVector2() * 0.5f + new Vector2(0, 56);
                 Texture2D bar = XythBarTex.Value;
                 Main.spriteBatch.Draw(bar, Center, new Rectangle(0, 0, 64, 26), Color.White, 0, new Vector2(32, 13), 1, SpriteEffects.None, 0);
                 Main.spriteBatch.Draw(bar, Center, new Rectangle(0, 26, (int)(8 + 48 * prog), 6), Color.White, 0, new Vector2(32, 1), 1, SpriteEffects.None, 0);
-                if (Main.MouseScreen.getRectCentered(2, 2).Intersects(Center.getRectCentered(64, 26)))
-                {
+                if (Main.MouseScreen.getRectCentered(2, 2).Intersects(Center.getRectCentered(64, 26))) {
                     Main.instance.MouseText(Mod.GetLocalization("XythCharge").Value + ": " + xr.charge.ToString() + "/20");
                 }
             }
@@ -611,8 +530,7 @@ namespace CalamityEntropy.Common
         public static float lhBarTarget = 1;
         public static float lhRedLerp = 0;
         public static Vector2 bbarOffset = Vector2.Zero;
-        private static void DrawLifeBarText(SpriteBatch spriteBatch, Vector2 topLeftAnchor)
-        {
+        private static void DrawLifeBarText(SpriteBatch spriteBatch, Vector2 topLeftAnchor) {
             Vector2 vector = topLeftAnchor + new Vector2(130f, -24f);
             Player localPlayer = Main.LocalPlayer;
             Color color = new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor);
@@ -623,14 +541,12 @@ namespace CalamityEntropy.Common
         }
         public static float bbar = 0;
 
-        public static void DrawBrambleBar()
-        {
+        public static void DrawBrambleBar() {
             Main.spriteBatch.UseSampleState_UI(SamplerState.PointClamp);
             Texture2D bar = BrambleBarTex.Value;
             bbar = float.Lerp(bbar, Main.LocalPlayer.Entropy().BrambleBarCharge, 0.16f);
             Vector2 center = new Vector2(Main.screenWidth / 2, Main.screenHeight / 16);
-            if ((center + bbarOffset).getRectCentered(100, 46).Intersects(Main.MouseScreen.getRectCentered(2, 2)))
-            {
+            if ((center + bbarOffset).getRectCentered(100, 46).Intersects(Main.MouseScreen.getRectCentered(2, 2))) {
                 Main.instance.MouseText(CalamityEntropy.Instance.GetLocalization("BCBarInfo").Value);
                 if (Mouse.GetState().MiddleButton == ButtonState.Pressed)
                     bbarOffset = Main.MouseScreen - center;
@@ -640,19 +556,14 @@ namespace CalamityEntropy.Common
             Main.spriteBatch.Draw(bar, center, new Rectangle(12, 36, (int)(42 * bbar), 8), Color.White, 0, new Vector2(21, 5), 1.4f, SpriteEffects.None, 0);
             Main.spriteBatch.UseSampleState_UI(SamplerState.AnisotropicClamp);
         }
-        public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
-        {
+        public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers) {
 
-            for (int ei = 0; ei < layers.Count; ei++)
-            {
+            for (int ei = 0; ei < layers.Count; ei++) {
                 var l = layers[ei];
 
-                if (l.Name == "Vanilla: Resource Bars")
-                {
-                    var drawLHB = new LegacyGameInterfaceLayer("Lost Heirloom HB", () =>
-                    {
-                        if (Main.LocalPlayer.dead || !(Main.LocalPlayer.GetModPlayer<VanityModPlayer>().vanityEquipped == nameof(LostHeirloom)))
-                        { return true; }
+                if (l.Name == "Vanilla: Resource Bars") {
+                    var drawLHB = new LegacyGameInterfaceLayer("Lost Heirloom HB", () => {
+                        if (Main.LocalPlayer.dead || !(Main.LocalPlayer.GetModPlayer<VanityModPlayer>().vanityEquipped == nameof(LostHeirloom))) { return true; }
                         Texture2D t1 = LlBar1Tex.Value;
                         Texture2D t2 = LlBar2Tex.Value;
                         Texture2D t3 = LlBar3Tex.Value;
@@ -669,8 +580,7 @@ namespace CalamityEntropy.Common
                         typeof(FancyClassicPlayerResourcesDisplaySet).GetMethod("DrawManaBar", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic, new Type[] { typeof(SpriteBatch) }).Invoke(((FancyClassicPlayerResourcesDisplaySet)((Dictionary<string, IPlayerResourcesDisplaySet>)Main.ResourceSetsManager.GetType().GetField("_sets", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(Main.ResourceSetsManager))["New"]), new object[] { Main.spriteBatch });
                         return true;
                     }, InterfaceScaleType.UI);
-                    if (Main.LocalPlayer.GetModPlayer<VanityModPlayer>().vanityEquipped == nameof(LostHeirloom))
-                    {
+                    if (Main.LocalPlayer.GetModPlayer<VanityModPlayer>().vanityEquipped == nameof(LostHeirloom)) {
                         l.Active = false;
                     }
                     layers.Insert(ei,
@@ -680,72 +590,56 @@ namespace CalamityEntropy.Common
                 }
             }
             int mouseIndex = layers.FindIndex(layer => layer.Name == "Vanilla: Mouse Text");
-            if (mouseIndex != -1)
-            {
-                layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("CalamityEntropy: Void Charge Bar", () =>
-                {
+            if (mouseIndex != -1) {
+                layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("CalamityEntropy: Void Charge Bar", () => {
                     DrawVoidChargeBar(Main.spriteBatch);
                     return true;
                 }, InterfaceScaleType.UI));
-                layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("CalamityEntropy: Other Charge Bars", () =>
-                {
+                layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("CalamityEntropy: Other Charge Bars", () => {
                     int baroffsety = 44;
-                    if (Main.LocalPlayer.GetModPlayer<CapricornBookmarkRecordPlayer>().SandStormCharge > 0)
-                    {
+                    if (Main.LocalPlayer.GetModPlayer<CapricornBookmarkRecordPlayer>().SandStormCharge > 0) {
                         drawChargeBar(Main.ScreenSize.ToVector2() / 2 + new Vector2(0, baroffsety), Main.LocalPlayer.GetModPlayer<CapricornBookmarkRecordPlayer>().SandStormCharge, new Color(246, 201, 122));
                         baroffsety += 20;
                     }
-                    if (Main.LocalPlayer.Entropy().SnowgraveCharge > 0)
-                    {
+                    if (Main.LocalPlayer.Entropy().SnowgraveCharge > 0) {
                         drawChargeBar(Main.ScreenSize.ToVector2() / 2 + new Vector2(0, baroffsety), Main.LocalPlayer.Entropy().SnowgraveCharge, new Color(170, 170, 255));
                         baroffsety += 20;
                     }
-                    if (Main.LocalPlayer.Entropy().mawOfVoidCharge > 0)
-                    {
+                    if (Main.LocalPlayer.Entropy().mawOfVoidCharge > 0) {
                         drawChargeBar(Main.ScreenSize.ToVector2() / 2 + new Vector2(0, baroffsety), Main.LocalPlayer.Entropy().mawOfVoidCharge, Color.Red);
                         baroffsety += 20;
                     }
-                    if (Main.LocalPlayer.Entropy().revelationCharge > 0)
-                    {
+                    if (Main.LocalPlayer.Entropy().revelationCharge > 0) {
                         drawChargeBar(Main.ScreenSize.ToVector2() / 2 + new Vector2(0, baroffsety), Main.LocalPlayer.Entropy().revelationCharge, new Color(255, 255, 190));
                         baroffsety += 20;
                     }
 
                     return true;
-                }, InterfaceScaleType.None)); 
-                layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("CalamityEntropy: Poop UI", () =>
-                {
-                    if (Main.LocalPlayer.Entropy().brokenAnkh)
-                    {
+                }, InterfaceScaleType.None));
+                layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("CalamityEntropy: Poop UI", () => {
+                    if (Main.LocalPlayer.Entropy().brokenAnkh) {
                         Main.spriteBatch.UseSampleState_UI(SamplerState.PointClamp);
                         PoopsUI.Draw();
                         Main.spriteBatch.UseSampleState_UI(SamplerState.AnisotropicClamp);
                     }
                     return true;
                 }, InterfaceScaleType.UI));
-                layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("CalamityEntropy: Xyth Bar", () =>
-                {
-                    if (Main.LocalPlayer.HeldItem.type == ModContent.ItemType<Bramblecleave>())
-                    {
+                layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("CalamityEntropy: Xyth Bar", () => {
+                    if (Main.LocalPlayer.HeldItem.type == ModContent.ItemType<Bramblecleave>()) {
                         DrawBrambleBar();
                     }
                     drawXythBar();
                     return true;
                 }, InterfaceScaleType.UI));
-                layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("CalamityEntropy: Durability Bar", () =>
-                {
-                    if (!Main.LocalPlayer.dead)
-                    {
-                        if (Main.LocalPlayer.GetModPlayer<AzafureHeavyArmorPlayer>().ArmorSetBonus)
-                        {
+                layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("CalamityEntropy: Durability Bar", () => {
+                    if (!Main.LocalPlayer.dead) {
+                        if (Main.LocalPlayer.GetModPlayer<AzafureHeavyArmorPlayer>().ArmorSetBonus) {
                             AzafureHeavyArmorPlayer.DrawDuraBar(Main.LocalPlayer.GetModPlayer<AzafureHeavyArmorPlayer>().durability);
                         }
-                        if (Main.LocalPlayer.GetModPlayer<AzafureSteamKnightArmorPlayer>().ArmorSetBonus)
-                        {
+                        if (Main.LocalPlayer.GetModPlayer<AzafureSteamKnightArmorPlayer>().ArmorSetBonus) {
                             AzafureSteamKnightArmorPlayer.DrawDuraBar(Main.LocalPlayer.GetModPlayer<AzafureSteamKnightArmorPlayer>().durability);
                         }
-                        if (Main.LocalPlayer.GetModPlayer<AcropolisArmorPlayer>().ArmorSetBonus)
-                        {
+                        if (Main.LocalPlayer.GetModPlayer<AcropolisArmorPlayer>().ArmorSetBonus) {
                             AcropolisArmorPlayer.DrawDuraBar(Main.LocalPlayer.GetModPlayer<AcropolisArmorPlayer>().durability);
                         }
                     }
@@ -753,8 +647,7 @@ namespace CalamityEntropy.Common
                 }, InterfaceScaleType.UI));
                 layers.Insert(mouseIndex, new LegacyGameInterfaceLayer(
                 "CalamityEntropy: Armor Reforging Station",
-                delegate
-                {
+                delegate {
                     if (ArmorForgingStationUI.Visible)
                         CalamityEntropy.Instance.armorForgingStationUI.Draw(Main.spriteBatch);
                     return true;
@@ -763,8 +656,7 @@ namespace CalamityEntropy.Common
             );
                 layers.Insert(mouseIndex, new LegacyGameInterfaceLayer(
                 "CalamityEntropy: EntropyBookItemUI",
-                delegate
-                {
+                delegate {
                     EBookUI.draw();
                     return true;
                 },
@@ -772,13 +664,10 @@ namespace CalamityEntropy.Common
             );
                 layers.Insert(mouseIndex, new LegacyGameInterfaceLayer(
                 "CalamityEntropy: Dialog UI",
-                delegate
-                {
-                    if (Typer.activeTypers.Count > 0)
-                    {
+                delegate {
+                    if (Typer.activeTypers.Count > 0) {
                         // 打字机音按 sound-map 定稿：改用自有音效池的三个打字音（文件本名大小写不一致，勿改）
-                        Typer.activeTypers[0].sound = Main.rand.Next(3) switch
-                        {
+                        Typer.activeTypers[0].sound = Main.rand.Next(3) switch {
                             0 => new Terraria.Audio.SoundStyle("CalamityEntropy/Assets/Sounds/Typ1"),
                             1 => new Terraria.Audio.SoundStyle("CalamityEntropy/Assets/Sounds/typ2"),
                             _ => new Terraria.Audio.SoundStyle("CalamityEntropy/Assets/Sounds/typ3"),
@@ -788,8 +677,7 @@ namespace CalamityEntropy.Common
                         t.update();
                         t.draw();
 
-                        if (Typer.activeTypers[0].Finish() && Main.mouseLeft && !MLPrd && !Main.LocalPlayer.mouseInterface)
-                        {
+                        if (Typer.activeTypers[0].Finish() && Main.mouseLeft && !MLPrd && !Main.LocalPlayer.mouseInterface) {
                             Typer.activeTypers.RemoveAt(0);
                         }
                         MLPrd = Main.mouseLeft;
@@ -803,10 +691,8 @@ namespace CalamityEntropy.Common
 
         public bool MLPrd = false;
 
-        public void DrawVoidChargeBar(SpriteBatch spriteBatch)
-        {
-            if (!Main.LocalPlayer.Entropy().VFSet)
-            {
+        public void DrawVoidChargeBar(SpriteBatch spriteBatch) {
+            if (!Main.LocalPlayer.Entropy().VFSet) {
                 return;
             }
             Texture2D bar = VoidChargeBarTex.Value;
@@ -814,86 +700,70 @@ namespace CalamityEntropy.Common
             Config config = ModContent.GetInstance<Config>();
             Vector2 offset = new Vector2(config.VoidChargeBarX, config.VoidChargeBarY);
             float p = Main.LocalPlayer.Entropy().VoidCharge;
-            if (Main.LocalPlayer.Entropy().VoidInspire > 0)
-            {
+            if (Main.LocalPlayer.Entropy().VoidInspire > 0) {
                 p = Main.LocalPlayer.Entropy().VoidInspire / 600f;
                 offset += new Vector2(Main.rand.Next(-2, 3), Main.rand.Next(-2, 3));
             }
             spriteBatch.Draw(bar, offset, null, Color.White, 0, bar.Size() / 2, 1, SpriteEffects.None, 0);
             spriteBatch.Draw(prog, offset, new Rectangle(0, 0, (int)(prog.Width * p), prog.Height), Color.White, 0, prog.Size() / 2, 1, SpriteEffects.None, 0);
             Rectangle mouse = new Rectangle((int)Main.MouseScreen.X, (int)Main.MouseScreen.Y, 1, 1);
-            if (new Rectangle((int)(offset - bar.Size() / 2).X, (int)((offset - bar.Size() / 2).Y), (int)bar.Size().X, (int)bar.Size().Y).Intersects(mouse))
-            {
+            if (new Rectangle((int)(offset - bar.Size() / 2).X, (int)((offset - bar.Size() / 2).Y), (int)bar.Size().X, (int)bar.Size().Y).Intersects(mouse)) {
                 string textToDisplay = Language.GetOrRegister("Mods.CalamityEntropy.VoidChargeBar").Value + " : " + ((int)(p * 100)).ToString() + "%";
                 Main.instance.MouseText(textToDisplay, 0, 0, -1, -1, -1, -1);
             }
         }
 
-        public override void PostUpdateNPCs()
-        {
+        public override void PostUpdateNPCs() {
             if (ModLoader.HasMod("Fargowiltas"))
                 foreach (NPC npc in Main.ActiveNPCs)
                     if (npc.type == 0)
                         npc.active = false;
-            if (CalamityEntropy.Instance.screenShakeAmp > 0)
-            {
+            if (CalamityEntropy.Instance.screenShakeAmp > 0) {
                 CalamityEntropy.Instance.screenShakeAmp -= 0.5f;
             }
             bool eow = false;
             int maxlifeEows = 0;
             bool sg = false;
             int maxlifeSg = 0;
-            foreach (NPC n in Main.ActiveNPCs)
-            {
-                if (n.type == NPCID.EaterofWorldsHead || n.type == NPCID.EaterofWorldsBody || n.type == NPCID.EaterofWorldsTail)
-                {
+            foreach (NPC n in Main.ActiveNPCs) {
+                if (n.type == NPCID.EaterofWorldsHead || n.type == NPCID.EaterofWorldsBody || n.type == NPCID.EaterofWorldsTail) {
                     eow = true;
                     maxlifeEows += n.lifeMax;
                 }
-                if (EntropyModeGNPC.IsSlimeGodSlime(n.type))
-                {
+                if (EntropyModeGNPC.IsSlimeGodSlime(n.type)) {
                     sg = true;
                     maxlifeSg += n.lifeMax;
                 }
             }
-            if (eow && !eowLast)
-            {
+            if (eow && !eowLast) {
                 eowMaxLife = maxlifeEows;
             }
             eowLast = eow;
 
             //史莱姆之神四体合计血条分母:开战首帧快照 lifeMax。无灾厄时集合空,与 4.0 一样不进
-            if (sg && !slimeGodLast)
-            {
+            if (sg && !slimeGodLast) {
                 slimeGodMaxLife = maxlifeSg;
             }
             slimeGodLast = sg;
         }
 
-        public static void RemoveItemInARecipe(Recipe recipe, int type)
-        {
-            for (int i = recipe.requiredItem.Count - 1; i >= 0; i--)
-            {
-                if (recipe.requiredItem[i].type == type)
-                {
+        public static void RemoveItemInARecipe(Recipe recipe, int type) {
+            for (int i = recipe.requiredItem.Count - 1; i >= 0; i--) {
+                if (recipe.requiredItem[i].type == type) {
                     recipe.requiredItem.RemoveAt(i);
                 }
             }
         }
-        public static void RemoveItemInRecipes(int itemtype, int type)
-        {
-            for (int i = 0; i < Main.recipe.Length; i++)
-            {
+        public static void RemoveItemInRecipes(int itemtype, int type) {
+            for (int i = 0; i < Main.recipe.Length; i++) {
                 Recipe recipe = Main.recipe[i];
-                if (recipe.createItem.type == itemtype)
-                {
+                if (recipe.createItem.type == itemtype) {
                     RemoveItemInARecipe(recipe, type);
                 }
             }
         }
 
-        public override void PostAddRecipes()
-        {
+        public override void PostAddRecipes() {
             Recipe.Create(ItemID.BloodMoonStarter)
                 .AddRecipeGroup(CERecipeGroups.evilBar, 4)
                 .AddIngredient(ItemID.Lens, 4)
@@ -901,38 +771,30 @@ namespace CalamityEntropy.Common
                 .Register();
 
             // 装灾厄时把灾厄马桶产物改挂自有 AuricToilet;无灾厄不碰配方表
-            if (CERef.Has && CEID.Item_AuricToilet > 0)
-            {
+            if (CERef.Has && CEID.Item_AuricToilet > 0) {
                 int ownToilet = ModContent.ItemType<Content.Items.AuricToilet>();
-                foreach (Recipe recipe in Main.recipe)
-                {
-                    if (recipe.createItem.type == CEID.Item_AuricToilet)
-                    {
+                foreach (Recipe recipe in Main.recipe) {
+                    if (recipe.createItem.type == CEID.Item_AuricToilet) {
                         recipe.createItem.type = ownToilet;
                     }
                 }
             }
         }
 
-        public override void PreUpdateProjectiles()
-        {
+        public override void PreUpdateProjectiles() {
             timer++;
-            if (!Main.dedServ)
-            {
+            if (!Main.dedServ) {
                 LastPlayerPos = Main.LocalPlayer.Center;
             }
         }
 
-        public override void PostUpdateProjectiles()
-        {
+        public override void PostUpdateProjectiles() {
             CEUtils.Update();
-            if (EGlobalProjectile.SSCD < 3)
-            {
+            if (EGlobalProjectile.SSCD < 3) {
                 EGlobalProjectile.SSCD++;
             }
 
-            if (!Main.dedServ)
-            {
+            if (!Main.dedServ) {
             }
         }
     }

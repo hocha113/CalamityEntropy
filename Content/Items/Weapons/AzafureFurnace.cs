@@ -9,12 +9,10 @@ namespace CalamityEntropy.Content.Items.Weapons
 {
     public class AzafureFurnace : ModItem, IAzafureEnhancable
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.staff[Item.type] = true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 24;
             Item.height = 24;
             Item.damage = 40;
@@ -34,8 +32,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.noUseGraphic = true;
             Item.mana = 15;
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe().
                 AddIngredient<OverloadFurnace>().
                 AddIngredient(ItemID.Nanites, 100).
@@ -43,8 +40,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 Register();
         }
 
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
     }

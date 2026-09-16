@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.LuminarisMoth.Core;
+﻿using CalamityEntropy.Content.NPCs.LuminarisMoth.Core;
 using CalamityEntropy.Content.Projectiles.LuminarisShoots;
 using InnoVault.StateMachines;
 using System;
@@ -24,8 +24,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
     {
         public override LuminarisStateIndex StateIndex => LuminarisStateIndex.ShootTriangle;
 
-        public override IVaultState<LuminarisStateContext> OnUpdate(LuminarisStateContext ctx)
-        {
+        public override IVaultState<LuminarisStateContext> OnUpdate(LuminarisStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
             float enrange = ctx.Enrange;
@@ -35,43 +34,34 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
             ctx.Vec2 = npc.Center;
             ctx.AfterImageTime = LuminarisDirector.AfterImageFrames;
 
-            if (c == LuminarisDirector.ShootTriangleFrames)
-            {
-                if (IsServer)
-                {
+            if (c == LuminarisDirector.ShootTriangleFrames) {
+                if (IsServer) {
                     //原代码在这里骰 num3,但本状态<b>从不读它</b>。骰点与过线照搬
                     ctx.Num3 = Main.rand.NextBool() ? -1 : 1;
                     MarkNetUpdate(ctx);
                 }
                 ctx.Vec1 = npc.Center;
             }
-            if (c > LuminarisDirector.ShootTriangleOrbitFrame)
-            {
+            if (c > LuminarisDirector.ShootTriangleOrbitFrame) {
                 npc.Center = Vector2.Lerp(ctx.Vec1,
                     player.Center + new Vector2(LuminarisDirector.ShootTriangleApproachX * Math.Sign(npc.Center.X - player.Center.X), LuminarisDirector.ShootTriangleApproachY),
                     CEUtils.GetRepeatedCosFromZeroToOne(1 - (c - LuminarisDirector.ShootTriangleOrbitFrame) / LuminarisDirector.ShootTriangleApproachSpan, 1));
                 npc.rotation = (npc.Center - ctx.Vec2).ToRotation() + MathHelper.PiOver2;
             }
-            if (c == LuminarisDirector.ShootTriangleOrbitFrame)
-            {
+            if (c == LuminarisDirector.ShootTriangleOrbitFrame) {
                 ctx.Num1 = npc.Center.Distance(player.Center);
                 ctx.Num2 = (npc.Center - player.Center).ToRotation();
             }
-            if (c < LuminarisDirector.ShootTriangleOrbitFrame)
-            {
-                if (c >= LuminarisDirector.ShootTriangleFastEndFrame)
-                {
+            if (c < LuminarisDirector.ShootTriangleOrbitFrame) {
+                if (c >= LuminarisDirector.ShootTriangleFastEndFrame) {
                     ctx.Num2 += MathHelper.ToRadians(LuminarisDirector.ShootTriangleFastStep);
                     npc.Center = player.Center + ctx.Num2.ToRotationVector2() * ctx.Num1;
-                    if (IsServer)
-                    {
+                    if (IsServer) {
                         //散射方向与速度抖动都吃随机数,只影响弹幕,所以整段收在权威端
-                        if (c % 2 == 0)
-                        {
+                        if (c % 2 == 0) {
                             Shoot<LuminarisTriangleShootBlue>(ctx, npc.Center, TriangleShotVelocity(npc, player, enrange));
                         }
-                        else
-                        {
+                        else {
                             Shoot<LuminarisTriangleShootRed>(ctx, npc.Center, TriangleShotVelocity(npc, player, enrange));
                         }
                     }
@@ -79,8 +69,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
                     //快转段每帧把绕圈中心钉在玩家身上,慢转段接手时用的就是最后这一帧的值
                     ctx.Vec1 = player.Center;
                 }
-                else
-                {
+                else {
                     //本状态每帧开头已经把速度清零了,所以这一句阻尼没有效果,照搬
                     npc.velocity *= LuminarisDirector.ShootTriangleSlowDrag;
                     ctx.Num2 += MathHelper.ToRadians(LuminarisDirector.ShootTriangleSlowStep);

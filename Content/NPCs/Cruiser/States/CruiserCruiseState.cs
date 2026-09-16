@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Cruiser.Core;
+﻿using CalamityEntropy.Content.NPCs.Cruiser.Core;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
     {
         public override CruiserStateIndex StateIndex => CruiserStateIndex.Cruise;
 
-        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx)
-        {
+        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
             Vector2 dir = (player.Center - npc.Center).normalize();
@@ -27,12 +26,10 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
             npc.velocity *= CruiserDirector.CruiseDrag;
 
             ctx.ChangeCounter++;
-            if (ctx.ChangeCounter > CruiserDirector.CruiseRollStart)
-            {
+            if (ctx.ChangeCounter > CruiserDirector.CruiseRollStart) {
                 //原代码是 rand.NextBool(150) || cc > 200,骰点在前。客户端不消耗随机数,只等包
                 bool rolled = IsServer && Main.rand.NextBool(CruiserDirector.CruiseRollChance);
-                if (rolled || ctx.ChangeCounter > CruiserDirector.CruiseHardEnd)
-                {
+                if (rolled || ctx.ChangeCounter > CruiserDirector.CruiseHardEnd) {
                     return NextAttack(ctx);
                 }
             }

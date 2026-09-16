@@ -10,8 +10,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
 {
     public class BrokenHilt : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 18;
             Item.DamageType = DamageClass.Melee;
             Item.width = 48;
@@ -31,19 +30,16 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Item.scale *= 1.2f;
         }
         public int atkType = 1;
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, atkType == 0 ? -1 : atkType);
             atkType *= -1;
             return false;
         }
 
-        public override bool MeleePrefix()
-        {
+        public override bool MeleePrefix() {
             return true;
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ItemID.WoodenSword)
                 .AddIngredient(ItemID.RichMahoganySword)
@@ -57,15 +53,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
     {
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/Fractal/BrokenHilt";
         List<float> odr = new List<float>();
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 12;
 
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
@@ -82,14 +76,12 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public float alpha = 0;
         public bool init = true;
         public bool shoot = true;
-        public override void AI()
-        {
+        public override void AI() {
             Player owner = Projectile.GetOwner();
             float MaxUpdateTimes = owner.itemTimeMax * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
             counter++;
-            if (init)
-            {
+            if (init) {
                 CEUtils.PlaySound("HiltAttack", 1 + Projectile.ai[0] * 0.12f, Projectile.Center, volume: 0.6f * CEUtils.WeapSound);
                 float scale_ = owner.HeldItem.scale;
                 owner.ApplyMeleeScale(ref scale_);
@@ -105,37 +97,31 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Projectile.Center = Projectile.GetOwner().MountedCenter;
 
 
-            if (odr.Count > 60)
-            {
+            if (odr.Count > 60) {
                 odr.RemoveAt(0);
             }
-            if (Projectile.velocity.X > 0)
-            {
+            if (Projectile.velocity.X > 0) {
                 owner.direction = 1;
                 owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - (float)(Math.PI * 0.5f));
             }
-            else
-            {
+            else {
                 owner.direction = -1;
                 owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - (float)(Math.PI * 0.5f));
             }
             owner.heldProj = Projectile.whoAmI;
             owner.itemTime = 2;
             owner.itemAnimation = 2;
-            if (counter > MaxUpdateTimes)
-            {
+            if (counter > MaxUpdateTimes) {
                 owner.itemTime = 1;
                 owner.itemAnimation = 1;
                 Projectile.Kill();
             }
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Projectile.GetTexture();
             int dir = (int)(Projectile.ai[0]) * (Projectile.velocity.X > 0 ? -1 : 1);
             Vector2 origin = dir > 0 ? new Vector2(0, tex.Height) : new Vector2(tex.Width, tex.Height);
@@ -148,12 +134,10 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
 
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * (70 * (Projectile.ai[0] == 2 ? 1.24f : 1)) * Projectile.scale * scale, targetHitbox, 64);
         }
-        public override void CutTiles()
-        {
+        public override void CutTiles() {
             Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * (70 * (Projectile.ai[0] == 2 ? 1.24f : 1)) * Projectile.scale * scale, 54, DelegateMethods.CutTiles);
         }
     }

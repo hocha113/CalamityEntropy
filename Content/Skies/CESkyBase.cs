@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
 using Terraria.Graphics;
@@ -33,8 +33,7 @@ namespace CalamityEntropy.Content.Skies
     public static class CESkyDrawing
     {
         /// <summary>还原 Main.DoDraw 传给 DrawBG 的背景矩阵(含重力翻转与背景缩放平移补偿)。</summary>
-        public static Matrix BackgroundMatrix()
-        {
+        public static Matrix BackgroundMatrix() {
             Matrix m = Main.BackgroundViewMatrix.TransformationMatrix;
             m.Translation -= Main.BackgroundViewMatrix.ZoomMatrix.Translation
                 * new Vector3(1f, Main.BackgroundViewMatrix.Effects.HasFlag(SpriteEffects.FlipVertically) ? -1f : 1f, 1f);
@@ -48,38 +47,32 @@ namespace CalamityEntropy.Content.Skies
         public static Rectangle CallerFullscreen => new Rectangle(0, 0, Main.screenWidth, Main.screenHeight);
 
         /// <summary>原始像素空间的全屏矩形(配无矩阵批次的全屏 shader pass 用)。</summary>
-        public static Rectangle ViewportFullscreen
-        {
-            get
-            {
+        public static Rectangle ViewportFullscreen {
+            get {
                 Viewport vp = Main.instance.GraphicsDevice.Viewport;
                 return new Rectangle(0, 0, vp.Width, vp.Height);
             }
         }
 
         /// <summary>End 后按指定混合/采样在调用方(背景矩阵)空间重开批次。</summary>
-        public static void BeginCallerSpace(SpriteBatch sb, BlendState blend, SamplerState sampler, SpriteSortMode sort = SpriteSortMode.Deferred)
-        {
+        public static void BeginCallerSpace(SpriteBatch sb, BlendState blend, SamplerState sampler, SpriteSortMode sort = SpriteSortMode.Deferred) {
             sb.End();
             sb.Begin(sort, blend, sampler, DepthStencilState.None, Main.Rasterizer, null, BackgroundMatrix());
         }
 
         /// <summary>End 后在原始像素空间(无矩阵)重开批次,给全屏 shader pass 用。</summary>
-        public static void BeginRawScreen(SpriteBatch sb, BlendState blend, SamplerState sampler, SpriteSortMode sort = SpriteSortMode.Immediate)
-        {
+        public static void BeginRawScreen(SpriteBatch sb, BlendState blend, SamplerState sampler, SpriteSortMode sort = SpriteSortMode.Immediate) {
             sb.End();
             sb.Begin(sort, blend, sampler, DepthStencilState.None, RasterizerState.CullNone, null);
         }
 
         /// <summary>不 End、直接按调用方参数开批次(配合已手动 End 过的场合,如图元渲染之后)。</summary>
-        public static void OpenCallerBatch(SpriteBatch sb)
-        {
+        public static void OpenCallerBatch(SpriteBatch sb) {
             sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, BackgroundMatrix());
         }
 
         /// <summary>按 Main.DoDraw 开 DrawBG 批次的参数还原调用方批次;自开批次画完后必须调用。</summary>
-        public static void RestoreCallerBatch(SpriteBatch sb)
-        {
+        public static void RestoreCallerBatch(SpriteBatch sb) {
             sb.End();
             OpenCallerBatch(sb);
         }
@@ -115,8 +108,7 @@ namespace CalamityEntropy.Content.Skies
 
         public override void Deactivate(params object[] args) => skyActive = false;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             skyActive = false;
             opacity = 0f;
             OnReset();
@@ -128,8 +120,7 @@ namespace CalamityEntropy.Content.Skies
         //淡出尾巴必须算 Active:SkyManager 只更新/绘制 IsActive 的天空,提前返回 false 会冻住渐隐
         public override bool IsActive() => skyActive || opacity > 0f;
 
-        public sealed override void Update(GameTime gameTime)
-        {
+        public sealed override void Update(GameTime gameTime) {
             skyActive = !Main.gameMenu && KeepActive();
 
             if (skyActive && opacity < 1f)
@@ -144,8 +135,7 @@ namespace CalamityEntropy.Content.Skies
         /// <summary>每 tick 的载荷状态推进(在 opacity 步进之后调用)。</summary>
         protected virtual void UpdatePayload(GameTime gameTime) { }
 
-        public sealed override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
-        {
+        public sealed override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth) {
             if (opacity <= 0.004f)
                 return;
             //捕捉/全屏地图路径的批次是裸 Begin(),背景矩阵还原公式在那里不成立,直接不画
@@ -153,15 +143,13 @@ namespace CalamityEntropy.Content.Skies
                 return;
 
             //最远切片:ResetDepthTracker 后的首个 DrawToDepth,maxDepth 为 float.MaxValue
-            if (maxDepth >= float.MaxValue && minDepth < float.MaxValue && lastFarStamp != CESkyFrameStamp.Current)
-            {
+            if (maxDepth >= float.MaxValue && minDepth < float.MaxValue && lastFarStamp != CESkyFrameStamp.Current) {
                 lastFarStamp = CESkyFrameStamp.Current;
                 DrawFar(spriteBatch);
             }
 
             //跨 0 切片:DrawRemainingDepth 的 (float.MinValue, ≥0) 调用
-            if (minDepth < 0f && maxDepth >= 0f && maxDepth < float.MaxValue && lastFrontStamp != CESkyFrameStamp.Current)
-            {
+            if (minDepth < 0f && maxDepth >= 0f && maxDepth < float.MaxValue && lastFrontStamp != CESkyFrameStamp.Current) {
                 lastFrontStamp = CESkyFrameStamp.Current;
                 DrawFront(spriteBatch);
             }

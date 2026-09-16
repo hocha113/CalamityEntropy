@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Cruiser.Core;
+﻿using CalamityEntropy.Content.NPCs.Cruiser.Core;
 using CalamityEntropy.Content.Projectiles.Cruiser;
 using InnoVault.StateMachines;
 using Terraria;
@@ -16,8 +16,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
     {
         public override CruiserStateIndex StateIndex => CruiserStateIndex.AroundSpawnVoidBomb;
 
-        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx)
-        {
+        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
 
@@ -30,15 +29,13 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
             ctx.ChangeCounter++;
             if (ctx.ChangeCounter < CruiserDirector.BombWindow
                 && ctx.ChangeCounter % CruiserDirector.BombInterval == 0
-                && IsServer)
-            {
+                && IsServer) {
                 Shoot(ctx, ModContent.ProjectileType<VoidBomb>(), npc.Center,
                     CEUtils.randomPointInCircle(CruiserDirector.BombScatter)
                         + (player.Center - npc.Center).normalize() * CruiserDirector.BombLead);
                 MarkNetUpdate(ctx);
             }
-            if (ctx.ChangeCounter > CruiserDirector.BombDuration)
-            {
+            if (ctx.ChangeCounter > CruiserDirector.BombDuration) {
                 return NextAttack(ctx);
             }
             return null;

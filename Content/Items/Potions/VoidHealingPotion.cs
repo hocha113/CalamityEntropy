@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Rarities;
+﻿using CalamityEntropy.Content.Rarities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -7,8 +7,7 @@ namespace CalamityEntropy.Content.Items.Potions
 {
     public class VoidHealingPotion : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.ResearchUnlockCount = 30;
             ItemID.Sets.DrinkParticleColors[Type] = new Color[3]
             {
@@ -18,15 +17,13 @@ namespace CalamityEntropy.Content.Items.Potions
             };
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.DefaultToHealingPotion(24, 32, 350);
             Item.value = Item.sellPrice(gold: 1);
             Item.rare = ModContent.RarityType<NihilityBlue>();
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe(4)
                 .AddIngredient(ItemID.SuperHealingPotion, 4)
                 .AddIngredient(ItemID.LunarBar)

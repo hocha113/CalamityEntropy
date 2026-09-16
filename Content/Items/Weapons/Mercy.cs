@@ -1,22 +1,19 @@
-﻿using CalamityEntropy.Content.Items;
-using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class Mercy : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<VoidEcho>();
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 100;
             Item.DamageType = DamageClass.Magic;
             Item.width = 96;
@@ -42,18 +39,15 @@ namespace CalamityEntropy.Content.Items.Weapons
              Item.Entropy().HasCustomStrokeColor = true;
              Item.Entropy().HasCustomNameColor = true;*/
         }
-        public override bool CanUseItem(Player player)
-        {
+        public override bool CanUseItem(Player player) {
             return player.ownedProjectileCounts[ModContent.ProjectileType<HelhieimBlaster>()] <= 0;
         }
 
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient<VoidEcho>()
                 .AddIngredient<FadingRunestone>()

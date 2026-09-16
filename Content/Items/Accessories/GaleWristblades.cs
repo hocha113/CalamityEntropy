@@ -1,4 +1,4 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -13,8 +13,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         public static float MoveSpeed = 0.04f;
         // 内置冷却 0.5 秒(rogue-weapons.md §三)
         public const int BladeCooldown = 30;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 38;
             Item.height = 22;
             Item.value = Item.buyPrice(gold: 2);
@@ -24,19 +23,16 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         public static string ID = "GaleWristblades";
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.Entropy().addEquip(ID, !hideVisual);
             // 新效果:移速加成 + 暴击放出追踪风刃(潜行体系退役)
             player.Entropy().moveSpeed += MoveSpeed;
             player.GetModPlayer<GaleWristbladesPlayer>().equipped = true;
         }
-        public override void UpdateVanity(Player player)
-        {
+        public override void UpdateVanity(Player player) {
             player.Entropy().addEquipVisual(ID);
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ItemID.GoldBar, 8)
                 .AddIngredient(ItemID.Cloud, 30)
@@ -58,28 +54,24 @@ namespace CalamityEntropy.Content.Items.Accessories
         public bool equipped;
         private int bladeCooldown;
 
-        public override void ResetEffects()
-        {
+        public override void ResetEffects() {
             equipped = false;
             if (bladeCooldown > 0)
                 bladeCooldown--;
         }
 
-        public override void OnHitNPCWithItem(Item item, NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPCWithItem(Item item, NPC target, NPC.HitInfo hit, int damageDone) {
             TrySpawnBlades(target, hit);
         }
 
-        public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone) {
             // 风刃自身命中不再触发,避免连锁
             if (proj.ModProjectile is GaleWindBlade)
                 return;
             TrySpawnBlades(target, hit);
         }
 
-        private void TrySpawnBlades(NPC target, NPC.HitInfo hit)
-        {
+        private void TrySpawnBlades(NPC target, NPC.HitInfo hit) {
             if (!equipped || !hit.Crit || bladeCooldown > 0)
                 return;
             if (Player.whoAmI != Main.myPlayer)
@@ -88,8 +80,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             int damage = (int)Player.GetTotalDamage(DamageClass.Generic).ApplyTo(GaleWristblades.BaseDamage);
             Vector2 dir = (target.Center - Player.Center).normalize();
             CEUtils.PlaySound("swing" + Main.rand.Next(1, 5), Main.rand.NextFloat(1.1f, 1.3f), Player.Center, 4, 0.5f);
-            for (int i = -1; i <= 1; i += 2)
-            {
+            for (int i = -1; i <= 1; i += 2) {
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, dir.RotatedBy(0.4f * i) * 9f, ModContent.ProjectileType<GaleWindBlade>(), damage, 1f, Player.whoAmI);
             }
         }
@@ -99,27 +90,23 @@ namespace CalamityEntropy.Content.Items.Accessories
     public class GaleWindBlade : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Generic);
             Projectile.width = 20;
             Projectile.height = 20;
             Projectile.timeLeft = 150;
             Projectile.extraUpdates = 1;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.HomingToNPCNearby(0.6f, 0.98f, 700);
             if (Projectile.velocity.Length() < 14f)
                 Projectile.velocity *= 1.02f;
             Projectile.rotation = Projectile.velocity.ToRotation();
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             CEUtils.PlaySound("ofhit", Main.rand.NextFloat(1.2f, 1.4f), target.Center, 4, 0.4f);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             // 风刃视觉:两层加算条带沿速度方向拉伸
             Texture2D streak = CEExtraAssets.Streak2;
             Main.spriteBatch.UseBlendState(BlendState.Additive);
@@ -133,8 +120,7 @@ namespace CalamityEntropy.Content.Items.Accessories
 
     public class WristTornado : ModProjectile
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Throwing);
             Projectile.timeLeft = 120;
             Projectile.width = 64;
@@ -143,16 +129,13 @@ namespace CalamityEntropy.Content.Items.Accessories
             Projectile.localNPCHitCooldown = 8;
             Projectile.penetrate = -1;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.Opacity = Projectile.timeLeft > 30 ? 1f : Projectile.timeLeft / 30f;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Texture2D tex = Projectile.GetTexture();
-            for (float i = 0; i <= 1; i += 0.01f)
-            {
+            for (float i = 0; i <= 1; i += 0.01f) {
                 Main.spriteBatch.Draw(tex, Projectile.Center + new Vector2(0, -44 + i * 128) - Main.screenPosition, null, Color.White * (1.01f - i) * Projectile.Opacity, Main.GlobalTimeWrappedHourly * 10 + i * 4, tex.Size() / 2f, (1.02f - i), SpriteEffects.None, 0);
             }
             Main.spriteBatch.ExitShaderRegion();

@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Cooldowns;
+﻿using CalamityEntropy.Content.Cooldowns;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Core.Cooldowns;
 using CalamityEntropy.Core.Dash;
@@ -15,8 +15,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         public static int CooldownTicks = 5 * 60;
         public const float SpeedMult = 1.2f;
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 42;
             Item.height = 42;
             Item.value = Item.buyPrice(gold: 20);
@@ -26,17 +25,14 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
         public static string ID = "ShadeCloak";
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.Entropy().addEquip(ID, !hideVisual);
             player.GetModPlayer<CEDashPlayer>().Offer(CEDashRegistry.GetEnhancer<ShadeCloakEnhancer>());
         }
-        public override void UpdateVanity(Player player)
-        {
+        public override void UpdateVanity(Player player) {
             player.Entropy().addEquipVisual(ID);
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             /*CreateRecipe().AddIngredient(ItemID.SoulofNight, 8)
                 .AddIngredient(ItemID.Ectoplasm, 12)
                 .AddIngredient(ItemID.SoulofNight, 4)
@@ -54,16 +50,14 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override float SpeedMult => ShadeCloak.SpeedMult;
         public override bool Invincible => true;
 
-        public override bool TryConsume(Player player)
-        {
+        public override bool TryConsume(Player player) {
             if (player.HasCooldown(ShadeCloakDashCD.ID))
                 return false;
             player.AddCooldown(ShadeCloakDashCD.ID, ShadeCloak.CooldownTicks);
             return true;
         }
 
-        public override void OnStart(Player player, CEDashState state)
-        {
+        public override void OnStart(Player player, CEDashState state) {
             CEUtils.PlaySound("Dash2", 1, player.Center);
             Vector2 dashAxis = state.Direction * 18f;
             var beam = PRTLoader.NewParticle<PRT_DashBeam>(player.Center, dashAxis, new Color(0, 0, 0, 210), 1f)
@@ -74,30 +68,26 @@ namespace CalamityEntropy.Content.Items.Accessories
             beam.AddPoint(player.Center);
             beam.AddPoint(player.Center + dashAxis * 2f);
             state.EnhancerData = beam;
-            for (int i = 0; i < 12; i++)
-            {
+            for (int i = 0; i < 12; i++) {
                 var orb = PRTLoader.NewParticle<PRT_ShadeCloakOrb>(Vector2.Zero, CEUtils.randomPointInCircle(4), Color.Black, 1)
                     .Configure(1, true, PRTDrawModeEnum.NonPremultiplied, -1, ShadeCloak.CooldownTicks);
                 orb.PlayerIndex = player.whoAmI;
             }
         }
 
-        public override void OnVisuals(Player player, CEDashState state)
-        {
+        public override void OnVisuals(Player player, CEDashState state) {
             if (state.EnhancerData is PRT_DashBeam beam && beam.active)
                 beam.AddPoint(player.Center + player.velocity);
 
             Vector2 dashDir = state.Direction;
-            for (int i = 0; i < 2; i++)
-            {
+            for (int i = 0; i < 2; i++) {
                 Vector2 pVel = -dashDir.RotatedByRandom(0.12f) * 40f;
                 PRTLoader.NewParticle<PRT_ShadeDashParticle>(player.Center + dashDir * 100f + CEUtils.randomPointInCircle(26), pVel, Color.White, 1)
                     .Configure(1, true, PRTDrawModeEnum.NonPremultiplied, pVel.ToRotation(), 16);
             }
         }
 
-        public override void OnEnd(Player player, CEDashState state)
-        {
+        public override void OnEnd(Player player, CEDashState state) {
             if (state.EnhancerData is PRT_DashBeam beam && beam.active)
                 beam.Lifetime = beam.Time + 30;
         }

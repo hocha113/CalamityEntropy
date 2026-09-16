@@ -1,4 +1,4 @@
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items.Donator;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Rarities;
@@ -13,18 +13,15 @@ namespace CalamityEntropy.Content.Items.Vanity
     {
         public string DonatorName => "Rathyep";
 
-        public override void Load()
-        {
-            if (Main.netMode != NetmodeID.Server)
-            {
+        public override void Load() {
+            if (Main.netMode != NetmodeID.Server) {
                 EquipLoader.AddEquipTexture(Mod, $"{Mod.Name.ToString()}/Content/Items/Vanity/{Name}_Head", EquipType.Head, this);
                 EquipLoader.AddEquipTexture(Mod, $"{Mod.Name.ToString()}/Content/Items/Vanity/{Name}_Body", EquipType.Body, this);
                 EquipLoader.AddEquipTexture(Mod, $"{Mod.Name.ToString()}/Content/Items/Vanity/{Name}_Legs", EquipType.Legs, this);
             }
         }
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             if (Main.netMode == NetmodeID.Server)
                 return;
 
@@ -39,8 +36,7 @@ namespace CalamityEntropy.Content.Items.Vanity
             ArmorIDs.Legs.Sets.HidesBottomSkin[equipSlotLegs] = true;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 30;
             Item.height = 30;
 
@@ -52,17 +48,13 @@ namespace CalamityEntropy.Content.Items.Vanity
             Item.rare = ItemRarityID.Green;
         }
 
-        public override bool PreDrawTooltipLine(DrawableTooltipLine line, ref int yOffset)
-        {
-            if (line.Mod == "Terraria")
-            {
-                if (line.Name == "ItemName")
-                {
+        public override bool PreDrawTooltipLine(DrawableTooltipLine line, ref int yOffset) {
+            if (line.Mod == "Terraria") {
+                if (line.Name == "ItemName") {
                     ShiningViolet.Draw(Item, line, Color.DeepPink, Color.LightPink, Color.LightPink);
                     return false;
                 }
-                if (line.Text.StartsWith("^"))
-                {
+                if (line.Text.StartsWith("^")) {
                     TooltipLine parent = new TooltipLine(Mod, line.Name, line.Text.Substring(1));
                     var newLine = new DrawableTooltipLine(parent, line.Index, line.X, line.Y, line.Color);
                     ShiningViolet.Draw(Item, newLine, new Color(255, 42, 54), new Color(90, 84, 255), Color.LightPink, false);
@@ -71,15 +63,12 @@ namespace CalamityEntropy.Content.Items.Vanity
             }
             return true;
         }
-        public void SpawnParticles(Vector2 playerPos)
-        {
-            if (Main.rand.NextBool(8))
-            {
+        public void SpawnParticles(Vector2 playerPos) {
+            if (Main.rand.NextBool(8)) {
                 Vector2 pos = playerPos + new Vector2(Main.rand.NextFloat(-1600, 1600), -650);
                 Vector2 vel = new Vector2(Main.rand.NextFloat(-2.4f, 2.4f), Main.rand.NextFloat(1.8f, 2.45f));
                 int t = Main.rand.Next(1, Main.rand.NextBool(12) ? 6 : 2);
-                for (int i = 0; i < t; i++)
-                {
+                for (int i = 0; i < t; i++) {
                     //PRT_SakuraPetalsParticle AlphaBlend+rotation走Configure
                     PRTLoader.NewParticle<PRT_SakuraPetalsParticle>(pos, vel, Color.Pink, Main.rand.NextFloat(0.35f, 0.68f))
                         .Configure(1, true, PRTDrawModeEnum.AlphaBlend, CEUtils.randomRot());
@@ -88,25 +77,21 @@ namespace CalamityEntropy.Content.Items.Vanity
                 }
             }
         }
-        public override void UpdateVanity(Player player)
-        {
+        public override void UpdateVanity(Player player) {
             player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             player.Entropy().light += 0.5f;
             SpawnParticles(player.Center);
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            if (!hideVisual)
-            {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
+            if (!hideVisual) {
                 player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
                 player.Entropy().light += 0.5f;
                 SpawnParticles(player.Center);
             }
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddRecipeGroup(CERecipeGroups.butterflies)
                 .AddIngredient(ItemID.Silk, 5)
@@ -115,8 +100,7 @@ namespace CalamityEntropy.Content.Items.Vanity
                 .Register();
         }
 
-        public bool OwnAble(Player player, ref int count)
-        {
+        public bool OwnAble(Player player, ref int count) {
             return StartBagGItem.NameContains(player, "rathyep") || StartBagGItem.NameContains(player, "hikari");
         }
     }

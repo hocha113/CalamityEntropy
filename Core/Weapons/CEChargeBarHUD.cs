@@ -1,9 +1,9 @@
-using System;
-using System.Collections.Generic;
-using CalamityEntropy.Core.Cooldowns;
+﻿using CalamityEntropy.Core.Cooldowns;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI;
@@ -26,28 +26,23 @@ namespace CalamityEntropy.Core.Weapons
         private static Asset<Texture2D> BarFrontTex;
 
         /// <summary>三种触发器的进度条主色。</summary>
-        public static Color TriggerColor(CEChargeTrigger trigger) => trigger switch
-        {
+        public static Color TriggerColor(CEChargeTrigger trigger) => trigger switch {
             CEChargeTrigger.ChargeBar => new Color(255, 170, 60),
             CEChargeTrigger.HitCount => new Color(235, 90, 80),
             _ => new Color(90, 200, 235),
         };
 
-        public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
-        {
+        public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers) {
             int index = layers.FindIndex(layer => layer.Name == "Vanilla: Entity Health Bars");
-            if (index != -1)
-            {
-                layers.Insert(index, new LegacyGameInterfaceLayer("CalamityEntropy: Charge Bar", () =>
-                {
+            if (index != -1) {
+                layers.Insert(index, new LegacyGameInterfaceLayer("CalamityEntropy: Charge Bar", () => {
                     Draw(Main.spriteBatch);
                     return true;
                 }, InterfaceScaleType.Game));
             }
         }
 
-        private static void Draw(SpriteBatch spriteBatch)
-        {
+        private static void Draw(SpriteBatch spriteBatch) {
             if (Main.gameMenu)
                 return;
 
@@ -68,8 +63,7 @@ namespace CalamityEntropy.Core.Weapons
 
             Color color = TriggerColor(chargeWeapon.ChargeProfile.Trigger);
             float opacity = 0.85f;
-            if (meter.Ready)
-            {
+            if (meter.Ready) {
                 float pulse = 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 8f);
                 color = Color.Lerp(color, Color.White, 0.35f + 0.4f * pulse);
                 opacity = 0.95f;
@@ -77,8 +71,7 @@ namespace CalamityEntropy.Core.Weapons
 
             spriteBatch.Draw(back, drawPos, null, Color.White * opacity, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             int fill = (int)(BarWidth * meter.Ratio);
-            if (fill > 0)
-            {
+            if (fill > 0) {
                 Rectangle fillRect = new Rectangle(0, 0, fill, front.Height);
                 spriteBatch.Draw(front, drawPos, fillRect, color * opacity, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             }

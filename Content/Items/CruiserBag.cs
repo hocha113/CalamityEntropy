@@ -15,14 +15,12 @@ namespace CalamityEntropy.Content.Items
 {
     public class CruiserBag : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.ResearchUnlockCount = 3;
             ItemID.Sets.BossBag[Item.type] = true;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.maxStack = 9999;
             Item.consumable = true;
             Item.width = 24;
@@ -31,8 +29,7 @@ namespace CalamityEntropy.Content.Items
             Item.rare = ModContent.RarityType<VoidPurple>();
         }
 
-        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-        {
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup) {
             itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
         }
 
@@ -40,19 +37,16 @@ namespace CalamityEntropy.Content.Items
 
         public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
 
-        public override void PostUpdate()
-        {
+        public override void PostUpdate() {
             CEUtils.ForceItemIntoWorld(Item);
             Item.TreasureBagLightAndDust();
         }
 
-        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
-        {
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI) {
             return CEUtils.DrawTreasureBagInWorld(Item, spriteBatch, ref rotation, ref scale, whoAmI);
         }
 
-        public override void ModifyItemLoot(ItemLoot itemLoot)
-        {
+        public override void ModifyItemLoot(ItemLoot itemLoot) {
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<CruiserHead>()));
 
             //脱离灾厄:原灾厄DropHelper.Add扩展换原版规则,分数概率按CommonDrop(物品,分母,最少,最多,分子)对位

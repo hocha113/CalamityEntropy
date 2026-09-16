@@ -1,16 +1,15 @@
-using CalamityEntropy.Content.Items.Armor.Azafure;
+﻿using CalamityEntropy.Content.Items.Armor.Azafure;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Armor.AzafureT3
 {
     [AutoloadEquip(EquipType.Body)]
     public class AcropolisHeavyArmor : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 42;
             Item.height = 30;
             Item.value = Item.buyPrice(platinum: 1);
@@ -18,15 +17,12 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             Item.rare = ItemRarityID.Red;
         }
 
-        public override void UpdateEquip(Player player)
-        {
+        public override void UpdateEquip(Player player) {
             player.GetCritChance(DamageClass.Generic) += 8f;
             player.maxMinions += 1;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_UnholyEssence))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_UnholyEssence)) {
                 CreateRecipe()
                 .AddIngredient<AzafureSteamKnightArmor>()
                 .AddIngredient(ItemID.LunarBar, 16)

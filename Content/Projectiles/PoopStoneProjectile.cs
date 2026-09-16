@@ -8,8 +8,7 @@ namespace CalamityEntropy.Content.Projectiles
     {
         public override bool BreakWhenHitNPC => false;
         public override int damageChance => 35;
-        public override void OnSpawn(IEntitySource source)
-        {
+        public override void OnSpawn(IEntitySource source) {
             base.OnSpawn(source);
             Projectile.damage *= 3;
         }

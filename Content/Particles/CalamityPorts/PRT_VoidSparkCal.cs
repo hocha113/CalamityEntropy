@@ -1,4 +1,4 @@
-using InnoVault.PRT;
+﻿using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -17,8 +17,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             InitialColor = default;
             AffectedByGravity = false;
@@ -30,8 +29,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         public override string Texture => CEUtils.WhiteTexPath;   //Texture指白图占位,真图走SharedAssets
 
         public PRT_VoidSparkCal Configure(bool affectedByGravity, int lifetime, float shrinkSpeed = 1f,
-            PRTRenderLayer? renderLayer = null)
-        {
+            PRTRenderLayer? renderLayer = null) {
             AffectedByGravity = affectedByGravity;
             ShrinkSpeed = shrinkSpeed;
             InitialColor = Color;
@@ -45,23 +43,20 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 30;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Scale *= 0.9f;
             Color = Color.Lerp(InitialColor, Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D));
             Velocity *= 0.95f;
             Ylength *= 1f + 0.25f * ShrinkSpeed;   //ShrinkSpeed拉长Y压扁X,VoidSpark标志性拉伸
             Xlength *= 1f - 0.3f * ShrinkSpeed;
 
-            if (Velocity.Length() < 12f && AffectedByGravity)
-            {
+            if (Velocity.Length() < 12f && AffectedByGravity) {
                 Velocity.X *= 0.94f;
                 Velocity.Y += 0.25f;
             }
@@ -69,8 +64,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             Rotation = Velocity.ToRotation() + MathHelper.PiOver2;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch) {
             Vector2 drawScale = new Vector2(Xlength, Ylength) * Scale;
             Texture2D texture = PRTSharedAssets.GlowSpark2.Value;   //黑芯GlowSpark2+外圈GlowSpark叠两层
             Texture2D texture2 = PRTSharedAssets.GlowSpark.Value;

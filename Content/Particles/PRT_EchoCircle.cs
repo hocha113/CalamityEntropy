@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/HadCircle";
 
         public PRT_EchoCircle Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -25,23 +24,20 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 6;   //旧默认6,很短
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             float remaining = 1f - LifetimeCompletion;   //旧剩余比例,别直接拿LifetimeCompletion当alpha
             Opacity = remaining;
             Scale = remaining * 0.22f;
             Velocity *= 0.96f;   //边扩边减速,框架还会再Position+=Velocity
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             //跟HadLine/HadCircle同一套Glow/NonPremultiplied分支
             Color clr = Color;
             if (!Glow)

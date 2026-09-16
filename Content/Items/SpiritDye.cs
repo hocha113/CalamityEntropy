@@ -10,19 +10,16 @@ namespace CalamityEntropy.Content.Items
     {
         public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Assets/Effects/SoulDiscorderDye"), "DyePass").
             UseColor(new Color(200, 200, 255)).UseSecondaryColor(new Color(140, 140, 255)).UseImage(ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/SoulDiscorderColorMap"));
-        public override void SafeSetStaticDefaults()
-        {
+        public override void SafeSetStaticDefaults() {
             Item.ResearchUnlockCount = 3;
         }
 
-        public override void SafeSetDefaults()
-        {
+        public override void SafeSetDefaults() {
             Item.rare = ItemRarityID.Cyan;
             Item.value = Item.sellPrice(0, 2, 50, 0);
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient<ProphetRelic>()
                 .AddTile(TileID.DyeVat)

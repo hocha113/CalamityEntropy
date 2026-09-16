@@ -7,8 +7,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 {
     public class VoidEcho : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 380;
             Item.DamageType = DamageClass.Magic;
             Item.width = 96;
@@ -27,12 +26,10 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.useStyle = -1;
             Item.noMelee = true;
         }
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
-        public override bool CanUseItem(Player player)
-        {
+        public override bool CanUseItem(Player player) {
             return player.ownedProjectileCounts[ModContent.ProjectileType<VoidBlaster>()] <= 0;
         }
     }

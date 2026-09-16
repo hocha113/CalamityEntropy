@@ -8,8 +8,7 @@ namespace CalamityEntropy.Content.Items
     public class LuminarisRelic : ModItem
     {
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.DefaultToPlaceableTile(ModContent.TileType<LuminarisRelicTile>(), 0);
 
             Item.width = 30;

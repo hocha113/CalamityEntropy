@@ -24,8 +24,7 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             Shooting,
             Dashing
         }
-        public IceClasperAIState CurrentState
-        {
+        public IceClasperAIState CurrentState {
             get => (IceClasperAIState)NPC.ai[0];
             set => NPC.ai[0] = (int)value;
         }
@@ -57,16 +56,14 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
 
         #endregion
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.npcFrameCount[NPC.type] = 6;
             this.HideFromBestiary();
             NPCID.Sets.TrailingMode[NPC.type] = 0;
             NPCID.Sets.TrailCacheLength[NPC.type] = 6;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             NPC.npcSlots = 3f;
             NPC.noGravity = true;
             NPC.damage = 35;
@@ -85,20 +82,17 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             NPC.friendly = true;
         }
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(rotationDir);
             writer.Write(checkedRotationDir);
         }
 
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             rotationDir = reader.ReadInt32();
             checkedRotationDir = reader.ReadBoolean();
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             AIMovement(target);
             this.applyCollisionDamage();
             float distToTarget = NPC.Distance(target.Center) + .1f;
@@ -106,8 +100,7 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
 
             Lighting.AddLight(NPC.Center, Color.Cyan.ToVector3());
 
-            switch (CurrentState)
-            {
+            switch (CurrentState) {
                 case IceClasperAIState.Shooting:
                     State_Shooting(target);
                     break;
@@ -117,10 +110,8 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             }
         }
 
-        public void AIMovement(Entity player)
-        {
-            if (!checkedRotationDir)
-            {
+        public void AIMovement(Entity player) {
+            if (!checkedRotationDir) {
                 rotationDir = (Main.rand.NextBool()).ToDirectionInt();
                 checkedRotationDir = true;
                 NPC.netUpdate = true;
@@ -135,29 +126,23 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             NPC.netUpdate = true;
         }
 
-        public void State_Shooting(Entity player)
-        {
+        public void State_Shooting(Entity player) {
             if (NPC.Distance(player.Center) > 800f)
                 return;
 
             AITimer++;
 
-            if (AITimer >= TimeBetweenBurst)
-            {
-                if (TimerForShooting % TimeBetweenProjectiles == 0)
-                {
+            if (AITimer >= TimeBetweenBurst) {
+                if (TimerForShooting % TimeBetweenProjectiles == 0) {
                     Vector2 vecToPlayer = NPC.SafeDirectionTo(player.Center);
                     Vector2 projVelocity = vecToPlayer * ProjectileSpeed;
                     // 灾厄冰钳召唤弹换自有同主题友方冰锥
                     int type = ModContent.ProjectileType<Icicle>();
                     int damage = NPC.damage;
 
-                    if (Main.myPlayer == NPC.Entropy().friendFinderOwner && target is NPC)
-                    {
-                        if (death)
-                        {
-                            for (int i = -16; i < 8; i += 8)
-                            {
+                    if (Main.myPlayer == NPC.Entropy().friendFinderOwner && target is NPC) {
+                        if (death) {
+                            for (int i = -16; i < 8; i += 8) {
                                 Vector2 spreadVelocity = projVelocity.RotatedBy(MathHelper.ToRadians(i));
                                 int projectile = Projectile.NewProjectile(NPC.GetSource_FromAI(),
                                     NPC.Center + projVelocity.SafeNormalize(Vector2.Zero) * 10f,
@@ -171,8 +156,7 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
                             }
                             NPC.netUpdate = true;
                         }
-                        else
-                        {
+                        else {
                             int projectile = Projectile.NewProjectile(NPC.GetSource_FromAI(),
                                 NPC.Center + projVelocity.SafeNormalize(Vector2.Zero) * 10f,
                                 projVelocity,
@@ -195,16 +179,14 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
 
                 TimerForShooting++;
 
-                if (TimerForShooting >= TimeBetweenProjectiles * AmountOfProjectiles)
-                {
+                if (TimerForShooting >= TimeBetweenProjectiles * AmountOfProjectiles) {
                     TimerForShooting = 0f;
                     AITimer = 0f;
                     CurrentState = IceClasperAIState.Dashing;
                     NPC.netUpdate = true;
                 }
             }
-            else if (AITimer >= TimeBetweenBurst / 2f && AITimer < TimeBetweenBurst)
-            {
+            else if (AITimer >= TimeBetweenBurst / 2f && AITimer < TimeBetweenBurst) {
                 Vector2 randPos = Main.rand.NextVector2CircularEdge(100f, 100f);
                 Dust telegraphDust = Dust.NewDustPerfect(NPC.Center + randPos, 172, NPC.DirectionFrom(NPC.Center + NPC.velocity + randPos) * Main.rand.NextFloat(5f, 7f), 0, default, 1.5f);
                 telegraphDust.noGravity = true;
@@ -212,58 +194,47 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             }
         }
 
-        public void State_Dashing(Entity player)
-        {
+        public void State_Dashing(Entity player) {
             float distToTarget = NPC.Distance(player.Center) + .1f;
             AITimer++;
-            if (AITimer <= TimeBeforeDash)
-            {
+            if (AITimer <= TimeBeforeDash) {
                 NPC.velocity = Vector2.Lerp(NPC.velocity, -NPC.rotation.ToRotationVector2() * 2f, .1f);
                 NPC.netUpdate = true;
             }
-            else if (AITimer > TimeBeforeDash && AITimer <= TimeBeforeDash + TimeDashing)
-            {
+            else if (AITimer > TimeBeforeDash && AITimer <= TimeBeforeDash + TimeDashing) {
                 NPC.velocity = NPC.rotation.ToRotationVector2() * (DashSpeed + (2f / (distToTarget * .1f)));
                 NPC.netUpdate = true;
             }
-            else
-            {
+            else {
                 AITimer = 0f;
                 checkedRotationDir = false; CurrentState = IceClasperAIState.Shooting;
                 NPC.netUpdate = true;
             }
         }
-        public override bool CheckActive()
-        {
+        public override bool CheckActive() {
             return false;
         }
 
-        public override void FindFrame(int frameHeight)
-        {
+        public override void FindFrame(int frameHeight) {
             NPC.frameCounter += (isDashing) ? 0.4f : 0.15f;
             NPC.frameCounter %= Main.npcFrameCount[NPC.type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
 
-        public override void HitEffect(NPC.HitInfo hit)
-        {
-            for (int k = 0; k < 3; k++)
-            {
+        public override void HitEffect(NPC.HitInfo hit) {
+            for (int k = 0; k < 3; k++) {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Frost, hit.HitDirection, -1f, 0, default, 1f);
             }
-            if (NPC.life <= 0)
-            {
-                for (int k = 0; k < 15; k++)
-                {
+            if (NPC.life <= 0) {
+                for (int k = 0; k < 15; k++) {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Frost, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }
 
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) {
             Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             Vector2 position = NPC.Center - screenPos;
             Vector2 origin = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
@@ -275,10 +246,8 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             float AfterimageFade = MathHelper.Lerp(0f, 1f, interpolant);
 
             // 灾厄残影客户端开关移除，恒定绘制
-            if (CurrentState == IceClasperAIState.Dashing)
-            {
-                for (int i = 0; i < NPC.oldPos.Length; i++)
-                {
+            if (CurrentState == IceClasperAIState.Dashing) {
+                for (int i = 0; i < NPC.oldPos.Length; i++) {
                     Color afterimageDrawColor = new Color(0.79f, 0.94f, 0.98f) with { A = 125 } * NPC.Opacity * (1f - i / (float)NPC.oldPos.Length) * AfterimageFade;
                     Vector2 afterimageDrawPosition = NPC.oldPos[i] + NPC.Size * 0.5f - screenPos;
                     spriteBatch.Draw(texture, afterimageDrawPosition, NPC.frame, afterimageDrawColor, NPC.rotation - MathHelper.PiOver2, origin, NPC.scale, SpriteEffects.None, 0f);

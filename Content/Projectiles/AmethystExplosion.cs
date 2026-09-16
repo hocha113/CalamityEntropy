@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Particles.CalamityPorts;
+﻿using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
 using Terraria;
 using Terraria.ID;
@@ -10,14 +10,12 @@ namespace CalamityEntropy.Content.Projectiles
     public class AmethystExplosion : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Assets/Extra/white";
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 34;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 400;
             Projectile.height = 400;
@@ -31,10 +29,8 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.localNPCHitCooldown = -1;
             Projectile.ArmorPenetration = 126;
         }
-        public override void AI()
-        {
-            if (Projectile.ai[0] == 0)
-            {
+        public override void AI() {
+            if (Projectile.ai[0] == 0) {
                 //DetailedExplosionCal Configure三参是Calamity explode原样,别套EParticle尾参
                 PRTLoader.NewParticle<PRT_DetailedExplosionCal>(Projectile.Center, Vector2.Zero, new Color(220, 196, 255), 0f).Configure(Vector2.One, Main.rand.NextFloat(-5, 5), 2.2f * 0.65f, 30);
                 float scale = 7f;
@@ -45,8 +41,7 @@ namespace CalamityEntropy.Content.Projectiles
             }
             Projectile.ai[0]++;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             return false;
         }
     }

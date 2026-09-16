@@ -12,12 +12,10 @@ namespace CalamityEntropy.Content.Projectiles
     public class AmethystFrisbeeProjectile : ModProjectile
     {
         List<Vector2> odp = new List<Vector2>();
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 24;
             Projectile.height = 24;
@@ -29,29 +27,24 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.localNPCHitCooldown = 20;
             Projectile.ArmorPenetration = 10;
         }
-        public override void ModifyDamageHitbox(ref Rectangle hitbox)
-        {
+        public override void ModifyDamageHitbox(ref Rectangle hitbox) {
             hitbox = Projectile.Center.getRectCentered(Projectile.scale * 40, Projectile.scale * 40);
         }
         public float counter { get { return Projectile.localAI[0]; } set { Projectile.localAI[0] = value; } }
         public float grav { get { return Projectile.localAI[2]; } set { Projectile.localAI[2] = value; } }
         public float gravity = 2.4f;
-        public bool hited
-        {
+        public bool hited {
             get { return Projectile.ai[1] > 0; }
             set { Projectile.ai[1] = 1; }
         }
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/AmethystFrisbee";
         public bool homing = false;
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.rotation += Projectile.velocity.X * 0.03f;
             counter++;
-            if (Projectile.ai[0] == 0)
-            {
+            if (Projectile.ai[0] == 0) {
                 Projectile.localNPCHitCooldown = 20;
-                if (hited && Projectile.ai[2] == 0)
-                {
+                if (hited && Projectile.ai[2] == 0) {
                     Projectile.ai[2]++;
                     Vector2 targetPosition = Projectile.GetOwner().Center;
                     float speed = 0;
@@ -61,8 +54,7 @@ namespace CalamityEntropy.Content.Projectiles
                     float basej = 0.01f;
                     float bspeed = jspeed;
                     int count = 0;
-                    while (basej > 0)
-                    {
+                    while (basej > 0) {
                         basej += bspeed;
                         bspeed -= gravity;
                         count++;
@@ -76,147 +68,114 @@ namespace CalamityEntropy.Content.Projectiles
 
                     Projectile.netUpdate = true;
                 }
-                if (hited)
-                {
-                    if (Projectile.Distance(Projectile.GetOwner().Center) < Projectile.velocity.Length() + 54)
-                    {
-                        if (Projectile.GetOwner().HeldItem.ModItem is AmethystFrisbee af)
-                        {
+                if (hited) {
+                    if (Projectile.Distance(Projectile.GetOwner().Center) < Projectile.velocity.Length() + 54) {
+                        if (Projectile.GetOwner().HeldItem.ModItem is AmethystFrisbee af) {
                             af.altShotCount = 16;
                         }
                         Projectile.Kill();
                     }
-                    if (homing)
-                    {
-                        if (Projectile.localAI[1] < 0.12f)
-                        {
+                    if (homing) {
+                        if (Projectile.localAI[1] < 0.12f) {
                             Projectile.localAI[1] += 0.0025f;
                         }
                         Projectile.velocity *= 1f - Projectile.localAI[1];
                         Projectile.velocity += (Projectile.GetOwner().Center - Projectile.Center).normalize() * (Projectile.localAI[1] * 56);
 
                     }
-                    else
-                    {
+                    else {
                         Projectile.velocity.Y += gravity;
                         Projectile.velocity *= 0.997f;
                         Projectile.velocity += (Projectile.GetOwner().Center - Projectile.Center).normalize() * 0.3f;
 
                     }
                 }
-                else
-                {
-                    if (Projectile.Distance(Projectile.owner.ToPlayer().Center) > 1400)
-                    {
+                else {
+                    if (Projectile.Distance(Projectile.owner.ToPlayer().Center) > 1400) {
                         hited = true;
                     }
                     Projectile.velocity.Y += grav;
-                    if (grav < 2f)
-                    {
+                    if (grav < 2f) {
                         grav += 0.05f;
                     }
-                    if (counter % 8 == 0)
-                    {
+                    if (counter % 8 == 0) {
                         CEUtils.PlaySound("spin" + Main.rand.Next(1, 3).ToString(), 1, Projectile.Center, 8, 0.5f);
                     }
                 }
             }
-            else
-            {
+            else {
                 Projectile.localNPCHitCooldown = 5;
-                if (counter > 30)
-                {
+                if (counter > 30) {
                     Projectile.velocity *= 0.92f;
                     Projectile.velocity += (Projectile.GetOwner().Center - Projectile.Center).normalize() * 3f;
-                    if (Projectile.Distance(Projectile.GetOwner().Center) < Projectile.velocity.Length() + 40)
-                    {
+                    if (Projectile.Distance(Projectile.GetOwner().Center) < Projectile.velocity.Length() + 40) {
                         Projectile.Kill();
                     }
                 }
-                else
-                {
-                    if (counter % 6 == 0)
-                    {
+                else {
+                    if (counter % 6 == 0) {
                         CEUtils.PlaySound("spin" + Main.rand.Next(1, 3).ToString(), 1, Projectile.Center);
                     }
                 }
             }
             odp.Add(Projectile.Center);
-            if (odp.Count > 8)
-            {
+            if (odp.Count > 8) {
                 odp.RemoveAt(0);
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             Projectile.damage = (int)(Projectile.damage * 0.9f);
-            if (!hited)
-            {
+            if (!hited) {
                 CEUtils.PlaySound("shield", pos: Projectile.Center);
                 CEUtils.PlaySound("SarosDiskThrow1", pos: Projectile.Center);
             }
-            else
-            {
+            else {
                 homing = true;
             }
             CEUtils.PlaySound("bne_hit2", pos: Projectile.Center);
-            if (!hited && Projectile.IsEmpowered())
-            {
+            if (!hited && Projectile.IsEmpowered()) {
                 CEUtils.PlaySound("crystalShieldBreak", pos: Projectile.Center);
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<AmethystExplosion>(), Projectile.damage, 1, Projectile.owner);
             }
             hited = true;
         }
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (!hited)
-            {
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) {
+            if (!hited) {
                 CEUtils.PlaySound("shield", pos: Projectile.Center);
             }
-            else
-            {
+            else {
                 homing = true;
             }
             hited = true;
         }
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            if (!hited)
-            {
+        public override bool OnTileCollide(Vector2 oldVelocity) {
+            if (!hited) {
                 CEUtils.PlaySound("shield", pos: Projectile.Center);
             }
-            else
-            {
+            else {
                 homing = true;
-                if (Projectile.velocity.Y == 0 && oldVelocity.Y != 0)
-                {
+                if (Projectile.velocity.Y == 0 && oldVelocity.Y != 0) {
                     Projectile.velocity.Y = oldVelocity.Y * -0.8f;
                 }
-                if (Projectile.velocity.X == 0 && oldVelocity.X != 0)
-                {
+                if (Projectile.velocity.X == 0 && oldVelocity.X != 0) {
                     Projectile.velocity.X = oldVelocity.X * -0.8f;
                 }
                 Projectile.tileCollide = false;
             }
             hited = true;
-            if (Projectile.ai[0] == 1)
-            {
+            if (Projectile.ai[0] == 1) {
                 counter = 41;
             }
 
             return false;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             odp.Add(Projectile.Center);
-            if (odp.Count > 2)
-            {
+            if (odp.Count > 2) {
                 List<Vector2> poses = new List<Vector2>();
-                for (int i = 1; i < odp.Count; i++)
-                {
-                    for (float h = 0.1f; h <= 1; h += 0.1f)
-                    {
+                for (int i = 1; i < odp.Count; i++) {
+                    for (float h = 0.1f; h <= 1; h += 0.1f) {
                         poses.Add(Vector2.Lerp(odp[i - 1], odp[i], h));
                     }
                 }
@@ -225,8 +184,7 @@ namespace CalamityEntropy.Content.Projectiles
                 List<ColoredVertex> vep = new List<ColoredVertex>();
                 List<ColoredVertex> vew = new List<ColoredVertex>();
                 float ds = Main.GlobalTimeWrappedHourly * 4;
-                for (int i = 1; i < poses.Count; i++)
-                {
+                for (int i = 1; i < poses.Count; i++) {
                     float p = i / (poses.Count - 1f);
                     float a = p;
 
@@ -244,8 +202,7 @@ namespace CalamityEntropy.Content.Projectiles
                           w * a));
                 }
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                if (vep.Count >= 3)
-                {
+                if (vep.Count >= 3) {
                     Main.spriteBatch.UseBlendState(BlendState.Additive, SamplerState.LinearWrap);
                     gd.Textures[0] = CEExtraAssets.Streak2;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, vep.ToArray(), 0, vep.Count - 2);

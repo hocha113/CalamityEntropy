@@ -7,12 +7,10 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class BHExp : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Generic;
             Projectile.width = 1;
             Projectile.height = 1;
@@ -23,21 +21,17 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.penetrate = -1;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
         }
 
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return false;
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             SpriteBatch sb = Main.spriteBatch;
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);

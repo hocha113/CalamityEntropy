@@ -1,4 +1,4 @@
-using InnoVault.PRT;
+﻿using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -15,8 +15,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             MistOpacity = 0f;
             OpacityMult = 0f;
@@ -27,8 +26,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         //Assets/Particles/TechyHolosquare → PRTSharedAssets,色差Draw一行没动
         public override string Texture => CEUtils.WhiteTexPath;
 
-        public PRT_TechyHolosquare Configure(int lifetime, float opacity = 1f)
-        {
+        public PRT_TechyHolosquare Configure(int lifetime, float opacity = 1f) {
             MistOpacity = opacity;
             OpacityMult = opacity;
             PRTDrawMode = PRTDrawModeEnum.AdditiveBlend;
@@ -37,16 +35,14 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 30;
             Variant = Main.rand.Next(6);
             Rotation = Main.rand.NextFloat(MathHelper.TwoPi);
 
-            switch (Variant)
-            {
+            switch (Variant) {
                 case 0: Frame = new Rectangle(8, 0, 6, 6); break;
                 case 1: Frame = new Rectangle(6, 8, 10, 6); break;
                 case 2: Frame = new Rectangle(4, 16, 14, 8); break;
@@ -56,8 +52,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             }
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             MistOpacity = (float)Math.Pow(LifetimeCompletion, 0.5f) * OpacityMult;   //透明度跟Completion^0.5走,Calamity原版
             Lighting.AddLight(Position, Color.ToVector3() * MistOpacity);
             Rotation = Velocity.ToRotation();
@@ -65,11 +60,9 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             Scale *= 0.96f;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch) {
             Texture2D baseTex = PRTSharedAssets.TechyHolosquare.Value;   //TechyHolosquare,色差Draw原样搬的
-            CEParticleUtils.DrawChromaticAberration(Vector2.UnitX.RotatedBy(Rotation), 1.5f, delegate (Vector2 offset, Color colorMod)
-            {
+            CEParticleUtils.DrawChromaticAberration(Vector2.UnitX.RotatedBy(Rotation), 1.5f, delegate (Vector2 offset, Color colorMod) {
                 spriteBatch.Draw(baseTex, Position + offset - Main.screenPosition, Frame,
                     Color.MultiplyRGB(colorMod) * MistOpacity, Rotation, Frame.Size() / 2f, Scale / 2f, SpriteEffects.None, 0);
             });

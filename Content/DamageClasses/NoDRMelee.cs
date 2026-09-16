@@ -1,4 +1,4 @@
-using Terraria.ModLoader;
+﻿using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.DamageClasses
 {
@@ -9,8 +9,7 @@ namespace CalamityEntropy.Content.DamageClasses
         public override void Load() => Instance = this;
         public override void Unload() => Instance = null;
 
-        public override StatInheritanceData GetModifierInheritance(DamageClass damageClass)
-        {
+        public override StatInheritanceData GetModifierInheritance(DamageClass damageClass) {
             if (damageClass == Melee || damageClass == Generic)
                 return StatInheritanceData.Full;
 

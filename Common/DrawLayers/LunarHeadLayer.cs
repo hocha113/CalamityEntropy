@@ -22,8 +22,7 @@ namespace CalamityEntropy.Common.DrawLayers
         [VaultLoaden("CalamityEntropy/Assets/Extra/LuminarRing")]
         internal static Asset<Texture2D> RingTex;
 
-        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
-        {
+        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) {
             if (drawInfo.drawPlayer.dead)
                 return false;
             return drawInfo.drawPlayer.head == EquipLoader.GetEquipSlot(Mod, "LuminarRing", EquipType.Head) || drawInfo.drawPlayer.head == EquipLoader.GetEquipSlot(Mod, "LunarMulse", EquipType.Head);
@@ -31,32 +30,26 @@ namespace CalamityEntropy.Common.DrawLayers
 
         public override bool IsHeadLayer => true;
 
-        public override Position GetDefaultPosition()
-        {
+        public override Position GetDefaultPosition() {
             return new AfterParent(PlayerDrawLayers.Head);
         }
 
-        protected override void Draw(ref PlayerDrawSet drawInfo)
-        {
+        protected override void Draw(ref PlayerDrawSet drawInfo) {
             var player = drawInfo.drawPlayer;
             Texture2D texture = StandFrames[(int)((Main.GameUpdateCount / 8) % 3)];
 
-            if (player.velocity.Y > 0)
-            {
+            if (player.velocity.Y > 0) {
                 texture = FallTex.Value;
             }
-            else
-            {
-                if (Math.Abs(player.velocity.X) > 0.4f)
-                {
+            else {
+                if (Math.Abs(player.velocity.X) > 0.4f) {
                     texture = WalkFrames[(int)((Main.GameUpdateCount / 4) % 4)];
                 }
             }
             Vector2 headPos = drawInfo.HeadPosition(true);
             drawInfo.DrawDataCache.Add(new DrawData(texture, headPos, null, drawInfo.colorArmorHead, drawInfo.drawPlayer.headRotation, new Vector2(drawInfo.playerEffect == SpriteEffects.FlipHorizontally ? texture.Width - 28 : 28, texture.Height / 2f + 3), 1, drawInfo.playerEffect) { shader = drawInfo.drawPlayer.cHead });
 
-            if (Main.GameUpdateCount % 320 > 310)
-            {
+            if (Main.GameUpdateCount % 320 > 310) {
                 texture = BlinkTex.Value;
                 drawInfo.DrawDataCache.Add(new DrawData(texture, headPos, null, drawInfo.colorArmorHead, drawInfo.drawPlayer.headRotation, new Vector2(drawInfo.playerEffect == SpriteEffects.FlipHorizontally ? texture.Width - 28 : 28, texture.Height / 2f + 3), 1, drawInfo.playerEffect) { shader = drawInfo.drawPlayer.cHead });
             }

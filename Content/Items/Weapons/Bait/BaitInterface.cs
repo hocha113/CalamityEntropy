@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.IO;
 using Terraria;
@@ -17,14 +17,12 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
         public bool IsActive = true;
         public int StickNPC = -1;
         public Vector2 StickOffset = Vector2.Zero;
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(StickNPC);
             writer.WriteVector2(StickOffset);
             writer.Write(IsActive);
         }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             StickNPC = reader.ReadInt32();
             StickOffset = reader.ReadVector2();
             IsActive = reader.ReadBoolean();
@@ -32,40 +30,32 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
         public float Counter { get { return Projectile.localAI[0]; } set { Projectile.localAI[0] = value; } }
         public float ActiveCounter { get { return Projectile.localAI[1]; } set { Projectile.localAI[1] = value; } }
         public int TagDamage => (int)Projectile.ai[2];
-        public virtual void SetActive()
-        {
+        public virtual void SetActive() {
             ActiveEffect(1);
             IsActive = false;
         }
-        public virtual void ActiveEffect(float DamageMul)
-        { }
+        public virtual void ActiveEffect(float DamageMul) { }
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
             modifiers.SourceDamage *= 0.16f;
         }
     }
     public class BaitHeldEffect : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Generic, false, -1);
         }
-        public override bool? CanDamage()
-        {
+        public override bool? CanDamage() {
             return false;
         }
         public float throwAnm = 0;
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Player player = Projectile.GetOwner();
-            if(player.HeldItem.ModItem is not IBaitItem)
-            {
+            if (player.HeldItem.ModItem is not IBaitItem) {
                 Projectile.Kill();
                 return;
             }
@@ -78,22 +68,19 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             player.Entropy().MouseWorldListener = true;
             float hr = 2.4f;
             float charge = float.Clamp(player.Entropy().BaitCharge, 0, 1);
-            if(throwAnm > 0)
-            {
+            if (throwAnm > 0) {
                 Projectile.rotation += (-hr + CEUtils.Parabola((1 - throwAnm * throwAnm * throwAnm) * 0.5f, hr * 1.6f)) * dir;
                 throwAnm -= 1 / 12f;
                 if (throwAnm < 0)
                     throwAnm = 0;
             }
-            else
-            {
+            else {
                 Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation + (float)(Math.Sin(Main.GameUpdateCount * 0.5f)) * 0.18f, Projectile.rotation - hr * dir, charge * charge * charge, false);
             }
             player.SetHandRotWithDir(Projectile.rotation, dir);
             player.heldProj = Projectile.whoAmI;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             if (throwAnm > 0)
                 return false;
             Texture2D item = TextureAssets.Item[Projectile.GetOwner().HeldItem.type].Value;

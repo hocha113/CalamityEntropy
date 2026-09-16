@@ -15,8 +15,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Assets/Extra/white";
 
         public PRT_RealisticExplosion Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -26,15 +25,13 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 40;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             frame++;
             //旧OnSpawn播音,放首帧AI(frame从-1走到0)对齐spawn时机,别挪SetProperty也不开CanPool
             if (frame == 0)
@@ -43,10 +40,8 @@ namespace CalamityEntropy.Content.Particles
                 Kill();
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
-            if (frame >= 0 && frame <= 32)
-            {
+        public override bool PreDraw(SpriteBatch sb) {
+            if (frame >= 0 && frame <= 32) {
                 //两帧共一张spr_realisticexplosion_N,RequestTex有缓存但别改成每帧无上限spawn
                 Texture2D tex = CEUtils.RequestTex("CalamityEntropy/Content/Particles/realisticexplosion/spr_realisticexplosion_" + (frame / 2));
                 sb.Draw(tex, Position - Main.screenPosition, null, Color, 0, tex.Size() / 2f, size * Scale, SpriteEffects.None, 0);

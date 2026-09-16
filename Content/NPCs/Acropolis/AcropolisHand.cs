@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Acropolis.Core;
+﻿using CalamityEntropy.Content.NPCs.Acropolis.Core;
 using System.IO;
 using Terraria;
 
@@ -26,8 +26,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         /// <summary>未晋升形态时手臂垂向的虚拟目标,纯本地</summary>
         public Vector2 DummyPos = Vector2.Zero;
 
-        public AcropolisHand(NPC n, Vector2 offset, float seg1Length, float seg1Rot, float seg2Rot)
-        {
+        public AcropolisHand(NPC n, Vector2 offset, float seg1Length, float seg1Rot, float seg2Rot) {
             npc = n;
             Seg1Length = seg1Length;
             Seg1Rot = seg1Rot;
@@ -46,20 +45,16 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             + Seg1Rot.ToRotationVector2() * Seg1Length;
 
         /// <summary>两节一起转向目标点,第一节带偏摆上限</summary>
-        public void PointAPos(Vector2 pos)
-        {
+        public void PointAPos(Vector2 pos) {
             Seg1Rot = CEUtils.RotateTowardsAngle(Seg1Rot,
                 (pos - (npc.Center + (offset * new Vector2(((AcropolisMachine)npc.ModNPC).dir, 1))
                     .RotatedBy(((AcropolisMachine)npc.ModNPC).dir > 0 ? npc.rotation : (npc.rotation + MathHelper.Pi)))).ToRotation(),
                 AcropolisDirector.HandAimRate, false);
-            if (CEUtils.GetAngleBetweenVectors(Seg1Rot.ToRotationVector2(), -Vector2.UnitY) > Seg1MaxRadians * 2)
-            {
-                if (Seg1Rot > (MathHelper.PiOver2 + Seg1MaxRadians))
-                {
+            if (CEUtils.GetAngleBetweenVectors(Seg1Rot.ToRotationVector2(), -Vector2.UnitY) > Seg1MaxRadians * 2) {
+                if (Seg1Rot > (MathHelper.PiOver2 + Seg1MaxRadians)) {
                     Seg1Rot = (MathHelper.PiOver2 + Seg1MaxRadians);
                 }
-                if (Seg1Rot < (MathHelper.PiOver2 - Seg1MaxRadians))
-                {
+                if (Seg1Rot < (MathHelper.PiOver2 - Seg1MaxRadians)) {
                     Seg1Rot = (MathHelper.PiOver2 - Seg1MaxRadians);
                 }
             }
@@ -67,25 +62,21 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         }
 
         /// <summary>过线块:定长</summary>
-        public void NetSend(BinaryWriter writer)
-        {
+        public void NetSend(BinaryWriter writer) {
             writer.Write(Seg1Rot);
             writer.Write(Seg2Rot);
             writer.Write(Seg1RotV);
         }
 
-        public void NetReceive(BinaryReader reader)
-        {
+        public void NetReceive(BinaryReader reader) {
             Seg1Rot = reader.ReadSingle();
             Seg2Rot = reader.ReadSingle();
             Seg1RotV = reader.ReadSingle();
         }
 
         /// <summary>每帧:未晋升形态自己垂下去,然后结算反冲</summary>
-        public void Update()
-        {
-            if (!npc.boss)
-            {
+        public void Update() {
+            if (!npc.boss) {
                 PointAPos(DummyPos);
                 DummyPos = Vector2.Lerp(DummyPos, npc.Center + offset + new Vector2(0, Seg1Length * npc.scale * 2), AcropolisDirector.HandDummyLerp);
             }

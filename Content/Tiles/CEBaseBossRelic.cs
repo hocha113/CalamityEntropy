@@ -1,6 +1,6 @@
-using System;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -30,22 +30,18 @@ namespace CalamityEntropy.Content.Tiles
         // 所有遗物共用同一张托座贴图。这张只是加载期的占位,实际绘制在 PreDraw 里换成原版的托座图
         public override string Texture => "CalamityEntropy/Content/Tiles/RelicPedestal";
 
-        public override void Load()
-        {
-            if (!Main.dedServ)
-            {
+        public override void Load() {
+            if (!Main.dedServ) {
                 RelicTexture = ModContent.Request<Texture2D>(RelicTextureName);
             }
         }
 
-        public override void Unload()
-        {
+        public override void Unload() {
             RelicTexture = null;
             pedestalTextureBorrowed = false;
         }
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             RegisterItemDrop(AssociatedItem);
 
             Main.tileShine[Type] = 400;
@@ -67,24 +63,20 @@ namespace CalamityEntropy.Content.Tiles
             AddMapEntry(new Color(233, 207, 94), Language.GetText("MapObject.Relic"));
         }
 
-        public override bool CreateDust(int i, int j, ref int type)
-        {
+        public override bool CreateDust(int i, int j, ref int type) {
             return false;
         }
 
         private bool pedestalTextureBorrowed;
 
-        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
-        {
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) {
             // 脱灾时自制的 RelicPedestal.png 只是块占位色板,与原版大师遗物底座对不上。
             // 原版 617 的托座图幅同样是 54x144、同样的 18px 格距,直接把本物块的贴图槽指向它,
             // 绘制仍由引擎按本类的 TileObjectData 走,不需要手写几何。只换一次。
-            if (!pedestalTextureBorrowed)
-            {
+            if (!pedestalTextureBorrowed) {
                 Main.instance.LoadTiles(TileID.MasterTrophyBase);
                 Asset<Texture2D> vanillaPedestal = TextureAssets.Tile[TileID.MasterTrophyBase];
-                if (vanillaPedestal != null && vanillaPedestal.IsLoaded)
-                {
+                if (vanillaPedestal != null && vanillaPedestal.IsLoaded) {
                     TextureAssets.Tile[Type] = vanillaPedestal;
                     pedestalTextureBorrowed = true;
                 }
@@ -92,17 +84,14 @@ namespace CalamityEntropy.Content.Tiles
             return true;
         }
 
-        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
-        {
+        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData) {
             // 悬浮部分不在物块贴图内,登记特殊绘制点由 SpecialDraw 处理
-            if (drawData.tileFrameX % FrameWidth == 0 && drawData.tileFrameY % FrameHeight == 0)
-            {
+            if (drawData.tileFrameX % FrameWidth == 0 && drawData.tileFrameY % FrameHeight == 0) {
                 Main.instance.TilesRenderer.AddSpecialPoint(i, j, Terraria.GameContent.Drawing.TileDrawing.TileCounterType.CustomNonSolid);
             }
         }
 
-        public override void SpecialDraw(int i, int j, SpriteBatch spriteBatch)
-        {
+        public override void SpecialDraw(int i, int j, SpriteBatch spriteBatch) {
             Point p = new Point(i, j);
             Tile tile = Main.tile[p.X, p.Y];
             if (!tile.HasTile)

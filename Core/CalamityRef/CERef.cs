@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Terraria;
@@ -14,35 +14,27 @@ namespace CalamityEntropy.Core.CalamityRef
         private const string CalName = "CalamityMod";
 
         /// <summary>已装 CalamityMod(不校版本)。成员取不到时全部走空值防护</summary>
-        public static bool Has
-        {
-            get
-            {
+        public static bool Has {
+            get {
                 has ??= ModLoader.TryGetMod(CalName, out calamity);
                 return has.Value;
             }
         }
 
         /// <summary>该 Mod 是否就是已缓存的灾厄实例。调用点不要再写模组名字符串</summary>
-        internal static bool IsCalamity(Mod mod)
-        {
+        internal static bool IsCalamity(Mod mod) {
             return Has && mod != null && ReferenceEquals(mod, calamity);
         }
 
         /// <summary>转调灾厄对第三方公开的 ModCall。未装灾厄返回 null;异常按本类惯例只记一次日志后吞掉。
         /// 调用点一律走 CECal 的语义方法,不要直接拼灾厄的 case 名</summary>
-        internal static object Call(params object[] args)
-        {
-            if (!Has || calamity == null)
-            {
+        internal static object Call(params object[] args) {
+            if (!Has || calamity == null) {
                 return null;
             }
-            try
-            {
+            try {
                 return calamity.Call(args);
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 string head = args != null && args.Length > 0 && args[0] != null ? args[0].ToString() : "?";
                 LogFailed("Call", head + " " + ex.GetType().Name);
                 return null;
@@ -136,118 +128,90 @@ namespace CalamityEntropy.Core.CalamityRef
             Count
         }
 
-        private static void LogFailed(string what, string fullName)
-        {
-            if (!loggedFailures.Add(what + "|" + fullName))
-            {
+        private static void LogFailed(string what, string fullName) {
+            if (!loggedFailures.Add(what + "|" + fullName)) {
                 return;
             }
             CalamityEntropy inst = CalamityEntropy.Instance;
             inst?.Logger.Warn("[CERef] 反射失败 " + what + ": " + fullName);
         }
 
-        private static Type GetModType(string fullName)
-        {
+        private static Type GetModType(string fullName) {
             Type type = calamity?.Code.GetType(fullName);
-            if (type == null)
-            {
+            if (type == null) {
                 LogFailed("Type", fullName);
             }
             return type;
         }
 
-        private static PropertyInfo GetProperty(Type type, string name, BindingFlags flags)
-        {
-            if (type == null)
-            {
+        private static PropertyInfo GetProperty(Type type, string name, BindingFlags flags) {
+            if (type == null) {
                 return null;
             }
             PropertyInfo property = type.GetProperty(name, flags);
-            if (property == null)
-            {
+            if (property == null) {
                 LogFailed("Property", type.FullName + "." + name);
             }
             return property;
         }
 
-        private static MemberInfo GetFieldOrProperty(Type type, string name, BindingFlags flags)
-        {
-            if (type == null)
-            {
+        private static MemberInfo GetFieldOrProperty(Type type, string name, BindingFlags flags) {
+            if (type == null) {
                 return null;
             }
             MemberInfo member = type.GetField(name, flags);
-            if (member == null)
-            {
+            if (member == null) {
                 member = type.GetProperty(name, flags);
             }
-            if (member == null)
-            {
+            if (member == null) {
                 LogFailed("FieldOrProperty", type.FullName + "." + name);
             }
             return member;
         }
 
-        private static object GetMember(MemberInfo member, object obj)
-        {
-            if (member == null)
-            {
+        private static object GetMember(MemberInfo member, object obj) {
+            if (member == null) {
                 return null;
             }
-            try
-            {
+            try {
                 FieldInfo field = member as FieldInfo;
-                if (field != null)
-                {
+                if (field != null) {
                     return field.GetValue(obj);
                 }
                 PropertyInfo property = member as PropertyInfo;
-                if (property != null)
-                {
+                if (property != null) {
                     return property.GetValue(obj);
                 }
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 LogFailed("GetValue", (member.DeclaringType != null ? member.DeclaringType.FullName : "?") + "." + member.Name + " " + ex.GetType().Name);
             }
             return null;
         }
 
-        private static void SetMember(MemberInfo member, object obj, object value)
-        {
-            if (member == null)
-            {
+        private static void SetMember(MemberInfo member, object obj, object value) {
+            if (member == null) {
                 return;
             }
-            try
-            {
+            try {
                 FieldInfo field = member as FieldInfo;
-                if (field != null)
-                {
+                if (field != null) {
                     field.SetValue(obj, value);
                     return;
                 }
                 PropertyInfo property = member as PropertyInfo;
-                if (property != null && property.CanWrite)
-                {
+                if (property != null && property.CanWrite) {
                     property.SetValue(obj, value);
                 }
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 LogFailed("SetValue", (member.DeclaringType != null ? member.DeclaringType.FullName : "?") + "." + member.Name + " " + ex.GetType().Name);
             }
         }
 
-        private static bool ReadCachedFlag(MemberInfo member, ref FlagCache cache)
-        {
-            if (member == null)
-            {
+        private static bool ReadCachedFlag(MemberInfo member, ref FlagCache cache) {
+            if (member == null) {
                 return false;
             }
-            if (cache.Frame != Main.GameUpdateCount)
-            {
+            if (cache.Frame != Main.GameUpdateCount) {
                 cache.Frame = Main.GameUpdateCount;
                 object raw = GetMember(member, null);
                 cache.Value = raw is bool flag && flag;
@@ -256,25 +220,20 @@ namespace CalamityEntropy.Core.CalamityRef
         }
 
         /// <summary>读灾厄 downed 旗标。一帧内至多反射一次;未装灾厄或反射失败恒 false</summary>
-        public static bool GetDowned(DownedFlag flag)
-        {
-            if (downedProps == null)
-            {
+        public static bool GetDowned(DownedFlag flag) {
+            if (downedProps == null) {
                 return false;
             }
             int index = (int)flag;
-            if (index < 0 || index >= downedProps.Length)
-            {
+            if (index < 0 || index >= downedProps.Length) {
                 return false;
             }
             PropertyInfo prop = downedProps[index];
-            if (prop == null)
-            {
+            if (prop == null) {
                 return false;
             }
             ref FlagCache cache = ref downedCache[index];
-            if (cache.Frame != Main.GameUpdateCount)
-            {
+            if (cache.Frame != Main.GameUpdateCount) {
                 cache.Frame = Main.GameUpdateCount;
                 object raw = prop.GetValue(null);
                 cache.Value = raw is bool flagValue && flagValue;
@@ -282,181 +241,146 @@ namespace CalamityEntropy.Core.CalamityRef
             return cache.Value;
         }
 
-        public static bool GetRevengeance()
-        {
+        public static bool GetRevengeance() {
             return ReadCachedFlag(calWorld_revenge_M, ref revengeCache);
         }
 
-        public static bool GetDeathMode()
-        {
+        public static bool GetDeathMode() {
             return ReadCachedFlag(calWorld_death_M, ref deathCache);
         }
 
-        public static bool GetBossRushActive()
-        {
+        public static bool GetBossRushActive() {
             return ReadCachedFlag(bossRush_Active_M, ref bossRushCache);
         }
 
-        private static ModPlayer GetCalPlayer(Player player)
-        {
-            if (calPlayerTemplate == null || player == null)
-            {
+        private static ModPlayer GetCalPlayer(Player player) {
+            if (calPlayerTemplate == null || player == null) {
                 return null;
             }
-            if (!player.TryGetModPlayer(calPlayerTemplate, out ModPlayer calPlayer))
-            {
+            if (!player.TryGetModPlayer(calPlayerTemplate, out ModPlayer calPlayer)) {
                 return null;
             }
             return calPlayer;
         }
 
-        private static bool GetPlayerFlag(Player player, MemberInfo member)
-        {
+        private static bool GetPlayerFlag(Player player, MemberInfo member) {
             ModPlayer calPlayer = GetCalPlayer(player);
-            if (calPlayer == null || member == null)
-            {
+            if (calPlayer == null || member == null) {
                 return false;
             }
             object raw = GetMember(member, calPlayer);
             return raw is bool flag && flag;
         }
 
-        public static bool GetZoneAstral(Player player)
-        {
+        public static bool GetZoneAstral(Player player) {
             return GetPlayerFlag(player, calPlayer_ZoneAstral_M);
         }
 
-        public static bool GetZoneSulphur(Player player)
-        {
+        public static bool GetZoneSulphur(Player player) {
             return GetPlayerFlag(player, calPlayer_ZoneSulphur_M);
         }
 
-        public static bool GetZoneAbyssLayer4(Player player)
-        {
+        public static bool GetZoneAbyssLayer4(Player player) {
             return GetPlayerFlag(player, calPlayer_ZoneAbyssLayer4_M);
         }
 
         //以下五个写入点都是灾厄每帧在 CalamityPlayer.ResetEffects 归位的装备旗标,
         //写它们等价于灾厄自家饰品在 UpdateAccessory 里做的事,不落存档不过网络
-        private static void SetPlayerFlag(Player player, MemberInfo member, bool value)
-        {
+        private static void SetPlayerFlag(Player player, MemberInfo member, bool value) {
             ModPlayer calPlayer = GetCalPlayer(player);
-            if (calPlayer == null || member == null)
-            {
+            if (calPlayer == null || member == null) {
                 return;
             }
             SetMember(member, calPlayer, value);
         }
 
-        public static void SetChaliceOfTheBloodGod(Player player, bool value)
-        {
+        public static void SetChaliceOfTheBloodGod(Player player, bool value) {
             SetPlayerFlag(player, calPlayer_chaliceOfTheBloodGod_M, value);
         }
 
-        public static void SetChaliceHeartStyle(Player player, bool value)
-        {
+        public static void SetChaliceHeartStyle(Player player, bool value) {
             SetPlayerFlag(player, calPlayer_chaliceHeartStyle_M, value);
         }
 
-        public static void SetAbsorber(Player player, bool value)
-        {
+        public static void SetAbsorber(Player player, bool value) {
             SetPlayerFlag(player, calPlayer_absorber_M, value);
         }
 
-        public static void SetPurity(Player player, bool value)
-        {
+        public static void SetPurity(Player player, bool value) {
             SetPlayerFlag(player, calPlayer_purity_M, value);
         }
 
-        public static void SetInfiniteFlight(Player player, bool value)
-        {
+        public static void SetInfiniteFlight(Player player, bool value) {
             SetPlayerFlag(player, calPlayer_infiniteFlight_M, value);
         }
 
         //深渊三项也是 ResetEffects 每帧归位的装备量,但类型是 float,要读改写
-        private static void AddPlayerFloat(Player player, MemberInfo member, float delta)
-        {
+        private static void AddPlayerFloat(Player player, MemberInfo member, float delta) {
             ModPlayer calPlayer = GetCalPlayer(player);
-            if (calPlayer == null || member == null)
-            {
+            if (calPlayer == null || member == null) {
                 return;
             }
             object raw = GetMember(member, calPlayer);
-            if (raw is not float current)
-            {
+            if (raw is not float current) {
                 return;
             }
             SetMember(member, calPlayer, current + delta);
         }
 
         /// <summary>加深渊黑暗强度。传负值即减黑暗,等价灾厄对外开放的 AddAbyssLightStrength</summary>
-        public static void AddAbyssDarkness(Player player, float delta)
-        {
+        public static void AddAbyssDarkness(Player player, float delta) {
             AddPlayerFloat(player, calPlayer_abyssDarkness_M, delta);
         }
 
         /// <summary>加玩家在深渊的主光环半径倍率。灾厄按 4 * 该倍率算光斑</summary>
-        public static void AddAbyssGlowMultiplier(Player player, float delta)
-        {
+        public static void AddAbyssGlowMultiplier(Player player, float delta) {
             AddPlayerFloat(player, calPlayer_abyssPlayerGlowMultiplier_M, delta);
         }
 
         /// <summary>加深渊手电筒光束宽度倍率</summary>
-        public static void AddAbyssFlashlightWidthMultiplier(Player player, float delta)
-        {
+        public static void AddAbyssFlashlightWidthMultiplier(Player player, float delta) {
             AddPlayerFloat(player, calPlayer_abyssFlashlightWidthMultiplier_M, delta);
         }
 
-        private static GlobalNPC GetCalGlobalNPC(NPC npc)
-        {
-            if (calGlobalNPCTemplate == null || npc == null)
-            {
+        private static GlobalNPC GetCalGlobalNPC(NPC npc) {
+            if (calGlobalNPCTemplate == null || npc == null) {
                 return null;
             }
-            if (!npc.TryGetGlobalNPC(calGlobalNPCTemplate, out GlobalNPC calNpc))
-            {
+            if (!npc.TryGetGlobalNPC(calGlobalNPCTemplate, out GlobalNPC calNpc)) {
                 return null;
             }
             return calNpc;
         }
 
-        private static bool GetNpcFlag(NPC npc, MemberInfo member)
-        {
+        private static bool GetNpcFlag(NPC npc, MemberInfo member) {
             GlobalNPC calNpc = GetCalGlobalNPC(npc);
-            if (calNpc == null || member == null)
-            {
+            if (calNpc == null || member == null) {
                 return false;
             }
             object raw = GetMember(member, calNpc);
             return raw is bool flag && flag;
         }
 
-        public static bool GetNPCEnraged(NPC npc)
-        {
+        public static bool GetNPCEnraged(NPC npc) {
             return GetNpcFlag(npc, calNPC_CurrentlyEnraged_M);
         }
 
-        public static bool GetNPCIncreasingDefenseOrDR(NPC npc)
-        {
+        public static bool GetNPCIncreasingDefenseOrDR(NPC npc) {
             return GetNpcFlag(npc, calNPC_CurrentlyIncreasingDefenseOrDR_M);
         }
 
-        public static float GetNPCDR(NPC npc)
-        {
+        public static float GetNPCDR(NPC npc) {
             GlobalNPC calNpc = GetCalGlobalNPC(npc);
-            if (calNpc == null || calNPC_DR_M == null)
-            {
+            if (calNpc == null || calNPC_DR_M == null) {
                 return 0f;
             }
             object raw = GetMember(calNPC_DR_M, calNpc);
             return raw is float value ? value : 0f;
         }
 
-        internal static void LoadData()
-        {
+        internal static void LoadData() {
             has = ModLoader.TryGetMod(CalName, out calamity);
-            if (!has.Value)
-            {
+            if (!has.Value) {
                 return;
             }
 
@@ -465,10 +389,8 @@ namespace CalamityEntropy.Core.CalamityRef
             int flagCount = (int)DownedFlag.Count;
             downedProps = new PropertyInfo[flagCount];
             downedCache = new FlagCache[flagCount];
-            if (downedBossSystemType != null)
-            {
-                for (int i = 0; i < flagCount; i++)
-                {
+            if (downedBossSystemType != null) {
+                for (int i = 0; i < flagCount; i++) {
                     string propName = "downed" + ((DownedFlag)i).ToString();
                     downedProps[i] = GetProperty(downedBossSystemType, propName, PublicStaticFlags);
                     downedCache[i].Frame = uint.MaxValue;
@@ -491,16 +413,12 @@ namespace CalamityEntropy.Core.CalamityRef
             bossRushCache.Frame = uint.MaxValue;
         }
 
-        internal static void SetupData()
-        {
-            if (Has)
-            {
-                if (!ModContent.TryFind(CalName, "CalamityPlayer", out calPlayerTemplate))
-                {
+        internal static void SetupData() {
+            if (Has) {
+                if (!ModContent.TryFind(CalName, "CalamityPlayer", out calPlayerTemplate)) {
                     LogFailed("TryFind", "CalamityMod/CalamityPlayer");
                 }
-                else
-                {
+                else {
                     Type calPlayerType = calPlayerTemplate.GetType();
                     calPlayer_ZoneAstral_M = GetFieldOrProperty(calPlayerType, "ZoneAstral", PublicInstanceFlags);
                     calPlayer_ZoneSulphur_M = GetFieldOrProperty(calPlayerType, "ZoneSulphur", PublicInstanceFlags);
@@ -515,12 +433,10 @@ namespace CalamityEntropy.Core.CalamityRef
                     calPlayer_abyssFlashlightWidthMultiplier_M = GetFieldOrProperty(calPlayerType, "abyssFlashlightWidthMultiplier", PublicInstanceFlags);
                 }
 
-                if (!ModContent.TryFind(CalName, "CalamityGlobalNPC", out calGlobalNPCTemplate))
-                {
+                if (!ModContent.TryFind(CalName, "CalamityGlobalNPC", out calGlobalNPCTemplate)) {
                     LogFailed("TryFind", "CalamityMod/CalamityGlobalNPC");
                 }
-                else
-                {
+                else {
                     Type calNpcType = calGlobalNPCTemplate.GetType();
                     calNPC_CurrentlyEnraged_M = GetFieldOrProperty(calNpcType, "CurrentlyEnraged", PublicInstanceFlags);
                     calNPC_CurrentlyIncreasingDefenseOrDR_M = GetFieldOrProperty(calNpcType, "CurrentlyIncreasingDefenseOrDR", PublicInstanceFlags);
@@ -531,8 +447,7 @@ namespace CalamityEntropy.Core.CalamityRef
             CEID.SealMissCache();
         }
 
-        internal static void UnLoadData()
-        {
+        internal static void UnLoadData() {
             has = null;
             calamity = null;
             loggedFailures.Clear();
@@ -577,18 +492,15 @@ namespace CalamityEntropy.Core.CalamityRef
     /// <summary>把 CERef 接到 ICELoader。本类不得有任何字段</summary>
     internal class CERefLoader : ICELoader
     {
-        public void LoadData()
-        {
+        public void LoadData() {
             CERef.LoadData();
         }
 
-        public void SetupData()
-        {
+        public void SetupData() {
             CERef.SetupData();
         }
 
-        public void UnLoadData()
-        {
+        public void UnLoadData() {
             CERef.UnLoadData();
         }
     }

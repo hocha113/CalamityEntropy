@@ -1,4 +1,4 @@
-namespace CalamityEntropy.Core.Weapons
+﻿namespace CalamityEntropy.Core.Weapons
 {
     /// <summary>
     /// 「蓄势」大招触发器类型,对应 rogue-weapons.md §一的三种触发器。
@@ -35,8 +35,7 @@ namespace CalamityEntropy.Core.Weapons
         /// <summary>大招释放时的击退乘数,承接原灾厄 StealthKnockbackMultiplier。</summary>
         public readonly float KnockbackMult;
 
-        private CEChargeProfile(CEChargeTrigger trigger, float max, float damageMult, float velocityMult, float knockbackMult)
-        {
+        private CEChargeProfile(CEChargeTrigger trigger, float max, float damageMult, float velocityMult, float knockbackMult) {
             Trigger = trigger;
             Max = max;
             DamageMult = damageMult;

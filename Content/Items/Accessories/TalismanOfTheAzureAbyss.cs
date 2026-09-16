@@ -1,17 +1,17 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
-using Terraria.ID;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -21,8 +21,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         // (0.5秒内置节流);受击时召唤3个漩涡,5秒效果冷却。水下机动风味保留。
         public const int VortexBaseDamage = 50;
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 52;
             Item.height = 52;
             Item.accessory = true;
@@ -30,24 +29,20 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.rare = ModContent.RarityType<VoidPurple>();
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.Entropy().accAzureAbyss = true;
             // 增加无敌帧(与十字章项链同源)
             player.longInvince = true;
             ApplyBuffImmune(player);
         }
 
-        public static void ApplyBuffImmune(Player player)
-        {
+        public static void ApplyBuffImmune(Player player) {
             player.buffImmune[ModContent.BuffType<CrushDepth>()] = true;
             player.buffImmune[ModContent.BuffType<HadopelagicPressure>()] = true;
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_Lumenyl, CEID.Item_AscendantSpiritEssence))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_Lumenyl, CEID.Item_AscendantSpiritEssence)) {
                 CreateRecipe().
                 AddIngredient<VoidBar>(5).
                 AddIngredient(CEID.Item_Lumenyl, 6).
@@ -67,26 +62,21 @@ namespace CalamityEntropy.Content.Items.Accessories
     public class AzureShield : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Generic, false, -1);
             Projectile.timeLeft = 480;
         }
-        public override bool? CanDamage()
-        {
+        public override bool? CanDamage() {
             return false;
         }
-        public override void AI()
-        {
+        public override void AI() {
             if (Projectile.localAI[1]++ == 0)
                 CEUtils.PlaySound("vp_use", 1.25f, Projectile.Center);
             Player player = Projectile.GetOwner();
-            if (player.dead)
-            {
+            if (player.dead) {
                 Projectile.Kill();
             }
-            else
-            {
+            else {
                 Projectile.Center = player.Center;
             }
             player.Entropy().AzureShield = 3;
@@ -94,24 +84,19 @@ namespace CalamityEntropy.Content.Items.Accessories
             if (Projectile.timeLeft < 32)
                 Projectile.ai[0] *= Projectile.timeLeft / 32f;
         }
-        public void DrawRing(Vector2 position, Texture2D trail, Vector2 scaleOutside, Vector2 scaleInside, Color color, BlendState blend, bool? drawUpside = null)
-        {
+        public void DrawRing(Vector2 position, Texture2D trail, Vector2 scaleOutside, Vector2 scaleInside, Color color, BlendState blend, bool? drawUpside = null) {
             List<ColoredVertex> ve = new List<ColoredVertex>();
             List<Vector2> points1 = new List<Vector2>();
             List<Vector2> points2 = new List<Vector2>();
-            for (float i = 0; i <= 1; i += 0.01f)
-            {
+            for (float i = 0; i <= 1; i += 0.01f) {
                 Vector2 rv = (i * MathHelper.TwoPi).ToRotationVector2();
                 Vector2 p = rv * scaleOutside;
-                if (drawUpside.HasValue)
-                {
-                    if (drawUpside.Value)
-                    {
+                if (drawUpside.HasValue) {
+                    if (drawUpside.Value) {
                         if (i == 0)
                             i = 0.5f;
                     }
-                    else
-                    {
+                    else {
                         if (i > 0.5f)
                             break;
                     }
@@ -121,8 +106,7 @@ namespace CalamityEntropy.Content.Items.Accessories
                 points1.Add(p);
                 points2.Add((i * MathHelper.TwoPi).ToRotationVector2() * scaleInside);
             }
-            for (int i = 0; i < points1.Count; i++)
-            {
+            for (int i = 0; i < points1.Count; i++) {
                 ve.Add(new ColoredVertex(position + points1[i], color, new Vector3(i / 50f + Main.GlobalTimeWrappedHourly, 0, 1)));
                 ve.Add(new ColoredVertex(position + points2[i], color, new Vector3(i / 50f + Main.GlobalTimeWrappedHourly, 1, 1)));
             }
@@ -133,8 +117,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
             Main.spriteBatch.ExitShaderRegion();
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D trail1 = CEExtraAssets.Streak2Trans;
             CEUtils.DrawGlow(Projectile.Center, Color.MediumVioletRed * 2, 0.4f * Projectile.ai[0]);
             CEUtils.DrawGlow(Projectile.Center, Color.MediumVioletRed * 2, 0.4f * Projectile.ai[0]);
@@ -145,8 +128,7 @@ namespace CalamityEntropy.Content.Items.Accessories
     public class AzureVortex : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Generic, false, -1);
             Projectile.width = Projectile.height = 120;
             Projectile.timeLeft = 250;
@@ -154,45 +136,35 @@ namespace CalamityEntropy.Content.Items.Accessories
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
         }
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             return Projectile.localAI[0] > 16 ? null : false;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.pushByOther(0.6f);
             if (Projectile.timeLeft >= 50)
                 Projectile.ai[0] = float.Lerp(Projectile.ai[0], 1.25f, 0.14f);
-            else
-            {
+            else {
                 Projectile.ai[0] -= 0.02f;
             }
             Projectile.localAI[0]++;
             NPC target = CEUtils.FindTarget_HomingProj(Projectile, Projectile.Center, 1800);
-            if (target != null)
-            {
-                if (Projectile.localAI[0] < 26)
-                {
+            if (target != null) {
+                if (Projectile.localAI[0] < 26) {
                     Projectile.velocity *= 0.98f;
                     if (Projectile.localAI[0] > 5)
                         Projectile.velocity = (CEUtils.RotateTowardsAngle(Projectile.velocity.ToRotation(), (target.Center - Projectile.Center).ToRotation(), 0.1f)).ToRotationVector2() * Projectile.velocity.Length();
                 }
-                else
-                {
-                    if (Projectile.timeLeft >= 60)
-                    {
-                        if (Projectile.localAI[0] > 38)
-                        {
+                else {
+                    if (Projectile.timeLeft >= 60) {
+                        if (Projectile.localAI[0] > 38) {
                             Projectile.velocity *= 0.96f;
                             Projectile.velocity += (target.Center - Projectile.Center).normalize() * 5f;
                         }
-                        else
-                        {
+                        else {
                             Projectile.velocity *= 0.97f;
                         }
                     }
-                    else
-                    {
+                    else {
                         Projectile.velocity *= 0.86f;
                     }
                 }
@@ -206,24 +178,19 @@ namespace CalamityEntropy.Content.Items.Accessories
             PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center + d * 1 + Projectile.velocity / 2f, Projectile.velocity * -0.1f, Color.Violet, 0.03f * Projectile.ai[0]).Configure(false, 8, new Vector2(0.9f, 1));
             PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center + d * -1 + Projectile.velocity / 2f, Projectile.velocity * -0.1f, Color.Violet, 0.03f * Projectile.ai[0]).Configure(false, 8, new Vector2(0.9f, 1));
         }
-        public void DrawRing(Vector2 position, Texture2D trail, Vector2 scaleOutside, Vector2 scaleInside, Color color, BlendState blend, bool? drawUpside = null)
-        {
+        public void DrawRing(Vector2 position, Texture2D trail, Vector2 scaleOutside, Vector2 scaleInside, Color color, BlendState blend, bool? drawUpside = null) {
             List<ColoredVertex> ve = new List<ColoredVertex>();
             List<Vector2> points1 = new List<Vector2>();
             List<Vector2> points2 = new List<Vector2>();
-            for (float i = 0; i <= 1; i += 0.01f)
-            {
+            for (float i = 0; i <= 1; i += 0.01f) {
                 Vector2 rv = (i * MathHelper.TwoPi).ToRotationVector2();
                 Vector2 p = rv * scaleOutside;
-                if (drawUpside.HasValue)
-                {
-                    if (drawUpside.Value)
-                    {
+                if (drawUpside.HasValue) {
+                    if (drawUpside.Value) {
                         if (i == 0)
                             i = 0.5f;
                     }
-                    else
-                    {
+                    else {
                         if (i > 0.5f)
                             break;
                     }
@@ -233,8 +200,7 @@ namespace CalamityEntropy.Content.Items.Accessories
                 points1.Add(p);
                 points2.Add((i * MathHelper.TwoPi).ToRotationVector2() * scaleInside);
             }
-            for (int i = 0; i < points1.Count; i++)
-            {
+            for (int i = 0; i < points1.Count; i++) {
                 ve.Add(new ColoredVertex(position + points1[i], color, new Vector3(i / 50f + Main.GlobalTimeWrappedHourly, 0, 1)));
                 ve.Add(new ColoredVertex(position + points2[i], color, new Vector3(i / 50f + Main.GlobalTimeWrappedHourly, 1, 1)));
             }
@@ -245,8 +211,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
             Main.spriteBatch.ExitShaderRegion();
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D trail1 = CEExtraAssets.Streak2Trans;
             CEUtils.DrawGlow(Projectile.Center, Color.LightBlue * 2, 0.4f * Projectile.ai[0]);
             CEUtils.DrawGlow(Projectile.Center, Color.LightBlue * 2, 0.4f * Projectile.ai[0]);

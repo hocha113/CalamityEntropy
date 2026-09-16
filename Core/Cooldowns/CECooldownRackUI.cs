@@ -1,7 +1,6 @@
+﻿using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI;
@@ -20,21 +19,17 @@ namespace CalamityEntropy.Core.Cooldowns
         public const float CompactXSpacing = 28f;
         public const float ExpandedXSpacing = 46f;
 
-        public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
-        {
+        public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers) {
             int buffIndex = layers.FindIndex(layer => layer.Name == "Vanilla: Buffs");
-            if (buffIndex != -1)
-            {
-                layers.Insert(buffIndex, new LegacyGameInterfaceLayer("CalamityEntropy: Cooldown Rack", () =>
-                {
+            if (buffIndex != -1) {
+                layers.Insert(buffIndex, new LegacyGameInterfaceLayer("CalamityEntropy: Cooldown Rack", () => {
                     Draw(Main.spriteBatch);
                     return true;
                 }, InterfaceScaleType.UI));
             }
         }
 
-        public static void Draw(SpriteBatch spriteBatch)
-        {
+        public static void Draw(SpriteBatch spriteBatch) {
             if (Main.gameMenu || Main.playerInventory)
                 return;
 
@@ -57,16 +52,14 @@ namespace CalamityEntropy.Core.Cooldowns
             Vector2 mouseCenter = mouse.Center.ToVector2();
             float hoverOpacity = MathHelper.Clamp((float)Math.Sin(Main.GlobalTimeWrappedHourly % MathHelper.Pi) * 2f, 0, 1) * 0.1f + 0.9f;
 
-            foreach (CECooldownInstance instance in cooldownsToDraw)
-            {
+            foreach (CECooldownInstance instance in cooldownsToDraw) {
                 CECooldownHandler handler = instance.handler;
                 float iconOpacity = iconOpacityScale;
 
                 // 鼠标靠近时图标增亮
                 iconOpacity += 0.3f * (1 - MathHelper.Clamp(Vector2.Distance(mouseCenter, iconRectangle.Center.ToVector2()), 0f, 80f) / 80f);
 
-                if (iconRectangle.Intersects(mouse))
-                {
+                if (iconRectangle.Intersects(mouse)) {
                     mouseHover = handler.DisplayName.ToString();
                     iconOpacity = hoverOpacity;
                 }
@@ -80,8 +73,7 @@ namespace CalamityEntropy.Core.Cooldowns
                 iconRectangle.X += (int)spacing.X;
             }
 
-            if (mouseHover != "")
-            {
+            if (mouseHover != "") {
                 Main.LocalPlayer.mouseInterface = true;
                 Main.instance.MouseText(mouseHover);
             }

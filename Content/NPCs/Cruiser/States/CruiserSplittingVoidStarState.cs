@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Cruiser.Core;
+﻿using CalamityEntropy.Content.NPCs.Cruiser.Core;
 using CalamityEntropy.Content.Projectiles.Cruiser;
 using InnoVault.StateMachines;
 using Terraria;
@@ -15,45 +15,36 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
     {
         public override CruiserStateIndex StateIndex => CruiserStateIndex.SplittingVoidStar;
 
-        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx)
-        {
+        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
             Vector2 dir = (player.Center - npc.Center).normalize();
 
             //自增前:嘴部开合与蓄力音
-            if (ctx.ChangeCounter < CruiserDirector.SplitMouthOpenUntil)
-            {
+            if (ctx.ChangeCounter < CruiserDirector.SplitMouthOpenUntil) {
                 ctx.MouthRot += CruiserDirector.SplitMouthOpenRate;
             }
-            else if (ctx.ChangeCounter < CruiserDirector.SplitMouthCloseUntil)
-            {
+            else if (ctx.ChangeCounter < CruiserDirector.SplitMouthCloseUntil) {
                 ctx.MouthRot += CruiserDirector.SplitMouthCloseRate;
             }
-            if (ctx.ChangeCounter == CruiserDirector.SplitSoundFrame)
-            {
+            if (ctx.ChangeCounter == CruiserDirector.SplitSoundFrame) {
                 CEUtils.PlaySound("voidSound", CruiserDirector.SplitSoundPitch, npc.Center);
             }
 
             ctx.ChangeCounter++;
 
             if (ctx.ChangeCounter < CruiserDirector.SplitBurstFrame
-                && npc.Distance(player.Center) > CruiserDirector.SplitApproachDistance)
-            {
+                && npc.Distance(player.Center) > CruiserDirector.SplitApproachDistance) {
                 npc.velocity *= CruiserDirector.SplitFarDrag;
                 npc.velocity += dir * CruiserDirector.SplitFarThrust;
             }
-            else
-            {
+            else {
                 npc.velocity *= CruiserDirector.SplitNearDrag;
                 npc.velocity += dir * CruiserDirector.SplitNearThrust;
             }
-            if (ctx.ChangeCounter == CruiserDirector.SplitBurstFrame)
-            {
-                if (IsServer)
-                {
-                    for (int i = 0; i < CruiserDirector.SplitBurstCount; i++)
-                    {
+            if (ctx.ChangeCounter == CruiserDirector.SplitBurstFrame) {
+                if (IsServer) {
+                    for (int i = 0; i < CruiserDirector.SplitBurstCount; i++) {
                         Shoot(ctx, ModContent.ProjectileType<VoidStar>(), npc.Center,
                             npc.velocity.normalize().RotatedByRandom(CruiserDirector.SplitBurstSpread)
                                 * CruiserDirector.SplitBurstSpeed
@@ -68,8 +59,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
                 CEUtils.PlaySound("VoidBomb", 1.1f, npc.Center);
                 CEUtils.PlaySound("vbuse", 1, npc.Center);
             }
-            if (ctx.ChangeCounter > CruiserDirector.SplitDuration)
-            {
+            if (ctx.ChangeCounter > CruiserDirector.SplitDuration) {
                 return NextAttack(ctx);
             }
             return null;

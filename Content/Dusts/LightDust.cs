@@ -1,8 +1,7 @@
-using System;
-using InnoVault;
-using Microsoft.Xna.Framework;
+﻿using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -21,13 +20,11 @@ namespace CalamityEntropy.Content.Dusts
         [VaultLoaden("CalamityEntropy/Assets/Particles/BloomCircle")]
         public static Asset<Texture2D> BloomCircle;
 
-        public override void OnSpawn(Dust dust)
-        {
+        public override void OnSpawn(Dust dust) {
             dust.scale *= Main.rand.NextFloat(0.8f, 1f);
         }
 
-        public override bool Update(Dust dust)
-        {
+        public override bool Update(Dust dust) {
             dust.rotation += MathF.Sign(dust.velocity.X);
             dust.velocity *= 0.98f;
             if (dust.noGravity)
@@ -42,8 +39,7 @@ namespace CalamityEntropy.Content.Dusts
             return true;
         }
 
-        public override bool PreDraw(Dust dust)
-        {
+        public override bool PreDraw(Dust dust) {
             Main.spriteBatch.Draw(BloomCircle.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, BloomCircle.Size() * 0.5f, dust.scale * 0.1f, SpriteEffects.None, 0);
             if (dust.alpha < 1)
                 Main.spriteBatch.Draw(BloomCircle.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, BloomCircle.Size() * 0.5f, dust.scale * 0.04f, SpriteEffects.None, 0);

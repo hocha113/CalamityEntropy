@@ -5,12 +5,10 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class IceSpikeSmall : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Magic;
             Projectile.width = 32;
             Projectile.height = 32;
@@ -23,8 +21,7 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.localNPCHitCooldown = 12;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
 
             Projectile.velocity.Y += 0.4f;
             Projectile.rotation = Projectile.velocity.ToRotation();

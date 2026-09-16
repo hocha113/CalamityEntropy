@@ -12,8 +12,7 @@ namespace CalamityEntropy.Common.DrawLayers
         [VaultLoaden("CalamityEntropy/Assets/Extra/sRing")]
         internal static Asset<Texture2D> RingTex;
 
-        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
-        {
+        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) {
             var drawPlayer = drawInfo.drawPlayer;
             if (drawPlayer.dead)
                 return false;
@@ -22,13 +21,11 @@ namespace CalamityEntropy.Common.DrawLayers
 
         public override bool IsHeadLayer => true;
 
-        public override Position GetDefaultPosition()
-        {
+        public override Position GetDefaultPosition() {
             return new BeforeParent(PlayerDrawLayers.Head);
         }
 
-        protected override void Draw(ref PlayerDrawSet drawInfo)
-        {
+        protected override void Draw(ref PlayerDrawSet drawInfo) {
             var player = drawInfo.drawPlayer;
             Texture2D texture;
             Vector2 headPos;

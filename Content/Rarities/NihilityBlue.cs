@@ -15,8 +15,7 @@ namespace CalamityEntropy.Content.Rarities
 
         public override int GetPrefixedRarity(int offset, float valueMult) => Type;
         public static void Draw(Item Item, SpriteBatch spriteBatch, string text, int X, int Y, float rotation,
-            Vector2 baseScale, float time, DynamicSpriteFont font)
-        {
+            Vector2 baseScale, float time, DynamicSpriteFont font) {
             Texture2D glow = CEExtraAssets.Glow;
             Texture2D particle = CEExtraAssets.Ray;
             spriteBatch.UseBlendState_UI(BlendState.Additive);
@@ -25,8 +24,7 @@ namespace CalamityEntropy.Content.Rarities
             spriteBatch.Draw(glow, new Vector2(X, Y + ey) + origin, null, Color.AliceBlue * 0.8f, 0, glow.Size() * 0.5f, origin * 0.02f * new Vector2(1, 0.6f), SpriteEffects.None, 0);
             UnifiedRandom rand = new UnifiedRandom(745367);
             int particleCount = 32;
-            for (int i = 0; i < particleCount; i++)
-            {
+            for (int i = 0; i < particleCount; i++) {
                 Vector2 vec = new Vector2(rand.NextFloat(), 0.5f);
                 vec.X = CEUtils.Frac(vec.X - time * 0.18f);
                 float alpha = 1;
@@ -41,8 +39,7 @@ namespace CalamityEntropy.Content.Rarities
             }
             spriteBatch.UseBlendState_UI(BlendState.AlphaBlend);
 
-            for (float r = 0; r < 360; r += 30)
-            {
+            for (float r = 0; r < 360; r += 30) {
                 Vector2 addVec = MathHelper.ToRadians(r + time).ToRotationVector2() * ((float)(0.5f + Math.Sin(time * 4) * 0.5f) * 1 + 2);
                 spriteBatch.DrawString(font, text, new Vector2(X, Y) + addVec, new Color(180, 70, 255) * 0.5f);
             }
@@ -50,8 +47,7 @@ namespace CalamityEntropy.Content.Rarities
             spriteBatch.UseBlendState_UI(BlendState.Additive);
 
             particleCount = 36;
-            for (int i = 0; i < particleCount; i++)
-            {
+            for (int i = 0; i < particleCount; i++) {
                 Vector2 vec = new Vector2(rand.NextFloat(), rand.NextFloat(0f, 0.9f));
                 vec.X = CEUtils.Frac(vec.X - time * 0.18f);
                 float alpha = 1;
@@ -69,8 +65,7 @@ namespace CalamityEntropy.Content.Rarities
         public static float MaxY = 0;
         public static Color TextColor1 = new Color(60, 5, 255);
         public static Color TextColor2 = new Color(245, 200, 255);
-        public static void Draw(Item Item, DrawableTooltipLine line)
-        {
+        public static void Draw(Item Item, DrawableTooltipLine line) {
             Draw(Item, Main.spriteBatch, line.Text, line.X, line.Y, 0, line.BaseScale, Main.GlobalTimeWrappedHourly, FontAssets.MouseText.Value);
         }
     }

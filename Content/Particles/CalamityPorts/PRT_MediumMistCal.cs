@@ -1,4 +1,4 @@
-using InnoVault.PRT;
+﻿using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 
@@ -15,8 +15,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             MistOpacity = 0f;
             ColorFire = default;
@@ -28,8 +27,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         //Assets/Particles/MediumMist,WhiteTexPath占位,真图PreDraw里走PRTSharedAssets
         public override string Texture => CEUtils.WhiteTexPath;
 
-        public PRT_MediumMistCal Configure(Color colorFade, float opacity, float rotationSpeed = 0f)
-        {
+        public PRT_MediumMistCal Configure(Color colorFade, float opacity, float rotationSpeed = 0f) {
             ColorFire = Color;
             ColorFade = colorFade;
             MistOpacity = opacity;
@@ -38,8 +36,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 200;
@@ -47,19 +44,16 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             Rotation = Main.rand.NextFloat(MathHelper.TwoPi);
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Rotation += Spin * (Velocity.X > 0f ? 1f : -1f);
             Velocity *= 0.85f;
 
-            if (MistOpacity > 90f)
-            {
+            if (MistOpacity > 90f) {
                 Lighting.AddLight(Position, Color.ToVector3() * 0.1f);   //高MistOpacity段带微光,旧Update原样
                 Scale += 0.01f;
                 MistOpacity -= 3f;
             }
-            else
-            {
+            else {
                 Scale *= 0.975f;
                 MistOpacity -= 2f;
             }
@@ -70,8 +64,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             Color = Color.Lerp(ColorFire, ColorFade, MathHelper.Clamp((255f - MistOpacity - 100f) / 80f, 0f, 1f)) * (MistOpacity / 255f);
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch) {
             Texture2D tex = PRTSharedAssets.MediumMist.Value;   //竖排3帧,Variant随机0-2,对齐灾厄FrameVariants竖切语义(原横切是搬运bug)
             int frameHeight = tex.Height / 3;
             Rectangle frame = new Rectangle(0, frameHeight * Variant, tex.Width, frameHeight);

@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Items.Donator.BreakStar;
+﻿using CalamityEntropy.Content.Items.Donator.BreakStar;
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.NPCs.Cruiser;
 using CalamityEntropy.Content.Projectiles;
@@ -16,14 +16,11 @@ namespace CalamityEntropy
         public static List<int> CalVanityItems;
         public static List<int> CruiserSpecificDeathProjs;
         public static List<int> CruiserSegs;
-        public static void Load()
-        {
-            int P<T>() where T : ModProjectile
-            {
+        public static void Load() {
+            int P<T>() where T : ModProjectile {
                 return ModContent.ProjectileType<T>();
             }
-            int N<T>() where T : ModNPC
-            {
+            int N<T>() where T : ModNPC {
                 return ModContent.NPCType<T>();
             }
             //脱离灾厄:灾厄弹幕条目(Hellkite/GrandGuardian/MajesticGuard/GrandDad/Earth Holdout)已删除
@@ -68,8 +65,7 @@ namespace CalamityEntropy
             };
         }
         public static List<int> SoyMilkProjectileBlacklist;
-        public static void Unload()
-        {
+        public static void Unload() {
             SoyMilkProjectileBlacklist = null;
             GodheadBlacklist = null;
             CalVanityItems = null;

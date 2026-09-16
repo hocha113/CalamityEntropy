@@ -9,8 +9,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 {
     public class StarlessNight : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 540;
             Item.crit = 10;
             Item.DamageType = DamageClass.Melee;
@@ -28,17 +27,14 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.shoot = ModContent.ProjectileType<StarlessNightProj>();
             Item.shootSpeed = 16f;
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
             return false;
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
         }
 
-        public override bool MeleePrefix()
-        {
+        public override bool MeleePrefix() {
             return true;
         }
     }

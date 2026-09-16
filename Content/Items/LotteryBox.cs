@@ -1,18 +1,17 @@
 ﻿using CalamityEntropy.Content.NPCs;
 using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items
 {
     public class LotteryBox : ModItem
     {
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 84;
             Item.height = 48;
             Item.maxStack = 1;
@@ -22,15 +21,11 @@ namespace CalamityEntropy.Content.Items
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<LMSpawner>();
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
 
-            if (Main.netMode == NetmodeID.SinglePlayer)
-            {
-                foreach (NPC npc in Main.npc)
-                {
-                    if (npc.type == ModContent.NPCType<LotteryMachine>())
-                    {
+            if (Main.netMode == NetmodeID.SinglePlayer) {
+                foreach (NPC npc in Main.npc) {
+                    if (npc.type == ModContent.NPCType<LotteryMachine>()) {
                         npc.active = false;
                         npc.netUpdate = true;
                     }
@@ -39,15 +34,11 @@ namespace CalamityEntropy.Content.Items
             }
             return false;
         }
-        public override bool? UseItem(Player player)
-        {
+        public override bool? UseItem(Player player) {
 
-            if (Main.netMode == NetmodeID.Server)
-            {
-                foreach (NPC npc in Main.npc)
-                {
-                    if (npc.type == ModContent.NPCType<LotteryMachine>())
-                    {
+            if (Main.netMode == NetmodeID.Server) {
+                foreach (NPC npc in Main.npc) {
+                    if (npc.type == ModContent.NPCType<LotteryMachine>()) {
                         npc.active = false;
                         npc.netUpdate = true;
                     }
@@ -59,8 +50,7 @@ namespace CalamityEntropy.Content.Items
         }
 
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe().
                 AddCalOrOwn(CEID.Item_DubiousPlating, ModContent.ItemType<AzafurePlating>(), 3).
                 AddCalOrOwn(CEID.Item_MysteriousCircuitry, ModContent.ItemType<AzafureCircuitry>(), 4).

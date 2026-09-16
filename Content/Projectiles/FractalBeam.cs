@@ -10,8 +10,7 @@ namespace CalamityEntropy.Content.Projectiles
     public class FractalBeam : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 16;
             Projectile.height = 16;
@@ -20,15 +19,12 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.friendly = true;
             Projectile.penetrate = 1;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return null;
         }
-        public override void CutTiles()
-        {
+        public override void CutTiles() {
         }
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.ai[0]++;
             if (Projectile.ai[0] > 20)
                 Projectile.HomingToNPCNearby(1.4f, 0.665f, 1200);
@@ -37,8 +33,7 @@ namespace CalamityEntropy.Content.Projectiles
             if (Projectile.timeLeft < 30)
                 Projectile.Opacity -= 1 / 30f;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D s = CEExtraAssets.StarTexture;
             Main.spriteBatch.UseAdditive();
 

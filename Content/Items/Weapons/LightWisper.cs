@@ -1,18 +1,16 @@
-﻿using CalamityEntropy.Content.Items;
-using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class LightWisper : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 72;
             Item.height = 36;
             Item.damage = 320;
@@ -29,16 +27,13 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.shoot = ModContent.ProjectileType<LightWisperFlame>();
             Item.shootSpeed = 11f;
         }
-        public override bool RangedPrefix()
-        {
+        public override bool RangedPrefix() {
             return true;
         }
         public override Vector2? HoldoutOffset() => new Vector2(-28, 0);
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_CleansingBlaze))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_CleansingBlaze)) {
                 CreateRecipe()
                 .AddIngredient(CEID.Item_CleansingBlaze)
                 .AddIngredient(ModContent.ItemType<VoidBar>(), 5)

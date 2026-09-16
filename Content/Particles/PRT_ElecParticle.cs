@@ -15,8 +15,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/UpdraftParticle";
 
         public PRT_ElecParticle Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -26,28 +25,24 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 30;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Opacity = 1f - LifetimeCompletion;   //旧alpha是剩余比例,Completion 0→1,这样写方向对了
         }
 
-        void DrawLines(SpriteBatch sb)
-        {
+        void DrawLines(SpriteBatch sb) {
             List<Vector2> lol = new List<Vector2>();
             for (int i = 0; i < 9; i++)
                 lol.Add(Position + CEUtils.randomPointInCircle(32 * Scale));
             CEUtils.DrawLines(lol, Color * Opacity, 4);
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             if (PixelPass)   //像素RT通道那边DrawPixelPass会画,这里跳过防双份
                 return false;
             DrawLines(sb);

@@ -6,12 +6,10 @@ namespace CalamityEntropy.Content.Projectiles
 
     public class MoonlightShieldBreak : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Magic;
             Projectile.width = 640;
             Projectile.height = 640;
@@ -25,22 +23,16 @@ namespace CalamityEntropy.Content.Projectiles
 
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return Projectile.ai[0] < 2;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.ai[0]++;
-            if (Projectile.ai[0] == 1)
-            {
+            if (Projectile.ai[0] == 1) {
                 Projectile.ai[2] = 1;
-                foreach (Projectile p in Main.projectile)
-                {
-                    if (p.active && p.getRect().Intersects(Projectile.getRect()))
-                    {
-                        if (p.hostile && (p.ModProjectile == null || p.ModProjectile.ShouldUpdatePosition()))
-                        {
+                foreach (Projectile p in Main.projectile) {
+                    if (p.active && p.getRect().Intersects(Projectile.getRect())) {
+                        if (p.hostile && (p.ModProjectile == null || p.ModProjectile.ShouldUpdatePosition())) {
                             p.velocity += (p.Center - Projectile.Center).SafeNormalize(Vector2.Zero) * p.velocity.Length();
                             p.hostile = false;
                             p.friendly = true;
@@ -50,14 +42,12 @@ namespace CalamityEntropy.Content.Projectiles
             }
             Projectile.ai[1] += addSize;
             addSize *= 0.94f;
-            if (Projectile.ai[0] > 4)
-            {
+            if (Projectile.ai[0] > 4) {
                 Projectile.ai[2] *= 0.8f;
             }
         }
         public float addSize = 0.5f;
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
 
             return false;
         }

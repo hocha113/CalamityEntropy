@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.SpiritFountain.Core;
+﻿using CalamityEntropy.Content.NPCs.SpiritFountain.Core;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -23,8 +23,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
 
         public override SpiritFountainStateIndex StateIndex => SpiritFountainStateIndex.SpiritSlicing;
 
-        protected override IVaultState<SpiritFountainStateContext> RunBody(SpiritFountainStateContext ctx)
-        {
+        protected override IVaultState<SpiritFountainStateContext> RunBody(SpiritFountainStateContext ctx) {
             NPC npc = ctx.Npc;
             SpiritFountain owner = ctx.Owner;
 
@@ -32,12 +31,10 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
             ctx.EyeAlphaTarget = 1;
             int t = SpiritFountainDirector.SlicingPeriod;
 
-            if (Timer == SpiritFountainDirector.SlicingInitFrame)
-            {
+            if (Timer == SpiritFountainDirector.SlicingInitFrame) {
                 owner.column1.rotation = -MathHelper.PiOver2;
                 owner.column2.rotation = 0;
-                if (IsServer)
-                {
+                if (IsServer) {
                     //两柱各自的起始方向:只在权威端骰,结果随 ExtraAI 的 Num 过线
                     owner.column1.Num = SpiritFountainDirector.SlicingReach * (Main.rand.NextBool() ? 1 : -1);
                     owner.column2.Num = SpiritFountainDirector.SlicingReach * (Main.rand.NextBool() ? 1 : -1);
@@ -46,14 +43,12 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
             }
             owner.column1.offset.X = float.Lerp(owner.column1.offset.X, owner.column1.Num, SpiritFountainDirector.SlicingOffsetLerp);
             owner.column2.offset.Y = float.Lerp(owner.column2.offset.Y, owner.column2.Num, SpiritFountainDirector.SlicingOffsetLerp);
-            if (Timer % t == SpiritFountainDirector.SlicingFlipPhase)
-            {
+            if (Timer % t == SpiritFountainDirector.SlicingFlipPhase) {
                 owner.column1.Num *= -1;
                 owner.column2.Num *= -1;
             }
 
-            if (Timer > SpiritFountainDirector.SlicingLoopAfter && Timer % t < SpiritFountainDirector.SlicingLoopWindow)
-            {
+            if (Timer > SpiritFountainDirector.SlicingLoopAfter && Timer % t < SpiritFountainDirector.SlicingLoopWindow) {
                 //原代码在这里写了 ai = SpiritSlicing(状态没变)+ aiTimer = 0,等价于原地重开
                 Timer = 0;
             }

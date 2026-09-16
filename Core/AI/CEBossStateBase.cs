@@ -1,4 +1,4 @@
-using InnoVault;
+﻿using InnoVault;
 using InnoVault.StateMachines;
 
 namespace CalamityEntropy.Core.AI
@@ -42,8 +42,7 @@ namespace CalamityEntropy.Core.AI
         public virtual bool RequiresTarget => true;
 
         /// <summary>进入状态:计时归零。覆写时先调 <c>base.OnEnter(ctx)</c></summary>
-        public virtual void OnEnter(TCtx ctx)
-        {
+        public virtual void OnEnter(TCtx ctx) {
             Timer = 0;
             Counter = 0;
         }
@@ -52,28 +51,23 @@ namespace CalamityEntropy.Core.AI
         public abstract IVaultState<TCtx> OnUpdate(TCtx ctx);
 
         /// <summary>离开状态</summary>
-        public virtual void OnExit(TCtx ctx)
-        {
+        public virtual void OnExit(TCtx ctx) {
         }
 
         /// <summary>超时兜底的去处。各 Boss 的状态基类覆写它,指回自己的选招口</summary>
         protected virtual IVaultState<TCtx> OnTimeout(TCtx ctx) => null;
 
-        public sealed override void OnEnter(VaultStateMachine<TCtx> machine, TCtx ctx)
-        {
+        public sealed override void OnEnter(VaultStateMachine<TCtx> machine, TCtx ctx) {
             OnEnter(ctx);
         }
 
-        public sealed override IVaultState<TCtx> OnUpdate(VaultStateMachine<TCtx> machine, TCtx ctx)
-        {
+        public sealed override IVaultState<TCtx> OnUpdate(VaultStateMachine<TCtx> machine, TCtx ctx) {
             Counter++;
             IVaultState<TCtx> next = null;
-            if (!RequiresTarget || ctx.TargetValid)
-            {
+            if (!RequiresTarget || ctx.TargetValid) {
                 next = OnUpdate(ctx);
             }
-            if (next == null && Counter > TimeoutFrames)
-            {
+            if (next == null && Counter > TimeoutFrames) {
                 next = OnTimeout(ctx);
             }
             //对齐原生「状态体跑完之后统一自增一次」的时序,见类注释
@@ -81,8 +75,7 @@ namespace CalamityEntropy.Core.AI
             return next;
         }
 
-        public sealed override void OnExit(VaultStateMachine<TCtx> machine, TCtx ctx)
-        {
+        public sealed override void OnExit(VaultStateMachine<TCtx> machine, TCtx ctx) {
             OnExit(ctx);
         }
 
@@ -90,8 +83,7 @@ namespace CalamityEntropy.Core.AI
         /// 收养权威端随快照过线的状态计时(客户端)。接口成员必须是 public,不能收成 internal。
         /// 容差内不动本地值:只差一两帧是网络抖动的常态,硬对齐会让 <c>Timer == N</c> 型一次性拍被跳过或重放
         /// </summary>
-        public void AdoptNetTiming(int timer, int counter)
-        {
+        public void AdoptNetTiming(int timer, int counter) {
             Timer = CEBossNetMotion.AdoptTimer(Timer, timer);
             Counter = counter;
         }
@@ -113,10 +105,8 @@ namespace CalamityEntropy.Core.AI
             => ctx.Target.Center + ctx.Target.velocity * leadFrames;
 
         /// <summary>决策点同步(权威端)。换态本身由 AiSlotNetSync 自带,这里用于出手锁向之类的额外决策</summary>
-        protected static void MarkNetUpdate(TCtx ctx)
-        {
-            if (IsServer && ctx.Npc != null)
-            {
+        protected static void MarkNetUpdate(TCtx ctx) {
+            if (IsServer && ctx.Npc != null) {
                 ctx.Npc.netUpdate = true;
             }
         }
@@ -125,8 +115,7 @@ namespace CalamityEntropy.Core.AI
         /// 宿主在脱战等「计时必须归零」的场合调用。两端都要调:
         /// 原代码脱战期间每帧把攻击计时清零,重新接战时从 0 起跑
         /// </summary>
-        public void ResetTiming()
-        {
+        public void ResetTiming() {
             Timer = 0;
             Counter = 0;
         }

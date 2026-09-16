@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.CalamityRef;
+﻿using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.Apsychos.Core
@@ -24,35 +24,27 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.Core
         /// </para>
         /// <para>装灾厄读复仇/死亡,缺席仍走专家/大师兜底。勿连带改熵灾那一项。</para>
         /// </summary>
-        public static float Enrange()
-        {
+        public static float Enrange() {
             float enrange = 1f;
-            if (Main.expertMode)
-            {
+            if (Main.expertMode) {
                 enrange += 0.1f;
             }
-            if (Main.masterMode)
-            {
+            if (Main.masterMode) {
                 enrange += 0.1f;
             }
-            if (CECal.IsRevengeance)
-            {
+            if (CECal.IsRevengeance) {
                 enrange += 0.15f;
             }
-            if (CECal.IsDeathMode)
-            {
+            if (CECal.IsDeathMode) {
                 enrange += 0.15f;
             }
-            if (CalamityEntropy.EntropyMode)
-            {
+            if (CalamityEntropy.EntropyMode) {
                 enrange *= 1.4f;
             }
-            if (Main.getGoodWorld)
-            {
+            if (Main.getGoodWorld) {
                 enrange *= 1.1f;
             }
-            if (Main.zenithWorld)
-            {
+            if (Main.zenithWorld) {
                 enrange *= 0.85f;
             }
             return enrange;
@@ -402,10 +394,8 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.Core
         };
 
         /// <summary>按阶段与血量取表</summary>
-        public static ApsychosStateIndex[] TableFor(int phase, NPC npc)
-        {
-            if (phase == 1)
-            {
+        public static ApsychosStateIndex[] TableFor(int phase, NPC npc) {
+            if (phase == 1) {
                 return Phase1;
             }
             return npc.life > npc.lifeMax / LowLifeDivisor ? Phase2 : Phase2Low;

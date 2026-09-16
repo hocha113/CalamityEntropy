@@ -18,8 +18,7 @@ namespace CalamityEntropy.Content.Particles
         public override bool CanPool => true;
 
         //池化复用,shape/multShrink/flag1忘Reset=下一个void粒子带脏状态,视觉bug极难查
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             vd = 0.99f;
             ad = 0.014f;
@@ -31,15 +30,13 @@ namespace CalamityEntropy.Content.Particles
         //Texture留空框架会猜路径刷Warn,借PRT_Light堵上,真绘制在EffectLoader RT合成里
         public override string Texture => "CalamityEntropy/Content/Particles/PRT_Light";
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             Lifetime = -1;   //旧VoidParticles不设LifeMax,alpha衰到Kill为止
             Opacity = 1f;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             //multShrink走乘法衰减(ShadewindLance那批),默认减法,两套旧语义别合并
             if (multShrink)
                 Opacity *= ad;
@@ -59,8 +56,7 @@ namespace CalamityEntropy.Content.Particles
     //另一半是Kill阈值0.05和没有multShrink分支,旧AbyssalParticles原值,别合并回父类
     public class PRT_Abyssal : PRT_Void
     {
-        public override void AI()
-        {
+        public override void AI() {
             Opacity -= ad;
             Velocity *= vd;
             if (Opacity < 0.05f)   //父类0.02,深渊那批旧阈值就是0.05

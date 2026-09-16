@@ -18,20 +18,16 @@ namespace CalamityEntropy.Common
         public float strength = 0.6f;
         public int brbType = -1;
         public override bool InstancePerEntity => true;
-        public bool shouldApply(Item item)
-        {
+        public bool shouldApply(Item item) {
             if (brbType == -1)
                 brbType = ModContent.ItemType<Bramblecleave>();
-            if (item.type == brbType)
-            {
+            if (item.type == brbType) {
                 return Main.LocalPlayer.Entropy().BrambleBarCharge >= 0.2f;
             }
             return false;
         }
-        public override bool PreDrawInInventory(Item item, SpriteBatch sb, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
-            if (!shouldApply(item))
-            {
+        public override bool PreDrawInInventory(Item item, SpriteBatch sb, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale) {
+            if (!shouldApply(item)) {
                 return true;
             }
             Asset<Texture2D> texture = CEExtraAssets.EnchantedAsset;
@@ -47,20 +43,16 @@ namespace CalamityEntropy.Common
             return true;
         }
 
-        public override void PostDrawInInventory(Item item, SpriteBatch sb, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
-            if (!shouldApply(item))
-            {
+        public override void PostDrawInInventory(Item item, SpriteBatch sb, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale) {
+            if (!shouldApply(item)) {
                 return;
             }
             sb.End();
             sb.Begin(0, sb.GraphicsDevice.BlendState, sb.GraphicsDevice.SamplerStates[0], sb.GraphicsDevice.DepthStencilState, sb.GraphicsDevice.RasterizerState, null, Main.UIScaleMatrix);
         }
 
-        public override bool PreDrawInWorld(Item item, SpriteBatch sb, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
-        {
-            if (!shouldApply(item))
-            {
+        public override bool PreDrawInWorld(Item item, SpriteBatch sb, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI) {
+            if (!shouldApply(item)) {
                 return true;
             }
             Asset<Texture2D> texture = CEExtraAssets.EnchantedAsset;
@@ -77,10 +69,8 @@ namespace CalamityEntropy.Common
             return true;
         }
 
-        public override void PostDrawInWorld(Item item, SpriteBatch sb, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
-        {
-            if (!shouldApply(item))
-            {
+        public override void PostDrawInWorld(Item item, SpriteBatch sb, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI) {
+            if (!shouldApply(item)) {
                 return;
             }
             sb.End();

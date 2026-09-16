@@ -7,8 +7,7 @@ namespace CalamityEntropy.Content.Items
 {
     public class NihilityTwinTrophy : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 30;
             Item.height = 30;
             Item.maxStack = 9999;

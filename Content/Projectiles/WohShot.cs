@@ -1,11 +1,9 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Core.Graphics;
-using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
@@ -23,8 +21,7 @@ namespace CalamityEntropy.Content.Projectiles
         public bool htd = false;
         public float exps = 0;
         public Vector2 dscp = Vector2.Zero;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 32;
             Projectile.height = 32;
@@ -41,32 +38,26 @@ namespace CalamityEntropy.Content.Projectiles
         public int counter = 0;
         public bool std = false;
         public int homingTime = 60;
-        public override void AI()
-        {
+        public override void AI() {
             counter++;
 
             Projectile.ai[0]++;
-            if (htd)
-            {
-                if (odp.Count > 0)
-                {
+            if (htd) {
+                if (odp.Count > 0) {
                     odp.RemoveAt(0);
                     odr.RemoveAt(0);
 
                 }
-                if (odp.Count > 0)
-                {
+                if (odp.Count > 0) {
                     odp.RemoveAt(0);
                     odr.RemoveAt(0);
                 }
                 Projectile.velocity = Vector2.Zero;
             }
-            else
-            {
+            else {
                 odp.Add(Projectile.Center);
                 odr.Add(Projectile.rotation);
-                if (odp.Count > 18)
-                {
+                if (odp.Count > 18) {
                     odp.RemoveAt(0);
                     odr.RemoveAt(0);
                 }
@@ -74,21 +65,16 @@ namespace CalamityEntropy.Content.Projectiles
             exps *= 0.9f;
             Projectile.rotation = Projectile.velocity.ToRotation();
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            if (htd)
-            {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+            if (htd) {
                 return false;
             }
             return base.Colliding(projHitbox, targetHitbox);
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (!htd)
-            {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            if (!htd) {
                 float sparkCount = 12;
-                for (int i = 0; i < sparkCount; i++)
-                {
+                for (int i = 0; i < sparkCount; i++) {
                     Vector2 sparkVelocity2 = new Vector2(32, 0).RotatedBy(Projectile.velocity.ToRotation()).RotatedByRandom(0.2f) * Main.rand.NextFloat(0.5f, 1.8f);
                     int sparkLifetime2 = Main.rand.Next(20, 24);
                     float sparkScale2 = Main.rand.NextFloat(0.95f, 1.8f);
@@ -109,43 +95,35 @@ namespace CalamityEntropy.Content.Projectiles
             }
         }
         public int tofs;
-        public Color TrailColor(float completionRatio, Vector2 vertex)
-        {
+        public Color TrailColor(float completionRatio, Vector2 vertex) {
             Color result = new Color(80, 60, 255);
             return result;
         }
 
-        public float TrailWidth(float completionRatio, Vector2 vertex)
-        {
-            if (completionRatio > 0.92f)
-            {
+        public float TrailWidth(float completionRatio, Vector2 vertex) {
+            if (completionRatio > 0.92f) {
                 return 22 * Projectile.scale * 1.4f * MathHelper.SmoothStep(0, 1, (1 - (completionRatio - 0.92f) / 0.08f));
             }
             return MathHelper.Lerp(0, 26 * Projectile.scale * 1.4f, completionRatio);
         }
-        public Color TrailColor2(float completionRatio, Vector2 vertex)
-        {
+        public Color TrailColor2(float completionRatio, Vector2 vertex) {
             Color result = new Color(255, 255, 255);
             return result;
         }
 
-        public float TrailWidth2(float completionRatio, Vector2 vertex)
-        {
-            if (completionRatio > 0.92f)
-            {
+        public float TrailWidth2(float completionRatio, Vector2 vertex) {
+            if (completionRatio > 0.92f) {
                 return 14 * Projectile.scale * 1.4f * MathHelper.SmoothStep(0, 1, (1 - (completionRatio - 0.92f) / 0.08f));
             }
             return MathHelper.Lerp(0, 14 * Projectile.scale * 1.4f, completionRatio);
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             drawT();
             return false;
         }
 
-        public void drawT()
-        {
+        public void drawT() {
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 

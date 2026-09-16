@@ -1,4 +1,4 @@
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Biomes;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items;
@@ -77,8 +77,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         #endregion
 
         #region 定义
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.npcFrameCount[NPC.type] = 1;
             NPCID.Sets.MustAlwaysDraw[NPC.type] = true;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
@@ -90,8 +89,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             //残影用原版 oldPos 缓存
             NPCID.Sets.TrailCacheLength[Type] = 10;
             NPCID.Sets.TrailingMode[Type] = 3;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
-            {
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers() {
                 Scale = 0.55f,
                 PortraitScale = 0.7f,
                 PortraitPositionXOverride = 0,
@@ -100,16 +98,14 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
         }
 
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
-        {
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry) {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityEntropy.VoidDestroyerBestiary")
             });
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             NPC.boss = true;
             NPC.aiStyle = -1;
             NPC.width = 140;
@@ -126,25 +122,21 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.value = Item.buyPrice(gold: 15);
             NPC.Entropy().VoidTouchDR = VDDirector.VoidTouchDR;
-            if (!Main.dedServ)
-            {
+            if (!Main.dedServ) {
                 //暂无专属曲目,先挂巡游者主题占位
                 Music = MusicLoader.GetMusicSlot(Mod, "Assets/Sounds/Music/CruiserBoss");
             }
             SpawnModBiomes = new int[] { ModContent.GetInstance<VoidDummyBoime>().Type };
         }
 
-        public override void OnSpawn(IEntitySource source)
-        {
+        public override void OnSpawn(IEntitySource source) {
             EnsureContext();
             //召唤物走 SpawnOnPlayer,把本体挪到召唤者头顶,出场传送门就开在这里
-            if (source is EntitySource_BossSpawn bossSpawn && bossSpawn.Target is Player summoner)
-            {
+            if (source is EntitySource_BossSpawn bossSpawn && bossSpawn.Target is Player summoner) {
                 NPC.target = summoner.whoAmI;
                 Context.AnchorPos = summoner.Center + new Vector2(0, -420);
             }
-            else
-            {
+            else {
                 NPC.TargetClosest(false);
                 Context.AnchorPos = NPC.Center;
             }
@@ -159,46 +151,37 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         #endregion
 
         #region 承伤
-        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers) {
             modifiers.FinalDamage *= 1f - (Context?.DamageReduction ?? VDDirector.DRPhase12);
         }
 
-        public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers) {
             //天顶剑与七彩水晶召唤杖只造成一半伤害
-            if (projectile.type == ProjectileID.FinalFractal || projectile.type == ProjectileID.RainbowCrystal || projectile.type == ProjectileID.RainbowCrystalExplosion)
-            {
+            if (projectile.type == ProjectileID.FinalFractal || projectile.type == ProjectileID.RainbowCrystal || projectile.type == ProjectileID.RainbowCrystalExplosion) {
                 modifiers.SourceDamage *= 0.5f;
             }
         }
 
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
-        {
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) {
             cooldownSlot = ImmunityCooldownID.Bosses;
             return ContactDamageActive();
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo) {
             target.AddDebuffFixed(ModContent.BuffType<VoidFire>(), 180);
         }
 
         /// <summary>策划表的大师显示值 → 当前难度下的弹幕 damage 字段(命中固定 ×2,故再除 2)</summary>
-        public int ProjDamage(int masterShown)
-        {
+        public int ProjDamage(int masterShown) {
             return Math.Max(1, (int)Math.Round(NPC.defDamage * (masterShown / (float)VDDirector.MasterContactDamage) / 2f));
         }
 
         /// <summary>接触伤害窗:演出/闪现/落地宽限/半透明/退入背景时一律关,其余由状态声明</summary>
-        public bool ContactDamageActive()
-        {
-            if (Context == null || Context.Dying || InCinematic || Context.BlinkTimer > 0 || Context.NoContactTimer > 0)
-            {
+        public bool ContactDamageActive() {
+            if (Context == null || Context.Dying || InCinematic || Context.BlinkTimer > 0 || Context.NoContactTimer > 0) {
                 return false;
             }
-            if (Alpha < 0.6f || FakeZ > 0.3f)
-            {
+            if (Alpha < 0.6f || FakeZ > 0.3f) {
                 return false;
             }
             return Context.ContactWindow;
@@ -206,13 +189,11 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         #endregion
 
         #region 掉落
-        public override void BossLoot(ref int potionType)
-        {
+        public override void BossLoot(ref int potionType) {
             potionType = ModContent.ItemType<VoidHealingPotion>();
         }
 
-        public override void ModifyNPCLoot(NPCLoot npcLoot)
-        {
+        public override void ModifyNPCLoot(NPCLoot npcLoot) {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<VoidDestroyerBag>()));
             npcLoot.Add(new DropPerPlayerOnThePlayer(ModContent.ItemType<VoidHealingPotion>(), 1, 5, 15, new HiddenDropCondition()));
 
@@ -232,32 +213,26 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             public string GetConditionDescription() => null;
         }
 
-        public override void OnKill()
-        {
+        public override void OnKill() {
             NPC.SetEventFlagCleared(ref EDownedBosses.downedVoidDestroyer, -1);
         }
         #endregion
 
         #region 死亡与消失
         /// <summary>锁血:死亡演出没放完不许真死,一击超杀也拦回演出;客户端计时可能落后几帧,留容差免得收到击杀包时把自己救活</summary>
-        public override bool CheckDead()
-        {
+        public override bool CheckDead() {
             EnsureContext();
-            if (Context.DeathPerformanceFinished)
-            {
+            if (Context.DeathPerformanceFinished) {
                 return true;
             }
             if (Context.Dying && stateMachine?.CurrentState is VDDeathState death
-                && death.Counter >= VDDirector.DeathDuration - VDDirector.DeathKillTolerance)
-            {
+                && death.Counter >= VDDirector.DeathDuration - VDDirector.DeathKillTolerance) {
                 return true;
             }
-            if (!Context.Dying)
-            {
+            if (!Context.Dying) {
                 Context.Dying = true;
                 Context.BlinkTimer = 0;
-                if (!VaultUtils.isClient && stateMachine != null && stateMachine.CurrentState is not VDDeathState)
-                {
+                if (!VaultUtils.isClient && stateMachine != null && stateMachine.CurrentState is not VDDeathState) {
                     stateMachine.ChangeState(new VDDeathState());
                 }
                 NPC.netUpdate = true;
@@ -273,34 +248,28 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         #endregion
 
         #region 状态机装配
-        private void EnsureContext()
-        {
-            Context ??= new VDStateContext
-            {
+        private void EnsureContext() {
+            Context ??= new VDStateContext {
                 Npc = NPC,
                 Owner = this,
             };
         }
 
-        private void InitializeStateMachine()
-        {
+        private void InitializeStateMachine() {
             EnsureContext();
             stateMachine = new NpcStateMachine<VDStateContext>(Context);
 
             //换态包带的是新态的计时:客户端在框架换态(新实例 OnEnter 刚清零)之后立刻收养
-            stateMachine.OnStateChanged += (_, next, _) =>
-            {
+            stateMachine.OnStateChanged += (_, next, _) => {
                 if (VaultUtils.isClient && next is VDStateBase entered
-                    && netMotion.TryTakeTiming(entered.StateId, out int timer, out int counter))
-                {
+                    && netMotion.TryTakeTiming(entered.StateId, out int timer, out int counter)) {
                     entered.AdoptNetTiming(timer, counter);
                 }
             };
 
             //中途加入的客户端从 ai[3] 恢复状态,回退入场
             IVaultState<VDStateContext> initial = null;
-            if (VaultUtils.isClient)
-            {
+            if (VaultUtils.isClient) {
                 initial = VaultStateRegistry<VDStateContext>.Create((int)NPC.ai[3]);
             }
             stateMachine.SetInitialState(initial ?? new VDEntranceState());
@@ -308,22 +277,18 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         #endregion
 
         #region 主 AI
-        public override void AI()
-        {
+        public override void AI() {
             EnsureContext();
-            if (stateMachine == null)
-            {
+            if (stateMachine == null) {
                 InitializeStateMachine();
             }
 
             bool client = VaultUtils.isClient;
-            if (client)
-            {
+            if (client) {
                 //自接位置纠偏 + 同态收包的计时收养(本帧拍点从权威端的计时起算)
                 netMotion.BeginFrame(NPC);
                 if (stateMachine.CurrentState is VDStateBase adopting
-                    && netMotion.TryTakeTiming(adopting.StateId, out int timer, out int counter))
-                {
+                    && netMotion.TryTakeTiming(adopting.StateId, out int timer, out int counter)) {
                     adopting.AdoptNetTiming(timer, counter);
                 }
             }
@@ -333,24 +298,20 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             UpdateContextFacts();
             EvaluateGlobalTransitions();
 
-            if (Context.NoContactTimer > 0)
-            {
+            if (Context.NoContactTimer > 0) {
                 Context.NoContactTimer--;
             }
-            if (Context.AttackCooldown > 0)
-            {
+            if (Context.AttackCooldown > 0) {
                 Context.AttackCooldown--;
             }
 
             Context.BeginFrameDefaults();
             stateMachine.Update();
 
-            if (Context.BlinkTimer > 0)
-            {
+            if (Context.BlinkTimer > 0) {
                 UpdateBlink();
             }
-            else
-            {
+            else {
                 ApplyDeclaredMovement();
             }
             ApplyTilt();
@@ -362,28 +323,23 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             UpdateVisualState();
             FocusCamera();
 
-            if (client)
-            {
+            if (client) {
                 netMotion.EndFrame(NPC);
             }
-            else if (Main.GameUpdateCount % CEBossNetMotion.HeartbeatFrames == 0)
-            {
+            else if (Main.GameUpdateCount % CEBossNetMotion.HeartbeatFrames == 0) {
                 //决策点(换态/闪现/出手锁向)各自 netUpdate,这里只留慢频兜底心跳
                 NPC.netUpdate = true;
             }
         }
 
-        private void FindTarget()
-        {
-            if (NPC.target < 0 || NPC.target >= Main.maxPlayers || !Main.player[NPC.target].active || Main.player[NPC.target].dead)
-            {
+        private void FindTarget() {
+            if (NPC.target < 0 || NPC.target >= Main.maxPlayers || !Main.player[NPC.target].active || Main.player[NPC.target].dead) {
                 NPC.TargetClosest(false);
             }
             targetPlayer = Main.player[NPC.target];
         }
 
-        private void UpdateContextFacts()
-        {
+        private void UpdateContextFacts() {
             Context.Npc = NPC;
             Context.Owner = this;
             Context.Target = targetPlayer;
@@ -392,41 +348,33 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         }
 
         /// <summary>全局转移,仅权威端:死亡/脱战/转阶段;演出与连接段中不打断</summary>
-        private void EvaluateGlobalTransitions()
-        {
-            if (VaultUtils.isClient || stateMachine?.CurrentState == null)
-            {
+        private void EvaluateGlobalTransitions() {
+            if (VaultUtils.isClient || stateMachine?.CurrentState == null) {
                 return;
             }
-            if (Context.Dying)
-            {
-                if (stateMachine.CurrentState is not VDDeathState)
-                {
+            if (Context.Dying) {
+                if (stateMachine.CurrentState is not VDDeathState) {
                     stateMachine.ChangeState(new VDDeathState());
                 }
                 return;
             }
             IVaultState<VDStateContext> current = stateMachine.CurrentState;
-            if (current is VDEntranceState or VDTransformState or VDShieldUpState or VDDespawnState or VDDeathState)
-            {
+            if (current is VDEntranceState or VDTransformState or VDShieldUpState or VDDespawnState or VDDeathState) {
                 return;
             }
 
-            if (!Context.TargetValid)
-            {
+            if (!Context.TargetValid) {
                 stateMachine.ChangeState(new VDDespawnState());
                 return;
             }
 
             //75%:变形展翼
-            if (Context.Phase == 1 && NPC.life <= NPC.lifeMax * VDDirector.Phase2LifeRatio)
-            {
+            if (Context.Phase == 1 && NPC.life <= NPC.lifeMax * VDDirector.Phase2LifeRatio) {
                 stateMachine.ChangeState(new VDTransformState());
                 return;
             }
             //30%:护盾展开连接段
-            if (Context.Phase == 2 && NPC.life <= NPC.lifeMax * VDDirector.Phase3LifeRatio)
-            {
+            if (Context.Phase == 2 && NPC.life <= NPC.lifeMax * VDDirector.Phase3LifeRatio) {
                 stateMachine.ChangeState(new VDShieldUpState());
             }
         }
@@ -434,20 +382,16 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
 
         #region 运动落地
         /// <summary>把状态声明的运动模式落到速度上;未声明一律指数刹停</summary>
-        private void ApplyDeclaredMovement()
-        {
-            switch (Context.Mode)
-            {
+        private void ApplyDeclaredMovement() {
+            switch (Context.Mode) {
                 case VDMoveMode.HoverTo:
                     HoverTo(Context.MoveTarget, Context.MoveSpeed, Context.Accel, Context.SlowRadius);
                     break;
                 case VDMoveMode.HoldRelative:
-                    if (Context.TargetValid)
-                    {
+                    if (Context.TargetValid) {
                         HoldRelative(Context.HoldOffset, Context.Stiffness, Context.Accel, Context.MoveSpeed);
                     }
-                    else
-                    {
+                    else {
                         NPC.velocity *= 0.9f;
                     }
                     break;
@@ -455,8 +399,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
                     break;
                 default:
                     NPC.velocity *= 0.9f;
-                    if (NPC.velocity.LengthSquared() < 0.01f)
-                    {
+                    if (NPC.velocity.LengthSquared() < 0.01f) {
                         NPC.velocity = Vector2.Zero;
                     }
                     break;
@@ -464,32 +407,27 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         }
 
         /// <summary>朝目标点平滑飞行:速度上限 maxSpeed,进入 slowRadius 后按距离比例减速</summary>
-        private void HoverTo(Vector2 dest, float maxSpeed, float accel, float slowRadius)
-        {
+        private void HoverTo(Vector2 dest, float maxSpeed, float accel, float slowRadius) {
             Vector2 diff = dest - NPC.Center;
             float dist = diff.Length();
             Vector2 desired = Vector2.Zero;
-            if (dist > 1f)
-            {
+            if (dist > 1f) {
                 desired = diff / dist * Math.Min(maxSpeed, dist / slowRadius * maxSpeed);
             }
             NPC.velocity = Vector2.Lerp(NPC.velocity, desired, accel);
         }
 
         /// <summary>与目标保持相对静止:前馈目标速度,再按偏差回位</summary>
-        private void HoldRelative(Vector2 offset, float stiffness, float lerp, float maxSpeed)
-        {
+        private void HoldRelative(Vector2 offset, float stiffness, float lerp, float maxSpeed) {
             Vector2 desiredPos = targetPlayer.Center + offset;
             Vector2 want = targetPlayer.velocity + (desiredPos - NPC.Center) * stiffness;
-            if (want.Length() > maxSpeed)
-            {
+            if (want.Length() > maxSpeed) {
                 want = want.SafeNormalize(Vector2.Zero) * maxSpeed;
             }
             NPC.velocity = Vector2.Lerp(NPC.velocity, want, lerp);
         }
 
-        private void ApplyTilt()
-        {
+        private void ApplyTilt() {
             float target = float.IsNaN(Context.TiltOverride)
                 ? MathHelper.Clamp(NPC.velocity.X * 0.012f, -0.25f, 0.25f)
                 : Context.TiltOverride;
@@ -499,45 +437,37 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
 
         #region 切技闪现
         /// <summary>开始闪现:锚点即落点,前半段淡出,过半换位,后半段淡入;落地后一段时间没有接触伤害</summary>
-        public void StartBlink(Vector2 destination)
-        {
+        public void StartBlink(Vector2 destination) {
             Context.AnchorPos = destination;
             Context.BlinkTimer = VDDirector.BlinkDuration;
             Context.NoContactTimer = VDDirector.PostTeleportGrace + VDDirector.BlinkDuration;
             NPC.velocity = Vector2.Zero;
-            if (!Main.dedServ)
-            {
+            if (!Main.dedServ) {
                 VDVfx.Sound("vbdisapear", 1f, NPC.Center, 3);
                 VDVfx.BlinkBurst(NPC.Center);
             }
-            if (!VaultUtils.isClient)
-            {
+            if (!VaultUtils.isClient) {
                 NPC.netUpdate = true;
             }
         }
 
-        private void UpdateBlink()
-        {
+        private void UpdateBlink() {
             Context.BlinkTimer--;
             NPC.velocity = Vector2.Zero;
             int half = VDDirector.BlinkDuration / 2;
-            if (Context.BlinkTimer <= half)
-            {
+            if (Context.BlinkTimer <= half) {
                 //后半段幂等地钉在锚点上,收包晚一帧也不会漏掉换位
-                if (Context.BlinkTimer == half && !Main.dedServ)
-                {
+                if (Context.BlinkTimer == half && !Main.dedServ) {
                     VDVfx.Sound("vbapear", 1f, Context.AnchorPos, 3);
                     VDVfx.BlinkBurst(Context.AnchorPos);
                 }
-                if (NPC.Center != Context.AnchorPos)
-                {
+                if (NPC.Center != Context.AnchorPos) {
                     NPC.Center = Context.AnchorPos;
                     netMotion.ForgetPrediction();
                 }
                 Alpha = 1f - Context.BlinkTimer / (float)half;
             }
-            else
-            {
+            else {
                 Alpha = (Context.BlinkTimer - half) / (float)half;
             }
             DrawScale = 0.7f + 0.3f * Alpha;
@@ -546,21 +476,17 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
 
         #region 限制圈
         /// <summary>半径 200 格,圆心随本体。只处理本地玩家:玩家速度归其自身客户端所有,服务端不碰</summary>
-        private void UpdateArena()
-        {
-            if (Main.dedServ || !Context.ArenaActive || Context.Dying)
-            {
+        private void UpdateArena() {
+            if (Main.dedServ || !Context.ArenaActive || Context.Dying) {
                 return;
             }
             Player player = Main.LocalPlayer;
-            if (!player.active || player.dead)
-            {
+            if (!player.active || player.dead) {
                 return;
             }
             Vector2 toCenter = NPC.Center - player.Center;
             float dist = toCenter.Length();
-            if (dist <= VDDirector.ArenaRadius)
-            {
+            if (dist <= VDDirector.ArenaRadius) {
                 return;
             }
             Vector2 dir = toCenter / dist;
@@ -568,8 +494,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             float pull = MathHelper.Clamp(VDDirector.ArenaPullBase + excess / 400f * VDDirector.ArenaPullPer400, VDDirector.ArenaPullBase, VDDirector.ArenaPullMax);
             player.velocity += dir * pull;
             float along = Vector2.Dot(player.velocity, dir);
-            if (along > VDDirector.ArenaInwardSpeedCap)
-            {
+            if (along > VDDirector.ArenaInwardSpeedCap) {
                 player.velocity -= dir * (along - VDDirector.ArenaInwardSpeedCap);
             }
             player.AddBuff(ModContent.BuffType<VoidTouch>(), 5);
@@ -577,24 +502,19 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         #endregion
 
         #region 视觉推导(全端同算,不过线)
-        private void UpdateVisualState()
-        {
-            if (Context.BlinkTimer <= 0)
-            {
-                if (!float.IsNaN(Context.AlphaDeclared))
-                {
+        private void UpdateVisualState() {
+            if (Context.BlinkTimer <= 0) {
+                if (!float.IsNaN(Context.AlphaDeclared)) {
                     Alpha = Context.AlphaDeclared;
                     DrawScale = Context.DrawScaleDeclared;
                 }
-                else
-                {
+                else {
                     Alpha = MathHelper.Lerp(Alpha, 1f, 0.15f);
                     DrawScale = MathHelper.Lerp(DrawScale, 1f, 0.15f);
                 }
             }
             FakeZ = MathHelper.Lerp(FakeZ, Context.FakeZ, 0.2f);
-            if (FakeZ < 0.005f)
-            {
+            if (FakeZ < 0.005f) {
                 FakeZ = 0f;
             }
             WingAlpha = MathHelper.Lerp(WingAlpha, Context.WingsVisible ? 1f : 0f, 0.05f);
@@ -604,42 +524,35 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             CoreColor = Color.Lerp(CoreColor, Context.CoreColorTarget, 0.06f);
             CoreGlow = Context.CoreGlow;
 
-            if (Main.dedServ)
-            {
+            if (Main.dedServ) {
                 return;
             }
 
             //抖动只走绘制层:原版把 NPC 画在 position + netOffset,NoMultiplayerSmoothing 让它每帧被清零
-            if (Context.ShakeStrength > 0.02f)
-            {
+            if (Context.ShakeStrength > 0.02f) {
                 CEBossNetMotion.DrawShake(NPC, new Vector2(
                     MathF.Sin(Main.GlobalTimeWrappedHourly * 61f + NPC.whoAmI),
                     MathF.Cos(Main.GlobalTimeWrappedHourly * 47f + NPC.whoAmI * 1.7f)) * (5f * Context.ShakeStrength));
             }
 
             //二阶段底部火焰喷吐的粒子层(锥形光在 Draw 里)
-            if (WingAlpha > 0.5f && Alpha > 0.5f && Main.GameUpdateCount % 2 == 0)
-            {
+            if (WingAlpha > 0.5f && Alpha > 0.5f && Main.GameUpdateCount % 2 == 0) {
                 Vector2 pos = NPC.Center + new Vector2(Main.rand.NextFloat(-28f, 28f), 34f) * DrawScale;
                 Vector2 vel = new Vector2(Main.rand.NextFloat(-0.6f, 0.6f), Main.rand.NextFloat(2.5f, 5.5f)) + NPC.velocity * 0.3f;
                 VDVfx.VoidPuff(pos, vel, Main.rand.NextFloat(0.9f, 1.5f), 0.65f);
-                if (Main.rand.NextBool(3))
-                {
+                if (Main.rand.NextBool(3)) {
                     VDVfx.SparkBurst(pos, new Color(230, 120, 255), 1, 2f, 4f, 16, 0.4f, 0.7f);
                 }
             }
         }
 
         /// <summary>出场演出的相机聚焦:状态声明焦点与力度,宿主只在本地玩家够近时写入 EModPlayer</summary>
-        private void FocusCamera()
-        {
-            if (Main.dedServ || float.IsNaN(Context.CameraFocus.X) || Context.CameraShift <= 0f)
-            {
+        private void FocusCamera() {
+            if (Main.dedServ || float.IsNaN(Context.CameraFocus.X) || Context.CameraShift <= 0f) {
                 return;
             }
             Player lp = Main.LocalPlayer;
-            if (!lp.active || lp.dead || lp.Distance(Context.CameraFocus) > 2400f)
-            {
+            if (!lp.active || lp.dead || lp.Distance(Context.CameraFocus) > 2400f) {
                 return;
             }
             var ep = lp.Entropy();
@@ -650,14 +563,12 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
 
         #region 同步
         /// <summary>权威端:当前状态计时与全部裁决/掷骰事实随位置速度原子过线</summary>
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             EnsureContext();
             int stateId = (int)NPC.ai[3];
             int timer = 0;
             int counter = 0;
-            if (stateMachine?.CurrentState is VDStateBase state)
-            {
+            if (stateMachine?.CurrentState is VDStateBase state) {
                 stateId = state.StateId;
                 timer = state.Timer;
                 counter = state.Counter;
@@ -668,12 +579,10 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             writer.Write((byte)Context.CornerIndex);
             writer.Write((sbyte)Context.SideDir);
             writer.Write(Context.RandCount);
-            for (int i = 0; i < Context.RolledAngles.Length; i++)
-            {
+            for (int i = 0; i < Context.RolledAngles.Length; i++) {
                 writer.Write(Context.RolledAngles[i]);
             }
-            for (int i = 0; i < Context.RolledPoints.Length; i++)
-            {
+            for (int i = 0; i < Context.RolledPoints.Length; i++) {
                 writer.WriteVector2(Context.RolledPoints[i]);
             }
             writer.Write(Context.BlinkTimer);
@@ -681,8 +590,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             writer.Write(Context.AttackIndex);
             writer.Write(Context.QueuedChainState);
             writer.Write(Context.ForcedNextState);
-            for (int i = 0; i < Context.RecentHistory.Length; i++)
-            {
+            for (int i = 0; i < Context.RecentHistory.Length; i++) {
                 writer.Write((sbyte)Context.RecentHistory[i]);
             }
             writer.Write((byte)Context.LastFamily);
@@ -694,13 +602,11 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         }
 
         /// <summary>客户端收包:position/velocity/ai 已是服务端值,据计时差纠偏,计时留给收养,再读事实</summary>
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             EnsureContext();
             int localStateId = -1;
             int localTimer = 0;
-            if (stateMachine?.CurrentState is VDStateBase state)
-            {
+            if (stateMachine?.CurrentState is VDStateBase state) {
                 localStateId = state.StateId;
                 localTimer = state.Timer;
             }
@@ -710,12 +616,10 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             Context.CornerIndex = reader.ReadByte();
             Context.SideDir = reader.ReadSByte();
             Context.RandCount = reader.ReadInt32();
-            for (int i = 0; i < Context.RolledAngles.Length; i++)
-            {
+            for (int i = 0; i < Context.RolledAngles.Length; i++) {
                 Context.RolledAngles[i] = reader.ReadSingle();
             }
-            for (int i = 0; i < Context.RolledPoints.Length; i++)
-            {
+            for (int i = 0; i < Context.RolledPoints.Length; i++) {
                 Context.RolledPoints[i] = reader.ReadVector2();
             }
             int packetBlink = reader.ReadInt32();
@@ -723,8 +627,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             Context.AttackIndex = reader.ReadInt32();
             Context.QueuedChainState = reader.ReadInt32();
             Context.ForcedNextState = reader.ReadInt32();
-            for (int i = 0; i < Context.RecentHistory.Length; i++)
-            {
+            for (int i = 0; i < Context.RecentHistory.Length; i++) {
                 Context.RecentHistory[i] = reader.ReadSByte();
             }
             Context.LastFamily = (VDAttackFamily)reader.ReadByte();
@@ -738,8 +641,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             int prev = Context.BlinkTimer;
             Context.BlinkTimer = CEBossNetMotion.AdoptTimer(Context.BlinkTimer, packetBlink);
             //闪现是服务端发起的,客户端在这里补放旧位置的消失演出(此时包里的位置还是旧位置)
-            if (prev <= 0 && Context.BlinkTimer > VDDirector.BlinkDuration / 2 && !Main.dedServ)
-            {
+            if (prev <= 0 && Context.BlinkTimer > VDDirector.BlinkDuration / 2 && !Main.dedServ) {
                 VDVfx.Sound("vbdisapear", 1f, NPC.Center, 3);
                 VDVfx.BlinkBurst(NPC.Center);
             }

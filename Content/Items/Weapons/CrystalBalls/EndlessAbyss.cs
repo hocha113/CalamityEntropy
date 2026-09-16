@@ -10,14 +10,12 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
 {
     public class EndlessAbyss : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ItemID.Sets.AnimatesAsSoul[Type] = true;
             ItemID.Sets.ItemNoGravity[Item.type] = true;
             Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 4));
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 44;
             Item.height = 44;
             Item.damage = 580;
@@ -37,16 +35,14 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
             Item.DamageType = DamageClass.Magic;
 
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ItemID.CrystalBall, 1)
                 .AddIngredient(ModContent.ItemType<VoidBar>(), 5)
                 .AddTile(ModContent.TileType<VoidWellTile>())
                 .Register();
         }
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
     }

@@ -1,8 +1,8 @@
-using CalamityEntropy.Content.Rarities;
+﻿using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -10,8 +10,7 @@ namespace CalamityEntropy.Content.Items.Accessories
     {
 
         // 2026-08-31 平衡案重做:4防1自然生命再生,+2召唤栏,+15%召唤伤害,15%鞭子攻速与15%鞭子攻击距离
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 26;
             Item.defense = 4;
             Item.height = 26;
@@ -20,8 +19,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.accessory = true;
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.lifeRegen += 2;
             player.maxMinions += 2;
             player.GetDamage(DamageClass.Summon) += 0.15f;
@@ -29,10 +27,8 @@ namespace CalamityEntropy.Content.Items.Accessories
             player.whipRangeMultiplier += 0.15f;
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_DarkSunRing, CEID.Item_AscendantSpiritEssence, CEID.Item_AuricBar, CEID.Tile_CosmicAnvil))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_DarkSunRing, CEID.Item_AscendantSpiritEssence, CEID.Item_AuricBar, CEID.Tile_CosmicAnvil)) {
                 CreateRecipe().
                 AddIngredient(ItemID.CelestialShell).
                 AddIngredient(CEID.Item_DarkSunRing).

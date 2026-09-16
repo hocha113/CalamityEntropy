@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
 using Terraria.Audio;
@@ -19,16 +19,14 @@ namespace CalamityEntropy.Content.Projectiles
 
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/PowerOfTyrant";
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Type] = 4;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.NoMeleeSpeedVelocityScaling[Type] = true;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 30;
             Projectile.height = 30;
             Projectile.alpha = 255;
@@ -43,8 +41,7 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.noEnchantmentVisuals = true;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             float fullyVisibleDuration = Projectile.ai[1];
             float timeBeforeFadeOut = fullyVisibleDuration + FadeInTime;
             float projectileDuration = timeBeforeFadeOut + FadeOutTime;
@@ -54,8 +51,7 @@ namespace CalamityEntropy.Content.Projectiles
 
             Projectile.localAI[0] += 1f;
             Projectile.Opacity = Utils.Remap(Projectile.localAI[0], 0f, fullyVisibleDuration, 0f, 1f) * Utils.Remap(Projectile.localAI[0], timeBeforeFadeOut, projectileDuration, 1f, 0f);
-            if (Projectile.localAI[0] >= projectileDuration)
-            {
+            if (Projectile.localAI[0] >= projectileDuration) {
                 Projectile.Kill();
                 return;
             }
@@ -66,15 +62,13 @@ namespace CalamityEntropy.Content.Projectiles
 
             float dustAngle = Projectile.rotation + Main.rand.NextFloatDirection() * MathHelper.PiOver2 * 0.7f;
             Vector2 dustPosition = Projectile.Center + dustAngle.ToRotationVector2() * 84f * Projectile.scale;
-            if (Main.rand.NextBool(3))
-            {
+            if (Main.rand.NextBool(3)) {
                 Dust dust = Dust.NewDustPerfect(dustPosition, DustID.Venom, null, 100, default, 1.4f);
                 dust.noGravity = true;
                 dust.velocity *= 0f;
                 dust.fadeIn = 1.5f;
             }
-            for (int i = 0; i < 3f * Projectile.Opacity; i++)
-            {
+            for (int i = 0; i < 3f * Projectile.Opacity; i++) {
                 Vector2 dustVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitX);
                 int dustType = Main.rand.NextFloat() < Projectile.Opacity ? DustID.IchorTorch : DustID.YellowTorch;
                 Dust dust = Dust.NewDustPerfect(dustPosition, dustType, Projectile.velocity * 0.2f + dustVelocity * 3f, 100, default, 1.4f);
@@ -82,16 +76,14 @@ namespace CalamityEntropy.Content.Projectiles
             }
 
             // 日光档不追踪，逐帧加速到上限
-            if (Projectile.velocity.Length() < MaxVelocity)
-            {
+            if (Projectile.velocity.Length() < MaxVelocity) {
                 Projectile.velocity *= 1.05f;
                 if (Projectile.velocity.Length() > MaxVelocity)
                     Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * MaxVelocity;
             }
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             Vector2 distanceFromTarget = targetHitbox.ClosestPointInRect(Projectile.Center) - Projectile.Center;
             float projectileSize = 100f * Projectile.scale;
             if (distanceFromTarget.Length() < projectileSize && Collision.CanHit(Projectile.Center, 0, 0, targetHitbox.Center.ToVector2(), 0, 0))
@@ -99,15 +91,13 @@ namespace CalamityEntropy.Content.Projectiles
             return null;
         }
 
-        public override void CutTiles()
-        {
+        public override void CutTiles() {
             Vector2 startPoint = (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2() * 60f * Projectile.scale;
             Vector2 endPoint = (Projectile.rotation + MathHelper.PiOver4).ToRotationVector2() * 60f * Projectile.scale;
             Utils.PlotTileLine(Projectile.Center + startPoint, Projectile.Center + endPoint, 60f * Projectile.scale, DelegateMethods.CutTiles);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff(BuffID.Venom, 120);
             target.AddBuff(BuffID.OnFire3, 120);
             if (Projectile.numHits >= MaxHits)
@@ -116,8 +106,7 @@ namespace CalamityEntropy.Content.Projectiles
 
         public override bool? CanDamage() => Projectile.localAI[0] > Projectile.ai[1] + FadeInTime ? false : null;
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = TextureAssets.Projectile[Type].Value;
             Vector2 origin = tex.Size() / 2f;
             SpriteEffects effects = Projectile.ai[0] >= 0f ? SpriteEffects.None : SpriteEffects.FlipVertically;
@@ -126,8 +115,7 @@ namespace CalamityEntropy.Content.Projectiles
             float glowStrength = MathHelper.Min(0.15f + brightness * 0.85f, Utils.Remap(Projectile.localAI[0], 30f, 96f, 1f, 0f));
 
             Main.spriteBatch.UseAdditive();
-            for (int i = 2; i >= 0; i--)
-            {
+            for (int i = 2; i >= 0; i--) {
                 if (Projectile.oldPos[i] == Vector2.Zero)
                     continue;
                 Vector2 drawPos = Projectile.Center - Projectile.velocity * 0.5f * i - Main.screenPosition;
@@ -139,8 +127,7 @@ namespace CalamityEntropy.Content.Projectiles
                 Color colorOne = Color.Lerp(new Color(20, 40, 60, 120), new Color(225, 225, 25, 120), amount);
                 Color colorTwo = Color.Lerp(new Color(40, 80, 180), new Color(255, 255, 100), amount);
                 // 三重相位残影，复刻原幻影剑的鬼影层
-                for (float off = -MathHelper.TwoPi + MathHelper.TwoPi / 3f; off < 0f; off += MathHelper.TwoPi / 3f)
-                {
+                for (float off = -MathHelper.TwoPi + MathHelper.TwoPi / 3f; off < 0f; off += MathHelper.TwoPi / 3f) {
                     float phaseFade = Utils.Remap(off, -MathHelper.TwoPi, 0f, 0f, 0.5f);
                     Main.spriteBatch.Draw(tex, drawPos, null, colorOne * glowStrength * alpha * phaseFade, ghostRot + off + MathHelper.PiOver4 * Projectile.ai[0], origin, Projectile.scale * 0.975f, effects, 0f);
                     Main.spriteBatch.Draw(tex, drawPos, null, colorTwo * brightness * alpha * phaseFade, ghostRot + off + MathHelper.PiOver4 * Projectile.ai[0], origin, Projectile.scale * 0.78f, effects, 0f);

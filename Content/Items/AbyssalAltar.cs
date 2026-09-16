@@ -1,16 +1,15 @@
-using CalamityEntropy.Content.Rarities;
+﻿using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items
 {
     public class AbyssalAltar : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 92;
             Item.height = 50;
             Item.maxStack = 9999;
@@ -24,10 +23,8 @@ namespace CalamityEntropy.Content.Items
             Item.rare = ModContent.RarityType<AbyssalBlue>();
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_AltarOfTheAccursedItem))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_AltarOfTheAccursedItem)) {
                 CreateRecipe()
                 .AddIngredient(CEID.Item_AltarOfTheAccursedItem)
                 .AddIngredient(ModContent.ItemType<WyrmTooth>(), 10)

@@ -7,10 +7,8 @@ namespace CalamityEntropy.Content
     {
         public override bool InstancePerEntity => true;
         public bool IsShootCountCorlUse;
-        public override bool CanUseItem(Item item, Player player)
-        {
-            if (player.TFAW().DontUseItemTime > 0)
-            {
+        public override bool CanUseItem(Item item, Player player) {
+            if (player.TFAW().DontUseItemTime > 0) {
                 return false;
             }
             return IsShootCountCorlUse

@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Content.Buffs;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -7,8 +7,7 @@ namespace CalamityEntropy.Content.Items;
 
 public class SoyMilk : ModItem
 {
-    public override void SetDefaults()
-    {
+    public override void SetDefaults() {
         Item.width = 40;
         Item.height = 40;
         Item.useTurn = true;

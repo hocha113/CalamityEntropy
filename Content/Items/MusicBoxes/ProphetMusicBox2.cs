@@ -8,8 +8,7 @@ namespace CalamityEntropy.Content.Items.MusicBoxes
     {
         public override string MusicFile => "Assets/Sounds/Music/Prophet2";
         public override int MusicBoxTile => ModContent.TileType<ProphetMusicBoxTile2>();
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.rare = ItemRarityID.Yellow;
         }

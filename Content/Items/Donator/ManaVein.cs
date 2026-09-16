@@ -5,8 +5,7 @@ namespace CalamityEntropy.Content.Items.Donator
 {
     public class ManaVein : ModBuff
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.buffNoSave[Type] = false;
         }
     }

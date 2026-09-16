@@ -5,13 +5,11 @@ namespace CalamityEntropy.Content.UI.Poops
 {
     public class PoopRainbow : Poop
     {
-        public override int ProjectileType()
-        {
+        public override int ProjectileType() {
             return ModContent.ProjectileType<PoopRainbowProjectile>();
         }
 
-        public override float getRollChance()
-        {
+        public override float getRollChance() {
             return 0.1f;
         }
     }

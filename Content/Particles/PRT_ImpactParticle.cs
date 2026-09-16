@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.Particles
         public override bool CanPool => true;
 
         //CanPool复用,Glow/sadd回默认,sadd在AI里还会*=0.9
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             Glow = true;
             sadd = 0.1f;
@@ -25,8 +24,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Assets/Extra/Impact2";
 
         public PRT_ImpactParticle Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -36,23 +34,20 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 120;   //旧Impact默认120,到点Kill是框架的事
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Scale += sadd;
             sadd *= 0.9f;   //Scale增速衰减,旧字段名sadd没改
             //没显式Kill,Color*=0.96每帧淡出,alpha见底视觉上没了但Lifetime还在跑
             Color *= 0.96f;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             //不走自定义批次,旧drawAll也是普通sb.Draw;Glow=false才吃地块光照
             Color clr = Color;
             if (!Glow)

@@ -11,12 +11,10 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
 {
     public class FireDragonsRoar : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Summon;
             Projectile.width = 64;
             Projectile.height = 64;
@@ -30,26 +28,21 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
         }
         public List<Vector2> odp = new List<Vector2>();
         public List<float> odr = new List<float>();
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.ArmorPenetration = HorizonssKey.getArmorPen();
             Projectile.ai[0]++;
-            for (int i = 0; i < 5; i++)
-            {
+            for (int i = 0; i < 5; i++) {
                 Projectile p = Projectile;
                 odp.Add(p.Center - p.velocity * (float)i / 5f);
                 odr.Add(p.rotation);
-                if (odp.Count > 24)
-                {
+                if (odp.Count > 24) {
                     odp.RemoveAt(0);
                     odr.RemoveAt(0);
                 }
             }
-            if (Projectile.ai[0] > 10)
-            {
+            if (Projectile.ai[0] > 10) {
                 NPC target = Projectile.FindTargetWithinRange(1100, false);
-                if (target != null)
-                {
+                if (target != null) {
                     Projectile.velocity *= 0.945f;
                     Vector2 v = target.Center - Projectile.Center;
                     v.Normalize();
@@ -60,23 +53,18 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
             Projectile.rotation = Projectile.velocity.ToRotation();
         }
 
-        public override void OnKill(int timeLeft)
-        {
-            if (Main.myPlayer == Projectile.owner)
-            {
+        public override void OnKill(int timeLeft) {
+            if (Main.myPlayer == Projectile.owner) {
                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.Next(6, 14) + new Vector2(0, -8), ModContent.ProjectileType<ZeratosBullet0>(), Projectile.damage, Projectile.knockBack * 2, Projectile.owner);
             }
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
-            if (HorizonssKey.getVoidTouchLevel() > 0)
-            {
+            if (HorizonssKey.getVoidTouchLevel() > 0) {
                 EGlobalNPC.AddVoidTouch(target, 80, HorizonssKey.getVoidTouchLevel(), 800, 16);
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             CEUtils.DrawAfterimage(TextureAssets.Projectile[Projectile.type].Value, odp, odr);
             lightColor = Color.White;
             return base.PreDraw(ref lightColor);

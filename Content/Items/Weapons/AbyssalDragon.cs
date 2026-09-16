@@ -1,24 +1,21 @@
-using CalamityEntropy.Common;
-using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class AbyssalDragon : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.staff[Item.type] = true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 84;
             Item.height = 84;
             Item.damage = 600;
@@ -37,21 +34,17 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.DamageType = DamageClass.Magic;
             Item.channel = true;
         }
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
 
             Projectile.NewProjectile(player.GetSource_ItemUse(Item), position, velocity, ModContent.ProjectileType<AbyssDragonProj>(), damage, knockback, player.whoAmI);
 
             return false;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_AlphaDraconis))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_AlphaDraconis)) {
                 CreateRecipe()
                 .AddIngredient(CEID.Item_AlphaDraconis)
                 .AddIngredient(ModContent.ItemType<VoidBar>(), 5)
@@ -69,8 +62,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         #region Animations
         public override void HoldItem(Player player) => player.Entropy().MouseWorldListener = true;
 
-        public override void UseStyle(Player player, Rectangle heldItemFrame)
-        {
+        public override void UseStyle(Player player, Rectangle heldItemFrame) {
             player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
@@ -82,8 +74,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             base.UseStyle(player, heldItemFrame);
         }
 
-        public override void UseItemFrame(Player player)
-        {
+        public override void UseItemFrame(Player player) {
             player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
 
             float rotation = (player.Center - player.Entropy().MouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;

@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Prophet.Core;
+﻿using CalamityEntropy.Content.NPCs.Prophet.Core;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles.Prophet;
 using InnoVault.PRT;
@@ -25,28 +25,23 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
     {
         public override ProphetStateIndex StateIndex => ProphetStateIndex.RuneOrb;
 
-        protected override void RunAttack(ProphetStateContext ctx)
-        {
+        protected override void RunAttack(ProphetStateContext ctx) {
             NPC npc = ctx.Npc;
             Player target = ctx.Target;
             int phase = ctx.Phase;
             int cd = ctx.Countdown;
 
-            if (cd == ProphetDirector.OrbBlinkBeat && IsServer)
-            {
+            if (cd == ProphetDirector.OrbBlinkBeat && IsServer) {
                 Teleport(ctx, target.Center + CEUtils.randomRot().ToRotationVector2() * ProphetDirector.OrbBlinkRadius);
             }
 
-            if (cd == ProphetDirector.OrbRingBeatA)
-            {
+            if (cd == ProphetDirector.OrbRingBeatA) {
                 SpawnRing(ctx);
             }
-            if (cd == ProphetDirector.OrbRingBeatB && phase > 1)
-            {
+            if (cd == ProphetDirector.OrbRingBeatB && phase > 1) {
                 SpawnRing(ctx);
             }
-            if (cd == ProphetDirector.OrbRingBeatC && phase > 1)
-            {
+            if (cd == ProphetDirector.OrbRingBeatC && phase > 1) {
                 SpawnRing(ctx);
             }
 
@@ -56,15 +51,13 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
         }
 
         /// <summary>一圈锚点:每个锚点两枚 SparkleCal(Calamity CometShard 原配)加一枚静止符文</summary>
-        private static void SpawnRing(ProphetStateContext ctx)
-        {
+        private static void SpawnRing(ProphetStateContext ctx) {
             NPC npc = ctx.Npc;
             CrystalCue(npc);
 
             int damage = ProjDamage(ctx);
             float step = ctx.Phase == 1 ? ProphetDirector.OrbAngleStepP1 : ProphetDirector.OrbAngleStepP2;
-            for (float i = 0; i < 360; i += step)
-            {
+            for (float i = 0; i < 360; i += step) {
                 float rot = MathHelper.ToRadians(i);
                 float impactParticleScale = ProphetDirector.OrbSparkleScale;
                 Vector2 anchor = npc.Center + rot.ToRotationVector2() * ProphetDirector.OrbRingRadius;
@@ -74,8 +67,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
                     .Configure(Color.SkyBlue, 10, 0, 3f);
 
                 //贴图变体是掷骰,写在权威端守卫之内(原代码同样在 netMode 守卫里掷)
-                if (IsServer)
-                {
+                if (IsServer) {
                     Shoot<ProphetRune>(ctx, anchor, Vector2.Zero, damage, 4, npc.whoAmI, rot,
                         Main.rand.Next(ProphetDirector.OrbRuneVariantMin, ProphetDirector.OrbRuneVariantMax));
                 }

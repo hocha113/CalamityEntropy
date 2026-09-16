@@ -1,5 +1,5 @@
+﻿using Microsoft.Xna.Framework.Graphics;
 using System;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ModLoader;
@@ -18,15 +18,13 @@ namespace CalamityEntropy.Core.Weapons
         // 两种触发都只在手持时推进。周期就绪原本挂在 UpdateInventory 上"在背包也计时",
         // 但 UpdateInventory 对背包里每一个物品每帧都跑,而充能是按物品实例存的,
         // 于是带 N 把同款就有 N 根独立的条一起涨,攒满能连放 N 次大招。
-        public override void HoldItem(Item item, Player player)
-        {
+        public override void HoldItem(Item item, Player player) {
             var profile = ((ICEChargeWeapon)item.ModItem).ChargeProfile;
             if (profile.Trigger == CEChargeTrigger.ChargeBar || profile.Trigger == CEChargeTrigger.Periodic)
                 CEChargeWeapon.Gain(player, item, profile, 1f);
         }
 
-        public override void ModifyShootStats(Item item, Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-        {
+        public override void ModifyShootStats(Item item, Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback) {
             // 就绪的下一次攻击即大招:在 Shoot 之前套用释放乘数,时序对齐原灾厄 RogueWeapon.ModifyShootStats
             if (!CEChargeWeapon.IsReady(item))
                 return;
@@ -36,8 +34,7 @@ namespace CalamityEntropy.Core.Weapons
             knockback *= profile.KnockbackMult;
         }
 
-        public override void PostDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
+        public override void PostDrawInInventory(Item item, SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale) {
             // 物品栏角标:槽位底部一条充能进度线,就绪时呼吸闪烁
             var meter = CEChargeWeapon.GetMeter(item);
             if (meter == null)

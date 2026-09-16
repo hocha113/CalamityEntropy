@@ -13,8 +13,7 @@ namespace CalamityEntropy.Common.DrawLayers
         [VaultLoaden("CalamityEntropy/Assets/Extra/TheoHead")]
         internal static Asset<Texture2D> TheoHeadTex;
 
-        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
-        {
+        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) {
             if (drawInfo.drawPlayer.dead)
                 return false;
             return drawInfo.drawPlayer.GetModPlayer<VanityModPlayer>().TheocracyMark;
@@ -22,13 +21,11 @@ namespace CalamityEntropy.Common.DrawLayers
 
         public override bool IsHeadLayer => true;
 
-        public override Position GetDefaultPosition()
-        {
+        public override Position GetDefaultPosition() {
             return new AfterParent(PlayerDrawLayers.Head);
         }
 
-        protected override void Draw(ref PlayerDrawSet drawInfo)
-        {
+        protected override void Draw(ref PlayerDrawSet drawInfo) {
             var player = drawInfo.drawPlayer;
             Texture2D texture = TheoHeadTex.Value;
 

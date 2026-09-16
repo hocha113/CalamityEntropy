@@ -1,4 +1,4 @@
-using InnoVault.StateMachines;
+﻿using InnoVault.StateMachines;
 
 namespace CalamityEntropy.Content.NPCs.Prophet.Core
 {
@@ -25,11 +25,9 @@ namespace CalamityEntropy.Content.NPCs.Prophet.Core
         /// 选下一手。原代码在这一段末尾还写了一次 <c>NPC.netUpdate = true</c>,
         /// 现在由状态机写 <c>ai[3]</c> 时的 <c>AiSlotNetSync</c> 自动完成,等价
         /// </summary>
-        public static IVaultState<ProphetStateContext> Pick(ProphetStateContext ctx)
-        {
+        public static IVaultState<ProphetStateContext> Pick(ProphetStateContext ctx) {
             ctx.AttackIndex++;
-            if (ctx.AttackIndex > ProphetDirector.AttackIndexMax)
-            {
+            if (ctx.AttackIndex > ProphetDirector.AttackIndexMax) {
                 ctx.AttackIndex = 0;
             }
             ProphetStateIndex next = ProphetDirector.AttackFor(ctx.AttackIndex);

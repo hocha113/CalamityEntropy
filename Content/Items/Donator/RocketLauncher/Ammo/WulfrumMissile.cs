@@ -1,14 +1,13 @@
+﻿using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
 {
     public class WulfrumMissile : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 24;
             Item.height = 24;
             Item.maxStack = 9999;
@@ -22,10 +21,8 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
             Item.shootSpeed = 4;
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_WulfrumMetalScrap))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_WulfrumMetalScrap)) {
                 CreateRecipe(100)
                 .AddIngredient(ModContent.ItemType<OsseousRemains>())
                 .AddIngredient(CEID.Item_WulfrumMetalScrap, 1)
@@ -50,20 +47,16 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
     {
         public override float StickDamageAddition => 0.01f;
         public override string Texture => "CalamityEntropy/Content/Items/Donator/RocketLauncher/Ammo/WulfrumMissile";
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             base.OnHitNPC(target, hit, damageDone);
             target.AddBuff(BuffID.OnFire3, 3 * 60);
         }
         public override float Gravity => 0.7f;
-        public override void StickUpdate(NPC target)
-        {
+        public override void StickUpdate(NPC target) {
             target.AddBuff(BuffID.OnFire3, 3 * 60);
         }
-        public override void SpawnParticle(Vector2 vel)
-        {
-            for (int i = 0; i < 4; i++)
-            {
+        public override void SpawnParticle(Vector2 vel) {
+            for (int i = 0; i < 4; i++) {
                 var d = Dust.NewDustDirect(Projectile.Center, 0, 0, DustID.Smoke);
                 d.noGravity = true;
                 d.position += vel * (i / 4f) + CEUtils.randomPointInCircle(6);

@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.LuminarisMoth.Core;
+﻿using CalamityEntropy.Content.NPCs.LuminarisMoth.Core;
 using CalamityEntropy.Content.Projectiles.LuminarisShoots;
 using InnoVault.StateMachines;
 using Terraria;
@@ -15,8 +15,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
     {
         public override LuminarisStateIndex StateIndex => LuminarisStateIndex.AstralSpike;
 
-        public override IVaultState<LuminarisStateContext> OnUpdate(LuminarisStateContext ctx)
-        {
+        public override IVaultState<LuminarisStateContext> OnUpdate(LuminarisStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
             int c = ctx.Countdown;
@@ -24,28 +23,22 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
             npc.velocity *= 0;
             npc.rotation = 0;
 
-            if (c == LuminarisDirector.AstralSpikeFrames)
-            {
+            if (c == LuminarisDirector.AstralSpikeFrames) {
                 ctx.Vec1 = npc.Center;
-                if (IsServer)
-                {
+                if (IsServer) {
                     //滑行方向只在权威端骰;结果整段都在驱动位置,靠 Vec2 过线
                     ctx.Vec2 = npc.Center + CEUtils.randomRot().ToRotationVector2() * LuminarisDirector.AstralSpikeTravelDistance;
                     MarkNetUpdate(ctx);
                 }
             }
-            if (c > LuminarisDirector.AstralSpikeMoveEndFrame)
-            {
+            if (c > LuminarisDirector.AstralSpikeMoveEndFrame) {
                 float p = Utils.Remap(c, LuminarisDirector.AstralSpikeFrames, LuminarisDirector.AstralSpikeMoveEndFrame, 0, 1);
                 npc.Center = Vector2.Lerp(ctx.Vec1, ctx.Vec2, CEUtils.GetRepeatedCosFromZeroToOne(p, 1));
-                if (c % LuminarisDirector.AstralSpikeShootInterval == 0)
-                {
-                    if (c % LuminarisDirector.AstralSpikeBlueInterval == 0)
-                    {
+                if (c % LuminarisDirector.AstralSpikeShootInterval == 0) {
+                    if (c % LuminarisDirector.AstralSpikeBlueInterval == 0) {
                         Shoot<LuminarisSpikeBlue>(ctx, npc.Center, (player.Center - npc.Center).normalize() * LuminarisDirector.AstralSpikeProjSpeed);
                     }
-                    else
-                    {
+                    else {
                         Shoot<LuminarisSpikeRed>(ctx, npc.Center, (player.Center - npc.Center).normalize() * LuminarisDirector.AstralSpikeProjSpeed);
                     }
                 }

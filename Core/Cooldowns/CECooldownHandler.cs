@@ -1,7 +1,6 @@
-using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
+using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -22,8 +21,7 @@ namespace CalamityEntropy.Core.Cooldowns
         /// <summary>该处理器绑定的运行时实例,由 <see cref="CECooldownInstance"/> 创建时赋值。</summary>
         public CECooldownInstance instance;
 
-        protected sealed override void Register()
-        {
+        protected sealed override void Register() {
             ModTypeLookup<CECooldownHandler>.Register(this);
         }
 
@@ -76,8 +74,7 @@ namespace CalamityEntropy.Core.Cooldowns
         public virtual Color CooldownEndColor => Color.White;
 
         /// <summary>展开模式绘制:进度环 + 描边 + 图标。进度环为纯 SpriteBatch 分段圆弧,不依赖着色器。</summary>
-        public virtual void DrawExpanded(SpriteBatch spriteBatch, Vector2 position, float opacity, float scale)
-        {
+        public virtual void DrawExpanded(SpriteBatch spriteBatch, Vector2 position, float opacity, float scale) {
             Texture2D sprite = ModContent.Request<Texture2D>(Texture).Value;
             Texture2D outline = ModContent.Request<Texture2D>(OutlineTexture).Value;
 
@@ -87,8 +84,7 @@ namespace CalamityEntropy.Core.Cooldowns
         }
 
         /// <summary>紧凑模式绘制:描边 + 图标 + 自上而下裁切的进度叠加。</summary>
-        public virtual void DrawCompact(SpriteBatch spriteBatch, Vector2 position, float opacity, float scale)
-        {
+        public virtual void DrawCompact(SpriteBatch spriteBatch, Vector2 position, float opacity, float scale) {
             Texture2D sprite = ModContent.Request<Texture2D>(Texture).Value;
             Texture2D outline = ModContent.Request<Texture2D>(OutlineTexture).Value;
 
@@ -107,8 +103,7 @@ namespace CalamityEntropy.Core.Cooldowns
         /// 分段圆弧进度环:暗色底环上,已恢复部分从顶端顺时针点亮,颜色沿弧从起始色渐变到结束色。
         /// 等效替代原灾厄 CircularBarShader 的视觉,零着色器依赖。
         /// </summary>
-        public virtual void DrawProgressRing(SpriteBatch spriteBatch, Vector2 center, float opacity, float scale)
-        {
+        public virtual void DrawProgressRing(SpriteBatch spriteBatch, Vector2 center, float opacity, float scale) {
             Texture2D px = TextureAssets.MagicPixel.Value;
             Rectangle src = new Rectangle(0, 0, 1, 1);
             const int segments = 48;
@@ -117,8 +112,7 @@ namespace CalamityEntropy.Core.Cooldowns
             float segLength = MathHelper.TwoPi * radius / segments + 1f;
             float recovered = 1f - instance.Completion;
 
-            for (int i = 0; i < segments; i++)
-            {
+            for (int i = 0; i < segments; i++) {
                 float f = (i + 0.5f) / segments;
                 float angle = MathHelper.TwoPi * f - MathHelper.PiOver2;
                 Color color = f <= recovered
@@ -130,12 +124,9 @@ namespace CalamityEntropy.Core.Cooldowns
         }
 
         /// <summary>八方向描边文本,替代原灾厄 CalamityUtils.DrawBorderStringEightWay,供护盾类冷却绘制数值。</summary>
-        public static void DrawBorderStringEightWay(SpriteBatch spriteBatch, DynamicSpriteFont font, string text, Vector2 baseDrawPosition, Color main, Color border, float scale = 1f)
-        {
-            for (int x = -1; x <= 1; x++)
-            {
-                for (int y = -1; y <= 1; y++)
-                {
+        public static void DrawBorderStringEightWay(SpriteBatch spriteBatch, DynamicSpriteFont font, string text, Vector2 baseDrawPosition, Color main, Color border, float scale = 1f) {
+            for (int x = -1; x <= 1; x++) {
+                for (int y = -1; y <= 1; y++) {
                     if (x == 0 && y == 0)
                         continue;
                     spriteBatch.DrawString(font, text, baseDrawPosition + new Vector2(x, y) * scale, border, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);

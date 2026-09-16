@@ -11,36 +11,28 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class RustyGrenadeProjectile : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.IsARocketThatDealsDoubleDamageToPrimaryEnemy[Type] = true; ProjectileID.Sets.PlayerHurtDamageIgnoresDifficultyScaling[Type] = true;
             ProjectileID.Sets.Explosive[Type] = true;
 
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 14;
             Projectile.height = 14;
             Projectile.friendly = true;
             Projectile.penetrate = -1; Projectile.DamageType = DamageClass.Ranged;
 
         }
-        public override void AI()
-        {
-            if (Projectile.owner == Main.myPlayer && Projectile.timeLeft <= 3)
-            {
+        public override void AI() {
+            if (Projectile.owner == Main.myPlayer && Projectile.timeLeft <= 3) {
                 Projectile.PrepareBombToBlow();
             }
-            else
-            {
-                if (Math.Abs(Projectile.velocity.X) >= 8f || Math.Abs(Projectile.velocity.Y) >= 8f)
-                {
-                    for (int i = 0; i < 2; i++)
-                    {
+            else {
+                if (Math.Abs(Projectile.velocity.X) >= 8f || Math.Abs(Projectile.velocity.Y) >= 8f) {
+                    for (int i = 0; i < 2; i++) {
                         float posOffsetX = 0f;
                         float posOffsetY = 0f;
-                        if (i == 1)
-                        {
+                        if (i == 1) {
                             posOffsetX = Projectile.velocity.X * 0.5f;
                             posOffsetY = Projectile.velocity.Y * 0.5f;
                         }
@@ -58,48 +50,40 @@ namespace CalamityEntropy.Content.Projectiles
                     }
                 }
 
-                if (Math.Abs(Projectile.velocity.X) <= 15f && Math.Abs(Projectile.velocity.Y) <= 15f)
-                {
+                if (Math.Abs(Projectile.velocity.X) <= 15f && Math.Abs(Projectile.velocity.Y) <= 15f) {
                     Projectile.velocity *= 1.1f;
                 }
             }
 
-            if (Projectile.velocity != Vector2.Zero)
-            {
+            if (Projectile.velocity != Vector2.Zero) {
                 Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
             }
         }
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
+        public override bool OnTileCollide(Vector2 oldVelocity) {
             Projectile.velocity *= 0f; Projectile.timeLeft = 3; return false;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 300);
         }
-        public override void PrepareBombToBlow()
-        {
+        public override void PrepareBombToBlow() {
             Projectile.tileCollide = false; Projectile.alpha = 255;
             Projectile.Resize(128, 128);
             Projectile.knockBack = 8f;
         }
 
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
 
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
 
             Projectile.Resize(22, 22);
 
-            for (int i = 0; i < 30; i++)
-            {
+            for (int i = 0; i < 30; i++) {
                 Dust smokeDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default, 1.5f);
                 smokeDust.velocity *= 1.4f;
             }
 
-            for (int j = 0; j < 20; j++)
-            {
+            for (int j = 0; j < 20; j++) {
                 Dust fireDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 3.5f);
                 fireDust.noGravity = true;
                 fireDust.velocity *= 7f;
@@ -107,11 +91,9 @@ namespace CalamityEntropy.Content.Projectiles
                 fireDust.velocity *= 3f;
             }
 
-            for (int k = 0; k < 2; k++)
-            {
+            for (int k = 0; k < 2; k++) {
                 float speedMulti = 0.4f;
-                if (k == 1)
-                {
+                if (k == 1) {
                     speedMulti = 0.8f;
                 }
 
@@ -130,8 +112,7 @@ namespace CalamityEntropy.Content.Projectiles
                 smokeGore.velocity *= speedMulti;
                 smokeGore.velocity -= Vector2.One;
             }
-            if (CalamityEntropy.AprilFool)
-            {
+            if (CalamityEntropy.AprilFool) {
                 //EXPLOSION类名和贴图绑死了,迁移纪律不改名
                 PRTLoader.NewParticle<PRT_EXPLOSION>(Projectile.Center + new Vector2(0, -26), Vector2.Zero, Color.White, 1).Configure(1, true, PRTDrawModeEnum.NonPremultiplied, 0);  //EXPLOSION类名和贴图绑死了,迁移纪律不改名
             }

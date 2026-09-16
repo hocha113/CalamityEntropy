@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria.ModLoader;
@@ -12,11 +12,9 @@ namespace CalamityEntropy.Content.Particles
     {
         private static readonly Dictionary<string, Asset<Texture2D>> Cache = new();
 
-        internal static Texture2D Get(string path)
-        {
+        internal static Texture2D Get(string path) {
             //路径进字典就不再Request,PreDraw里直接Get,每帧Request能把帧率吃出坑
-            if (!Cache.TryGetValue(path, out Asset<Texture2D> asset))
-            {
+            if (!Cache.TryGetValue(path, out Asset<Texture2D> asset)) {
                 asset = RequestTexture(path);
                 Cache[path] = asset;
             }
@@ -24,11 +22,9 @@ namespace CalamityEntropy.Content.Particles
             return asset.Value;
         }
 
-        private static Asset<Texture2D> RequestTexture(string path)
-        {
+        private static Asset<Texture2D> RequestTexture(string path) {
             int slash = path.IndexOf('/');
-            if (slash > 0)
-            {
+            if (slash > 0) {
                 string modName = path[..slash];
                 string assetPath = path[(slash + 1)..];
                 Mod mod = ModLoader.GetMod(modName);

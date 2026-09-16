@@ -1,4 +1,4 @@
-using InnoVault.StateMachines;
+﻿using InnoVault.StateMachines;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -45,10 +45,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
 
         public static bool IsAttack(VDStateIndex state) => (int)state >= (int)VDStateIndex.ArcFireball;
 
-        public static VDAttackFamily FamilyOf(VDStateIndex state)
-        {
-            switch (state)
-            {
+        public static VDAttackFamily FamilyOf(VDStateIndex state) {
+            switch (state) {
                 case VDStateIndex.PhantomDash:
                 case VDStateIndex.PhantomFleet:
                     return VDAttackFamily.Dash;
@@ -77,34 +75,27 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         }
 
         /// <summary>硬性防复读判据:不在最近三手里,且与上一手不同家族</summary>
-        public static bool IsLegal(VDStateContext ctx, VDStateIndex candidate)
-        {
-            if (!IsAttack(candidate))
-            {
+        public static bool IsLegal(VDStateContext ctx, VDStateIndex candidate) {
+            if (!IsAttack(candidate)) {
                 return false;
             }
-            if (ctx.InHistory(candidate))
-            {
+            if (ctx.InHistory(candidate)) {
                 return false;
             }
             return FamilyOf(candidate) != ctx.LastFamily;
         }
 
         /// <summary>由注册表创建状态实例(未注册返回 null,框架已打日志)</summary>
-        public static IVDState Create(VDStateIndex state)
-        {
+        public static IVDState Create(VDStateIndex state) {
             return VaultStateRegistry<VDStateContext>.Create((int)state) as IVDState;
         }
 
         /// <summary>P3 连段:头招收招直接接的后手(None = 无)</summary>
-        public static VDStateIndex ChainFollow(int phase, VDStateIndex head)
-        {
-            if (phase < 3)
-            {
+        public static VDStateIndex ChainFollow(int phase, VDStateIndex head) {
+            if (phase < 3) {
                 return VDStateIndex.Hub;
             }
-            switch (head)
-            {
+            switch (head) {
                 //奇点还在牵引时导弹环从四周扑来:引力把导弹的弧线也拉弯
                 case VDStateIndex.Singularity:
                     return VDStateIndex.HomingMissiles;
@@ -124,22 +115,18 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// 舰队在玩家拉远时退成传送逼近的幻影冲刺;支援投送在没有地面或前卫满员时退成裂隙斩
         /// (Summon 没有同家族兄弟,这是唯一一处跨家族替补)
         /// </summary>
-        public static VDStateIndex Substitute(VDStateContext ctx, VDStateIndex candidate)
-        {
-            switch (candidate)
-            {
+        public static VDStateIndex Substitute(VDStateContext ctx, VDStateIndex candidate) {
+            switch (candidate) {
                 case VDStateIndex.PhantomFleet:
-                    if (ctx.TargetValid && Vector2.Distance(ctx.Npc.Center, ctx.Target.Center) > VDDirector.FarDashDistance)
-                    {
+                    if (ctx.TargetValid && Vector2.Distance(ctx.Npc.Center, ctx.Target.Center) > VDDirector.FarDashDistance) {
                         return VDStateIndex.PhantomDash;
                     }
                     return candidate;
-                case VDStateIndex.Reinforcement:
-                    {
-                        bool ground = ctx.TargetValid && VDVfx.HasGroundBelow(ctx.Target.Center);
-                        bool room = NPC.CountNPCS(ModContent.NPCType<VoidVanguardCultist>()) < VDDirector.MaxVanguards;
-                        return ground && room ? candidate : VDStateIndex.RiftCut;
-                    }
+                case VDStateIndex.Reinforcement: {
+                    bool ground = ctx.TargetValid && VDVfx.HasGroundBelow(ctx.Target.Center);
+                    bool room = NPC.CountNPCS(ModContent.NPCType<VoidVanguardCultist>()) < VDDirector.MaxVanguards;
+                    return ground && room ? candidate : VDStateIndex.RiftCut;
+                }
                 default:
                     return candidate;
             }
@@ -149,28 +136,23 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// 选招(权威端):签名首招优先;否则沿表从 AttackIndex 起找第一个过阀且合法的招,
         /// 序号同步推进;表内无解(理论上不会)退到家族互异的安全对。返回值已 Commit
         /// </summary>
-        public static VDStateIndex Pick(VDStateContext ctx)
-        {
+        public static VDStateIndex Pick(VDStateContext ctx) {
             ctx.QueuedChainState = -1;
 
-            if (ctx.ForcedNextState >= 0)
-            {
+            if (ctx.ForcedNextState >= 0) {
                 VDStateIndex forced = (VDStateIndex)ctx.ForcedNextState;
                 ctx.ForcedNextState = -1;
-                if (IsAttack(forced))
-                {
+                if (IsAttack(forced)) {
                     Commit(ctx, forced);
                     return forced;
                 }
             }
 
             VDStateIndex[] table = TableFor(ctx.Phase);
-            for (int step = 0; step < VDDirector.RotationSearchSteps; step++)
-            {
+            for (int step = 0; step < VDDirector.RotationSearchSteps; step++) {
                 int slot = (ctx.AttackIndex + step) % table.Length;
                 VDStateIndex candidate = Substitute(ctx, table[slot]);
-                if (!IsLegal(ctx, candidate))
-                {
+                if (!IsLegal(ctx, candidate)) {
                     continue;
                 }
                 ctx.AttackIndex = (ctx.AttackIndex + step + 1) % table.Length;
@@ -188,23 +170,19 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         }
 
         /// <summary>连段入队:后手在当下就要合法(不与头招同家族、不在历史里),否则不排</summary>
-        private static void QueueChain(VDStateContext ctx, VDStateIndex head)
-        {
+        private static void QueueChain(VDStateContext ctx, VDStateIndex head) {
             VDStateIndex follow = ChainFollow(ctx.Phase, head);
-            if (!IsAttack(follow) || follow == head)
-            {
+            if (!IsAttack(follow) || follow == head) {
                 return;
             }
-            if (ctx.InHistory(follow) || FamilyOf(follow) == FamilyOf(head))
-            {
+            if (ctx.InHistory(follow) || FamilyOf(follow) == FamilyOf(head)) {
                 return;
             }
             ctx.QueuedChainState = (int)follow;
         }
 
         /// <summary>记账:写历史环与上一手家族</summary>
-        public static void Commit(VDStateContext ctx, VDStateIndex picked)
-        {
+        public static void Commit(VDStateContext ctx, VDStateIndex picked) {
             ctx.PushHistory(picked);
             ctx.LastFamily = FamilyOf(picked);
         }

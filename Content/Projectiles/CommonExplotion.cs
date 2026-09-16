@@ -8,8 +8,7 @@ namespace CalamityEntropy.Content.Projectiles
     public class CommonExplotion : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Assets/Extra/white";
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 64;
             Projectile.height = 64;
             Projectile.friendly = false;
@@ -18,16 +17,13 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.tileCollide = false;
             Projectile.timeLeft = 10;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.getDistance(projHitbox.Center.ToVector2(), targetHitbox.Center.ToVector2()) < Projectile.ai[0];
         }
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             if (Projectile.ai[1] > 0)
                 return true;
 
@@ -38,8 +34,7 @@ namespace CalamityEntropy.Content.Projectiles
     public class CommonExplotionFriendly : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Assets/Extra/white";
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 64;
             Projectile.height = 64;
             Projectile.friendly = true;
@@ -54,23 +49,19 @@ namespace CalamityEntropy.Content.Projectiles
         public Action<NPC, NPC.HitInfo, int> onHitAction = null;
         public Action<NPC> modifyHitAction = null;
         public float DamageMulToWormSegs = 1;
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
             modifyHitAction?.Invoke(target);
             if (target.realLife >= 0)
                 modifiers.SourceDamage *= DamageMulToWormSegs;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             onHitAction?.Invoke(target, hit, damageDone);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Projectile.width = Projectile.height = (int)(Projectile.ai[2] * 2);
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             if (Projectile.ai[0] < 400)
                 return Projectile.Center.getRectCentered(Projectile.ai[0] * 2, Projectile.ai[0] * 2).Intersects(targetHitbox);
             return CEUtils.getDistance(projHitbox.Center.ToVector2(), targetHitbox.Center.ToVector2()) < Projectile.ai[0];

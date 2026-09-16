@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using CalamityEntropy.Content.Items;
+﻿using CalamityEntropy.Content.Items;
 using CalamityEntropy.Core.CalamityRef;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -12,8 +12,7 @@ namespace CalamityEntropy.Content.Tiles
 {
     public class VoidWellTile : ModTile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             RegisterItemDrop(ModContent.ItemType<VoidWell>());
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
             TileObjectData.newTile.Width = 4;
@@ -46,8 +45,7 @@ namespace CalamityEntropy.Content.Tiles
                 TileID.LunarCraftingStation,
                 TileID.DemonAltar
             };
-            if (CERef.Has && CEID.Tile_CosmicAnvil > 0)
-            {
+            if (CERef.Has && CEID.Tile_CosmicAnvil > 0) {
                 adj.Add(CEID.Tile_CosmicAnvil);
             }
             AdjTiles = adj.ToArray();

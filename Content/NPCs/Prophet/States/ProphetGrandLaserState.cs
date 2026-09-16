@@ -1,4 +1,4 @@
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.NPCs.Prophet.Core;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles.Prophet;
@@ -27,8 +27,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
     {
         public override ProphetStateIndex StateIndex => ProphetStateIndex.GrandLaser;
 
-        protected override void RunAttack(ProphetStateContext ctx)
-        {
+        protected override void RunAttack(ProphetStateContext ctx) {
             NPC npc = ctx.Npc;
             Player target = ctx.Target;
             int cd = ctx.Countdown;
@@ -36,30 +35,24 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
             npc.velocity *= ProphetDirector.LaserDrag;
             npc.rotation = (target.Center - npc.Center).ToRotation();
 
-            if (cd == ProphetDirector.LaserSetupBeat)
-            {
+            if (cd == ProphetDirector.LaserSetupBeat) {
                 //清场:把场上残留的符文晶体全部打掉。各端都跑(照搬原写法)
                 int type = ModContent.ProjectileType<RuneCrystalTop>();
-                foreach (Projectile p in Main.ActiveProjectiles)
-                {
-                    if (p.type == type)
-                    {
+                foreach (Projectile p in Main.ActiveProjectiles) {
+                    if (p.type == type) {
                         p.Kill();
                     }
                 }
                 npc.velocity *= 0;
 
-                if (IsServer)
-                {
+                if (IsServer) {
                     // 禁忌档案坐标写入源已随灾厄 IL 删除,新世界恒为 (-1,-1);
                     // 无效坐标跳过档案馆传送(安全短路,防落到世界界外),仅旧档遗留有效值时保留原演出;
                     // 下方距离检查兜底把 Boss 拉回玩家附近
-                    if (EDownedBosses.ForbiddenArchiveCenter.X >= 0)
-                    {
+                    if (EDownedBosses.ForbiddenArchiveCenter.X >= 0) {
                         Teleport(ctx, EDownedBosses.GetDungeonArchiveCenterPos() + new Vector2(0, ProphetDirector.LaserArchiveOffsetY));
                     }
-                    if (CEUtils.getDistance(npc.Center, target.Center) > ProphetDirector.LaserFallbackDistance)
-                    {
+                    if (CEUtils.getDistance(npc.Center, target.Center) > ProphetDirector.LaserFallbackDistance) {
                         Teleport(ctx, target.Center - target.velocity.SafeNormalize(-Vector2.UnitY) * ProphetDirector.LaserFallbackRadius);
                     }
                 }
@@ -67,17 +60,13 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
 
             Vector2 focus = npc.Center + new Vector2(0, ProphetDirector.LaserFocusOffsetY);
 
-            if (cd > ProphetDirector.LaserPullUntil)
-            {
+            if (cd > ProphetDirector.LaserPullUntil) {
                 npc.velocity *= ProphetDirector.LaserPullDrag;
-                foreach (Player plr in Main.ActivePlayers)
-                {
-                    if (plr.Distance(npc.Center) >= ProphetDirector.LaserAffectRadius)
-                    {
+                foreach (Player plr in Main.ActivePlayers) {
+                    if (plr.Distance(npc.Center) >= ProphetDirector.LaserAffectRadius) {
                         continue;
                     }
-                    if (plr.Distance(focus) <= ProphetDirector.LaserPullRadius)
-                    {
+                    if (plr.Distance(focus) <= ProphetDirector.LaserPullRadius) {
                         continue;
                     }
                     plr.Entropy().immune = ProphetDirector.LaserPullImmune;
@@ -85,36 +74,29 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
                     plr.velocity = (focus - plr.Center).normalize() * ProphetDirector.LaserPullSpeed;
                     plr.Center += (focus - plr.Center).normalize() * ProphetDirector.LaserPullStep;
                     //拖人相位 8 颗 RuneParticle/玩家,Additive 40 帧,纯 VFX 不是攻击判定
-                    for (int i = 0; i < ProphetDirector.LaserPullParticles; i++)
-                    {
+                    for (int i = 0; i < ProphetDirector.LaserPullParticles; i++) {
                         PRTLoader.NewParticle<PRT_RuneParticle>(CEUtils.randomPoint(plr.getRect()), Vector2.Zero, Color.LightBlue, 1)
                             .Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 40);
                     }
                 }
             }
 
-            if (cd > ProphetDirector.LaserWingWindowLow && cd < ProphetDirector.LaserWingWindowHigh)
-            {
-                foreach (Player plr in Main.ActivePlayers)
-                {
-                    if (plr.Distance(npc.Center) < ProphetDirector.LaserAffectRadius)
-                    {
+            if (cd > ProphetDirector.LaserWingWindowLow && cd < ProphetDirector.LaserWingWindowHigh) {
+                foreach (Player plr in Main.ActivePlayers) {
+                    if (plr.Distance(npc.Center) < ProphetDirector.LaserAffectRadius) {
                         // 原灾厄无限飞行位删除,这里每帧回满翅膀时间即等效(player-api)
                         plr.wingTime = plr.wingTimeMax;
                     }
                 }
             }
 
-            if (cd == ProphetDirector.LaserFireBeat)
-            {
+            if (cd == ProphetDirector.LaserFireBeat) {
                 //地形检查读的是已同步的图格,各端同算;压缩倒计时是决策,只在权威端广播
-                if (CEUtils.CheckSolidTile(npc.Center.getRectCentered(ProphetDirector.LaserBlockedCheckSize, ProphetDirector.LaserBlockedCheckSize)))
-                {
+                if (CEUtils.CheckSolidTile(npc.Center.getRectCentered(ProphetDirector.LaserBlockedCheckSize, ProphetDirector.LaserBlockedCheckSize))) {
                     ctx.Countdown = ProphetDirector.LaserAbortCountdown;
                     MarkNetUpdate(ctx);
                 }
-                else
-                {
+                else {
                     Shoot<FableEye>(ctx, focus, (target.Center - focus).normalize() * ProphetDirector.LaserEyeSpeed,
                         npc.damage / ProphetDirector.EyeDamageDivisor, 4);
                 }

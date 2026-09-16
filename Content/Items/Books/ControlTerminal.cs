@@ -1,8 +1,9 @@
 ﻿using CalamityEntropy.Common;
-using CalamityEntropy.Content.Tiles;
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using InnoVault;
 using InnoVault.PRT;
@@ -15,14 +16,12 @@ using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Books
 {
     public class ControlTerminal : EntropyBook
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.damage = 165;
             Item.useAnimation = Item.useTime = 100;
@@ -38,10 +37,8 @@ namespace CalamityEntropy.Content.Items.Books
         public override int HeldProjectileType => ModContent.ProjectileType<ControlTerminalHeld>();
         public override int SlotCount => 5;
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_ExoPrism, CEID.Tile_DraedonsForge))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_ExoPrism, CEID.Tile_DraedonsForge)) {
                 CreateRecipe().AddIngredient<ProphecyMasterpiece>()
                 .AddIngredient(CEID.Item_ExoPrism, 5)
                 .AddTile(CEID.Tile_DraedonsForge)
@@ -61,8 +58,7 @@ namespace CalamityEntropy.Content.Items.Books
         public override string PageAnimationPath => "CalamityEntropy/Content/Items/Books/Textures/ControlTerminal/ControlTerminalPage";
         public override string UIOpenAnimationPath => "CalamityEntropy/Content/Items/Books/Textures/ControlTerminal/ControlTerminalUI";
 
-        public override EBookStatModifer getBaseModifer()
-        {
+        public override EBookStatModifer getBaseModifer() {
             var m = base.getBaseModifer();
             m.Homing += 1f;
             m.HomingRange += 1f;
@@ -71,45 +67,36 @@ namespace CalamityEntropy.Content.Items.Books
         public override float randomShootRotMax => 0;
         public override int frameChange => 2;
         public override int baseProjectileType => ModContent.ProjectileType<WhirlExobeam>();
-        public override EBookProjectileEffect getEffect()
-        {
+        public override EBookProjectileEffect getEffect() {
             return new ControlTerminalBookBaseEffect();
         }
-        public override bool Shoot()
-        {
+        public override bool Shoot() {
             int type = ModContent.ProjectileType<ExoWhirl>();
             ShootSingleProjectile(type, Projectile.Center, Projectile.velocity, MainProjectile: true);
             return true;
         }
         public override bool canApplyShootCDModifer => false;
-        public int getShootCd()
-        {
+        public int getShootCd() {
             int _shotCooldown = bookItem.useTime;
 
             EBookStatModifer m = getBaseModifer();
-            for (int i = 0; i < Projectile.GetOwner().GetMyMaxActiveBookMarks(bookItem); i++)
-            {
+            for (int i = 0; i < Projectile.GetOwner().GetMyMaxActiveBookMarks(bookItem); i++) {
                 Item it = Projectile.GetOwner().Entropy().EBookStackItems[i];
-                if (BookMarkLoader.IsABookMark(it))
-                {
+                if (BookMarkLoader.IsABookMark(it)) {
                     BookMarkLoader.ModifyStat(it, m);
                     BookMarkLoader.modifyShootCooldown(it, ref _shotCooldown);
                 }
             }
             return (int)(0.6f * (float)_shotCooldown / m.attackSpeed);
         }
-        public void shootBaseProj(Vector2 pos, Vector2 vel)
-        {
+        public void shootBaseProj(Vector2 pos, Vector2 vel) {
             int type = getShootProjectileType();
 
-            for (int i = 0; i < Projectile.GetOwner().GetMyMaxActiveBookMarks(bookItem); i++)
-            {
+            for (int i = 0; i < Projectile.GetOwner().GetMyMaxActiveBookMarks(bookItem); i++) {
                 var bm = Projectile.owner.ToPlayer().Entropy().EBookStackItems[i];
-                if (BookMarkLoader.IsABookMark(bm))
-                {
+                if (BookMarkLoader.IsABookMark(bm)) {
                     int pn = BookMarkLoader.ModifyProjectile(bm, type);
-                    if (pn >= 0)
-                    {
+                    if (pn >= 0) {
                         type = pn;
                     }
                 }
@@ -119,174 +106,139 @@ namespace CalamityEntropy.Content.Items.Books
     }
     public class ControlTerminalBookBaseEffect : EBookProjectileEffect
     {
-        public override void OnProjectileSpawn(Projectile projectile, bool ownerClient)
-        {
+        public override void OnProjectileSpawn(Projectile projectile, bool ownerClient) {
             base.OnProjectileSpawn(projectile, ownerClient);
             projectile.tileCollide = false;
-            if (projectile.ModProjectile is EBookBaseProjectile e)
-            {
+            if (projectile.ModProjectile is EBookBaseProjectile e) {
                 e.gravity = 0;
             }
         }
-        public override void OnHitNPC(Projectile projectile, NPC target, int damageDone)
-        {
+        public override void OnHitNPC(Projectile projectile, NPC target, int damageDone) {
             target.AddBuff(ModContent.BuffType<MiracleBlight>(), 60, false);
         }
     }
 
     public class ExoWhirl : EBookBaseProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.TrailCacheLength[base.Projectile.type] = 18;
             ProjectileID.Sets.TrailingMode[base.Projectile.type] = 2;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Projectile.width = Projectile.height = 80;
             Projectile.extraUpdates = 1;
             Projectile.localNPCHitCooldown = 3;
             Projectile.light = 1;
         }
-        public override bool PreAI()
-        {
+        public override bool PreAI() {
             Projectile.penetrate = -1;
             return base.PreAI();
         }
         public float r = 0;
         public int shootCd = 9;
         public bool ri = true;
-        public override void AI()
-        {
-            if (ri)
-            {
+        public override void AI() {
+            if (ri) {
                 ri = false;
                 r = Projectile.velocity.ToRotation();
-                for (int i = 0; i < Projectile.oldPos.Length; i++)
-                {
+                for (int i = 0; i < Projectile.oldPos.Length; i++) {
                     Projectile.oldPos[i] = Projectile.Center;
                     Projectile.oldRot[i] = Projectile.rotation;
                 }
             }
             base.AI();
             shootCd--;
-            if (shootCd <= 0)
-            {
-                if (Main.myPlayer == Projectile.owner)
-                {
+            if (shootCd <= 0) {
+                if (Main.myPlayer == Projectile.owner) {
                     var book = (ControlTerminalHeld)(ShooterModProjectile);
                     NPC target = null;
 
                     target = Projectile.FindTargetWithinRange(homingRange * 3);
 
-                    if (target != null)
-                    {
+                    if (target != null) {
                         book.shootBaseProj(Projectile.Center, target.Center - Projectile.Center);
                     }
                     shootCd = book.getShootCd();
                 }
 
             }
-            if (++Projectile.localAI[0] > 18 && hitCount == 0)
-            {
+            if (++Projectile.localAI[0] > 18 && hitCount == 0) {
                 hitCount++;
                 Projectile.ai[0] = 120;
             }
-            if (Projectile.ai[0] > 0)
-            {
-                if (Projectile.velocity.Length() > 6)
-                {
+            if (Projectile.ai[0] > 0) {
+                if (Projectile.velocity.Length() > 6) {
                     Projectile.velocity = Projectile.velocity.normalize() * 6;
                 }
             }
             Projectile.ai[0]--;
-            if (hitCount == 0)
-            {
+            if (hitCount == 0) {
                 r = Projectile.velocity.ToRotation();
             }
-            else
-            {
-                if (Projectile.ai[0] < 10)
-                {
-                    if (Projectile.ai[2] < 16)
-                    {
+            else {
+                if (Projectile.ai[0] < 10) {
+                    if (Projectile.ai[2] < 16) {
                         Projectile.ai[2] += 0.15f;
                     }
                     r = Projectile.velocity.ToRotation();
                     Projectile.velocity = new Vector2(Projectile.velocity.Length() + 1f, 0).RotatedBy(CEUtils.RotateTowardsAngle(r, (Projectile.GetOwner().Center - Projectile.Center).ToRotation(), 0.5f * Projectile.ai[2], false));
                     Projectile.velocity = new Vector2(Projectile.velocity.Length(), 0).RotatedBy(CEUtils.RotateTowardsAngle(r, (Projectile.GetOwner().Center - Projectile.Center).ToRotation(), (1f * Projectile.ai[2]).ToRadians(), true));
                     Projectile.velocity *= 0.97f;
-                    if (CEUtils.getDistance(Projectile.Center, Projectile.GetOwner().Center) < Projectile.velocity.Length() * 1.2f)
-                    {
+                    if (CEUtils.getDistance(Projectile.Center, Projectile.GetOwner().Center) < Projectile.velocity.Length() * 1.2f) {
                         Projectile.Kill();
                     }
                 }
             }
             Projectile.rotation = Main.GameUpdateCount * 0.4f;
-            if (Projectile.velocity.Length() < 2)
-            {
+            if (Projectile.velocity.Length() < 2) {
                 Projectile.velocity = r.ToRotationVector2() * 2;
             }
             NoMoveTime--;
         }
         public int NoMoveTime = 0;
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return NoMoveTime <= 0;
         }
-        public float TrailWidth(float completionRatio, Vector2 vertex)
-        {
+        public float TrailWidth(float completionRatio, Vector2 vertex) {
             return Utils.GetLerpValue(1f, 0.4f, completionRatio, clamped: true) * (float)Math.Sin(Math.Acos(1f - Utils.GetLerpValue(0f, 0.15f, completionRatio, clamped: true))) * Utils.GetLerpValue(0f, 0.1f, (float)base.Projectile.timeLeft / 600f, clamped: true) * 6;
         }
-        public Color TrailColor(float completionRatio, Vector2 vertex)
-        {
+        public Color TrailColor(float completionRatio, Vector2 vertex) {
             return Color.Lerp(Color.Cyan, new Color(0, 0, 255), completionRatio);
         }
 
-        public float MiniTrailWidth(float completionRatio, Vector2 vertex)
-        {
+        public float MiniTrailWidth(float completionRatio, Vector2 vertex) {
             return TrailWidth(completionRatio, vertex) * 0.8f;
         }
 
-        public Color MiniTrailColor(float completionRatio, Vector2 vertex)
-        {
+        public Color MiniTrailColor(float completionRatio, Vector2 vertex) {
             return Color.White;
         }
 
-        public override void ApplyHoming()
-        {
-            if (hitCount == 0 && ++Projectile.ai[1] > 10)
-            {
+        public override void ApplyHoming() {
+            if (hitCount == 0 && ++Projectile.ai[1] > 10) {
                 base.ApplyHoming();
             }
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             base.OnHitNPC(target, hit, damageDone);
             SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/SwiftSlice") with { Pitch = 0.1f * Projectile.numHits, MaxInstances = 12 }, Projectile.Center);
-            if (hitCount == 1)
-            {
+            if (hitCount == 1) {
                 Projectile.ai[0] = 120;
             }
-            if (Projectile.ai[0] <= 0)
-            {
+            if (Projectile.ai[0] <= 0) {
                 NoMoveTime = 4;
             }
-            if (Projectile.ai[0] < 6)
-            {
+            if (Projectile.ai[0] < 6) {
                 Projectile.ai[0] = 6;
             }
-            for (int i = 0; i < 4; i++)
-            {
+            for (int i = 0; i < 4; i++) {
                 //PRT_GlowSpark AdditiveBlend走Configure,旧EParticle统一尾参
                 PRTLoader.NewParticle<PRT_GlowSpark>(target.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(5, 10), Color.LightGreen, Main.rand.NextFloat(0.04f, 0.08f)).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            for (int i = 0; i < 4; i++)
-            {
+        public override bool PreDraw(ref Color lightColor) {
+            for (int i = 0; i < 4; i++) {
                 float ra = i * MathHelper.PiOver2;
                 Main.spriteBatch.EnterShaderRegion();
                 Color color1 = CEUtils.MulticolorLerp((Main.GlobalTimeWrappedHourly * 0.5f + (float)base.Projectile.whoAmI * 0.12f) % 1f, Color.Cyan, Color.Lime, Color.GreenYellow, Color.Goldenrod, Color.Orange);
@@ -300,8 +252,7 @@ namespace CalamityEntropy.Content.Items.Books
                 GameShaders.Misc["CalamityEntropy:ExobladePierce"].Apply();
                 GameShaders.Misc["CalamityEntropy:ExobladePierce"].Apply();
                 Vector2[] tpos = new Vector2[ProjectileID.Sets.TrailCacheLength[Type]];
-                for (int k = 0; k < ProjectileID.Sets.TrailCacheLength[Type]; k++)
-                {
+                for (int k = 0; k < ProjectileID.Sets.TrailCacheLength[Type]; k++) {
                     tpos[k] = Projectile.oldPos[k] + (Projectile.oldRot[k] + ra).ToRotationVector2() * 37 * Projectile.scale;
                 }
                 CEPrimitiveRenderer.RenderTrail(tpos, new CEPrimitiveSettings(TrailWidth, TrailColor, (_, _) => base.Projectile.Size * 0.5f, smoothen: true, pixelate: false, GameShaders.Misc["CalamityEntropy:ExobladePierce"]), 30);
@@ -325,14 +276,12 @@ namespace CalamityEntropy.Content.Items.Books
 
         public ref float Time => ref base.Projectile.ai[0];
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.TrailCacheLength[base.Projectile.type] = 30;
             ProjectileID.Sets.TrailingMode[base.Projectile.type] = 2;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             base.Projectile.width = 20;
             base.Projectile.height = 20;
@@ -346,41 +295,32 @@ namespace CalamityEntropy.Content.Items.Books
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 0;
         }
-        public override void AI()
-        {
+        public override void AI() {
             base.AI();
-            if (Time >= (float)10)
-            {
-                if (TargetIndex >= 0)
-                {
-                    if (!Main.npc[TargetIndex].active || !Main.npc[TargetIndex].CanBeChasedBy())
-                    {
+            if (Time >= (float)10) {
+                if (TargetIndex >= 0) {
+                    if (!Main.npc[TargetIndex].active || !Main.npc[TargetIndex].CanBeChasedBy()) {
                         TargetIndex = -1;
                     }
-                    else
-                    {
+                    else {
                         Vector2 value = base.Projectile.SafeDirectionTo(Main.npc[TargetIndex].Center) * (base.Projectile.velocity.Length() + 6.5f);
                         base.Projectile.velocity = Vector2.Lerp(base.Projectile.velocity, value, 0.08f);
                     }
                 }
 
-                if (TargetIndex == -1)
-                {
+                if (TargetIndex == -1) {
                     NPC nPC = base.Projectile.Center.ClosestNPCAt(1600f, ignoreTiles: false);
-                    if (nPC != null)
-                    {
+                    if (nPC != null) {
                         TargetIndex = nPC.whoAmI;
                     }
-                    else
-                    {
+                    else {
                         base.Projectile.velocity *= 0.99f;
                     }
                 }
             }
 
             base.Projectile.rotation = base.Projectile.velocity.ToRotation();
-            if (Main.rand.NextBool())
-            {
+            if (Main.rand.NextBool()) {
                 Color newColor = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.9f);
                 Dust dust = Dust.NewDustPerfect(base.Projectile.Center + Main.rand.NextVector2Circular(20f, 20f) + base.Projectile.velocity, 267, base.Projectile.velocity * -2.6f, 0, newColor);
                 dust.scale = 0.3f;
@@ -389,21 +329,17 @@ namespace CalamityEntropy.Content.Items.Books
             }
 
             base.Projectile.scale = Utils.GetLerpValue(0f, 0.1f, (float)base.Projectile.timeLeft / 600f, clamped: true);
-            if (base.Projectile.FinalExtraUpdate())
-            {
+            if (base.Projectile.FinalExtraUpdate()) {
                 Time += 1f;
             }
         }
 
         public static readonly SoundStyle BeamHitSound = new SoundStyle("CalamityEntropy/Assets/Sounds/SwiftSlice") { Volume = 0.4f, PitchVariance = 0.2f };
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             SoundEngine.PlaySound(in BeamHitSound, target.Center);
-            if (Main.myPlayer == base.Projectile.owner)
-            {
+            if (Main.myPlayer == base.Projectile.owner) {
                 int num = Projectile.NewProjectile(base.Projectile.GetSource_FromAI(), target.Center, base.Projectile.velocity * 0.1f, ModContent.ProjectileType<ExobeamSlashBurst>(), base.Projectile.damage, 0f, base.Projectile.owner, target.whoAmI, base.Projectile.velocity.ToRotation());
-                if (Main.projectile.IndexInRange(num))
-                {
+                if (Main.projectile.IndexInRange(num)) {
                     Main.projectile[num].timeLeft = 20;
                 }
             }
@@ -412,42 +348,34 @@ namespace CalamityEntropy.Content.Items.Books
             base.OnHitNPC(target, hit, damageDone);
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) {
             target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
         }
 
-        public override Color? GetAlpha(Color lightColor)
-        {
+        public override Color? GetAlpha(Color lightColor) {
             Color white = Color.White;
             white.A = 0;
             return white * base.Projectile.Opacity;
         }
 
-        public float TrailWidth(float completionRatio, Vector2 vertex)
-        {
+        public float TrailWidth(float completionRatio, Vector2 vertex) {
             return Utils.GetLerpValue(1f, 0.4f, completionRatio, clamped: true) * (float)Math.Sin(Math.Acos(1f - Utils.GetLerpValue(0f, 0.15f, completionRatio, clamped: true))) * Utils.GetLerpValue(0f, 0.1f, (float)base.Projectile.timeLeft / 600f, clamped: true) * MaxWidth;
         }
 
-        public Color TrailColor(float completionRatio, Vector2 vertex)
-        {
+        public Color TrailColor(float completionRatio, Vector2 vertex) {
             return Color.Lerp(Color.Cyan, new Color(0, 0, 255), completionRatio);
         }
 
-        public float MiniTrailWidth(float completionRatio, Vector2 vertex)
-        {
+        public float MiniTrailWidth(float completionRatio, Vector2 vertex) {
             return TrailWidth(completionRatio, vertex) * 0.8f;
         }
 
-        public Color MiniTrailColor(float completionRatio, Vector2 vertex)
-        {
+        public Color MiniTrailColor(float completionRatio, Vector2 vertex) {
             return Color.White;
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
-            if (base.Projectile.timeLeft > 595)
-            {
+        public override bool PreDraw(ref Color lightColor) {
+            if (base.Projectile.timeLeft > 595) {
                 return false;
             }
 
@@ -498,10 +426,8 @@ namespace CalamityEntropy.Content.Items.Books
     public class ExobeamSlashBurst : ModProjectile
     {
         public NPC Target => Main.npc[(int)Projectile.ai[0]];
-        public float SlashDirection
-        {
-            get
-            {
+        public float SlashDirection {
+            get {
                 if (Projectile.ai[1] > MathHelper.Pi)
                     return Main.rand.NextFloatDirection();
                 return Projectile.ai[1] + Main.rand.NextFloatDirection() * 0.2f;
@@ -510,8 +436,7 @@ namespace CalamityEntropy.Content.Items.Books
 
         public override string Texture => "CalamityEntropy/Assets/Extra/Ports/Invisible";
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 2;
             Projectile.height = 2;
             Projectile.friendly = true;
@@ -524,10 +449,8 @@ namespace CalamityEntropy.Content.Items.Books
             Projectile.noEnchantmentVisuals = true;
         }
 
-        public override void AI()
-        {
-            if (Main.myPlayer == Projectile.owner && Projectile.timeLeft % 20 == 19 && Target.active)
-            {
+        public override void AI() {
+            if (Main.myPlayer == Projectile.owner && Projectile.timeLeft % 20 == 19 && Target.active) {
                 float maxOffset = Math.Min(Target.width * 0.4f, 300f);
                 Vector2 spawnOffset = SlashDirection.ToRotationVector2() * (Main.rand.NextFloatDirection() * maxOffset);
                 Vector2 pos = Target.Center + spawnOffset;

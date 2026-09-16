@@ -5,27 +5,22 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CalamityEntropy.Common
 {
     public class VanityDisplaySys : GlobalItem
     {
         public static List<int> VanityItems = new List<int>();
-        public override void ModifyTooltips(Item entity, List<TooltipLine> tooltips)
-        {
-            if (IsASkinVanity(entity))
-            {
+        public override void ModifyTooltips(Item entity, List<TooltipLine> tooltips) {
+            if (IsASkinVanity(entity)) {
                 tooltips.Add(new TooltipLine(Mod, "CESkinDisplay", "-"));
                 tooltips.Add(new TooltipLine(Mod, "Placeholder", "-"));
             }
         }
         public override bool InstancePerEntity => true;
         public Player dummy = null;
-        public override bool PreDrawTooltipLine(Item item, DrawableTooltipLine line, ref int yOffset)
-        {
-            if (line.Name == "CESkinDisplay")
-            {
+        public override bool PreDrawTooltipLine(Item item, DrawableTooltipLine line, ref int yOffset) {
+            if (line.Name == "CESkinDisplay") {
                 int oFlag = Main.LocalPlayer.GetModPlayer<VanityModPlayer>().SpecialFlag;
                 Main.LocalPlayer.GetModPlayer<VanityModPlayer>().SpecialFlag = 1;
                 dummy = new Player();
@@ -60,15 +55,13 @@ namespace CalamityEntropy.Common
                 drawInfo.colorArmorBody = drawInfo.colorArmorHead = drawInfo.colorArmorLegs = Color.White;
                 drawInfo.colorHead = drawInfo.colorBodySkin = drawInfo.colorLegs = Main.LocalPlayer.skinColor;
 
-                foreach (var layer in PlayerDrawLayerLoader.GetDrawLayers(drawInfo))
-                {
+                foreach (var layer in PlayerDrawLayerLoader.GetDrawLayers(drawInfo)) {
                     layer.DrawWithTransformationAndChildren(ref drawInfo);
                 }
                 SpriteBatch sb = Main.spriteBatch;
                 sb.End();
                 sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.UIScaleMatrix);
-                foreach (var data in drawInfo.DrawDataCache)
-                {
+                foreach (var data in drawInfo.DrawDataCache) {
                     if (data.useDestinationRectangle)
                         sb.Draw(data.texture, data.destinationRectangle, data.sourceRect, data.color, data.rotation, data.origin, data.effect, 0f);
                     else
@@ -78,26 +71,21 @@ namespace CalamityEntropy.Common
                 sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.UIScaleMatrix);
                 Main.LocalPlayer.GetModPlayer<VanityModPlayer>().SpecialFlag = oFlag;
             }
-            if (line.Name == "CESkinDisplay" || line.Name == "Placeholder")
-            {
+            if (line.Name == "CESkinDisplay" || line.Name == "Placeholder") {
                 return false;
             }
 
             return true;
         }
-        public static bool IsASkinVanity(Item item)
-        {
+        public static bool IsASkinVanity(Item item) {
             if (item.ModItem != null && CELists.CalVanityItems.Contains(item.type))
                 return true;
             return VanityItems.Contains(item.type);
         }
-        public static void SetupVanities()
-        {
-            for (int i = 0; i < ItemLoader.ItemCount; i++)
-            {
+        public static void SetupVanities() {
+            for (int i = 0; i < ItemLoader.ItemCount; i++) {
                 Item item = ContentSamples.ItemsByType[i];
-                if (item.ModItem != null && item.ModItem is IVanitySkin)
-                {
+                if (item.ModItem != null && item.ModItem is IVanitySkin) {
                     VanityItems.Add(i);
                 }
             }

@@ -1,26 +1,23 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Items.Weapons.Fractal;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
-using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 namespace CalamityEntropy.Content.Items.Donator
 {
     public class Gungnir : ModItem, IDonatorItem
     {
         public string DonatorName => "散尘化天心";
 
-        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
-        {
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI) {
             Texture2D tex = TextureAssets.Item[Type].Value;
             Vector2 position = Item.position - Main.screenPosition + tex.Size() / 2;
             Rectangle iFrame = tex.Frame();
@@ -31,10 +28,8 @@ namespace CalamityEntropy.Content.Items.Donator
             Lighting.AddLight(position, TorchID.Blue);
             return false;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_CosmiliteBar, CEID.Item_DivineGeode, CEID.Item_AscendantSpiritEssence, CEID.Tile_CosmicAnvil))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_CosmiliteBar, CEID.Item_DivineGeode, CEID.Item_AscendantSpiritEssence, CEID.Tile_CosmicAnvil)) {
                 CreateRecipe()
                 .AddIngredient(ItemID.Gungnir)
                 .AddIngredient(CEID.Item_CosmiliteBar, 12)
@@ -61,8 +56,7 @@ namespace CalamityEntropy.Content.Items.Donator
                 .Register();
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 120;
             Item.height = 120;
             Item.damage = 800;
@@ -85,8 +79,7 @@ namespace CalamityEntropy.Content.Items.Donator
     public class GungnirThrow : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Content/Items/Donator/Gungnir";
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Melee, false, -1);
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
@@ -94,28 +87,23 @@ namespace CalamityEntropy.Content.Items.Donator
             Projectile.penetrate = 7;
             Projectile.timeLeft = 240;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center - Projectile.rotation.ToRotationVector2() * 170 * Projectile.scale, Projectile.Center, targetHitbox, 32);
         }
         public List<Vector2> oldPos = new List<Vector2>();
         public List<float> oldRot = new List<float>();
-        public override void AI()
-        {
+        public override void AI() {
             if (Projectile.localAI[0]++ == 0)
                 CEUtils.PlaySound("xswing", Main.rand.NextFloat(3, 3.6f), Projectile.Center);
             Projectile.rotation = Projectile.velocity.ToRotation();
             oldPos.Add(Projectile.Center);
             oldRot.Add(Projectile.rotation);
-            if (oldPos.Count > 36)
-            {
+            if (oldPos.Count > 36) {
                 oldPos.RemoveAt(0);
                 oldRot.RemoveAt(0);
             }
-            if (Projectile.localAI[0] > 1)
-            {
-                for (float i = 0; i < 1; i += 1f)
-                {
+            if (Projectile.localAI[0] > 1) {
+                for (float i = 0; i < 1; i += 1f) {
                     //PRT_HeavenfallStar2拖尾,旧EParticle数值照抄
                     var p = PRTLoader.NewParticle<PRT_HeavenfallStar2>(Projectile.Center - Projectile.velocity * i, Projectile.velocity * 0.6f, new Color(60, 60, 255), 0.4f);
                     p.drawScale = new Vector2(0.4f, 3);
@@ -124,44 +112,37 @@ namespace CalamityEntropy.Content.Items.Donator
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Vector2.Zero, 6));
             var slash = PRTLoader.NewParticle<PRT_DOracleSlash>(Projectile.Center - Projectile.velocity * 0.8f, Vector2.Zero, new Color(122, 122, 255), Main.rand.NextFloat(380, 420));
             slash.centerColor = Color.White;
             slash.Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, Projectile.rotation + MathHelper.Pi, 8);
-            if (Projectile.ai[1]-- > -1)
-            {
+            if (Projectile.ai[1]-- > -1) {
                 CEUtils.PlaySound("ThunderStrike", Main.rand.NextFloat(0.8f, 1.2f), target.Center, 6, 0.4f);
                 CEUtils.PlaySound("ystn_hit", 2.7f, target.Center);
-                for (int i = 0; i < 8; i++)
-                {
+                for (int i = 0; i < 8; i++) {
                     Vector2 pos = target.Center + new Vector2(0, -900) + CEUtils.randomPointInCircle(600);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, (target.Center - pos).normalize() * 42, ModContent.ProjectileType<AstralStarMelee>(), Projectile.damage / 6, Projectile.owner);
                 }
-                for (int i = 0; i < 1; i++)
-                {
+                for (int i = 0; i < 1; i++) {
                     // 天雷改用自有 Lightning 弹幕（ai 须保持 0 由其自行初始化）；
                     // 自有闪电路径约 480px，落点上移量相应缩短以保证劈中目标
                     int lightningDamage = (int)(Projectile.damage * 1.25f);
                     Vector2 lightningSpawnPosition = target.Center - Vector2.UnitY.RotatedByRandom(0.2f) * 240f;
                     Vector2 lightningShootVelocity = (target.Center - lightningSpawnPosition + target.velocity * 7.5f).SafeNormalize(Vector2.UnitY) * 30f;
                     int lightning = Projectile.NewProjectile(Projectile.GetSource_FromThis(), lightningSpawnPosition, lightningShootVelocity, ModContent.ProjectileType<Lightning>(), lightningDamage, 0f, Projectile.owner);
-                    if (Main.projectile.IndexInRange(lightning))
-                    {
+                    if (Main.projectile.IndexInRange(lightning)) {
                         Main.projectile[lightning].CritChance = Projectile.CritChance;
                         Main.projectile[lightning].DamageType = Projectile.DamageType;
                     }
                 }
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Effect shader = CEEffectAssets.SwordTrail3;
             List<ColoredVertex> ve = new();
             {
-                for (int i = 0; i < oldPos.Count; i++)
-                {
+                for (int i = 0; i < oldPos.Count; i++) {
                     Color b = new Color(255, 255, 255);
                     ve.Add(new ColoredVertex(oldPos[i] - Main.screenPosition + (new Vector2(12 * Projectile.scale * 1, 0).RotatedBy(oldRot[i] + MathHelper.PiOver2)),
                           new Vector3((i) / ((float)oldPos.Count - 1), 1, 1),
@@ -170,8 +151,7 @@ namespace CalamityEntropy.Content.Items.Donator
                           new Vector3((i) / ((float)oldPos.Count - 1), 0, 1),
                           b));
                 }
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     var gd = Main.graphics.GraphicsDevice;
                     SpriteBatch sb = Main.spriteBatch;
 
@@ -190,8 +170,7 @@ namespace CalamityEntropy.Content.Items.Donator
 
             ve.Clear();
             {
-                for (int i = 0; i < oldPos.Count; i++)
-                {
+                for (int i = 0; i < oldPos.Count; i++) {
                     Color b = new Color(255, 255, 255);
                     ve.Add(new ColoredVertex(oldPos[i] - Main.screenPosition + (new Vector2(9 * Projectile.scale * 1, 0).RotatedBy(oldRot[i] + MathHelper.PiOver2)),
                           new Vector3((i) / ((float)oldPos.Count - 1), 1, 1),
@@ -200,8 +179,7 @@ namespace CalamityEntropy.Content.Items.Donator
                           new Vector3((i) / ((float)oldPos.Count - 1), 0, 1),
                           b));
                 }
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     var gd = Main.graphics.GraphicsDevice;
                     SpriteBatch sb = Main.spriteBatch;
 

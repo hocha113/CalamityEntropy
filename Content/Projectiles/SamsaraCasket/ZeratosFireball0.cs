@@ -13,12 +13,10 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
         //帧动画数组(ZeratosFireball0~4),加载期就位,PreDraw 不再拼接路径逐帧请求
         [VaultLoaden("CalamityEntropy/Content/Projectiles/SamsaraCasket/ZeratosFireball", 0, 5, AssetMode = AssetMode.TextureValueArray)]
         internal static Texture2D[] Frames;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Summon;
             Projectile.width = 164;
             Projectile.height = 164;
@@ -32,34 +30,27 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
         }
         int framecounter = 3;
         int frame = 0;
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.ArmorPenetration = HorizonssKey.getArmorPen();
-            if (frame == 0 && framecounter == 3)
-            {
+            if (frame == 0 && framecounter == 3) {
                 SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
             }
             framecounter--;
-            if (framecounter == 0)
-            {
+            if (framecounter == 0) {
                 frame++;
                 framecounter = 3;
-                if (frame > 4)
-                {
+                if (frame > 4) {
                     Projectile.Kill();
                 }
             }
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (HorizonssKey.getVoidTouchLevel() > 0)
-            {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            if (HorizonssKey.getVoidTouchLevel() > 0) {
                 EGlobalNPC.AddVoidTouch(target, 80, HorizonssKey.getVoidTouchLevel(), 800, 16);
             }
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
 
             lightColor = Color.White;
             Texture2D tex = Frames[frame];

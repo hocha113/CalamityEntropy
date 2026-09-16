@@ -1,15 +1,14 @@
 ﻿using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items
 {
     public class AuricToilet : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 12;
             Item.height = 30;
             Item.maxStack = 9999;
@@ -23,8 +22,7 @@ namespace CalamityEntropy.Content.Items
             Item.rare = CECal.RarityBurnishedAuric(ModContent.RarityType<Golden>());
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             // 三把灾厄主题椅换为原版奇珍椅，保持“三椅合一”的配方趣味；门槛由虚空锭把关
             CreateRecipe().
                 AddCalOrOwn(CEID.Item_BotanicChair, ItemID.GoldenChair).

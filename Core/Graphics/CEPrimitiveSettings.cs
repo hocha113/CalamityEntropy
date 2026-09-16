@@ -1,5 +1,4 @@
-using Microsoft.Xna.Framework;
-using Terraria.Graphics.Shaders;
+﻿using Terraria.Graphics.Shaders;
 
 namespace CalamityEntropy.Core.Graphics
 {
@@ -32,8 +31,7 @@ namespace CalamityEntropy.Core.Graphics
         /// <summary>绘制时应用的着色器; 为空时渲染器回落到顶点色直通着色器。</summary>
         public readonly MiscShaderData Shader;
 
-        public CEPrimitiveSettings(VertexWidthFunction widthFunction, VertexColorFunction colorFunction, VertexOffsetFunction offsetFunction = null, bool smoothen = true, bool pixelate = false, MiscShaderData shader = null)
-        {
+        public CEPrimitiveSettings(VertexWidthFunction widthFunction, VertexColorFunction colorFunction, VertexOffsetFunction offsetFunction = null, bool smoothen = true, bool pixelate = false, MiscShaderData shader = null) {
             WidthFunction = widthFunction;
             ColorFunction = colorFunction;
             OffsetFunction = offsetFunction;

@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 
 namespace CalamityEntropy.Content.Buffs
@@ -10,8 +10,7 @@ namespace CalamityEntropy.Content.Buffs
         public override int DamagePlayerPerSec => 20;
         public override int DamageEnemiesPerSec => 200;
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             base.SetStaticDefaults();
             Main.buffNoSave[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = false;

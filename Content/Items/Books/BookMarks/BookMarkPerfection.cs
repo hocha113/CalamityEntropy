@@ -5,23 +5,19 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 {
     public class BookMarkPerfection : BookMark
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.rare = ItemRarityID.Orange;
             Item.value = Item.buyPrice(gold: 5);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Perfection");
         public override Color tooltipColor => Color.Green;
-        public override EBookProjectileEffect getEffect()
-        {
+        public override EBookProjectileEffect getEffect() {
             return new APlusBMEffect();
         }
 
-        public override void ModifyStat(EBookStatModifer modifer)
-        {
-            if (Main.LocalPlayer.Entropy().hitTimeCount > 600)
-            {
+        public override void ModifyStat(EBookStatModifer modifer) {
+            if (Main.LocalPlayer.Entropy().hitTimeCount > 600) {
                 modifer.Crit += 16;
             }
         }

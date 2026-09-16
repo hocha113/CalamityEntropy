@@ -1,15 +1,14 @@
 ﻿using CalamityEntropy.Content.Items;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.AzafureMiners
 {
     public class AzafureMiner : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 92;
             Item.height = 50;
             Item.maxStack = 9999;
@@ -25,10 +24,8 @@ namespace CalamityEntropy.Content.AzafureMiners
             Item.value = Item.buyPrice(gold: 5);
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_EnergyCore, CEID.Item_DubiousPlating))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_EnergyCore, CEID.Item_DubiousPlating)) {
                 CreateRecipe().AddIngredient(CEID.Item_EnergyCore)
                 .AddIngredient<HellIndustrialComponents>(6)
                 .AddIngredient(CEID.Item_DubiousPlating, 6)

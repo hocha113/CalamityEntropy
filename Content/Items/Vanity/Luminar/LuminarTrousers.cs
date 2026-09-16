@@ -9,8 +9,7 @@ namespace CalamityEntropy.Content.Items.Vanity.Luminar
     public class LuminarTrousers : ModItem, IDonatorItem
     {
         public string DonatorName => "玲瓏";
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 48;
             Item.height = 48;
             Item.value = Item.buyPrice(gold: 20);

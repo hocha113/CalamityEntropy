@@ -1,13 +1,13 @@
-using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Dash;
 using InnoVault.PRT;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -26,13 +26,11 @@ namespace CalamityEntropy.Content.Items.Accessories
         public const int DashWingCost = 20;
         /// <summary>飞行时间不足时改由虚空侵蚀扣血的时长。</summary>
         public const int DashVoidTouchTicks = 40;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(wTime, HorSpeed, AccMul, false, 20, 3f);
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.width = 22;
             Item.height = 20;
@@ -46,12 +44,9 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override float RisingSpeedThreshold => 1f;
         public override float MaxAscentSpeed => 3f;
         public override float BaseAscent => 0.135f;
-        public override bool WingUpdate(Player player, bool inUse)
-        {
-            if (inUse && !player.GetModPlayer<CEDashPlayer>().IsDashing)
-            {
-                for (int i = 0; i < 10; i++)
-                {
+        public override bool WingUpdate(Player player, bool inUse) {
+            if (inUse && !player.GetModPlayer<CEDashPlayer>().IsDashing) {
+                for (int i = 0; i < 10; i++) {
                     //翼飞时拖PRT_Void,Opacity=0.2旧VoidElytra原值
                     var p = PRTLoader.NewParticle<PRT_Void>((player.Center - new Vector2(14f, 0f) * (float)player.direction) - player.velocity * ((float)i * 0.1f) + new Vector2(-8f, 10f) * new Vector2((float)player.direction, 1f) * ((float)i * 0.1f), new Vector2(-8f, 10f) * new Vector2((float)player.direction, 1f), Color.White, 1f);
                     p.Opacity = 0.2f;
@@ -61,11 +56,9 @@ namespace CalamityEntropy.Content.Items.Accessories
 
             return base.WingUpdate(player, inUse);
         }
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.GetModPlayer<CEDashPlayer>().Offer(CEDashRegistry.Get<VoidElytraDash>());
-            if (player.wingTime < 2 && !(player.mount.Active))
-            {
+            if (player.wingTime < 2 && !(player.mount.Active)) {
                 player.wingTime = 2;
                 player.AddBuff(ModContent.BuffType<VoidTouch>(), 5);
             }
@@ -87,23 +80,18 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override int Cooldown => VoidElytra.DashCooldown;
         public override float GravityMult => 0f;
 
-        public override void OnStart(Player player, CEDashState state)
-        {
-            if (!state.Remote)
-            {
-                if (player.wingTime >= VoidElytra.DashWingCost)
-                {
+        public override void OnStart(Player player, CEDashState state) {
+            if (!state.Remote) {
+                if (player.wingTime >= VoidElytra.DashWingCost) {
                     player.wingTime -= VoidElytra.DashWingCost;
                 }
-                else
-                {
+                else {
                     player.wingTime = 0;
                     player.AddBuff(ModContent.BuffType<VoidTouch>(), VoidElytra.DashVoidTouchTicks);
                 }
             }
             Vector2 burst = state.Direction * state.CurrentSpeed;
-            for (int i = 0; i < 32; i++)
-            {
+            for (int i = 0; i < 32; i++) {
                 //PRT_Void dash残影,Opacity/vd spawn后赋,旧VoidParticles原值
                 var p = PRTLoader.NewParticle<PRT_Void>(player.Center, burst + CEUtils.randomPointInCircle(6), Color.White, 1f);
                 p.Opacity = 0.36f;
@@ -111,8 +99,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             }
         }
 
-        public override void OnVisuals(Player player, CEDashState state)
-        {
+        public override void OnVisuals(Player player, CEDashState state) {
             var p = PRTLoader.NewParticle<PRT_Void>(player.Center, Vector2.Zero, Color.White, 1f);
             p.Opacity = 0.34f;
             p.vd = 0.9f;

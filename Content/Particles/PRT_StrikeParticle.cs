@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/UpdraftParticle";
 
         public PRT_StrikeParticle Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -25,22 +24,19 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             end = Position;
             if (Lifetime <= 0)
                 Lifetime = 60;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Velocity *= 0.8f;
             end = Vector2.Lerp(end, Position, 0.16f);
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             //blend走Configure尾参mode,拉伸长度跟Position-end距离走
             Texture2D tex = PRTSharedAssets.UpdraftParticle.Value;
             sb.Draw(tex, Position - Main.screenPosition, null, new Color(255, 206, 180),

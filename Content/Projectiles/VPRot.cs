@@ -9,14 +9,12 @@ namespace CalamityEntropy.Content.Projectiles
 
     public class VPRot : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 5000;
 
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 30;
             Projectile.height = 30;
             Projectile.friendly = false;
@@ -29,39 +27,31 @@ namespace CalamityEntropy.Content.Projectiles
 
         }
         public List<Vector2> odp = new List<Vector2>();
-        public override void AI()
-        {
-            if (!((int)(Projectile.ai[2])).ToNPC().active)
-            {
+        public override void AI() {
+            if (!((int)(Projectile.ai[2])).ToNPC().active) {
                 Projectile.Kill();
                 return;
             }
             Projectile.Center = ((int)(Projectile.ai[2])).ToNPC().Center + ((int)(Projectile.ai[2])).ToNPC().rotation.ToRotationVector2() * 47;
-            if (((VoidPopeHand)((int)(Projectile.ai[2])).ToNPC().ModNPC).circle)
-            {
+            if (((VoidPopeHand)((int)(Projectile.ai[2])).ToNPC().ModNPC).circle) {
                 Projectile.timeLeft = 3;
             }
             odp.Add(Projectile.Center);
-            if (odp.Count > 2)
-            {
+            if (odp.Count > 2) {
                 odp.RemoveAt(0);
             }
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            for (int i = 1; i < odp.Count; i++)
-            {
-                if (CEUtils.LineThroughRect(odp[i - 1], odp[i], targetHitbox, 90))
-                {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+            for (int i = 1; i < odp.Count; i++) {
+                if (CEUtils.LineThroughRect(odp[i - 1], odp[i], targetHitbox, 90)) {
                     return true;
                 }
             }
             return false;
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
 
             return false;
         }

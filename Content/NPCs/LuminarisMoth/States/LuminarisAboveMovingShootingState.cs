@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.LuminarisMoth.Core;
+﻿using CalamityEntropy.Content.NPCs.LuminarisMoth.Core;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles.LuminarisShoots;
 using InnoVault.PRT;
@@ -26,14 +26,12 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
         /// <summary>落地拍的本地锁存,不过线。慢半拍的客户端在宽限窗内仍补这一拍,越过就静默(那是真的中途加入)</summary>
         private bool slamCued;
 
-        public override void OnEnter(LuminarisStateContext ctx)
-        {
+        public override void OnEnter(LuminarisStateContext ctx) {
             base.OnEnter(ctx);
             slamCued = false;
         }
 
-        public override IVaultState<LuminarisStateContext> OnUpdate(LuminarisStateContext ctx)
-        {
+        public override IVaultState<LuminarisStateContext> OnUpdate(LuminarisStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
             float enrange = ctx.Enrange;
@@ -43,14 +41,10 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
             npc.velocity *= 0;
             ctx.AfterImageTime = LuminarisDirector.AfterImageFrames;
 
-            if (c <= LuminarisDirector.AboveMovingGateFrame)
-            {
-                if (c > LuminarisDirector.AboveMovingStage1Frame)
-                {
-                    if (c == LuminarisDirector.AboveMovingGateFrame)
-                    {
-                        if (IsServer)
-                        {
+            if (c <= LuminarisDirector.AboveMovingGateFrame) {
+                if (c > LuminarisDirector.AboveMovingStage1Frame) {
+                    if (c == LuminarisDirector.AboveMovingGateFrame) {
+                        if (IsServer) {
                             //原代码在这里骰 num3,但本状态<b>从不读它</b>。骰点与过线照搬,免得动到随机序列语义
                             ctx.Num3 = Main.rand.NextBool() ? -1 : 1;
                             MarkNetUpdate(ctx);
@@ -61,19 +55,16 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
                         player.Center + new Vector2(LuminarisDirector.AboveMovingStage1X * Math.Sign(npc.Center.X - player.Center.X), LuminarisDirector.AboveMovingStage1Y),
                         CEUtils.GetRepeatedCosFromZeroToOne(1 - (c - LuminarisDirector.AboveMovingStage1Frame) / LuminarisDirector.AboveMovingStage1Span, 1));
                 }
-                else if (c > LuminarisDirector.AboveMovingStage2Frame)
-                {
+                else if (c > LuminarisDirector.AboveMovingStage2Frame) {
                     //240 落在这一支(上一支要求严格大于 240),所以这里的锚点重置确实会执行
-                    if (c == LuminarisDirector.AboveMovingStage1Frame)
-                    {
+                    if (c == LuminarisDirector.AboveMovingStage1Frame) {
                         ctx.Vec1 = npc.Center;
                     }
                     npc.Center = Vector2.Lerp(ctx.Vec1,
                         player.Center + new Vector2(0, LuminarisDirector.AboveMovingStage2Y),
                         CEUtils.GetRepeatedCosFromZeroToOne(1 - (c - LuminarisDirector.AboveMovingStage2Frame) / LuminarisDirector.AboveMovingStage2Span, 1));
                 }
-                if (c < LuminarisDirector.AboveMovingStage2Frame)
-                {
+                if (c < LuminarisDirector.AboveMovingStage2Frame) {
                     //横移幅度渐入:219 → 160 线性涨满,之后恒为 1
                     float f = c < LuminarisDirector.AboveMovingRampFrame ? 1 : 1 - ((c - LuminarisDirector.AboveMovingRampFrame) / LuminarisDirector.AboveMovingRampSpan);
                     npc.Center = new Vector2(
@@ -81,11 +72,9 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
                         npc.Center.Y + ((player.Center.Y - LuminarisDirector.AboveMovingHoverAbove) - npc.Center.Y) * LuminarisDirector.AboveMovingHoverLerp);
                     //横移段的朝向直接拿本帧位移的 X 分量当倾角,纯绘制
                     npc.rotation = (npc.Center - ctx.OldPos).X * LuminarisDirector.AboveMovingTiltFactor;
-                    if (c < LuminarisDirector.AboveMovingShootStartFrame)
-                    {
+                    if (c < LuminarisDirector.AboveMovingShootStartFrame) {
                         int interval = (int)(LuminarisDirector.AboveMovingShootIntervalBase / enrange);
-                        if (c % interval == 0)
-                        {
+                        if (c % interval == 0) {
                             //左右两道横扫 + 本体正下方一发,重力载荷走 ai0 方向 / ai1 强度 / ai2 延迟
                             Shoot<LuminarisAstralShoot>(ctx, player.Center + new Vector2(-LuminarisDirector.AboveMovingSideOffsetX, LuminarisDirector.AboveMovingSideOffsetY),
                                 Vector2.UnitX * LuminarisDirector.AboveMovingSideSpeed * enrange, 1,
@@ -96,8 +85,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
                             Shoot<LuminarisAstralShoot>(ctx, npc.Center,
                                 Vector2.UnitY * LuminarisDirector.AboveMovingDownSpeed * enrange, 1,
                                 (-Vector2.UnitY).ToRotation(), LuminarisDirector.AboveMovingDownGravity * enrange, LuminarisDirector.AboveMovingGravityDelay);
-                            if (!Main.dedServ)
-                            {
+                            if (!Main.dedServ) {
                                 //竖直天顶线预告:横坐标用「上一次开火那一帧」的余弦相位。
                                 //原代码写成 `(int)(8f / enrange) * 1`,那个 × 1 是无作用的冗余,原样留着
                                 PRTLoader.NewParticle<PRT_HadLine>(
@@ -108,23 +96,18 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
                         }
                     }
                 }
-                if (!slamCued && c <= LuminarisDirector.AboveMovingStage2Frame)
-                {
+                if (!slamCued && c <= LuminarisDirector.AboveMovingStage2Frame) {
                     slamCued = true;
-                    if (!CountdownCuePassed(c, LuminarisDirector.AboveMovingStage2Frame))
-                    {
-                        if (!Main.dedServ)
-                        {
+                    if (!CountdownCuePassed(c, LuminarisDirector.AboveMovingStage2Frame)) {
+                        if (!Main.dedServ) {
                             ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Vector2.Zero,
                                 Utils.Remap(Main.LocalPlayer.Distance(npc.Center), LuminarisDirector.AboveMovingSlamShakeFar, LuminarisDirector.AboveMovingSlamShakeNear, 0f, LuminarisDirector.AboveMovingSlamShakeAmp)));
                             CalamityEntropy.FlashEffectStrength = LuminarisDirector.AboveMovingSlamFlash;
                         }
                         CEUtils.PlaySound("ksLand", LuminarisDirector.AboveMovingSlamPitch, npc.Center);
-                        if (IsServer)
-                        {
+                        if (IsServer) {
                             //散射的方向与偏转都吃随机数,只影响弹幕,所以整段收在权威端
-                            for (int i = 0; i < LuminarisDirector.AboveMovingSlamShots; i++)
-                            {
+                            for (int i = 0; i < LuminarisDirector.AboveMovingSlamShots; i++) {
                                 Shoot<LuminarisAstralShoot>(ctx, npc.Center,
                                     new Vector2(LuminarisDirector.AboveMovingSlamSpeedX * (Main.rand.NextBool() ? 1 : -1), LuminarisDirector.AboveMovingSlamSpeedY).RotatedByRandom(LuminarisDirector.AboveMovingSlamScatter) * enrange,
                                     1, Vector2.UnitY.ToRotation(), LuminarisDirector.AboveMovingSlamGravity * enrange, LuminarisDirector.AboveMovingSlamGravityDelay);

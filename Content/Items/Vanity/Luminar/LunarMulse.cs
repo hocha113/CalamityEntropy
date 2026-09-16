@@ -9,18 +9,15 @@ namespace CalamityEntropy.Content.Items.Vanity.Luminar
 {
     public class LunarMulse : ModItem, IDonatorItem, IVanitySkin
     {
-        public override void Load()
-        {
-            if (Main.netMode != NetmodeID.Server)
-            {
+        public override void Load() {
+            if (Main.netMode != NetmodeID.Server) {
                 EquipLoader.AddEquipTexture(Mod, "CalamityEntropy/Content/Items/Vanity/Luminar/LuminarRing_Head", EquipType.Head, this);
                 EquipLoader.AddEquipTexture(Mod, "CalamityEntropy/Content/Items/Vanity/Luminar/LuminarDress_Body", EquipType.Body, this);
                 EquipLoader.AddEquipTexture(Mod, "CalamityEntropy/Content/Items/Vanity/Luminar/LuminarTrousers_Legs", EquipType.Legs, this);
             }
         }
         public string DonatorName => "玲瓏";
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 22;
             Item.height = 30;
             Item.accessory = true;
@@ -29,21 +26,17 @@ namespace CalamityEntropy.Content.Items.Vanity.Luminar
             Item.vanity = true;
         }
 
-        public override void UpdateVanity(Player player)
-        {
+        public override void UpdateVanity(Player player) {
             player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            if (!hideVisual)
-            {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
+            if (!hideVisual) {
                 player.GetModPlayer<VanityModPlayer>().vanityEquipped = Name;
             }
-        }                   
+        }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<LuminarRing>())
                 .AddIngredient(ModContent.ItemType<LuminarDress>())

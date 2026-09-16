@@ -19,8 +19,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Assets/Extra/SimpleNoise";
 
         public PRT_ProminenceTrail Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -30,8 +29,7 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             //旧drawAll里Prominence走像素pass单独遍历,现挂IPixelPassPRT让EffectLoader回调DrawPixelPass
             PixelPass = true;   //走EffectLoader像素RT通道,常规PRT分桶PreDraw直接return
@@ -39,11 +37,9 @@ namespace CalamityEntropy.Content.Particles
                 Lifetime = 11;   //短寿命武器拖尾,11是旧默认
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             //最后10tick每帧啃2个odp点,尾端收束,不是Kill条件
-            if (Lifetime - Time < 10)
-            {
+            if (Lifetime - Time < 10) {
                 if (odp.Count > 0)
                     odp.RemoveAt(0);
                 if (odp.Count > 0)
@@ -51,16 +47,14 @@ namespace CalamityEntropy.Content.Particles
             }
         }
 
-        public void AddPoint(Vector2 pos)
-        {
+        public void AddPoint(Vector2 pos) {
             //Add+RemoveAt(0)跟Insert(0)那批轨迹方向相反,旧ProminenceTrail就这么存点
             odp.Add(pos);
             if (odp.Count > maxLength)
                 odp.RemoveAt(0);
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             if (PixelPass)
                 return false;   //正常路径EffectLoader回调DrawPixelPass,别在这画
             DrawPixelPass(sb);
@@ -69,23 +63,19 @@ namespace CalamityEntropy.Content.Particles
             return false;
         }
 
-        public void DrawPixelPass(SpriteBatch sb)
-        {
+        public void DrawPixelPass(SpriteBatch sb) {
             if (odp.Count < 3)
                 return;
             List<ColoredVertex> ve = new List<ColoredVertex>();
             Color b = Color * ((Lifetime - Time) / 12f);
             float width = 0;
-            for (int i = 1; i < odp.Count; i++)
-            {
+            for (int i = 1; i < odp.Count; i++) {
                 float c = (float)i / (float)(odp.Count - 1);
-                if (c > 0.4)
-                {
+                if (c > 0.4) {
                     float x = (c - 0.4f) / 0.6f;
                     width = (float)Math.Sqrt(1 - x * x) * Scale;
                 }
-                else
-                {
+                else {
                     width = 1f * Scale;
                 }
                 ve.Add(new ColoredVertex(odp[i] - Main.screenPosition + (odp[i] - odp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 8 * width,
@@ -96,8 +86,7 @@ namespace CalamityEntropy.Content.Particles
                       b * ((odp.Count - i) / (float)odp.Count)));
             }
             GraphicsDevice gd = Main.graphics.GraphicsDevice;
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 Effect shader = PRTSharedAssets.Prominence.Value;
 
                 //本地EnterShaderRegion等价:End+Begin(Immediate)带shader,原先是灾厄扩展

@@ -1,15 +1,14 @@
 ﻿using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
 {
     public class GravityGaze : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 44;
             Item.height = 44;
             Item.damage = 20;
@@ -28,10 +27,8 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
             Item.mana = 3;
             Item.DamageType = DamageClass.Magic;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_AerialiteBar))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_AerialiteBar)) {
                 CreateRecipe()
                 .AddIngredient(CEID.Item_AerialiteBar, 5)
                 .AddIngredient(ItemID.Glass, 10)
@@ -46,8 +43,7 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
                 .AddTile(TileID.WorkBenches)
                 .Register();
         }
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
     }

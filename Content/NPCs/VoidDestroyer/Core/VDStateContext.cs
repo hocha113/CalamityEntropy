@@ -1,4 +1,4 @@
-using InnoVault.StateMachines;
+﻿using InnoVault.StateMachines;
 using System;
 using Terraria;
 
@@ -34,8 +34,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
 
         #region 事实:出招编排(权威端裁决,随包过线)
         /// <summary>阶段 1~3,映射 ai[2] 同步槽</summary>
-        public int Phase
-        {
+        public int Phase {
             get => Math.Max(1, (int)Npc.ai[2]);
             set => Npc.ai[2] = value;
         }
@@ -138,8 +137,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         #endregion
 
         /// <summary>每帧默认值:运动回 Hold、判定关窗、表现量自然衰减</summary>
-        public void BeginFrameDefaults()
-        {
+        public void BeginFrameDefaults() {
             Mode = VDMoveMode.Hold;
             MoveSpeed = 0f;
             Accel = 0.1f;
@@ -168,39 +166,31 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
             CameraShift = 0f;
 
             CoreGlow = MathHelper.Lerp(CoreGlow, 0f, 0.08f);
-            if (CoreGlow < 0.01f)
-            {
+            if (CoreGlow < 0.01f) {
                 CoreGlow = 0f;
             }
             WingPulse *= 0.94f;
-            if (WingPulse < 0.02f)
-            {
+            if (WingPulse < 0.02f) {
                 WingPulse = 0f;
             }
             ShakeStrength *= 0.82f;
-            if (ShakeStrength < 0.02f)
-            {
+            if (ShakeStrength < 0.02f) {
                 ShakeStrength = 0f;
             }
         }
 
         /// <summary>把一手招写进历史环(新在 0)</summary>
-        public void PushHistory(VDStateIndex state)
-        {
-            for (int i = RecentHistory.Length - 1; i > 0; i--)
-            {
+        public void PushHistory(VDStateIndex state) {
+            for (int i = RecentHistory.Length - 1; i > 0; i--) {
                 RecentHistory[i] = RecentHistory[i - 1];
             }
             RecentHistory[0] = (int)state;
         }
 
-        public bool InHistory(VDStateIndex state)
-        {
+        public bool InHistory(VDStateIndex state) {
             int id = (int)state;
-            for (int i = 0; i < RecentHistory.Length; i++)
-            {
-                if (RecentHistory[i] == id)
-                {
+            for (int i = 0; i < RecentHistory.Length; i++) {
+                if (RecentHistory[i] == id) {
                     return true;
                 }
             }

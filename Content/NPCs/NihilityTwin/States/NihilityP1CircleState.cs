@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.NihilityTwin.Core;
+﻿using CalamityEntropy.Content.NPCs.NihilityTwin.Core;
 using CalamityEntropy.Content.Projectiles;
 using InnoVault.StateMachines;
 using Terraria;
@@ -23,8 +23,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.States
     {
         public override NihilityStateIndex StateIndex => NihilityStateIndex.P1Circle;
 
-        public override IVaultState<NihilityStateContext> OnUpdate(NihilityStateContext ctx)
-        {
+        public override IVaultState<NihilityStateContext> OnUpdate(NihilityStateContext ctx) {
             NPC npc = ctx.Npc;
             NPC cell = ctx.Cell;
             Vector2 targetPos = ctx.Target.Center;
@@ -35,18 +34,15 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.States
             npc.velocity = npc.rotation.ToRotationVector2() * NihilityDirector.CircleSpeed;
             npc.rotation = CEUtils.RotateTowardsAngle(npc.rotation, (cell.Center - npc.Center).ToRotation(), NihilityDirector.CircleTurnRate, false);
 
-            if (ctx.Num1 == NihilityDirector.CircleRingRollFrame && IsServer)
-            {
+            if (ctx.Num1 == NihilityDirector.CircleRingRollFrame && IsServer) {
                 ctx.Num2 = CEUtils.randomRot();
                 MarkNetUpdate(ctx);
             }
             ctx.Num2 += MathHelper.ToRadians(NihilityDirector.CircleRingSpinDeg);
             ctx.Num1++;
 
-            if (IsServer)
-            {
-                if (Main.GameUpdateCount % NihilityDirector.CircleSpikeInterval == 0)
-                {
+            if (IsServer) {
+                if (Main.GameUpdateCount % NihilityDirector.CircleSpikeInterval == 0) {
                     Shoot<CellSpike>(npc.GetSource_FromThis(), npc.Center,
                         (npc.rotation + MathHelper.PiOver2).ToRotationVector2() * NihilityDirector.CircleSpikeSpeed,
                         BulletDamage(ctx), NihilityDirector.SpikeKnockback);
@@ -54,24 +50,18 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.States
                         (npc.rotation - MathHelper.PiOver2).ToRotationVector2() * NihilityDirector.CircleSpikeSpeed,
                         BulletDamage(ctx), NihilityDirector.SpikeKnockback);
                 }
-                if (ctx.Num1 < NihilityDirector.CircleBurstFrame)
-                {
-                    if (Main.GameUpdateCount % NihilityDirector.CircleRingInterval == 0)
-                    {
-                        for (int i = 0; i < 360; i += NihilityDirector.CircleRingStepDeg)
-                        {
+                if (ctx.Num1 < NihilityDirector.CircleBurstFrame) {
+                    if (Main.GameUpdateCount % NihilityDirector.CircleRingInterval == 0) {
+                        for (int i = 0; i < 360; i += NihilityDirector.CircleRingStepDeg) {
                             Shoot<CellBullet>(cell.GetSource_FromThis(), cell.Center,
                                 (ctx.Num2 + MathHelper.ToRadians(i)).ToRotationVector2() * NihilityDirector.CircleRingSpeed,
                                 BulletDamage(ctx), NihilityDirector.BulletKnockback);
                         }
                     }
                 }
-                else
-                {
-                    for (int i = 0; i < 360; i += NihilityDirector.CircleRingStepDeg)
-                    {
-                        if (Main.rand.NextBool(NihilityDirector.CircleBurstChance))
-                        {
+                else {
+                    for (int i = 0; i < 360; i += NihilityDirector.CircleRingStepDeg) {
+                        if (Main.rand.NextBool(NihilityDirector.CircleBurstChance)) {
                             Shoot<CellBullet>(cell.GetSource_FromThis(),
                                 cell.Center + new Vector2(Main.rand.Next(-NihilityDirector.CircleBurstScatter, NihilityDirector.CircleBurstScatter), Main.rand.Next(-NihilityDirector.CircleBurstScatter, NihilityDirector.CircleBurstScatter)),
                                 (ctx.Num2 + MathHelper.ToRadians(i)).ToRotationVector2() * NihilityDirector.CircleBurstSpeed,
@@ -81,8 +71,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.States
                 }
             }
 
-            if (ctx.Num1 > NihilityDirector.CircleDuration)
-            {
+            if (ctx.Num1 > NihilityDirector.CircleDuration) {
                 return EndAttack(ctx);
             }
             return null;

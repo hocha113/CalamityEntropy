@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.NihilityTwin.Core;
+﻿using CalamityEntropy.Content.NPCs.NihilityTwin.Core;
 using CalamityEntropy.Content.Projectiles;
 using InnoVault.StateMachines;
 using Terraria;
@@ -22,8 +22,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.States
     {
         public override NihilityStateIndex StateIndex => NihilityStateIndex.P1SpinSnipe;
 
-        public override IVaultState<NihilityStateContext> OnUpdate(NihilityStateContext ctx)
-        {
+        public override IVaultState<NihilityStateContext> OnUpdate(NihilityStateContext ctx) {
             NPC npc = ctx.Npc;
             NPC cell = ctx.Cell;
             Vector2 targetPos = ctx.Target.Center;
@@ -40,8 +39,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.States
             cell.velocity += (npc.Center + npc.rotation.ToRotationVector2() * NihilityDirector.SpinCellOffset - cell.Center) * NihilityDirector.SpinCellLerp;
 
             if (ctx.Num1 > NihilityDirector.SpinWindup && IsServer
-                && CEUtils.getDistance(cell.Center, npc.Center) < NihilityDirector.SpinFireRange)
-            {
+                && CEUtils.getDistance(cell.Center, npc.Center) < NihilityDirector.SpinFireRange) {
                 Shoot<CellBullet>(cell.GetSource_FromThis(), cell.Center,
                     npc.rotation.ToRotationVector2() * NihilityDirector.SpinBulletSpeed,
                     BulletDamage(ctx), NihilityDirector.BulletKnockback);
@@ -49,8 +47,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.States
 
             ctx.Num1++;
             IVaultState<NihilityStateContext> next = null;
-            if (ctx.Num1 > NihilityDirector.SpinDuration)
-            {
+            if (ctx.Num1 > NihilityDirector.SpinDuration) {
                 next = EndAttack(ctx);
             }
             //原代码在收招判定之后还额外推了两次绳索求解:自旋时绳子才跟得上,纯绘制

@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.CalamityRef;
+﻿using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.SpiritFountain.Core
@@ -42,31 +42,24 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.Core
         public const int SpiritCountWorldBonus = 4;
 
         /// <summary>装灾厄读复仇/死亡,缺席仍走专家/大师兜底。原 SetDefaults 逐条搬过来</summary>
-        public static int SpiritCount()
-        {
+        public static int SpiritCount() {
             int count = SpiritCountBase;
-            if (Main.expertMode)
-            {
+            if (Main.expertMode) {
                 count += SpiritCountDifficultyBonus;
             }
-            if (Main.masterMode)
-            {
+            if (Main.masterMode) {
                 count += SpiritCountDifficultyBonus;
             }
-            if (CECal.IsRevengeance)
-            {
+            if (CECal.IsRevengeance) {
                 count += SpiritCountDifficultyBonus;
             }
-            if (CECal.IsDeathMode)
-            {
+            if (CECal.IsDeathMode) {
                 count += SpiritCountDifficultyBonus;
             }
-            if (Main.getGoodWorld)
-            {
+            if (Main.getGoodWorld) {
                 count += SpiritCountWorldBonus;
             }
-            if (Main.zenithWorld)
-            {
+            if (Main.zenithWorld) {
                 count += SpiritCountWorldBonus;
             }
             return count;
@@ -89,32 +82,25 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.Core
         public const int PhaseTransThreshold = 3;
 
         /// <summary>阶段号 1~7。原代码 L246-271 的逐条自增,一条不合并</summary>
-        public static int PhaseFor(NPC npc)
-        {
+        public static int PhaseFor(NPC npc) {
             int phase = 1;
             float p = (float)npc.life / npc.lifeMax;
-            if (p < Phase1_2)
-            {
+            if (p < Phase1_2) {
                 phase++;
             }
-            if (p < Phase1_3)
-            {
+            if (p < Phase1_3) {
                 phase++;
             }
-            if (p < Phase2_1)
-            {
+            if (p < Phase2_1) {
                 phase++;
             }
-            if (p < Phase2_2)
-            {
+            if (p < Phase2_2) {
                 phase++;
             }
-            if (p < Phase3_1)
-            {
+            if (p < Phase3_1) {
                 phase++;
             }
-            if (p < Phase3_2)
-            {
+            if (p < Phase3_2) {
                 phase++;
             }
             return phase;
@@ -130,31 +116,24 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.Core
         /// 装灾厄读复仇/死亡,缺席仍走大师/专家兜底
         /// </para>
         /// </summary>
-        public static float Enrage()
-        {
+        public static float Enrage() {
             float enrage = 1f;
-            if (Main.masterMode)
-            {
+            if (Main.masterMode) {
                 enrage += 0.2f;
             }
-            else if (Main.expertMode)
-            {
+            else if (Main.expertMode) {
                 enrage += 0.1f;
             }
-            if (CECal.IsDeathMode)
-            {
+            if (CECal.IsDeathMode) {
                 enrage += 0.2f;
             }
-            else if (CECal.IsRevengeance)
-            {
+            else if (CECal.IsRevengeance) {
                 enrage += 0.1f;
             }
-            if (Main.zenithWorld)
-            {
+            if (Main.zenithWorld) {
                 enrage += 0.3f;
             }
-            else if (Main.getGoodWorld)
-            {
+            else if (Main.getGoodWorld) {
                 enrage += 0.15f;
             }
             return enrage;

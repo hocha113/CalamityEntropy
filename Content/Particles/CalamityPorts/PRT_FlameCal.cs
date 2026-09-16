@@ -1,4 +1,4 @@
-using InnoVault.PRT;
+﻿using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 
@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             RelativePower = 0f;
             BrightColor = default;
@@ -26,8 +25,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         //Assets/Particles/Flames → PRTSharedAssets.Flames,Texture指白图占位
         public override string Texture => CEUtils.WhiteTexPath;
 
-        public PRT_FlameCal Configure(int lifetime, float relativePower, Color darkColor)
-        {
+        public PRT_FlameCal Configure(int lifetime, float relativePower, Color darkColor) {
             BrightColor = Color;
             DarkColor = darkColor;
             RelativePower = relativePower;
@@ -37,8 +35,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 30;
@@ -48,8 +45,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         //框架自动Position+=Velocity,旧FlameParticle AI里也有那行,关位移自己接管,忘删就双倍速度
         public override bool ShouldUpdatePosition() => false;
 
-        public override void AI()
-        {
+        public override void AI() {
             Position += Velocity;
             Scale += RelativePower * 0.01f;
             Position.Y -= RelativePower * 1.25f;
@@ -62,8 +58,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             Color.A = 50;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch) {
             Texture2D tex = PRTSharedAssets.Flames.Value;
             int frameWidth = tex.Width / 3;   //3列横排,Variant在SetProperty里rand
             Rectangle frame = new Rectangle(frameWidth * Variant, 0, frameWidth, tex.Height);

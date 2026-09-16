@@ -1,4 +1,4 @@
-using InnoVault.PRT;
+﻿using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 
@@ -12,8 +12,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             AngularVelocity = 0f;   //池化复用,旋速忘了清下一朵出生就在转
         }
@@ -21,8 +20,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         //StarProj自制贴图走PRTSharedAssets,Texture只能指白图
         public override string Texture => CEUtils.WhiteTexPath;
 
-        public PRT_ImpactCal Configure(float angularVelocity, int lifetime)
-        {
+        public PRT_ImpactCal Configure(float angularVelocity, int lifetime) {
             AngularVelocity = angularVelocity;
             PRTDrawMode = PRTDrawModeEnum.AdditiveBlend;
             Rotation = Main.rand.NextFloat(MathHelper.TwoPi);
@@ -31,20 +29,17 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 30;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Rotation += AngularVelocity;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch) {
             float scaleFactor = CEParticleUtils.Convert01To010(LifetimeCompletion) * 1.3f;   //缩放脉冲,Completion走Convert01To010不是线性
             Vector2 drawScale = new Vector2(0.3f, 1f) * scaleFactor;
             Texture2D texture = PRTSharedAssets.StarProj.Value;   //Impact三Draw叠StarProj,缩放走Convert01To010

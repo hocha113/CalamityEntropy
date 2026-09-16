@@ -8,12 +8,10 @@ namespace CalamityEntropy.Content.Items.Weapons
 {
     public class DarkArts : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 26;
             Item.height = 26;
             Item.useTime = 1;
@@ -27,13 +25,11 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.rare = ItemRarityID.Red;
 
         }
-        public override bool CanUseItem(Player player)
-        {
+        public override bool CanUseItem(Player player) {
             return !player.HasBuff(ModContent.BuffType<StealthState>());
         }
 
-        public override bool? UseItem(Player player)
-        {
+        public override bool? UseItem(Player player) {
             SoundEffect se = ModContent.Request<SoundEffect>("CalamityEntropy/Assets/Sounds/da1").Value;
             if (se != null) { se.Play(Main.soundVolume, 0, 0); }
             player.AddBuff(ModContent.BuffType<StealthState>(), 120);

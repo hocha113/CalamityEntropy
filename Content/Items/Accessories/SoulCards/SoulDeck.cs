@@ -1,16 +1,15 @@
+﻿using CalamityEntropy.Core.CalamityRef;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories.SoulCards
 {
     public class SoulDeck : ModItem, IDeck
     {
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 22;
             Item.height = 22;
             Item.value = Item.buyPrice(platinum: 1);
@@ -20,8 +19,7 @@ namespace CalamityEntropy.Content.Items.Accessories.SoulCards
         public float WingSpeedAddition => IndigoCard.WingSpeedAddition;
         public float WingTimeAddition => IndigoCard.WingTimeAddition;
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.Entropy().soulDeckInInv = true;
             player.Entropy().bitternessCard = true;
             player.Entropy().grudgeCard = true;
@@ -34,8 +32,7 @@ namespace CalamityEntropy.Content.Items.Accessories.SoulCards
             player.Entropy().CooldownTimeMult -= RequiemCard.CooldownDec;
             player.Entropy().addEquip("SoulDeck", !hideVisual);
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             tooltips.Replace("[CD]", RequiemCard.CooldownDec.ToPercent());
             tooltips.Replace("[IM]", WisperCard.ImmuneAdd.ToPercent());
             tooltips.Replace("[DB]", PurificationCard.DebuffTimeReduce.ToPercent());
@@ -45,13 +42,11 @@ namespace CalamityEntropy.Content.Items.Accessories.SoulCards
             tooltips.Replace("[BD]", BitternessCard.DmgMax.ToPercent());
             tooltips.Replace("[AP]", DevouringCard.ArmorPene.ToPercent());
         }
-        public override void UpdateInventory(Player player)
-        {
+        public override void UpdateInventory(Player player) {
             player.Entropy().soulDeckInInv = true;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient<BitternessCard>()
                 .AddIngredient<DevouringCard>()
@@ -67,8 +62,7 @@ namespace CalamityEntropy.Content.Items.Accessories.SoulCards
                 .AddTile(TileID.Bookcases)
                 .Register();
         }
-        public override bool CanAccessoryBeEquippedWith(Item equippedItem, Item incomingItem, Player player)
-        {
+        public override bool CanAccessoryBeEquippedWith(Item equippedItem, Item incomingItem, Player player) {
             return !(equippedItem.ModItem is IDeck && incomingItem.ModItem is IDeck);
         }
     }

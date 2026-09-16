@@ -18,8 +18,7 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             SquishStrenght = 1f;
             MaxSquish = 3f;
@@ -33,8 +32,7 @@ namespace CalamityEntropy.Content.Particles
         internal static Asset<Texture2D> BloomTex;
 
         public PRT_Light Configure(float opacity, float squishStrenght = 1f, float maxSquish = 3f,
-            float hueShift = 0f, Entity entity = null, float followingRateRatio = 0.9f, int lifetime = -1)
-        {
+            float hueShift = 0f, Entity entity = null, float followingRateRatio = 0.9f, int lifetime = -1) {
             Opacity = opacity;
             SquishStrenght = squishStrenght;
             MaxSquish = maxSquish;
@@ -46,16 +44,14 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             PRTDrawMode = PRTDrawModeEnum.AdditiveBlend;
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 200;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Velocity *= LifetimeCompletion >= 0.34f ? 0.93f : 1.02f;
 
             Opacity = LifetimeCompletion > 0.5f ? (float)Math.Sin(LifetimeCompletion * MathHelper.Pi) * 0.2f + 0.8f : (float)Math.Sin(LifetimeCompletion * MathHelper.Pi);
@@ -63,15 +59,13 @@ namespace CalamityEntropy.Content.Particles
 
             Color = Main.hslToRgb(Main.rgbToHsl(Color).X + HueShift, Main.rgbToHsl(Color).Y, Main.rgbToHsl(Color).Z);
 
-            if (entity != null && entity.active)
-            {
+            if (entity != null && entity.active) {
                 //entity跟随手动写,框架只管Velocity位移,跟PRT_Spark/FollowOwner同款
                 Position += entity.velocity * followingRateRatio;
             }
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch) {
             Texture2D tex = PRTLoader.PRT_IDToTexture[ID];
             Texture2D bloomTex = BloomTex.Value;
 

@@ -8,8 +8,7 @@ namespace CalamityEntropy.Content.Items
     public class ProphetRelic : ModItem
     {
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.DefaultToPlaceableTile(ModContent.TileType<ProphetRelicTile>(), 0);
 
             Item.width = 30;

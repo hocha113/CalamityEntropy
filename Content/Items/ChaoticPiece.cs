@@ -7,14 +7,12 @@ namespace CalamityEntropy.Content.Items
 {
     public class ChaoticPiece : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.ResearchUnlockCount = 120;
             ItemID.Sets.SortingPriorityMaterials[Type] = 98;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 42;
             Item.height = 42;
             Item.maxStack = 9999;

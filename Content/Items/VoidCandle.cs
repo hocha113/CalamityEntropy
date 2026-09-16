@@ -9,8 +9,7 @@ namespace CalamityEntropy.Content.Items
 {
     public class VoidCandle : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 26;
             Item.height = 42;
             Item.maxStack = 9999;

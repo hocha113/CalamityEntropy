@@ -6,8 +6,7 @@ namespace CalamityEntropy.Content.Buffs
 {
     public class NoHeal : ModBuff
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.buffNoSave[Type] = true;
             BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
             Main.debuff[Type] = true;

@@ -7,16 +7,13 @@ namespace CalamityEntropy.Content.Items
 {
     public class TargetingWand : ModItem
     {
-        public override bool IsLoadingEnabled(Mod mod)
-        {
+        public override bool IsLoadingEnabled(Mod mod) {
             return false;
         }
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.staff[Item.type] = true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 84;
             Item.height = 84;
             Item.damage = 1;

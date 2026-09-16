@@ -13,14 +13,12 @@ namespace CalamityEntropy.Common
         public float OrderPriority { get; set; }
 
         public CESpawnConditionBestiaryInfoElement(string nameLanguageKey, int filterIconFrame, string backgroundImagePath = null, Color? backgroundColor = null)
-            : base(nameLanguageKey, filterIconFrame)
-        {
+            : base(nameLanguageKey, filterIconFrame) {
             _backgroundImagePath = backgroundImagePath;
             _backgroundColor = backgroundColor;
         }
 
-        public Asset<Texture2D> GetBackgroundImage()
-        {
+        public Asset<Texture2D> GetBackgroundImage() {
             if (_backgroundImagePath == null)
                 return null;
 

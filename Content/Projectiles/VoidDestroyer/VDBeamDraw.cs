@@ -1,4 +1,4 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -21,10 +21,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         /// 画一根从 start 沿 dir 长 length 的射线。width 为可见宽度(像素),envelope 是宽度包络 0..1,
         /// color 主色、coreColor 核心热色,seed 让并存的多根射线湍流不同步
         /// </summary>
-        public static void Draw(Vector2 start, Vector2 dir, float length, float width, Color color, Color coreColor, float envelope, float opacity, float seed = 0f)
-        {
-            if (envelope <= 0.001f || opacity <= 0.001f || length <= 1f)
-            {
+        public static void Draw(Vector2 start, Vector2 dir, float length, float width, Color color, Color coreColor, float envelope, float opacity, float seed = 0f) {
+            if (envelope <= 0.001f || opacity <= 0.001f || length <= 1f) {
                 return;
             }
             dir = dir.SafeNormalize(Vector2.UnitY);
@@ -32,8 +30,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Vector2 screenStart = start - Main.screenPosition;
             float rot = dir.ToRotation();
 
-            if (shader != null)
-            {
+            if (shader != null) {
                 Texture2D strip = CEExtraAssets.white ?? CEUtils.getExtraTex("white");
                 Texture2D noise = CEExtraAssets.TurbulentNoise ?? CEUtils.getExtraTex("TurbulentNoise");
                 Main.spriteBatch.EnterShaderRegion(BlendState.Additive, shader);
@@ -51,8 +48,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 Main.spriteBatch.Draw(strip, screenStart, null, Color.White, rot, new Vector2(0f, strip.Height / 2f), scale, SpriteEffects.None, 0f);
                 Main.spriteBatch.ExitShaderRegion();
             }
-            else
-            {
+            else {
                 Texture2D core = CEUtils.getExtraTex("VoidLaser");
                 Texture2D glowBeam = CEUtils.getExtraTex("BasicTrail");
                 Vector2 mid = screenStart + dir * length * 0.5f;

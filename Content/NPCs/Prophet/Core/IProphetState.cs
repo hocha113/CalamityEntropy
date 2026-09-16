@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.AI;
+﻿using CalamityEntropy.Core.AI;
 using InnoVault.StateMachines;
 using Terraria;
 using Terraria.Audio;
@@ -72,14 +72,11 @@ namespace CalamityEntropy.Content.NPCs.Prophet.Core
         /// 权威端选招总把倒计时赋成正数且同帧就跑状态体,所以 else 支<b>永远进不来</b>;
         /// 客户端在「本地倒计时已归零、换态包还没到」的一两帧里会短暂走到。照搬保留
         /// </summary>
-        public sealed override IVaultState<ProphetStateContext> OnUpdate(ProphetStateContext ctx)
-        {
-            if (ctx.Countdown > 0)
-            {
+        public sealed override IVaultState<ProphetStateContext> OnUpdate(ProphetStateContext ctx) {
+            if (ctx.Countdown > 0) {
                 RunAttack(ctx);
             }
-            else
-            {
+            else {
                 IdleDrift(ctx);
             }
             return null;
@@ -89,8 +86,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet.Core
         protected abstract void RunAttack(ProphetStateContext ctx);
 
         /// <summary>原 else 支:朝向跟速度走,轻微阻尼,再朝玩家加一个单位推力</summary>
-        private static void IdleDrift(ProphetStateContext ctx)
-        {
+        private static void IdleDrift(ProphetStateContext ctx) {
             NPC npc = ctx.Npc;
             npc.rotation = npc.velocity.ToRotation();
             npc.velocity *= ProphetDirector.IdleDrag;
@@ -102,10 +98,8 @@ namespace CalamityEntropy.Content.NPCs.Prophet.Core
             => ctx.Npc.damage / ProphetDirector.ProjDamageDivisor;
 
         /// <summary>符文结晶起手音。原代码在 0 / 1 / 3 / 6 号招里逐字重复了四遍,这里合成一处</summary>
-        protected static void CrystalCue(NPC npc)
-        {
-            if (!Main.dedServ)
-            {
+        protected static void CrystalCue(NPC npc) {
+            if (!Main.dedServ) {
                 SoundEngine.PlaySound(SoundID.Item9 with { Pitch = 0.2f, Volume = 0.85f, MaxInstances = 8 }, npc.Center);
                 CEUtils.PlaySound("crystedge_spawn_crystal", Main.rand.NextFloat(0.8f, 1.2f), npc.Center);
             }
@@ -116,10 +110,8 @@ namespace CalamityEntropy.Content.NPCs.Prophet.Core
         /// (<c>IsServer</c> 就是原代码的 <c>Main.netMode != NetmodeID.MultiplayerClient</c>)
         /// </summary>
         protected static void Shoot<T>(ProphetStateContext ctx, Vector2 pos, Vector2 velocity, int damage,
-            float knockback, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile
-        {
-            if (!IsServer)
-            {
+            float knockback, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile {
+            if (!IsServer) {
                 return;
             }
             NPC npc = ctx.Npc;
@@ -136,10 +128,8 @@ namespace CalamityEntropy.Content.NPCs.Prophet.Core
         /// 瞬移是决策点,当场 netUpdate
         /// </para>
         /// </summary>
-        protected static void Teleport(ProphetStateContext ctx, Vector2 pos)
-        {
-            if (!IsServer)
-            {
+        protected static void Teleport(ProphetStateContext ctx, Vector2 pos) {
+            if (!IsServer) {
                 return;
             }
             ctx.TeleportSeq++;

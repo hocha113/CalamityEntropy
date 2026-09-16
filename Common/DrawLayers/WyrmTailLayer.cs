@@ -13,20 +13,17 @@ namespace CalamityEntropy.Common.DrawLayers
         [VaultLoaden("CalamityEntropy/Assets/Extra/WyrmTail")]
         internal static Asset<Texture2D> WyrmTailTex;
 
-        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
-        {
+        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) {
             if (drawInfo.drawPlayer.dead)
                 return false;
             return drawInfo.drawPlayer.legs == EquipLoader.GetEquipSlot(Mod, "MariviniumLeggings", EquipType.Legs);
         }
 
-        public override Position GetDefaultPosition()
-        {
+        public override Position GetDefaultPosition() {
             return new BeforeParent(PlayerDrawLayers.Leggings);
         }
 
-        protected override void Draw(ref PlayerDrawSet drawInfo)
-        {
+        protected override void Draw(ref PlayerDrawSet drawInfo) {
             var player = drawInfo.drawPlayer;
             Texture2D texture = WyrmTailTex.Value;
 

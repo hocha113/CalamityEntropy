@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Apsychos.Core;
+﻿using CalamityEntropy.Content.NPCs.Apsychos.Core;
 using CalamityEntropy.Content.Projectiles.ApsychosProjs;
 using InnoVault.StateMachines;
 using System;
@@ -15,8 +15,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.States
     {
         public override ApsychosStateIndex StateIndex => ApsychosStateIndex.FlameThrow;
 
-        public override IVaultState<ApsychosStateContext> OnUpdate(ApsychosStateContext ctx)
-        {
+        public override IVaultState<ApsychosStateContext> OnUpdate(ApsychosStateContext ctx) {
             NPC npc = ctx.Npc;
             NPC tail = ctx.Tail;
             Player player = ctx.Target;
@@ -33,16 +32,13 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.States
             npc.velocity += npc.rotation.ToRotationVector2() * ApsychosDirector.FlameThrust;
             tail.Center = Vector2.Lerp(tail.Center, npc.Center + npc.rotation.ToRotationVector2() * ApsychosDirector.FlameTailReach * npc.scale, ApsychosDirector.FlameTailHomeLerp * enrange);
 
-            if (Timer > ApsychosDirector.FlameStartFrame && Timer < ApsychosDirector.FlameEndFrame)
-            {
+            if (Timer > ApsychosDirector.FlameStartFrame && Timer < ApsychosDirector.FlameEndFrame) {
                 tail.velocity += tail.rotation.ToRotationVector2() * ApsychosDirector.FlameTailRecoilPerFrame;
                 float v = 1f;
-                if (Timer < ApsychosDirector.FlameRampFrame)
-                {
+                if (Timer < ApsychosDirector.FlameRampFrame) {
                     v = (Timer - ApsychosDirector.FlameStartFrame) / ApsychosDirector.FlameRampSpan;
                 }
-                if (Timer > ApsychosDirector.FlameFadeFrame)
-                {
+                if (Timer > ApsychosDirector.FlameFadeFrame) {
                     v = 1f - (Timer - ApsychosDirector.FlameFadeFrame) / ApsychosDirector.FlameRampSpan;
                 }
                 Shoot<ApsychosFire>(ctx, tail.Center + tail.rotation.ToRotationVector2() * ApsychosDirector.FlameMuzzleOffset,
@@ -51,8 +47,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.States
                     ApsychosDirector.FlameLifeBase + (ctx.Phase - 1) * ApsychosDirector.FlameLifePerPhase,
                     ctx.Phase);
             }
-            if (Timer > ApsychosDirector.FlameDuration)
-            {
+            if (Timer > ApsychosDirector.FlameDuration) {
                 return NextAttack(ctx);
             }
             return null;

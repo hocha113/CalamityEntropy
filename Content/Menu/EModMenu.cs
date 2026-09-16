@@ -15,8 +15,7 @@ namespace CalamityEntropy.Content.Menu
         public override int Music => MusicLoader.GetMusicSlot(Mod, "Assets/Sounds/Music/startmenu");
         public override Asset<Texture2D> Logo => ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Logo");
         public override string DisplayName => Mod.GetLocalization("Menu.Vortex").Value;
-        public override bool PreDrawLogo(SpriteBatch spriteBatch, ref Vector2 logoDrawCenter, ref float logoRotation, ref float logoScale, ref Color drawColor)
-        {
+        public override bool PreDrawLogo(SpriteBatch spriteBatch, ref Vector2 logoDrawCenter, ref float logoRotation, ref float logoScale, ref Color drawColor) {
             Main.time = 27000;
             Main.dayTime = true;
             Texture2D mask = CEUtils.getExtraTex("menumask");
@@ -49,43 +48,34 @@ namespace CalamityEntropy.Content.Menu
 
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.UIScaleMatrix);
-            if(Main.rand.NextBool(8))
-            {
+            if (Main.rand.NextBool(8)) {
                 MenuParticle particle = new MenuParticle(new Vector2(Main.screenWidth / 2, Main.screenHeight / 2), new Vector2(Main.screenWidth / 2, Main.screenHeight / 2), (Main.rand.Next(6) / 6f * MathHelper.TwoPi).ToRotationVector2() * 1, new Vector2(1.5f, 1), 660);
                 MenuParticle.particles.Add(particle);
                 particle.pos += particle.velocity * 2;
             }
-            if (counter % 35 == 0)
-            {
+            if (counter % 35 == 0) {
                 MenuParticle particle = new MenuParticle(new Vector2(Main.screenWidth / 2, Main.screenHeight / 2), new Vector2(Main.screenWidth / 2, Main.screenHeight / 2), CEUtils.randomRot().ToRotationVector2() * 1, new Vector2(1.5f, 1), 660);
                 MenuParticle.particles.Add(particle);
                 particle.pos += particle.velocity * 2;
             }
-            if (Main.rand.NextBool(120))
-            {
+            if (Main.rand.NextBool(120)) {
 
                 LightningParticle.lightningParticles.Add(new LightningParticle());
             }
-            foreach (MenuParticle p in MenuParticle.particles)
-            {
+            foreach (MenuParticle p in MenuParticle.particles) {
                 p.update();
                 p.draw();
             }
-            for (int i = MenuParticle.particles.Count - 1; i >= 0; i--)
-            {
-                if (MenuParticle.particles[i].timeleft <= 0)
-                {
+            for (int i = MenuParticle.particles.Count - 1; i >= 0; i--) {
+                if (MenuParticle.particles[i].timeleft <= 0) {
                     MenuParticle.particles.RemoveAt(i);
                 }
             }
-            foreach (LightningParticle p in LightningParticle.lightningParticles)
-            {
+            foreach (LightningParticle p in LightningParticle.lightningParticles) {
                 p.draw();
             }
-            for (int i = LightningParticle.lightningParticles.Count - 1; i >= 0; i--)
-            {
-                if (LightningParticle.lightningParticles[i].timeleft <= 0)
-                {
+            for (int i = LightningParticle.lightningParticles.Count - 1; i >= 0; i--) {
+                if (LightningParticle.lightningParticles[i].timeleft <= 0) {
                     LightningParticle.lightningParticles.RemoveAt(i);
                 }
             }
@@ -103,11 +93,9 @@ namespace CalamityEntropy.Content.Menu
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
 
-            for (int i = 1; i < 19; i += 3)
-            {
+            for (int i = 1; i < 19; i += 3) {
                 float rot = counter * 0.008f;
-                for (int j = 0; j < 16; j++)
-                {
+                for (int j = 0; j < 16; j++) {
                     spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Logool").Value, logoDrawCenter + rot.ToRotationVector2() * ((float)i), null, Color.LightBlue * 0.15f, logoRotation, logo.Size() / 2, logoScale, SpriteEffects.None, 0);
                     rot += MathHelper.ToRadians(22.5f);
                 }
@@ -138,8 +126,7 @@ namespace CalamityEntropy.Content.Menu
         public float alpha = 0f;
         public List<Vector2> oldPos = new List<Vector2>();
         public List<float> oldRot = new List<float>();
-        public MenuParticle(Vector2 pos, Vector2 center, Vector2 vel, Vector2 size, float time)
-        {
+        public MenuParticle(Vector2 pos, Vector2 center, Vector2 vel, Vector2 size, float time) {
             this.center = center;
             this.pos = center + vel.RotatedBy(-MathHelper.PiOver2).normalize() * 660;
             dist = 660;
@@ -151,17 +138,14 @@ namespace CalamityEntropy.Content.Menu
         public Vector2 lastPos = Vector2.Zero;
         public float dist = 0;
         public float rot = 0;
-        public void update()
-        {
+        public void update() {
             oldPos.Add(pos);
             oldRot.Add(rot);
-            if(oldPos.Count > 40)
-            {
+            if (oldPos.Count > 40) {
                 oldPos.RemoveAt(0);
                 oldRot.RemoveAt(0);
             }
-            if (alpha < 1)
-            {
+            if (alpha < 1) {
                 alpha += 0.005f;
             }
             timeleft--;
@@ -175,27 +159,22 @@ namespace CalamityEntropy.Content.Menu
             lastPos = pos;
         }
 
-        public void draw()
-        {
+        public void draw() {
             Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/lightball").Value;
             float op = 1;
-            if (timeleft < 90)
-            {
+            if (timeleft < 90) {
                 op = float.Min(1, (float)timeleft / 90f);
             }
             op *= alpha;
-            for(int i = 0; i < oldPos.Count; i++)
-            {
+            for (int i = 0; i < oldPos.Count; i++) {
                 Main.spriteBatch.Draw(tx, oldPos[i], null, new Color(170, 180, 255) * op * 0.6f * ((i + 1f) / oldPos.Count), oldRot[i], tx.Size() / 2, this.size * 0.15f * (dist / 660f), SpriteEffects.None, 0);
             }
             Main.spriteBatch.Draw(tx, pos, null, new Color(170, 180, 255) * op * 0.8f, this.velocity.ToRotation(), tx.Size() / 2, this.size * 0.15f * (dist / 660f), SpriteEffects.None, 0);
         }
-        public void draw(float opc)
-        {
+        public void draw(float opc) {
             Texture2D tx = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/lightball").Value;
             float op = 1;
-            if (timeleft < 90)
-            {
+            if (timeleft < 90) {
                 op = (float)timeleft / 90f;
             }
             op *= alpha * opc;
@@ -209,15 +188,13 @@ namespace CalamityEntropy.Content.Menu
         public List<Vector2> points = new List<Vector2>();
         public List<Vector2> points2 = new List<Vector2>();
         public static List<LightningParticle> lightningParticles = new List<LightningParticle>();
-        public LightningParticle()
-        {
+        public LightningParticle() {
             Vector2 centerp = new Vector2(Main.screenWidth / 2, Main.screenHeight / 2) + new Vector2(Main.rand.Next(-60, 61), Main.rand.Next(-60, 61));
             float a1 = CEUtils.randomRot();
             float a2 = a1 + MathHelper.ToRadians(180);
             Vector2 p1 = centerp;
             Vector2 p2 = centerp;
-            for (int i = 0; i < 20; i++)
-            {
+            for (int i = 0; i < 20; i++) {
                 points.Add(p1);
                 points2.Add(p2);
                 a1 += ((float)Main.rand.NextDouble() - 0.5f) * 1f;
@@ -229,8 +206,7 @@ namespace CalamityEntropy.Content.Menu
 
         public int timeleft = 20;
 
-        public void draw()
-        {
+        public void draw() {
 
             timeleft--;
             Texture2D px = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/white").Value;
@@ -238,8 +214,7 @@ namespace CalamityEntropy.Content.Menu
             float jd = 1;
             float lw = 2f * ((float)timeleft / 20f);
             Color color = Color.White;
-            for (int i = 1; i < points.Count; i++)
-            {
+            for (int i = 1; i < points.Count; i++) {
                 Vector2 jv = points[i] - points[i - 1];
                 jv.Normalize();
                 jv *= 2;
@@ -249,8 +224,7 @@ namespace CalamityEntropy.Content.Menu
 
             jd = 1;
             lw = 2f * ((float)timeleft / 20f);
-            for (int i = 1; i < points2.Count; i++)
-            {
+            for (int i = 1; i < points2.Count; i++) {
                 Vector2 jv = points2[i] - points2[i - 1];
                 jv.Normalize();
                 jv *= 2;

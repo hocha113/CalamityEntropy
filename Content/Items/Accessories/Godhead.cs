@@ -1,9 +1,9 @@
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -11,8 +11,7 @@ namespace CalamityEntropy.Content.Items.Accessories
     {
         // 2026-08-31 平衡案重做:在玩家身边形成半径60格的隐形光环,
         // 光环内敌人持续受伤(固定40,0.25秒一跳,25穿甲)并被施加破晓减益。
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 22;
             Item.height = 22;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
@@ -21,20 +20,16 @@ namespace CalamityEntropy.Content.Items.Accessories
 
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.Entropy().GodHeadVisual = !hideVisual;
             player.GetModPlayer<EModPlayer>().Godhead = true;
-            if (player.whoAmI == Main.myPlayer && player.ownedProjectileCounts[ModContent.ProjectileType<GodheadAura>()] < 1)
-            {
+            if (player.whoAmI == Main.myPlayer && player.ownedProjectileCounts[ModContent.ProjectileType<GodheadAura>()] < 1) {
                 Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<GodheadAura>(), GodheadAura.AuraDamage, 0, player.whoAmI);
             }
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_DivineGeode, CEID.Item_Bloodstone))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_DivineGeode, CEID.Item_Bloodstone)) {
                 CreateRecipe().
                 AddIngredient(CEID.Item_DivineGeode, 3).
                 AddIngredient(CEID.Item_Bloodstone, 5).
@@ -57,8 +52,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         public const int AuraDamage = 40;
         public const float Radius = 60 * 16f;
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 10;
             Projectile.height = 10;
             Projectile.friendly = true;
@@ -71,32 +65,26 @@ namespace CalamityEntropy.Content.Items.Accessories
             Projectile.localNPCHitCooldown = 15;
             Projectile.ArmorPenetration = 25;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Player owner = Projectile.GetOwner();
-            if (owner == null || !owner.active || owner.dead)
-            {
+            if (owner == null || !owner.active || owner.dead) {
                 Projectile.Kill();
                 return;
             }
-            if (owner.Entropy().Godhead)
-            {
+            if (owner.Entropy().Godhead) {
                 Projectile.timeLeft = 2;
             }
             Projectile.Center = owner.Center;
             // 伤害恒定,不吃任何加成
             Projectile.damage = AuraDamage;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.getDistance(Projectile.Center, targetHitbox.Center.ToVector2()) < Radius;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff(BuffID.Daybreak, 60);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             return false;
         }
     }

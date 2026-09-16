@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Buffs.PortsDoT;
+﻿using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
 using Terraria;
@@ -20,8 +20,7 @@ namespace CalamityEntropy.Content.Projectiles
 
         public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 10;
             Projectile.height = 10;
             Projectile.friendly = true;
@@ -32,34 +31,28 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.ignoreWater = true;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Time++;
-            if (Time == 1)
-            {
+            if (Time == 1) {
                 randTimer = Main.rand.Next(240, 301);
                 Projectile.timeLeft = randTimer;
             }
-            if (Time > 20 && Time < (randTimer - 70))
-            {
+            if (Time > 20 && Time < (randTimer - 70)) {
                 //原灾厄HomeInOnNPC(350,1→10渐升,20),忽略视线
                 NPC target = CEUtils.FindTarget_HomingProj(Projectile, Projectile.Center, 350f);
                 if (target != null)
                     Projectile.HomingNPCBetter(target, 350f, MathHelper.Clamp(1f + Time * 0.075f, 1, 10), 20f, giveExtraUpdate: 1, ignoreDist: true);
             }
-            else if (Time >= (randTimer - 70))
-            {
+            else if (Time >= (randTimer - 70)) {
                 if (Projectile.velocity.Y < 10)
                     Projectile.velocity.Y += 0.4f;
                 Projectile.velocity.X *= 0.97f;
             }
-            if (Time % 3 == 0)
-            {
+            if (Time % 3 == 0) {
                 //原灾厄HeavySmokeParticle(30寿命,0.3不透明度)
                 PRTLoader.NewParticle<PRT_HeavySmokeCal>(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(0.6f, 0.8f), Color.MediumBlue, Main.rand.NextFloat(0.35f, 0.5f)).Configure(0.3f, 30, Main.rand.NextFloat(-0.2f, 0.2f), false, 0f, true);
             }
-            for (int i = 0; i < 2; i++)
-            {
+            for (int i = 0; i < 2; i++) {
                 Vector2 dustPos = Projectile.Center;
                 int dustType = Main.rand.NextBool(3) ? dustType1 : dustType2;
                 Dust dust = Dust.NewDustPerfect(dustPos, dustType);
@@ -69,8 +62,7 @@ namespace CalamityEntropy.Content.Projectiles
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff(ModContent.BuffType<CrushDepth>(), 120);
 
             SoundEngine.PlaySound(SoundID.ShimmerWeak1 with { Pitch = 0.35f }, Projectile.Center);

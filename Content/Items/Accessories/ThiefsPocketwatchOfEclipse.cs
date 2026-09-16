@@ -1,10 +1,9 @@
-using CalamityEntropy.Content.Items;
+﻿using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Weapons;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -17,23 +16,20 @@ namespace CalamityEntropy.Content.Items.Accessories
         public static float chargeRate = 0.12f;
         // 日蚀期间额外增伤
         public static float eclipseDamage = 0.10f;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 42;
             Item.height = 42;
             Item.value = Item.buyPrice(platinum: 1);
             Item.rare = ItemRarityID.Red;
             Item.accessory = true;
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             tooltips.Replace("[A]", damage.ToPercent());
             tooltips.Replace("[B]", MoveSpeed.ToPercent());
             tooltips.Replace("[C]", chargeRate.ToPercent());
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             // 新效果:盗贼伤害转全伤害,潜行回复转大招充能速度,日蚀期间额外增伤(潜行体系退役)
             player.GetDamage(DamageClass.Generic) += damage;
             player.Entropy().moveSpeed += MoveSpeed;
@@ -41,15 +37,12 @@ namespace CalamityEntropy.Content.Items.Accessories
             player.GetModPlayer<CEChargePlayer>().ChargeRateMult += chargeRate;
             // 2026-08-31 平衡案:死亡后复活并回复100生命(120秒冷却,结算在 EModPlayer.PreKill)
             player.Entropy().thiefWatch = true;
-            if (Main.eclipse)
-            {
+            if (Main.eclipse) {
                 player.GetDamage(DamageClass.Generic) += eclipseDamage;
             }
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_AscendantSpiritEssence, CEID.Item_DarksunFragment, CEID.Tile_CosmicAnvil))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_AscendantSpiritEssence, CEID.Item_DarksunFragment, CEID.Tile_CosmicAnvil)) {
                 CreateRecipe()
                 .AddIngredient<LurkersCharm>(1)
                 .AddIngredient(CEID.Item_AscendantSpiritEssence, 4)

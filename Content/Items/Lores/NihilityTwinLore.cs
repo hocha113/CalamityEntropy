@@ -15,13 +15,11 @@ namespace CalamityEntropy.Content.Items.Lores
         public static float VoidRes = 0.1f;
         public static int HealPreSec = 1;
         public static float MaxFlyTimeAddition = 0.05f;
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             base.ModifyTooltips(tooltips);
             if (Keyboard.GetState().IsKeyDown(Keys.LeftShift))
                 return;
-            if (LoreEffect.Enabled)
-            {
+            if (LoreEffect.Enabled) {
                 TooltipLine tooltipLineEF = new TooltipLine(Mod, "Entropy:Effect", Language.GetTextValue("Mods.CalamityEntropy.UseToggle"));
                 tooltips.Add(tooltipLineEF);
                 TooltipLine tooltipLineA = new TooltipLine(Mod, "Entropy:Effect", Language.GetTextValue("Mods.CalamityEntropy.NihTwinLoreEffect"));
@@ -37,12 +35,10 @@ namespace CalamityEntropy.Content.Items.Lores
             }
 
         }
-        public override bool CanUseItem(Player player)
-        {
+        public override bool CanUseItem(Player player) {
             return LoreEffect.Enabled;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 20;
             Item.height = 20;
             Item.useAnimation = 30;
@@ -56,8 +52,7 @@ namespace CalamityEntropy.Content.Items.Lores
             Item.maxStack = 1;
             Item.useTurn = true;
         }
-        public override bool? UseItem(Player player)
-        {
+        public override bool? UseItem(Player player) {
             EModPlayer modPlayer = player.Entropy();
             player.itemTime = Item.useTime;
             modPlayer.NihilityTwinLoreBonus = !modPlayer.NihilityTwinLoreBonus;

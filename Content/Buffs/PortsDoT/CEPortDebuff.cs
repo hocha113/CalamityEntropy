@@ -1,4 +1,4 @@
-using CalamityEntropy.Core;
+﻿using CalamityEntropy.Core;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -20,8 +20,7 @@ namespace CalamityEntropy.Content.Buffs.PortsDoT
         /// <summary>护士不可移除</summary>
         public virtual bool NurseCannotRemove => false;
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;

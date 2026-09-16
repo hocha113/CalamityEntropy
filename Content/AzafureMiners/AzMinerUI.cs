@@ -50,12 +50,9 @@ namespace CalamityEntropy.Content.AzafureMiners
         private Rectangle panelRect;
         private Rectangle titleBarRect;
 
-        public override bool Active
-        {
-            get
-            {
-                if (AzMinerTP == null || !AzMinerTP.Active)
-                {
+        public override bool Active {
+            get {
+                if (AzMinerTP == null || !AzMinerTP.Active) {
                     IsActive = false;
                 }
                 return IsActive || uiAlpha > 0.01f;
@@ -64,15 +61,12 @@ namespace CalamityEntropy.Content.AzafureMiners
         }
         public static bool InitDragPos = true;
 
-        public override void Update()
-        {
-            if (InitDragPos)
-            {
+        public override void Update() {
+            if (InitDragPos) {
                 InitDragPos = false;
                 DrawPosition = new Vector2(800, 440);
             }
-            if (dontDragTime > 0)
-            {
+            if (dontDragTime > 0) {
                 dontDragTime--;
             }
 
@@ -80,8 +74,7 @@ namespace CalamityEntropy.Content.AzafureMiners
             float targetAlpha = IsActive ? 1f : 0f;
             uiAlpha = MathHelper.Lerp(uiAlpha, targetAlpha, 0.4f);
 
-            if (uiAlpha < 0.1f && !IsActive)
-            {
+            if (uiAlpha < 0.1f && !IsActive) {
                 return;
             }
 
@@ -91,8 +84,7 @@ namespace CalamityEntropy.Content.AzafureMiners
             //更新粒子
             UpdateParticles();
 
-            if (AzMinerTP == null)
-            {
+            if (AzMinerTP == null) {
                 return;
             }
 
@@ -112,46 +104,37 @@ namespace CalamityEntropy.Content.AzafureMiners
             hoverInMainPage = panelRect.Contains(MouseHitBox);
 
             //更新悬停进度
-            if (hoverInMainPage)
-            {
+            if (hoverInMainPage) {
                 hoverProgress = Math.Min(1f, hoverProgress + 0.08f);
             }
-            else
-            {
+            else {
                 hoverProgress = Math.Max(0f, hoverProgress - 0.06f);
             }
 
             //检查是否应该关闭UI
-            if (!Main.playerInventory || AzMinerTP.CenterInWorld.Distance(Main.LocalPlayer.Center) > 20 * 16)
-            {
+            if (!Main.playerInventory || AzMinerTP.CenterInWorld.Distance(Main.LocalPlayer.Center) > 20 * 16) {
                 IsActive = false;
                 return;
             }
 
             //更新槽位，位置已经是最新的
-            if (Filters != null)
-            {
-                foreach (AzMinerUISlot s in Filters)
-                {
+            if (Filters != null) {
+                foreach (AzMinerUISlot s in Filters) {
                     s.Update();
                 }
             }
-            if (Items != null)
-            {
-                foreach (AzMinerUISlot s in Items)
-                {
+            if (Items != null) {
+                foreach (AzMinerUISlot s in Items) {
                     s.Update();
                 }
             }
 
-            if (hoverInMainPage)
-            {
+            if (hoverInMainPage) {
                 player.mouseInterface = true;
             }
         }
 
-        private void UpdateAnimationTimers()
-        {
+        private void UpdateAnimationTimers() {
             scanLineTimer += 0.04f;
             heatPulseTimer += 0.025f;
             dataStreamTimer += 0.05f;
@@ -165,79 +148,64 @@ namespace CalamityEntropy.Content.AzafureMiners
             if (borderGlowTimer > MathHelper.TwoPi) borderGlowTimer -= MathHelper.TwoPi;
         }
 
-        private void UpdateParticles()
-        {
+        private void UpdateParticles() {
             if (uiAlpha < 0.3f) return;
 
             Vector2 panelCenter = DrawPosition;
 
             //科技粒子
             particleSpawnTimer++;
-            if (IsActive && particleSpawnTimer >= 15 && techParticles.Count < 12)
-            {
+            if (IsActive && particleSpawnTimer >= 15 && techParticles.Count < 12) {
                 particleSpawnTimer = 0;
                 float xPos = Main.rand.NextFloat(panelCenter.X - PanelWidth / 2 + 30, panelCenter.X + PanelWidth / 2 - 30);
                 float yPos = Main.rand.NextFloat(panelCenter.Y - PanelHeight / 2 + 50, panelCenter.Y + PanelHeight / 2 - 30);
                 techParticles.Add(new TechParticle(new Vector2(xPos, yPos)));
             }
-            for (int i = techParticles.Count - 1; i >= 0; i--)
-            {
-                if (techParticles[i].Update())
-                {
+            for (int i = techParticles.Count - 1; i >= 0; i--) {
+                if (techParticles[i].Update()) {
                     techParticles.RemoveAt(i);
                 }
             }
 
             //余烬粒子，采矿机工作时生成
-            if (AzMinerTP != null && AzMinerTP.IsWork)
-            {
+            if (AzMinerTP != null && AzMinerTP.IsWork) {
                 emberSpawnTimer++;
-                if (emberSpawnTimer >= 6 && embers.Count < 25)
-                {
+                if (emberSpawnTimer >= 6 && embers.Count < 25) {
                     emberSpawnTimer = 0;
                     float xPos = Main.rand.NextFloat(panelCenter.X - PanelWidth / 2 + 40, panelCenter.X + PanelWidth / 2 - 40);
                     Vector2 startPos = new(xPos, panelCenter.Y + PanelHeight / 2 - 20);
                     embers.Add(new EmberParticle(startPos));
                 }
             }
-            for (int i = embers.Count - 1; i >= 0; i--)
-            {
-                if (embers[i].Update())
-                {
+            for (int i = embers.Count - 1; i >= 0; i--) {
+                if (embers[i].Update()) {
                     embers.RemoveAt(i);
                 }
             }
         }
 
-        private void HandleDragging()
-        {
+        private void HandleDragging() {
             //检查鼠标是否在任何槽位上
             bool hoveringAnySlot = false;
-            if (Filters != null)
-            {
-                foreach (var slot in Filters)
-                {
+            if (Filters != null) {
+                foreach (var slot in Filters) {
                     Rectangle slotRect = new Rectangle(
                         (int)(DrawPosition.X + slot.OffsetPos.X - 22),
                         (int)(DrawPosition.Y + slot.OffsetPos.Y - 22),
                         44, 44);
-                    if (slotRect.Contains(MouseHitBox))
-                    {
+                    if (slotRect.Contains(MouseHitBox)) {
                         hoveringAnySlot = true;
                         break;
                     }
                 }
             }
-            if (!hoveringAnySlot && Items != null)
-            {
-                foreach (var slot in Items)
-                {
+            if (!hoveringAnySlot && Items != null) {
+                foreach (var slot in Items) {
                     Rectangle slotRect = new Rectangle(
                         (int)(DrawPosition.X + slot.OffsetPos.X - 22),
                         (int)(DrawPosition.Y + slot.OffsetPos.Y - 22),
                         44, 44);
-                    if (slotRect.Contains(MouseHitBox))
-                    {
+                    if (slotRect.Contains(MouseHitBox)) {
                         hoveringAnySlot = true;
                         break;
                     }
@@ -248,26 +216,22 @@ namespace CalamityEntropy.Content.AzafureMiners
             bool hoveringPanel = panelRect.Contains(MouseHitBox);
             bool canStartDrag = hoveringPanel && !hoveringAnySlot && dontDragTime <= 0;
 
-            if (canStartDrag && keyLeftPressState == KeyPressState.Pressed)
-            {
+            if (canStartDrag && keyLeftPressState == KeyPressState.Pressed) {
                 isDragging = true;
                 dragOffset = DrawPosition - MousePosition;
             }
 
-            if (isDragging)
-            {
+            if (isDragging) {
                 player.mouseInterface = true;
                 DrawPosition = MousePosition + dragOffset;
 
-                if (keyLeftPressState == KeyPressState.Released)
-                {
+                if (keyLeftPressState == KeyPressState.Released) {
                     isDragging = false;
                 }
             }
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
-        {
+        public override void Draw(SpriteBatch spriteBatch) {
             if (uiAlpha < 0.01f) return;
             if (AzMinerTP == null) return;
 
@@ -284,17 +248,13 @@ namespace CalamityEntropy.Content.AzafureMiners
             DrawStatusIndicator(spriteBatch);
 
             //绘制槽位
-            if (Filters != null)
-            {
-                foreach (var slot in Filters)
-                {
+            if (Filters != null) {
+                foreach (var slot in Filters) {
                     slot.Draw(spriteBatch);
                 }
             }
-            if (Items != null)
-            {
-                foreach (var slot in Items)
-                {
+            if (Items != null) {
+                foreach (var slot in Items) {
                     slot.Draw(spriteBatch);
                 }
             }
@@ -303,8 +263,7 @@ namespace CalamityEntropy.Content.AzafureMiners
             DrawScanLines(spriteBatch);
         }
 
-        private void DrawMainPanel(SpriteBatch sb)
-        {
+        private void DrawMainPanel(SpriteBatch sb) {
             Texture2D pixel = VaultAsset.placeholder2.Value;
             float alpha = uiAlpha;
 
@@ -349,15 +308,13 @@ namespace CalamityEntropy.Content.AzafureMiners
             DrawCornerDecoration(sb, new Vector2(panelRect.Right, panelRect.Bottom), alpha, 3);
         }
 
-        private void DrawCornerDecoration(SpriteBatch sb, Vector2 pos, float alpha, int corner)
-        {
+        private void DrawCornerDecoration(SpriteBatch sb, Vector2 pos, float alpha, int corner) {
             Texture2D pixel = VaultAsset.placeholder2.Value;
             Color decorColor = new Color(200, 100, 70) * (alpha * 0.6f);
             int size = 12;
             int thickness = 2;
 
-            switch (corner)
-            {
+            switch (corner) {
                 case 0: //左上
                     sb.Draw(pixel, new Rectangle((int)pos.X, (int)pos.Y, size, thickness), new Rectangle(0, 0, 1, 1), decorColor);
                     sb.Draw(pixel, new Rectangle((int)pos.X, (int)pos.Y, thickness, size), new Rectangle(0, 0, 1, 1), decorColor);
@@ -377,8 +334,7 @@ namespace CalamityEntropy.Content.AzafureMiners
             }
         }
 
-        private void DrawTitleBar(SpriteBatch sb)
-        {
+        private void DrawTitleBar(SpriteBatch sb) {
             Texture2D pixel = VaultAsset.placeholder2.Value;
             float alpha = uiAlpha;
 
@@ -399,8 +355,7 @@ namespace CalamityEntropy.Content.AzafureMiners
 
             //标题发光
             Color glowColor = new Color(255, 150, 100) * (alpha * 0.5f);
-            for (int i = 0; i < 4; i++)
-            {
+            for (int i = 0; i < 4; i++) {
                 float angle = MathHelper.TwoPi * i / 4f;
                 Vector2 offset = angle.ToRotationVector2() * 2f;
                 sb.DrawString(font, title, titlePos + offset, glowColor);
@@ -408,8 +363,7 @@ namespace CalamityEntropy.Content.AzafureMiners
             sb.DrawString(font, title, titlePos, new Color(255, 220, 200) * alpha);
         }
 
-        private void DrawStatusIndicator(SpriteBatch sb)
-        {
+        private void DrawStatusIndicator(SpriteBatch sb) {
             Texture2D pixel = VaultAsset.placeholder2.Value;
             float alpha = uiAlpha;
 
@@ -431,16 +385,14 @@ namespace CalamityEntropy.Content.AzafureMiners
             sb.Draw(pixel, lightRect, new Rectangle(0, 0, 1, 1), lightColor);
 
             //发光效果
-            if (isWorking)
-            {
+            if (isWorking) {
                 Color glowCol = new Color(100, 255, 100) * (alpha * 0.3f * pulse);
                 Rectangle glowRect = new Rectangle((int)indicatorPos.X - 8, (int)indicatorPos.Y - 8, 16, 16);
                 sb.Draw(pixel, glowRect, new Rectangle(0, 0, 1, 1), glowCol);
             }
         }
 
-        private void DrawScanLines(SpriteBatch sb)
-        {
+        private void DrawScanLines(SpriteBatch sb) {
             Texture2D pixel = VaultAsset.placeholder2.Value;
             float alpha = uiAlpha * 0.08f;
 
@@ -448,26 +400,21 @@ namespace CalamityEntropy.Content.AzafureMiners
             float scanY = panelRect.Y + (float)Math.Sin(scanLineTimer) * 0.5f * panelRect.Height + panelRect.Height * 0.5f;
             Color scanColor = new Color(255, 150, 100) * alpha;
 
-            for (int i = 0; i < 3; i++)
-            {
+            for (int i = 0; i < 3; i++) {
                 float y = scanY + i * 3;
-                if (y > panelRect.Y && y < panelRect.Bottom)
-                {
+                if (y > panelRect.Y && y < panelRect.Bottom) {
                     sb.Draw(pixel, new Rectangle(panelRect.X + 10, (int)y, panelRect.Width - 20, 1), new Rectangle(0, 0, 1, 1), scanColor * (1f - i * 0.3f));
                 }
             }
         }
 
-        private void DrawParticles(SpriteBatch sb)
-        {
+        private void DrawParticles(SpriteBatch sb) {
             float alpha = uiAlpha;
 
-            foreach (var particle in techParticles)
-            {
+            foreach (var particle in techParticles) {
                 particle.Draw(sb, alpha);
             }
-            foreach (var ember in embers)
-            {
+            foreach (var ember in embers) {
                 ember.Draw(sb, alpha);
             }
         }
@@ -482,8 +429,7 @@ namespace CalamityEntropy.Content.AzafureMiners
             public float Size;
             public float Rotation;
 
-            public TechParticle(Vector2 pos)
-            {
+            public TechParticle(Vector2 pos) {
                 Position = pos;
                 float angle = Main.rand.NextFloat(MathHelper.TwoPi);
                 float speed = Main.rand.NextFloat(0.2f, 0.8f);
@@ -494,8 +440,7 @@ namespace CalamityEntropy.Content.AzafureMiners
                 Rotation = Main.rand.NextFloat(MathHelper.TwoPi);
             }
 
-            public bool Update()
-            {
+            public bool Update() {
                 Life++;
                 Position += Velocity;
                 Velocity *= 0.98f;
@@ -503,8 +448,7 @@ namespace CalamityEntropy.Content.AzafureMiners
                 return Life >= MaxLife;
             }
 
-            public void Draw(SpriteBatch sb, float alpha)
-            {
+            public void Draw(SpriteBatch sb, float alpha) {
                 float t = Life / MaxLife;
                 float fade = (float)Math.Sin(t * MathHelper.Pi) * alpha;
 
@@ -523,8 +467,7 @@ namespace CalamityEntropy.Content.AzafureMiners
             public float MaxLife;
             public float Size;
 
-            public EmberParticle(Vector2 pos)
-            {
+            public EmberParticle(Vector2 pos) {
                 Position = pos;
                 Velocity = new Vector2(Main.rand.NextFloat(-0.5f, 0.5f), Main.rand.NextFloat(-1.5f, -0.8f));
                 Life = 0f;
@@ -532,8 +475,7 @@ namespace CalamityEntropy.Content.AzafureMiners
                 Size = Main.rand.NextFloat(1.5f, 3f);
             }
 
-            public bool Update()
-            {
+            public bool Update() {
                 Life++;
                 Position += Velocity;
                 Velocity.X += Main.rand.NextFloat(-0.05f, 0.05f);
@@ -541,8 +483,7 @@ namespace CalamityEntropy.Content.AzafureMiners
                 return Life >= MaxLife;
             }
 
-            public void Draw(SpriteBatch sb, float alpha)
-            {
+            public void Draw(SpriteBatch sb, float alpha) {
                 float t = Life / MaxLife;
                 float fade = (float)Math.Sin(t * MathHelper.Pi) * alpha;
 
@@ -570,42 +511,33 @@ namespace CalamityEntropy.Content.AzafureMiners
         private bool hoverRightHeld;
         private int lastHoverSlot = -1;
 
-        public Item Item
-        {
-            get
-            {
-                if (type == 0)
-                {
+        public Item Item {
+            get {
+                if (type == 0) {
                     return AzMinerUI.AzMinerTP.filters[itemIndex];
                 }
-                else
-                {
+                else {
                     return AzMinerUI.AzMinerTP.items[itemIndex];
                 }
             }
-            set
-            {
-                if (type == 0)
-                {
+            set {
+                if (type == 0) {
                     AzMinerUI.AzMinerTP.filters[itemIndex] = value;
                 }
-                else
-                {
+                else {
                     AzMinerUI.AzMinerTP.items[itemIndex] = value;
                 }
             }
         }
 
-        public override void Update()
-        {
+        public override void Update() {
             //更新位置和鼠标交互区域
             DrawPosition = AzMinerUI.Instance.DrawPosition + OffsetPos;
             UIHitBox = new Rectangle((int)(DrawPosition.X - SlotSize / 2), (int)(DrawPosition.Y - SlotSize / 2), SlotSize, SlotSize);
 
             hoverInMainPage = UIHitBox.Contains(MouseHitBox);
 
-            if (!hoverInMainPage)
-            {
+            if (!hoverInMainPage) {
                 hoverProgress = Math.Max(0f, hoverProgress - 0.1f);
                 hoverRightHeld = false;
                 return;
@@ -615,26 +547,22 @@ namespace CalamityEntropy.Content.AzafureMiners
             Main.LocalPlayer.mouseInterface = true;
 
             //显示物品信息
-            if (Main.mouseItem.IsAir && !Item.IsAir)
-            {
+            if (Main.mouseItem.IsAir && !Item.IsAir) {
                 CEUtils.showItemTooltip(Item);
             }
 
             //空槽提示
-            if (Item.IsAir && type == 0 && Main.mouseItem.IsAir)
-            {
+            if (Item.IsAir && type == 0 && Main.mouseItem.IsAir) {
                 Main.instance.MouseText(CalamityEntropy.Instance.GetLocalization("SlotInfo2").Value);
             }
 
             //Shift合并
-            if (!Item.IsAir && Main.keyState.PressingShift())
-            {
+            if (!Item.IsAir && Main.keyState.PressingShift()) {
                 TryMergeStacks();
             }
 
             //空物品格直接退出
-            if (Main.mouseItem.IsAir && Item.IsAir)
-            {
+            if (Main.mouseItem.IsAir && Item.IsAir) {
                 return;
             }
 
@@ -647,66 +575,54 @@ namespace CalamityEntropy.Content.AzafureMiners
             AzMinerUI.AzMinerTP.SendData();
         }
 
-        private void HandleRightClick()
-        {
+        private void HandleRightClick() {
             int currentSlot = itemIndex;
 
-            if (currentSlot != lastHoverSlot)
-            {
+            if (currentSlot != lastHoverSlot) {
                 hoverRightHeld = false;
                 lastHoverSlot = currentSlot;
             }
 
-            if (Main.mouseItem.IsAir)
-            {
+            if (Main.mouseItem.IsAir) {
                 return;
             }
 
             bool canAdd = Item.IsAir || Item.type == Main.mouseItem.type && Item.stack < Item.maxStack && Main.mouseItem.stack > 0;
 
-            if (!canAdd)
-            {
+            if (!canAdd) {
                 return;
             }
 
-            if (keyRightPressState == KeyPressState.Held && hoverInMainPage)
-            {
-                if (!hoverRightHeld)
-                {
+            if (keyRightPressState == KeyPressState.Held && hoverInMainPage) {
+                if (!hoverRightHeld) {
                     AddOneFromMouse();
                     hoverRightHeld = true;
                 }
             }
-            else if (keyRightPressState == KeyPressState.Pressed)
-            {
+            else if (keyRightPressState == KeyPressState.Pressed) {
                 AddOneFromMouse();
                 hoverRightHeld = true;
             }
         }
 
-        private void HandleLeftClick()
-        {
+        private void HandleLeftClick() {
             if (keyLeftPressState != KeyPressState.Pressed)
                 return;
 
             AzMinerUI.Instance.dontDragTime = 2;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.LeftShift))
-            {
+            if (Keyboard.GetState().IsKeyDown(Keys.LeftShift)) {
                 SoundEngine.PlaySound(SoundID.Grab);
                 Main.LocalPlayer.QuickSpawnItem(Main.LocalPlayer.GetSource_Loot(), Item, Item.stack);
                 ClearSlot();
                 return;
             }
 
-            if (Main.mouseItem.type == Item.type)
-            {
+            if (Main.mouseItem.type == Item.type) {
                 MergeWithMouse();
             }
-            else
-            {
-                if (!IsOre(Main.mouseItem) && Main.mouseItem.type != ItemID.None)
-                {
+            else {
+                if (!IsOre(Main.mouseItem) && Main.mouseItem.type != ItemID.None) {
                     SoundEngine.PlaySound(SoundID.MenuTick);
                     Main.NewText(CalamityEntropy.Instance.GetLocalization("AzMinerOreWarning").Value, Color.Red);
                     return;
@@ -715,16 +631,13 @@ namespace CalamityEntropy.Content.AzafureMiners
             }
         }
 
-        private void AddOneFromMouse()
-        {
+        private void AddOneFromMouse() {
             SoundEngine.PlaySound(SoundID.Grab);
-            if (Item.IsAir)
-            {
+            if (Item.IsAir) {
                 Item = Main.mouseItem.Clone();
                 Item.stack = 1;
             }
-            else
-            {
+            else {
                 Item.stack++;
             }
 
@@ -733,27 +646,23 @@ namespace CalamityEntropy.Content.AzafureMiners
                 Main.mouseItem.TurnToAir();
         }
 
-        private void MergeWithMouse()
-        {
+        private void MergeWithMouse() {
             SoundEngine.PlaySound(SoundID.Grab);
             Item targetSlot = GetSlotRef();
             int total = targetSlot.stack + Main.mouseItem.stack;
 
-            if (total > targetSlot.maxStack)
-            {
+            if (total > targetSlot.maxStack) {
                 int overflow = total - targetSlot.maxStack;
                 targetSlot.stack = targetSlot.maxStack;
                 Main.mouseItem.stack = overflow;
             }
-            else
-            {
+            else {
                 targetSlot.stack = total;
                 Main.mouseItem.TurnToAir();
             }
         }
 
-        private void SwapWithMouse()
-        {
+        private void SwapWithMouse() {
             SoundEngine.PlaySound(SoundID.Grab);
             Item targetSlot = GetSlotRef();
 
@@ -764,11 +673,9 @@ namespace CalamityEntropy.Content.AzafureMiners
             Main.mouseItem = temp;
         }
 
-        private void TryMergeStacks()
-        {
+        private void TryMergeStacks() {
             bool merged = false;
-            foreach (var slot in AzMinerUI.Items)
-            {
+            foreach (var slot in AzMinerUI.Items) {
                 if (slot.itemIndex == itemIndex || Item.type != slot.Item.type)
                     continue;
 
@@ -776,13 +683,11 @@ namespace CalamityEntropy.Content.AzafureMiners
                     continue;
 
                 int total = Item.stack + slot.Item.stack;
-                if (total > Item.maxStack)
-                {
+                if (total > Item.maxStack) {
                     Item.stack = Item.maxStack;
                     slot.Item.stack = total - Item.maxStack;
                 }
-                else
-                {
+                else {
                     Item.stack = total;
                     slot.Item.TurnToAir();
                 }
@@ -793,32 +698,26 @@ namespace CalamityEntropy.Content.AzafureMiners
                 SoundEngine.PlaySound(SoundID.Grab);
         }
 
-        private void ClearSlot()
-        {
-            if (type == 0)
-            {
+        private void ClearSlot() {
+            if (type == 0) {
                 AzMinerUI.AzMinerTP.filters[itemIndex].TurnToAir();
             }
-            else
-            {
+            else {
                 AzMinerUI.AzMinerTP.items[itemIndex].TurnToAir();
             }
         }
 
-        private Item GetSlotRef()
-        {
+        private Item GetSlotRef() {
             return type == 0
                 ? AzMinerUI.AzMinerTP.filters[itemIndex]
                 : AzMinerUI.AzMinerTP.items[itemIndex];
         }
 
-        private bool IsOre(Item item)
-        {
+        private bool IsOre(Item item) {
             return AzMinerTP.ItemIsOre.TryGetValue(item.type, out bool isOre) && isOre;
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
-        {
+        public override void Draw(SpriteBatch spriteBatch) {
             float alpha = AzMinerUI.uiAlpha;
             if (alpha < 0.01f) return;
 
@@ -845,8 +744,7 @@ namespace CalamityEntropy.Content.AzafureMiners
             spriteBatch.Draw(pixel, new Rectangle(slotRect.Right - 2, slotRect.Y, 2, slotRect.Height), new Rectangle(0, 0, 1, 1), borderColor * 0.9f);
 
             //悬停发光效果
-            if (hoverProgress > 0.01f)
-            {
+            if (hoverProgress > 0.01f) {
                 Color glowColor = new Color(255, 180, 120) * (alpha * hoverProgress * 0.2f);
                 Rectangle glowRect = slotRect;
                 glowRect.Inflate(2, 2);
@@ -854,14 +752,12 @@ namespace CalamityEntropy.Content.AzafureMiners
             }
 
             //绘制物品
-            if (!Item.IsAir)
-            {
+            if (!Item.IsAir) {
                 float itemScale = scale * (0.9f + hoverProgress * 0.1f);
                 ItemSlot.DrawItemIcon(Item, 1, spriteBatch, center, itemScale, 128, Color.White * alpha);
 
                 //物品数量
-                if (Item.stack > 1)
-                {
+                if (Item.stack > 1) {
                     DynamicSpriteFont font = FontAssets.ItemStack.Value;
                     string stackText = Item.stack.ToString();
                     Vector2 stackPos = center + new Vector2(SlotSize / 2 - 18, SlotSize / 2 - 16) * scale;
@@ -871,8 +767,7 @@ namespace CalamityEntropy.Content.AzafureMiners
                     spriteBatch.DrawString(font, stackText, stackPos, Color.White * alpha, 0, Vector2.Zero, 0.75f * scale, SpriteEffects.None, 0);
                 }
             }
-            else if (type == 0)
-            {
+            else if (type == 0) {
                 //空过滤槽显示提示图标
                 Color hintColor = new Color(150, 100, 80) * (alpha * 0.4f);
                 DynamicSpriteFont font = FontAssets.MouseText.Value;

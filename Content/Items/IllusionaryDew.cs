@@ -8,12 +8,10 @@ namespace CalamityEntropy.Content.Items
 {
     public class IllusionaryDew : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ItemID.Sets.SortingPriorityBossSpawns[Type] = 12;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 56;
             Item.height = 56;
             Item.useAnimation = 20;
@@ -25,19 +23,16 @@ namespace CalamityEntropy.Content.Items
             Item.rare = ItemRarityID.Yellow;
 
         }
-        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-        {
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup) {
             itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
         }
 
-        public override bool CanUseItem(Player player)
-        {
+        public override bool CanUseItem(Player player) {
             //地点/夜晚门槛冻结。只补终焉之战互斥,不改回星辉群系
             return !NPC.AnyNPCs(ModContent.NPCType<Luminaris>()) && !Main.dayTime && !CECal.IsBossRushActive;
         }
 
-        public override bool? UseItem(Player player)
-        {
+        public override bool? UseItem(Player player) {
             int type = ModContent.NPCType<Luminaris>();
             if (Main.netMode != NetmodeID.MultiplayerClient)
                 NPC.SpawnOnPlayer(player.whoAmI, type);
@@ -46,10 +41,8 @@ namespace CalamityEntropy.Content.Items
 
             return true;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_StarblightSoot))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_StarblightSoot)) {
                 CreateRecipe().
                 AddIngredient(CEID.Item_StarblightSoot, 6).
                 AddIngredient(ItemID.FallenStar, 2).

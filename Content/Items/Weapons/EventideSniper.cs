@@ -14,12 +14,10 @@ namespace CalamityEntropy.Content.Items.Weapons
         public float SniperCritMult = Main.zenithWorld ? 7f : 1.35f;
         public float SniperVelocityMult = 2f;
 
-        public override bool RangedPrefix()
-        {
+        public override bool RangedPrefix() {
             return true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 234;
             Item.height = 70;
             Item.damage = 680;
@@ -43,29 +41,25 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         }
 
-        public override Vector2? HoldoutOffset()
-        {
+        public override Vector2? HoldoutOffset() {
             return new Vector2(-24, 0);
         }
 
 
-        public override float UseSpeedMultiplier(Player player)
-        {
+        public override float UseSpeedMultiplier(Player player) {
             return 1f;
         }
 
 
 
         #region Shooting
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             int p = Projectile.NewProjectile(source, position + velocity.SafeNormalize(Vector2.Zero) * 96, velocity, type, damage, knockback, player.whoAmI);
             p.ToProj().Entropy().EventideShot = true;
             p.ToProj().usesLocalNPCImmunity = true;
             p.ToProj().localNPCHitCooldown = 60;
             CEUtils.PlaySound("evshot", 1, player.Center);
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
+            if (Main.netMode == NetmodeID.MultiplayerClient) {
                 NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, p);
             }
             return false;
@@ -75,8 +69,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         #region Animations
         public override void HoldItem(Player player) => player.Entropy().MouseWorldListener = true;
 
-        public override void UseStyle(Player player, Rectangle heldItemFrame)
-        {
+        public override void UseStyle(Player player, Rectangle heldItemFrame) {
             player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
@@ -90,8 +83,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             base.UseStyle(player, heldItemFrame);
         }
 
-        public override void UseItemFrame(Player player)
-        {
+        public override void UseItemFrame(Player player) {
             player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
 
             float animProgress = 1 - player.itemTime / (float)player.itemTimeMax;
@@ -100,8 +92,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 rotation += (-0.15f) * (float)Math.Pow((0.5f - animProgress) / 0.5f, 2) * player.direction;
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
 
-            if (animProgress > 0.5f)
-            {
+            if (animProgress > 0.5f) {
                 float backArmRotation = rotation + 0.52f * player.direction;
 
                 Player.CompositeArmStretchAmount stretch = ((float)Math.Sin(MathHelper.Pi * (animProgress - 0.5f) / 0.36f)).ToStretchAmount();

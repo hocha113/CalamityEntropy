@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Prophet.Core;
+﻿using CalamityEntropy.Content.NPCs.Prophet.Core;
 using CalamityEntropy.Content.Projectiles.Prophet;
 using InnoVault.StateMachines;
 using Terraria;
@@ -19,20 +19,16 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
     {
         public override ProphetStateIndex StateIndex => ProphetStateIndex.RingBlink;
 
-        protected override void RunAttack(ProphetStateContext ctx)
-        {
+        protected override void RunAttack(ProphetStateContext ctx) {
             NPC npc = ctx.Npc;
             Player target = ctx.Target;
             float difficult = ctx.Difficult;
             int phase = ctx.Phase;
 
-            if (ctx.Countdown > ProphetDirector.RingBlinkUntil)
-            {
+            if (ctx.Countdown > ProphetDirector.RingBlinkUntil) {
                 int period = phase == 1 ? ProphetDirector.RingBlinkPeriodP1 : ProphetDirector.RingBlinkPeriodP2;
-                if (ctx.Countdown % period == 0)
-                {
-                    if (IsServer)
-                    {
+                if (ctx.Countdown % period == 0) {
+                    if (IsServer) {
                         Teleport(ctx, target.Center + CEUtils.randomRot().ToRotationVector2()
                             * ProphetDirector.RingBlinkRadius / difficult);
                     }
@@ -43,8 +39,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
                     npc.rotation = (target.Center - npc.Center).ToRotation();
                 }
             }
-            else
-            {
+            else {
                 npc.rotation = npc.velocity.ToRotation();
                 npc.velocity *= ProphetDirector.RingChaseDrag;
                 npc.velocity += (target.Center - npc.Center).normalize() * ProphetDirector.RingChaseThrust;

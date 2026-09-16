@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.LuminarisMoth.Core;
+﻿using CalamityEntropy.Content.NPCs.LuminarisMoth.Core;
 using InnoVault.StateMachines;
 using System;
 using Terraria;
@@ -20,8 +20,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
     {
         public override LuminarisStateIndex StateIndex => LuminarisStateIndex.Subduction;
 
-        public override IVaultState<LuminarisStateContext> OnUpdate(LuminarisStateContext ctx)
-        {
+        public override IVaultState<LuminarisStateContext> OnUpdate(LuminarisStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
             float enrange = ctx.Enrange;
@@ -29,64 +28,53 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
 
             ctx.AfterImageTime = LuminarisDirector.AfterImageFrames;
 
-            if (c == LuminarisDirector.SubductionFrames)
-            {
+            if (c == LuminarisDirector.SubductionFrames) {
                 ctx.Vec1 = npc.Center;
                 ctx.Vec2 = RisePoint(npc, player, enrange);
             }
-            if (c > LuminarisDirector.SubductionRise1EndFrame)
-            {
+            if (c > LuminarisDirector.SubductionRise1EndFrame) {
                 //落点每帧重算,所以抬升途中玩家跑动会把目标点一起带走
                 ctx.Vec2 = RisePoint(npc, player, enrange);
                 npc.Center = Vector2.Lerp(ctx.Vec1, ctx.Vec2,
                     CEUtils.GetRepeatedCosFromZeroToOne(Utils.Remap(c, LuminarisDirector.SubductionFrames, LuminarisDirector.SubductionRise1EndFrame, 0, 1), 1));
             }
-            if (c == LuminarisDirector.SubductionRise1EndFrame)
-            {
+            if (c == LuminarisDirector.SubductionRise1EndFrame) {
                 ctx.Vec1 = npc.Center;
                 ctx.Vec2 = MirrorPoint(npc, player);
             }
             npc.rotation = 0;
-            if (c <= LuminarisDirector.SubductionRise1EndFrame && c >= LuminarisDirector.SubductionDive1EndFrame)
-            {
+            if (c <= LuminarisDirector.SubductionRise1EndFrame && c >= LuminarisDirector.SubductionDive1EndFrame) {
                 float p = 1 - (c - (float)LuminarisDirector.SubductionDive1EndFrame) / LuminarisDirector.SubductionDive1Span;
                 npc.Center = Vector2.Lerp(ctx.Vec1, ctx.Vec2, CEUtils.GetRepeatedCosFromZeroToOne(p, 1)) + new Vector2(0, ArcOffset(p));
                 npc.rotation = (npc.Center - ctx.OldPos).ToRotation() + MathHelper.PiOver2;
             }
 
-            if (c <= LuminarisDirector.SubductionRound2Frame)
-            {
-                if (c == LuminarisDirector.SubductionRound2Frame)
-                {
+            if (c <= LuminarisDirector.SubductionRound2Frame) {
+                if (c == LuminarisDirector.SubductionRound2Frame) {
                     ctx.Vec1 = npc.Center;
                     ctx.Vec2 = RisePoint(npc, player, enrange);
                 }
-                if (c > LuminarisDirector.SubductionRise2EndFrame)
-                {
+                if (c > LuminarisDirector.SubductionRise2EndFrame) {
                     ctx.Vec2 = RisePoint(npc, player, enrange);
                     npc.Center = Vector2.Lerp(ctx.Vec1, ctx.Vec2,
                         CEUtils.GetRepeatedCosFromZeroToOne(Utils.Remap(c, LuminarisDirector.SubductionRound2Frame, LuminarisDirector.SubductionRise2EndFrame, 0, 1), 1));
                 }
-                if (c == LuminarisDirector.SubductionRise2EndFrame)
-                {
+                if (c == LuminarisDirector.SubductionRise2EndFrame) {
                     ctx.Vec1 = npc.Center;
                     ctx.Vec2 = MirrorPoint(npc, player);
                 }
-                if (c < LuminarisDirector.SubductionRise2EndFrame && c >= LuminarisDirector.SubductionDive2EndFrame)
-                {
+                if (c < LuminarisDirector.SubductionRise2EndFrame && c >= LuminarisDirector.SubductionDive2EndFrame) {
                     float p = 1 - (c - (float)LuminarisDirector.SubductionDive2EndFrame) / LuminarisDirector.SubductionDive2Span;
                     npc.Center = Vector2.Lerp(ctx.Vec1, ctx.Vec2, CEUtils.GetRepeatedCosFromZeroToOne(p, 1)) + new Vector2(0, ArcOffset(p));
                     npc.rotation = (npc.Center - ctx.OldPos).ToRotation() + MathHelper.PiOver2;
                 }
             }
-            if (c < LuminarisDirector.SubductionDive2EndFrame)
-            {
+            if (c < LuminarisDirector.SubductionDive2EndFrame) {
                 npc.velocity += (player.Center - npc.Center).SafeNormalize(Vector2.Zero) * LuminarisDirector.SubductionChaseAccel;
                 npc.velocity *= LuminarisDirector.SubductionChaseDrag;
                 npc.rotation = npc.velocity.X * LuminarisDirector.SubductionTiltFactor;
             }
-            if (c == LuminarisDirector.SubductionBrakeFrame)
-            {
+            if (c == LuminarisDirector.SubductionBrakeFrame) {
                 //这一拍<b>没有效果</b>:同一帧上面的追撞分支已经先写过速度,而 0 与 -1 两帧追撞又会继续加速。
                 //原代码如此,照搬
                 npc.velocity *= 0;
@@ -104,8 +92,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
         /// 俯冲落点:横坐标是本体相对玩家的镜像,纵坐标保持当前高度。
         /// 原代码写成 <c>player.Center - new Vector2(Center.X - player.Center.X, 0)</c> 再单独盖掉 Y
         /// </summary>
-        private static Vector2 MirrorPoint(NPC npc, Player player)
-        {
+        private static Vector2 MirrorPoint(NPC npc, Player player) {
             Vector2 target = player.Center - new Vector2(npc.Center.X - player.Center.X, 0);
             target.Y = npc.Center.Y;
             return target;

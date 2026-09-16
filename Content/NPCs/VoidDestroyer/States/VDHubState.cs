@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
+﻿using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -17,11 +17,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         /// <summary>hub 卡死只可能是目标失效,那由全局转移接走;这里给个宽松上限回到自己</summary>
         public override int TimeoutFrames => 60 * 10;
 
-        public override IVDState OnUpdate(VDStateContext ctx)
-        {
+        public override IVDState OnUpdate(VDStateContext ctx) {
             Timer++;
-            if (!ctx.TargetValid)
-            {
+            if (!ctx.TargetValid) {
                 return null;
             }
 
@@ -29,15 +27,13 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             Vector2 dest = ctx.Target.Center + new Vector2(ctx.SideDir * 260f, -220f);
             DeclareHoverTo(ctx, dest, 14f, 0.08f, 140f);
 
-            if (!IsServer || Timer <= VDDirector.HubConnectorFrames(ctx.Phase) || ctx.AttackCooldown > 0)
-            {
+            if (!IsServer || Timer <= VDDirector.HubConnectorFrames(ctx.Phase) || ctx.AttackCooldown > 0) {
                 return null;
             }
 
             VDStateIndex pick = VDRotation.Pick(ctx);
             IVDState next = VDRotation.Create(pick);
-            if (next == null)
-            {
+            if (next == null) {
                 //注册表缺项(框架已打日志):留在 hub,下一帧再试其它招
                 return null;
             }
@@ -46,8 +42,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             ctx.SideDir = Main.rand.NextBool() ? -1 : 1;
             ctx.RandCount = 0;
 
-            if (next is VDStateBase picked && picked.NeedsRepositionBlink)
-            {
+            if (next is VDStateBase picked && picked.NeedsRepositionBlink) {
                 ctx.CornerIndex = Main.rand.Next(4);
                 ctx.Owner.StartBlink(ctx.Target.Center + VDVfx.CornerDirs[ctx.CornerIndex] * VDDirector.SwitchTeleportOffset);
             }

@@ -20,8 +20,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/AbyssalLine";
 
         public PRT_MultiSlash Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             useAdditive = mode == PRTDrawModeEnum.AdditiveBlend;
@@ -32,17 +31,14 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 26;
         }
 
-        public override void AI()
-        {
-            if (Time % 2 == 0)
-            {
+        public override void AI() {
+            if (Time % 2 == 0) {
                 var p = PRTLoader.NewParticle<PRT_AbyssalLine>(Position, Vector2.Zero, Color, Scale);
                 p.lx = lx * Main.rand.NextFloat(0.6f, 1.4f);
                 p.xadd = xadd * Main.rand.NextFloat(0.6f, 1.4f);

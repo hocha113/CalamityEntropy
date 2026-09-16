@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.LuminarisMoth.Core;
+﻿using CalamityEntropy.Content.NPCs.LuminarisMoth.Core;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -22,8 +22,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
     {
         public override LuminarisStateIndex StateIndex => LuminarisStateIndex.Dashing;
 
-        public override IVaultState<LuminarisStateContext> OnUpdate(LuminarisStateContext ctx)
-        {
+        public override IVaultState<LuminarisStateContext> OnUpdate(LuminarisStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
             float enrange = ctx.Enrange;
@@ -31,29 +30,24 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
 
             ctx.AfterImageTime = LuminarisDirector.AfterImageFrames;
 
-            if (c == LuminarisDirector.DashingFrames)
-            {
+            if (c == LuminarisDirector.DashingFrames) {
                 ctx.Num1 = npc.rotation;
                 ctx.Num2 = (player.Center - npc.Center).ToRotation() + MathHelper.PiOver2;
             }
-            if (c <= LuminarisDirector.DashingFrames && c >= LuminarisDirector.DashingLock1EndFrame)
-            {
+            if (c <= LuminarisDirector.DashingFrames && c >= LuminarisDirector.DashingLock1EndFrame) {
                 npc.rotation = CEUtils.RotateTowardsAngle(ctx.Num1, ctx.Num2,
                     CEUtils.GetRepeatedCosFromZeroToOne(Utils.Remap(c, LuminarisDirector.DashingFrames, LuminarisDirector.DashingLock1EndFrame, 0, 1), 1), false);
             }
-            if (c == LuminarisDirector.DashingLock2StartFrame)
-            {
+            if (c == LuminarisDirector.DashingLock2StartFrame) {
                 ctx.Num1 = npc.rotation;
                 ctx.Num2 = (player.Center - npc.Center).ToRotation() + MathHelper.PiOver2;
             }
-            if (c <= LuminarisDirector.DashingLock2StartFrame && c >= LuminarisDirector.DashingLock2EndFrame)
-            {
+            if (c <= LuminarisDirector.DashingLock2StartFrame && c >= LuminarisDirector.DashingLock2EndFrame) {
                 npc.rotation = CEUtils.RotateTowardsAngle(ctx.Num1, ctx.Num2,
                     Utils.Remap(c, LuminarisDirector.DashingLock2StartFrame, LuminarisDirector.DashingLock2EndFrame, 0, 1), false);
             }
             if (c < LuminarisDirector.DashingLock2EndFrame
-                || (c > LuminarisDirector.DashingLock2StartFrame && c < LuminarisDirector.DashingLock1EndFrame))
-            {
+                || (c > LuminarisDirector.DashingLock2StartFrame && c < LuminarisDirector.DashingLock1EndFrame)) {
                 npc.velocity = (npc.rotation - MathHelper.PiOver2).ToRotationVector2() * LuminarisDirector.DashingSpeed;
                 //追瞄速率是 `0.25f * enrange.ToRadians()`:ToRadians 把 enrange 本身当角度换算,
                 //所以实际只有 0.004~0.010 rad/帧。看着像笔误,但这是原代码的写法

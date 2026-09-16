@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -8,8 +8,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
     {
         public string DonatorName => "Ovasa";
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 24;
             Item.height = 24;
             Item.maxStack = 9999;
@@ -22,8 +21,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
             Item.DamageType = DamageClass.Ranged;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe(100)
                 .AddIngredient(ModContent.ItemType<OsseousRemains>())
                 .AddIngredient(ItemID.IronBar, 1)

@@ -1,4 +1,4 @@
-using InnoVault;
+﻿using InnoVault;
 using System.Collections.Generic;
 
 namespace CalamityEntropy.Core.Dash
@@ -14,27 +14,23 @@ namespace CalamityEntropy.Core.Dash
         private static Dictionary<string, CEDashEnhancer> enhancersById;
         private static Dictionary<System.Type, CEDashEnhancer> enhancersByType;
 
-        void ICELoader.SetupData()
-        {
+        void ICELoader.SetupData() {
             effectsById = new Dictionary<string, CEDashEffect>();
             effectsByType = new Dictionary<System.Type, CEDashEffect>();
             enhancersById = new Dictionary<string, CEDashEnhancer>();
             enhancersByType = new Dictionary<System.Type, CEDashEnhancer>();
 
-            foreach (CEDashEffect effect in VaultUtils.GetDerivedInstances<CEDashEffect>())
-            {
+            foreach (CEDashEffect effect in VaultUtils.GetDerivedInstances<CEDashEffect>()) {
                 effectsById[effect.ID] = effect;
                 effectsByType[effect.GetType()] = effect;
             }
-            foreach (CEDashEnhancer enhancer in VaultUtils.GetDerivedInstances<CEDashEnhancer>())
-            {
+            foreach (CEDashEnhancer enhancer in VaultUtils.GetDerivedInstances<CEDashEnhancer>()) {
                 enhancersById[enhancer.ID] = enhancer;
                 enhancersByType[enhancer.GetType()] = enhancer;
             }
         }
 
-        void ICELoader.UnLoadData()
-        {
+        void ICELoader.UnLoadData() {
             effectsById = null;
             effectsByType = null;
             enhancersById = null;

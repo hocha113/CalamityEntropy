@@ -16,10 +16,8 @@ namespace CalamityEntropy.Content.UI
         public int ReforgeCD = 0;
         Terraria.Item[] item;
         UIText text;
-        public override void OnInitialize()
-        {
-            if (Main.dedServ)
-            {
+        public override void OnInitialize() {
+            if (Main.dedServ) {
                 return;
             }
             UIPanel panel = new UIPanel();
@@ -62,46 +60,37 @@ namespace CalamityEntropy.Content.UI
 
             base.OnInitialize();
         }
-        public override void Update(GameTime gameTime)
-        {
-            if (Main.dedServ)
-            {
+        public override void Update(GameTime gameTime) {
+            if (Main.dedServ) {
                 return;
             }
-            if (item[0].active && CEUtils.IsArmor(item[0]))
-            {
+            if (item[0].active && CEUtils.IsArmor(item[0])) {
                 text.SetText(Main.ValueToCoins((int)(item[0].value / 6)));
             }
-            else
-            {
+            else {
                 text.SetText("");
             }
             ReforgeCD--;
-            if (reforgeButton.IsMouseHovering)
-            {
+            if (reforgeButton.IsMouseHovering) {
                 Main.LocalPlayer.mouseInterface = true;
             }
             base.Update(gameTime);
         }
         public static bool Visible = false;
-        private void reforge(UIMouseEvent evt, UIElement listeningElement)
-        {
+        private void reforge(UIMouseEvent evt, UIElement listeningElement) {
             Main.isMouseLeftConsumedByUI = true;
             Main.mouseLeft = false;
             EModSys.noItemUse = true;
-            if ((!item[0].active) || (!CEUtils.IsArmor(item[0])) || ReforgeCD > 0)
-            {
+            if ((!item[0].active) || (!CEUtils.IsArmor(item[0])) || ReforgeCD > 0) {
                 return;
 
             }
-            if (!Main.LocalPlayer.BuyItem(item[0].value / 6))
-            {
+            if (!Main.LocalPlayer.BuyItem(item[0].value / 6)) {
                 return;
             }
             SoundStyle s = new SoundStyle("CalamityEntropy/Assets/Sounds/Reforge");
             SoundEngine.PlaySound(s);
-            if (Main.rand.NextBool(ArmorPrefix.instances.Count + 1))
-            {
+            if (Main.rand.NextBool(ArmorPrefix.instances.Count + 1)) {
                 item[0].Entropy().armorPrefix = null;
                 item[0].Entropy().armorPrefixName = string.Empty;
                 CombatText.NewText(Main.LocalPlayer.getRect(), Color.Blue, item[0].Name);
@@ -109,10 +98,8 @@ namespace CalamityEntropy.Content.UI
             }
 
             ArmorPrefix armorPrefix = ArmorPrefix.RollPrefixToItem(item[0]);
-            if (armorPrefix != null)
-            {
-                if (armorPrefix.Dramatic())
-                {
+            if (armorPrefix != null) {
+                if (armorPrefix.Dramatic()) {
                     ReforgeCD = 60;
                     SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/AscendantActivate"));
                 }
@@ -121,10 +108,8 @@ namespace CalamityEntropy.Content.UI
                 CombatText.NewText(Main.LocalPlayer.getRect(), armorPrefix.getColor(), armorPrefix.GivenName + " " + item[0].Name, armorPrefix.Dramatic());
             }
         }
-        public void close()
-        {
-            if (item[0].type != ItemID.None)
-            {
+        public void close() {
+            if (item[0].type != ItemID.None) {
                 Main.LocalPlayer.QuickSpawnItem(Player.GetSource_None(), item[0]);
                 item[0].TurnToAir();
             }

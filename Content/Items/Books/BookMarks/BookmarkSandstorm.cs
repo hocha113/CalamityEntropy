@@ -9,33 +9,27 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 {
     public class BookmarkSandstorm : BookMark, IPriceFromRecipe
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.rare = ItemRarityID.Orange;
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Sandstorm");
-        public override EBookProjectileEffect getEffect()
-        {
+        public override EBookProjectileEffect getEffect() {
             return new SandstormBMEffect();
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe().AddIngredient(ItemID.SandBlock, 40)
                 .AddIngredient(ItemID.AntlionMandible)
                 .AddTile(TileID.WorkBenches)
                 .Register();
         }
         public override Color tooltipColor => new Color(246, 201, 122);
-        public static void ShootProjectile(int count, Player player, EntropyBookHeldProjectile book)
-        {
+        public static void ShootProjectile(int count, Player player, EntropyBookHeldProjectile book) {
             if (count > 0)
                 CEUtils.PlaySound("corruptwhip_hit2", 1, player.Center, 10, count / 4f + 0.4f);
-            for (int i = 0; i < count; i++)
-            {
+            for (int i = 0; i < count; i++) {
                 int dustAmt = 16;
-                for (int j = 0; j < dustAmt; j++)
-                {
+                for (int j = 0; j < dustAmt; j++) {
                     Vector2 vel = (Main.MouseWorld - player.MountedCenter).normalize().RotatedByRandom(0.22f) * 24 * Main.rand.NextFloat(0.3f, 1);
                     Vector2 dustRotate = vel;
                     int sand = Dust.NewDust(player.Center + vel * 4, 0, 0, DustID.Sand, 0, 0, 0, default, 1.2f);
@@ -50,15 +44,13 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     }
     public class SandBullet : EBookBaseProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Projectile.width = 16;
             Projectile.height = 16;
@@ -68,24 +60,20 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             Projectile.alpha = 255;
         }
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             base.SendExtraAI(writer);
             writer.Write(Projectile.localAI[0]);
         }
 
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             base.ReceiveExtraAI(reader);
             Projectile.localAI[0] = reader.ReadSingle();
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             base.AI();
             Projectile.frameCounter++;
-            if (Projectile.frameCounter > 4)
-            {
+            if (Projectile.frameCounter > 4) {
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
@@ -94,8 +82,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Projectile.localAI[0] += 1f;
-            if (Projectile.localAI[0] > 4f)
-            {
+            if (Projectile.localAI[0] > 4f) {
                 Projectile.alpha -= 50;
                 if (Projectile.alpha < 0)
                     Projectile.alpha = 0;
@@ -108,16 +95,14 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 Projectile.velocity.Y += 0.9f;
         }
 
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             SoundEngine.PlaySound(SoundID.Dig, Projectile.Center);
             Projectile.position = Projectile.Center;
             Projectile.width = Projectile.height = (int)(32 * Projectile.scale);
             Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             int dustAmt = 36;
-            for (int i = 0; i < dustAmt; i++)
-            {
+            for (int i = 0; i < dustAmt; i++) {
                 Vector2 dustRotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                 dustRotate = dustRotate.RotatedBy((double)((float)(i - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Projectile.Center;
                 Vector2 dustDirection = dustRotate - Projectile.Center;
@@ -128,8 +113,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             }
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             lightColor.R = (byte)(255 * Projectile.Opacity);
             lightColor.G = (byte)(255 * Projectile.Opacity);
             lightColor.B = (byte)(255 * Projectile.Opacity);

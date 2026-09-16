@@ -1,19 +1,17 @@
 ﻿using CalamityEntropy.Common;
-using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class GhostdomWhisper : ModItem, IDevItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 80;
             Item.height = 80;
             Item.damage = 1500;
@@ -36,24 +34,19 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         public string DevName => "Polaris";
 
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
+        public override bool CanConsumeAmmo(Item ammo, Player player) {
             return cs;
         }
-        public override bool RangedPrefix()
-        {
+        public override bool RangedPrefix() {
             return true;
         }
         public override Vector2? HoldoutOffset() => new Vector2(-28, 0);
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             return false;
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_AstrealDefeat, CEID.Item_DarkPlasma))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_AstrealDefeat, CEID.Item_DarkPlasma)) {
                 CreateRecipe()
                 .AddIngredient(CEID.Item_AstrealDefeat, 1)
                 .AddIngredient(CEID.Item_DarkPlasma, 8)

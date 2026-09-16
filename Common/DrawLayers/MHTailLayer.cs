@@ -13,20 +13,17 @@ namespace CalamityEntropy.Common.DrawLayers
         [VaultLoaden("CalamityEntropy/Assets/Extra/MHTail")]
         internal static Asset<Texture2D> MHTailTex;
 
-        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
-        {
+        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) {
             if (drawInfo.drawPlayer.dead)
                 return false;
             return drawInfo.drawPlayer.legs == EquipLoader.GetEquipSlot(Mod, "ScarletKilt", EquipType.Legs) || drawInfo.drawPlayer.legs == EquipLoader.GetEquipSlot(Mod, "KitsunesFan", EquipType.Legs);
         }
 
-        public override Position GetDefaultPosition()
-        {
+        public override Position GetDefaultPosition() {
             return new BeforeParent(PlayerDrawLayers.Leggings);
         }
 
-        protected override void Draw(ref PlayerDrawSet drawInfo)
-        {
+        protected override void Draw(ref PlayerDrawSet drawInfo) {
             var player = drawInfo.drawPlayer;
             Texture2D texture = MHTailTex.Value;
 

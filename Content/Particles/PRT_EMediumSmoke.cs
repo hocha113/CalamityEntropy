@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             //CanPool,texT/rotDir在SetProperty里重掷,Reset漏了复用粒子全长同一帧
             base.Reset();
             orgColor = default;
@@ -28,8 +27,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/MediumSmoke";
 
         public PRT_EMediumSmoke Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -39,8 +37,7 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 80;
@@ -50,8 +47,7 @@ namespace CalamityEntropy.Content.Particles
             wl = 1;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             if (wl > 0)
                 wl -= 0.1f / (80f / Lifetime);   //wl白化插值,寿命越长衰减越慢,老代码原公式
             Rotation += rotDir * 0.03f;
@@ -61,8 +57,7 @@ namespace CalamityEntropy.Content.Particles
             Velocity += new Vector2(0, -0.1f);   //微上浮,框架还会Position+=Velocity,别在AI里再写一遍
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Texture2D tex = PRTLoader.PRT_IDToTexture[ID];
             Color clr = Color;
             if (!Glow)

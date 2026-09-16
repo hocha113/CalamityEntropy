@@ -1,4 +1,4 @@
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Lores;
@@ -21,30 +21,24 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         #region 图鉴头像
         public static int icon = ModContent.GetModBossHeadSlot("CalamityEntropy/Content/NPCs/Cruiser/CruiserHead_Head_Boss");
         public static int iconP2;
-        public static void loadHead()
-        {
+        public static void loadHead() {
             string path = "CalamityEntropy/Content/NPCs/Cruiser/p2head";
             CalamityEntropy.Instance.AddBossHeadTexture(path, -1);
             iconP2 = ModContent.GetModBossHeadSlot(path);
         }
-        public override void BossHeadSlot(ref int index)
-        {
-            if (phaseTrans >= CruiserDirector.PhaseTransDrawSwitch)
-            {
+        public override void BossHeadSlot(ref int index) {
+            if (phaseTrans >= CruiserDirector.PhaseTransDrawSwitch) {
                 index = iconP2;
             }
-            else
-            {
+            else {
                 index = icon;
             }
         }
-        public override void BossHeadRotation(ref float rotation)
-        {
+        public override void BossHeadRotation(ref float rotation) {
             rotation = NPC.rotation - MathHelper.PiOver2;
         }
 
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
-        {
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry) {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityEntropy.CruiserBestiary")
@@ -53,23 +47,19 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         #endregion
 
         #region 掉落
-        public override void BossLoot(ref int potionType)
-        {
+        public override void BossLoot(ref int potionType) {
             potionType = ModContent.ItemType<VoidHealingPotion>();
         }
 
-        public override void OnKill()
-        {
-            if (!EDownedBosses.downedCruiser)
-            {
+        public override void OnKill() {
+            if (!EDownedBosses.downedCruiser) {
                 VoidOreSystem.BlessWorldWithOre();
             }
 
             NPC.SetEventFlagCleared(ref EDownedBosses.downedCruiser, -1);
         }
 
-        public override void ModifyNPCLoot(NPCLoot npcLoot)
-        {
+        public override void ModifyNPCLoot(NPCLoot npcLoot) {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<CruiserBag>()));
 
             // 月后虚空治疗药水,数量沿用原欧米茄档 8-23;隐藏图鉴条目

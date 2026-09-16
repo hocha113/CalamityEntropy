@@ -18,12 +18,10 @@ namespace CalamityEntropy.Content.Skies
     public class CrScreenShaderData : ScreenShaderData
     {
         public CrScreenShaderData(Asset<Effect> shader, string passName)
-            : base(shader, passName)
-        {
+            : base(shader, passName) {
         }
 
-        public override void Apply()
-        {
+        public override void Apply() {
             //强度门:uOpacity = 本值 × Filter 淡入;为 0 时 IsVisible 为假,滤镜整体被跳过
             UseOpacity(Config.Instance.EnablePixelEffect ? CruiserSkyDrive.Intensity : 0f);
 

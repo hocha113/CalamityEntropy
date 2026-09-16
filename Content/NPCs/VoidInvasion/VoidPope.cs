@@ -16,18 +16,15 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
     public class VoidPope : ModNPC
     {
         public int seed = -1;
-        public override void OnSpawn(IEntitySource source)
-        {
+        public override void OnSpawn(IEntitySource source) {
             seed = Main.rand.Next(0, 10000);
-            if (Main.netMode == NetmodeID.Server)
-            {
+            if (Main.netMode == NetmodeID.Server) {
                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, NPC.whoAmI);
             }
         }
 
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.npcFrameCount[NPC.type] = 1;
             NPCID.Sets.MustAlwaysDraw[NPC.type] = true;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
@@ -35,37 +32,31 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
 
             NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
-        {
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry) {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityEntropy.VoidPopeBestiary")
             });
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             NPC.boss = true;
             NPC.width = 110;
             NPC.height = 110;
             NPC.damage = 136;
-            if (Main.expertMode)
-            {
+            if (Main.expertMode) {
                 NPC.damage += 20;
             }
-            if (Main.masterMode)
-            {
+            if (Main.masterMode) {
                 NPC.damage += 20;
             }
             NPC.defense = 60;
             NPC.lifeMax = 2800000;
             //装灾厄读死亡/复仇,缺席仍走大师/专家兜底
-            if (CECal.IsDeathMode)
-            {
+            if (CECal.IsDeathMode) {
                 NPC.damage += 20;
             }
-            else if (CECal.IsRevengeance)
-            {
+            else if (CECal.IsRevengeance) {
                 NPC.damage += 20;
             }
             NPC.HitSound = SoundID.NPCHit1;
@@ -77,20 +68,17 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
             NPC.Entropy().VoidTouchDR = 0.9f;
             NPC.dontCountMe = true;
             NPC.defense = 100;
-            if (!Main.dedServ)
-            {
+            if (!Main.dedServ) {
                 Music = MusicLoader.GetMusicSlot(Mod, "Assets/Sounds/Music/RepBossTrack");
             }
         }
 
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(seed);
 
         }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             seed = reader.ReadInt32();
         }
 
@@ -107,82 +95,65 @@ namespace CalamityEntropy.Content.NPCs.VoidInvasion
         public AttackAIStyle aitype = AttackAIStyle.Melee;
         public float circleCounter = 0;
         public float circlespeed = 0;
-        public override void AI()
-        {
-            if (spawnHands)
-            {
+        public override void AI() {
+            if (spawnHands) {
                 spawnHands = false;
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
+                if (Main.netMode != NetmodeID.MultiplayerClient) {
                     NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<VoidPopeHand>(), 0, NPC.whoAmI, 1);
                     NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<VoidPopeHand>(), 0, NPC.whoAmI, -1);
 
                 }
             }
-            if (seed >= 0)
-            {
-                if (random == null)
-                {
+            if (seed >= 0) {
+                if (random == null) {
                     random = new Random(seed);
                 }
             }
-            if (aitype == AttackAIStyle.Circle)
-            {
+            if (aitype == AttackAIStyle.Circle) {
                 circleCounter += circlespeed * 0.38f;
-                if (aichange < 2.5f * 60)
-                {
+                if (aichange < 2.5f * 60) {
                     circlespeed += 0.01f;
                     circlespeed *= 0.97f;
                 }
-                else
-                {
+                else {
                     circlespeed *= 0.99f;
                 }
             }
-            if (random != null)
-            {
-                if (!NPC.HasValidTarget)
-                {
+            if (random != null) {
+                if (!NPC.HasValidTarget) {
                     NPC.target = NPC.FindClosestPlayer();
                 }
-                if (NPC.HasValidTarget)
-                {
+                if (NPC.HasValidTarget) {
                     Player target = NPC.target.ToPlayer();
                     NPC.velocity += (target.Center - NPC.Center).SafeNormalize(Vector2.Zero) * 0.44f;
                     NPC.velocity *= 0.98f;
                     aichange++;
-                    if (aitype == AttackAIStyle.Idle)
-                    {
+                    if (aitype == AttackAIStyle.Idle) {
                         aitype = AttackAIStyle.Melee;
                         aichange = 0;
                     }
-                    if (aitype == AttackAIStyle.Melee && aichange > 4 * 60)
-                    {
+                    if (aitype == AttackAIStyle.Melee && aichange > 4 * 60) {
                         aitype = AttackAIStyle.VoidLightball;
                         aichange = 0;
                     }
-                    if (aitype == AttackAIStyle.VoidLightball && aichange > 8 * 60)
-                    {
+                    if (aitype == AttackAIStyle.VoidLightball && aichange > 8 * 60) {
                         aitype = AttackAIStyle.Circle;
                         aichange = 0;
                         circleCounter = 0;
                         circlespeed = 0;
                     }
-                    if (aitype == AttackAIStyle.Circle && aichange > 4 * 60)
-                    {
+                    if (aitype == AttackAIStyle.Circle && aichange > 4 * 60) {
                         aitype = AttackAIStyle.Melee;
                         aichange = 0;
                     }
                 }
             }
-            if (!NPC.HasValidTarget)
-            {
+            if (!NPC.HasValidTarget) {
                 aitype = AttackAIStyle.Idle;
             }
 
         }
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) {
             Texture2D tex = TextureAssets.Npc[NPC.type].Value;
             Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition, null, Color.White, NPC.rotation, tex.Size() / 2, NPC.scale, SpriteEffects.None);
             return false;

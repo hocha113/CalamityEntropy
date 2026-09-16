@@ -7,15 +7,13 @@ namespace CalamityEntropy.Content.Projectiles
     public class BrimstoneBarrageFriendly : ModProjectile
     {
         public int time = 0;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 4;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 18;
             Projectile.height = 44;
             Projectile.hostile = false;
@@ -27,24 +25,19 @@ namespace CalamityEntropy.Content.Projectiles
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(Projectile.localAI[0]);
         }
 
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             Projectile.localAI[0] = reader.ReadSingle();
         }
 
-        public override void AI()
-        {
+        public override void AI() {
 
-            if (Projectile.velocity.Length() < Projectile.ai[2])
-            {
+            if (Projectile.velocity.Length() < Projectile.ai[2]) {
                 Projectile.velocity *= 1.01f;
-                if (Projectile.velocity.Length() > Projectile.ai[2])
-                {
+                if (Projectile.velocity.Length() > Projectile.ai[2]) {
                     Projectile.velocity.Normalize();
                     Projectile.velocity *= Projectile.ai[2];
                 }
@@ -53,8 +46,7 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
             Projectile.frameCounter++;
-            if (Projectile.frameCounter > 4)
-            {
+            if (Projectile.frameCounter > 4) {
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
@@ -64,8 +56,7 @@ namespace CalamityEntropy.Content.Projectiles
             if (Projectile.timeLeft < 60)
                 Projectile.Opacity = MathHelper.Clamp(Projectile.timeLeft / 60f, 0f, 1f);
 
-            if (Projectile.localAI[0] == 0f)
-            {
+            if (Projectile.localAI[0] == 0f) {
                 Projectile.localAI[0] = 1f;
             }
             Lighting.AddLight(Projectile.Center, 0.75f * Projectile.Opacity, 0f, 0f);
@@ -73,8 +64,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
 
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             lightColor.R = (byte)(255 * Projectile.Opacity);
 
             CEUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);

@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Prophet.Core;
+﻿using CalamityEntropy.Content.NPCs.Prophet.Core;
 using CalamityEntropy.Content.Projectiles.Prophet;
 using InnoVault.StateMachines;
 using Terraria;
@@ -20,8 +20,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
     {
         public override ProphetStateIndex StateIndex => ProphetStateIndex.RapidTorrent;
 
-        protected override void RunAttack(ProphetStateContext ctx)
-        {
+        protected override void RunAttack(ProphetStateContext ctx) {
             NPC npc = ctx.Npc;
             Player target = ctx.Target;
             float difficult = ctx.Difficult;
@@ -30,10 +29,8 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
 
             npc.rotation = (target.Center - npc.Center).ToRotation();
 
-            if (cd == ProphetDirector.RapidBlinkBeat)
-            {
-                if (IsServer)
-                {
+            if (cd == ProphetDirector.RapidBlinkBeat) {
+                if (IsServer) {
                     Teleport(ctx, target.Center + target.velocity.SafeNormalize(CEUtils.randomRot().ToRotationVector2())
                         * ProphetDirector.RapidBlinkRadius / difficult);
                 }
@@ -41,33 +38,26 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
                 npc.velocity = (target.Center - npc.Center).normalize() * ProphetDirector.RapidLaunchSpeed;
             }
 
-            if (cd <= ProphetDirector.RapidWindowLow)
-            {
+            if (cd <= ProphetDirector.RapidWindowLow) {
                 return;
             }
 
             int damage = ProjDamage(ctx);
-            if (cd < ProphetDirector.RapidFastBelow)
-            {
-                if (cd % ProphetDirector.RapidFastSoundPeriod == 0)
-                {
+            if (cd < ProphetDirector.RapidFastBelow) {
+                if (cd % ProphetDirector.RapidFastSoundPeriod == 0) {
                     CEUtils.PlaySound("crystalsound" + Main.rand.Next(1, 3), Main.rand.NextFloat(0.7f, 1.3f), npc.Center);
                 }
-                if (IsServer && cd % ProphetDirector.RapidFastPeriod == 0)
-                {
+                if (IsServer && cd % ProphetDirector.RapidFastPeriod == 0) {
                     float scatter = phase == 1 ? ProphetDirector.RapidFastScatterP1 : ProphetDirector.RapidFastScatterP2;
                     Shoot<RuneTorrent>(ctx, npc.Center,
                         (target.Center - npc.Center).normalize().RotatedByRandom(scatter) * difficult * ProphetDirector.RapidFastSpeed,
                         damage, 4, ProphetDirector.RapidMaxSpeed * difficult);
                 }
             }
-            else if (cd < ProphetDirector.RapidSlowBelow)
-            {
-                if (cd % ProphetDirector.RapidSlowPeriod == 0)
-                {
+            else if (cd < ProphetDirector.RapidSlowBelow) {
+                if (cd % ProphetDirector.RapidSlowPeriod == 0) {
                     CEUtils.PlaySound("crystalsound" + Main.rand.Next(1, 3), Main.rand.NextFloat(0.7f, 1.3f), npc.Center);
-                    if (IsServer)
-                    {
+                    if (IsServer) {
                         float scatter = phase == 1 ? ProphetDirector.RapidSlowScatterP1 : ProphetDirector.RapidSlowScatterP2;
                         Shoot<RuneTorrent>(ctx, npc.Center,
                             (target.Center - npc.Center).normalize().RotatedByRandom(scatter) * difficult * ProphetDirector.RapidSlowSpeed,

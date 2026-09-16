@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             Glow = true;
             CenterColor = Color.White;
@@ -26,8 +25,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Assets/Extra/Glow2";
 
         public PRT_EGlowOrb Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -37,20 +35,17 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 200;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Velocity *= Slowdown;   //Slowdown默认0.92,老代码原值,迁移纪律不改
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             float remaining = 1f - LifetimeCompletion;
             Texture2D tex = PRTExtraTextures.Glow2.Value;   //PreDraw走ExtraTextures VaultLoaden,Texture属性只是同名路径
             Vector2 origin = tex.Size() / 2f;

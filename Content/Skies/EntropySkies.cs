@@ -7,8 +7,7 @@ namespace CalamityEntropy.Content.Skies
 {
     public static class EntropySkies
     {
-        public static void setUpSkies()
-        {
+        public static void setUpSkies() {
             //巡游者:天空件在此注册,配套扭曲滤镜的着色器是 VaultLoaden 字段,注册在 setUpShaderFilters
             SkyManager.Instance["CalamityEntropy:Cruiser"] = new CrSky();
             Terraria.Graphics.Effects.Filters.Scene["CalamityEntropy:DimensionLens"] = new Filter(new TransScreenShaderData("FilterMiniTower").UseColor(Color.Transparent).UseOpacity(0f), EffectPriority.VeryHigh);
@@ -27,8 +26,7 @@ namespace CalamityEntropy.Content.Skies
         /// 着色器取自 VaultLoaden 静态字段的滤镜。字段要到 PostSetupContent 才赋值,
         /// 所以这批不能跟着 setUpSkies 在 Load 里注册;服务器上字段恒为 null,只在客户端调用。
         /// </summary>
-        public static void setUpShaderFilters()
-        {
+        public static void setUpShaderFilters() {
             //巡游者天幕扭曲滤镜:与 CrSky 同键成对(ManageSpecialBiomeVisuals 对缺键无空值保护);
             //强度由 CrScreenShaderData 每帧喂,噪声 VoidBack 绑 s1
             Terraria.Graphics.Effects.Filters.Scene["CalamityEntropy:Cruiser"] = new Filter(
@@ -38,8 +36,7 @@ namespace CalamityEntropy.Content.Skies
                 EffectPriority.VeryHigh);
 
             //虚空驱逐舰滤镜(引力透镜/空间裂隙/暗角/冲击帧):参数由 VDScreenFx 每帧上报,激活/停用由 VDScreenFxSystem 结算
-            if (CEEffectAssets.VDScreenFx != null)
-            {
+            if (CEEffectAssets.VDScreenFx != null) {
                 Terraria.Graphics.Effects.Filters.Scene[VDScreenFx.FilterKey] = new Filter(
                     new VDScreenShaderData(CEEffectAssets.VDScreenFx, "ScreenFxPass")
                         .UseOpacity(0f),

@@ -54,11 +54,9 @@ namespace CalamityEntropy.Content.Skies
 
         public override float GetCloudAlpha() => (1f - opacity) * 0.97f + 0.03f;
 
-        protected override void UpdatePayload(GameTime gameTime)
-        {
+        protected override void UpdatePayload(GameTime gameTime) {
             counter++;
-            if (opacity <= 0f)
-            {
+            if (opacity <= 0f) {
                 if (bolts.Count > 0)
                     bolts.Clear();
                 return;
@@ -66,42 +64,36 @@ namespace CalamityEntropy.Content.Skies
 
             //拍点爆发:登场揭幕/二阶段转换时齐发
             int burst = CruiserSkyDrive.ConsumeBurst();
-            if (burst > 0)
-            {
+            if (burst > 0) {
                 for (int i = 0; i < burst && bolts.Count < BoltCap; i++)
                     bolts.Add(new LightningBolt());
                 PlayThunder(0.5f);
             }
 
             //自发闪电:强度过门槛后,频率随躁动升档(P1 稀疏,P2 密集)
-            if (CruiserSkyDrive.Intensity > BoltIntensityGate && bolts.Count < BoltCap)
-            {
+            if (CruiserSkyDrive.Intensity > BoltIntensityGate && bolts.Count < BoltCap) {
                 int interval = (int)MathHelper.Lerp(240f, 45f, CruiserSkyDrive.Agitation);
-                if (Main.rand.NextBool(interval))
-                {
+                if (Main.rand.NextBool(interval)) {
                     bolts.Add(new LightningBolt());
                     if (Main.rand.NextBool(6))
                         PlayThunder(Main.rand.NextFloat() * 0.4f);
                 }
             }
 
-            for (int i = bolts.Count - 1; i >= 0; i--)
-            {
+            for (int i = bolts.Count - 1; i >= 0; i--) {
                 if (--bolts[i].timeleft <= 0)
                     bolts.RemoveAt(i);
             }
         }
 
-        private static void PlayThunder(float volume)
-        {
+        private static void PlayThunder(float volume) {
             SoundStyle s = SoundID.Thunder;
             s.Volume = volume;
             s.MaxInstances = 3;
             SoundEngine.PlaySound(s);
         }
 
-        protected override void DrawFar(SpriteBatch spriteBatch)
-        {
+        protected override void DrawFar(SpriteBatch spriteBatch) {
             Texture2D tex = crSkyTex.Value;
             float intensity = CruiserSkyDrive.Intensity;
 
@@ -122,8 +114,7 @@ namespace CalamityEntropy.Content.Skies
             CESkyDrawing.OpenCallerBatch(spriteBatch);
         }
 
-        private void DrawScrollLayer(SpriteBatch sb, Texture2D tex, Vector2 drift, float texScale, Color color)
-        {
+        private void DrawScrollLayer(SpriteBatch sb, Texture2D tex, Vector2 drift, float texScale, Color color) {
             //镜头视差 0.5 + 恒定漂移;取模防大世界坐标丢浮点精度
             Vector2 scroll = CESkyDrawing.RealScreenPosition * -0.5f + drift * counter;
             scroll.X %= tex.Width;
@@ -133,8 +124,7 @@ namespace CalamityEntropy.Content.Skies
             sb.Draw(tex, dest, src, color);
         }
 
-        private void DrawBolts()
-        {
+        private void DrawBolts() {
             if (bolts.Count == 0)
                 return;
             MiscShaderData shader = GameShaders.Misc["CalamityEntropy:ArtAttack"];
@@ -151,8 +141,7 @@ namespace CalamityEntropy.Content.Skies
             private const int MaxTime = 200;
             private float drawOpacity;
 
-            public LightningBolt()
-            {
+            public LightningBolt() {
                 //散布范围随分辨率等比放大(旧实现固定 ±1200,高分屏会挤在中央)
                 float spreadX = Math.Max(1200f, Main.screenWidth * 0.62f);
                 float spreadY = Math.Max(1200f, Main.screenHeight * 1.1f);
@@ -164,8 +153,7 @@ namespace CalamityEntropy.Content.Skies
                 List<Vector2> half1 = new();
                 List<Vector2> half2 = new();
                 Vector2 p1 = center, p2 = center;
-                for (int i = 0; i < 20; i++)
-                {
+                for (int i = 0; i < 20; i++) {
                     half1.Add(p1);
                     half2.Add(p2);
                     a1 += ((float)Main.rand.NextDouble() - 0.5f) * 1f;
@@ -178,8 +166,7 @@ namespace CalamityEntropy.Content.Skies
                 points.AddRange(half2);
             }
 
-            public void Draw(MiscShaderData shader, float opacity)
-            {
+            public void Draw(MiscShaderData shader, float opacity) {
                 drawOpacity = opacity;
                 //背景窗口内渲染器用被平移过的 screenPosition 做世界→屏幕换算,这里把平移补回去
                 CEPrimitiveRenderer.RenderTrail(points,
@@ -188,14 +175,12 @@ namespace CalamityEntropy.Content.Skies
                         smoothen: true, pixelate: false, shader), 180);
             }
 
-            private Color Colorer(float completionRatio, Vector2 vertex)
-            {
+            private Color Colorer(float completionRatio, Vector2 vertex) {
                 float wave = MathF.Sin(completionRatio * MathHelper.Pi);
                 return Color.Lerp(Color.MediumPurple, Color.LightBlue, wave) * completionRatio * (drawOpacity * 1.4f);
             }
 
-            private float Width(float completionRatio, Vector2 vertex)
-            {
+            private float Width(float completionRatio, Vector2 vertex) {
                 float lifeWave = MathF.Sin(timeleft / (float)MaxTime * MathHelper.Pi);
                 return 48f * lifeWave * MathF.Sin(completionRatio * MathHelper.Pi);
             }

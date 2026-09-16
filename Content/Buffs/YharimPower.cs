@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -6,16 +6,14 @@ namespace CalamityEntropy.Content.Buffs
 {
     public class YharimPower : ModBuff
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.debuff[Type] = false;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = false;
             BuffID.Sets.LongerExpertDebuff[Type] = false;
         }
 
-        public override void Update(Player player, ref int buffIndex)
-        {
+        public override void Update(Player player, ref int buffIndex) {
             player.GetDamage(DamageClass.Generic) += 0.05f;
             player.GetCritChance(DamageClass.Generic) += 4;
             player.pickSpeed -= 0.3f;

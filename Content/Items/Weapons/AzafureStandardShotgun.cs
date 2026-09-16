@@ -1,22 +1,20 @@
 ﻿using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class AzafureStandardShotgun : ModItem, IAzafureEnhancable
     {
-        public override bool RangedPrefix()
-        {
+        public override bool RangedPrefix() {
             return true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 88;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 82;
@@ -34,15 +32,12 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public static int BulletCount = 6;
         public static int BulletCountEnhanced = 9;
-        public override Vector2? HoldoutOffset()
-        {
+        public override Vector2? HoldoutOffset() {
             return new Vector2(-2, 0);
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_PerennialBar))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_PerennialBar)) {
                 CreateRecipe()
                 .AddIngredient(ItemID.Shotgun)
                 .AddIngredient<HellIndustrialComponents>(8)
@@ -58,16 +53,13 @@ namespace CalamityEntropy.Content.Items.Weapons
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
-        public override float UseSpeedMultiplier(Player player)
-        {
+        public override float UseSpeedMultiplier(Player player) {
             return 1f;
         }
 
         #region Shooting
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            for(int i = 0; i < (player.AzafureEnhance() ? BulletCountEnhanced : BulletCount); i++)
-            {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
+            for (int i = 0; i < (player.AzafureEnhance() ? BulletCountEnhanced : BulletCount); i++) {
                 int p = Projectile.NewProjectile(source, position + velocity.SafeNormalize(Vector2.Zero) * 16, velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(1f, 1.3f), type, damage, knockback, player.whoAmI);
             }
             return false;
@@ -77,8 +69,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         #region Animations
         public override void HoldItem(Player player) => player.Entropy().MouseWorldListener = true;
 
-        public override void UseStyle(Player player, Rectangle heldItemFrame)
-        {
+        public override void UseStyle(Player player, Rectangle heldItemFrame) {
             player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
@@ -92,8 +83,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             base.UseStyle(player, heldItemFrame);
         }
 
-        public override void UseItemFrame(Player player)
-        {
+        public override void UseItemFrame(Player player) {
             player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
 
             float animProgress = 1 - player.itemTime / (float)player.itemTimeMax;
@@ -102,8 +92,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 rotation += (-0.32f) * (float)Math.Pow((0.5f - animProgress) / 0.5f, 2) * player.direction;
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
 
-            if (animProgress > 0.5f)
-            {
+            if (animProgress > 0.5f) {
                 float backArmRotation = rotation + 0.52f * player.direction;
 
                 Player.CompositeArmStretchAmount stretch = ((float)Math.Sin(MathHelper.Pi * (animProgress - 0.5f) / 0.36f)).ToStretchAmount();

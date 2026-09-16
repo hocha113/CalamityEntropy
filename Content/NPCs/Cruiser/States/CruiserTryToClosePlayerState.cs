@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Cruiser.Core;
+﻿using CalamityEntropy.Content.NPCs.Cruiser.Core;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -14,15 +14,13 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
     {
         public override CruiserStateIndex StateIndex => CruiserStateIndex.TryToClosePlayer;
 
-        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx)
-        {
+        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
             float dist = npc.Distance(player.Center);
             Vector2 dir = (player.Center - npc.Center).normalize();
 
-            if (npc.velocity.Length() < CruiserDirector.CloseInSpeedCap)
-            {
+            if (npc.velocity.Length() < CruiserDirector.CloseInSpeedCap) {
                 npc.velocity *= CruiserDirector.CloseInAccel;
             }
             npc.velocity += dir * Utils.Remap(dist, CruiserDirector.CloseInRemapNear, CruiserDirector.CloseInRemapFar,
@@ -35,8 +33,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
 
             ctx.ChangeCounter++;
             if (ctx.ChangeCounter > CruiserDirector.CloseInDuration
-                || dist < CruiserDirector.CloseInHandoffDistance + npc.velocity.Length())
-            {
+                || dist < CruiserDirector.CloseInHandoffDistance + npc.velocity.Length()) {
                 return NextAttack(ctx);
             }
             return null;

@@ -1,4 +1,4 @@
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
@@ -13,20 +13,17 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 {
     public class BookmarkHammer : BookMark, IPriceFromRecipe
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.rare = ItemRarityID.Green;
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Hammer");
-        public override EBookProjectileEffect getEffect()
-        {
+        public override EBookProjectileEffect getEffect() {
             return new BookmarkHammerBMEffect();
         }
 
         public override Color tooltipColor => Color.Silver;
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ItemID.Pwnhammer)
                 .AddIngredient(ItemID.SoulofNight, 5)
@@ -42,8 +39,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     }
     public class BMHammerProjectile : BaseBookMinion
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             fixedBaseDamage = 75;
             Projectile.penetrate = -1;
@@ -54,20 +50,17 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public List<Vector2> OldPos = new();
         public List<float> OldRot = new();
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             if (trail != null) trail.DrawTrail(Main.spriteBatch);
             Main.spriteBatch.UseBlendState(BlendState.AlphaBlend);
             Texture2D tex = Projectile.GetTexture();
-            for (int i = 0; i < OldPos.Count; i++)
-            {
+            for (int i = 0; i < OldPos.Count; i++) {
                 Main.EntitySpriteDraw(tex, OldPos[i] - Main.screenPosition, null, Color.White * 0.16f * ((float)i / OldPos.Count), OldRot[i] + MathHelper.PiOver4, tex.Size() / 2f, Projectile.scale, SpriteEffects.None);
             }
             Main.EntitySpriteDraw(tex, Projectile.Center + Projectile.rotation.ToRotationVector2() * Offset - Main.screenPosition, null, Color.White, Projectile.rotation + MathHelper.PiOver4, tex.Size() / 2f, Projectile.scale, SpriteEffects.None);
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return (Projectile.Center + Projectile.rotation.ToRotationVector2() * Offset).getRectCentered(Projectile.width, Projectile.height).Intersects(targetHitbox);
         }
         public enum AIStyle
@@ -88,8 +81,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         public PRT_TrailParticle trail = null;
         public override float DamageMult => 1.1f;
 
-        public override void AI()
-        {
+        public override void AI() {
             base.AI();
             var player = Projectile.GetOwner();
 
@@ -97,66 +89,54 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             if (Main.myPlayer != Projectile.owner || BookMarkLoader.HeldingBookAndHasBookmarkEffect<BookmarkHammerBMEffect>(player))
                 Projectile.timeLeft = 3;
             Projectile.netUpdate = true;
-            if (trail == null && ++Projectile.localAI[2] > 2)
-            {
+            if (trail == null && ++Projectile.localAI[2] > 2) {
                 //TrailParticle寿命-1,每帧手动改Lifetime+AddPoint
                 trail = PRTLoader.NewParticle<PRT_TrailParticle>(Projectile.Center, Vector2.Zero, Color.Goldenrod * 0.4f, 1f * Projectile.scale);
                 trail.maxLength = 42;
                 trail.ShouldDraw = false;
                 trail.Configure(1, true, PRTDrawModeEnum.AlphaBlend, 0, -1);
             }
-            if (Projectile.localAI[2] > 2)
-            {
+            if (Projectile.localAI[2] > 2) {
                 trail.Lifetime = 24;
                 trail.AddPoint(Projectile.Center + Projectile.rotation.ToRotationVector2() * (8 + Offset));
             }
-            if (target == null || !target.active || CEUtils.getDistance(target.Center, Projectile.Center) > 6000 || target.dontTakeDamage)
-            {
+            if (target == null || !target.active || CEUtils.getDistance(target.Center, Projectile.Center) > 6000 || target.dontTakeDamage) {
                 target = CEUtils.FindMinionTarget(Projectile, 3200);
             }
             AttackTimer--;
-            if (target == null && AttackTimer <= 0)
-            {
+            if (target == null && AttackTimer <= 0) {
                 aiStyle = AIStyle.Idle;
             }
-            else
-            {
+            else {
                 if (aiStyle == AIStyle.Idle)
                     aiStyle = AIStyle.Chase;
             }
             float DelayMult = 1;
-            if (ShooterModProjectile is EntropyBookHeldProjectile eb_)
-            {
+            if (ShooterModProjectile is EntropyBookHeldProjectile eb_) {
                 DelayMult = eb_.CauculateAttackSpeed();
             }
             Projectile.pushByOther(0.1f);
-            if (target != null)
-            {
-                if (aiStyle == AIStyle.Chase)
-                {
+            if (target != null) {
+                if (aiStyle == AIStyle.Chase) {
                     float targetRot = (target.Center - Projectile.Center).ToRotation();
                     Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, targetRot, 0.03f, false);
                     Vector2 tpos = target.Center + (Projectile.Center - target.Center).SafeNormalize(Vector2.UnitX) * tofs;
-                    if (CEUtils.getDistance(Projectile.Center, tpos) > 8)
-                    {
+                    if (CEUtils.getDistance(Projectile.Center, tpos) > 8) {
                         Projectile.velocity += (tpos - Projectile.Center).normalize() * 1f;
                     }
                     Projectile.velocity *= 0.9f;
                     AttackDelay--;
-                    if (AttackDelay <= 0)
-                    {
+                    if (AttackDelay <= 0) {
                         Projectile.ResetLocalNPCHitImmunity();
                         num2 = Main.rand.NextBool() ? 1 : -1;
                         AttackDelay = (int)(90 / DelayMult);
                         Shake = true;
-                        if (Main.rand.NextBool())
-                        {
+                        if (Main.rand.NextBool()) {
                             aiStyle = AIStyle.Strike;
                             AttackTimer = 180;
                             num = Projectile.rotation;
                         }
-                        else
-                        {
+                        else {
                             aiStyle = AIStyle.Smash;
                             AttackTimer = 180;
                             num = Projectile.rotation;
@@ -164,48 +144,39 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                     }
                 }
             }
-            if (aiStyle == AIStyle.Stop)
-            {
+            if (aiStyle == AIStyle.Stop) {
                 Projectile.velocity *= 0.97f;
-                if (target != null)
-                {
+                if (target != null) {
                     float targetRot = (target.Center - Projectile.Center).ToRotation();
                     Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, targetRot, 0.01f, false);
                 }
-                if (AttackTimer <= 0)
-                {
+                if (AttackTimer <= 0) {
                     AttackDelay = (int)(30 / DelayMult);
                     aiStyle = AIStyle.Chase;
                 }
             }
-            if (aiStyle == AIStyle.Smash)
-            {
+            if (aiStyle == AIStyle.Smash) {
                 if (AttackTimer == 179 && target != null)
                     Projectile.rotation = ((target.Center + target.velocity * 8) - Projectile.Center).ToRotation();
-                if (AttackTimer < 160)
-                {
+                if (AttackTimer < 160) {
                     Projectile.velocity *= 0.96f;
                     Projectile.velocity += Projectile.rotation.ToRotationVector2();
                 }
-                else
-                {
+                else {
                     Projectile.velocity *= 0.94f;
                     Projectile.velocity -= Projectile.rotation.ToRotationVector2() * 0.6f;
                 }
                 if (AttackTimer < 100)
                     AttackTimer = 0;
-                if (AttackTimer <= 0)
-                {
+                if (AttackTimer <= 0) {
                     aiStyle = AIStyle.Stop;
                     AttackTimer = (int)(60 / DelayMult);
                     num = 0;
                 }
             }
-            if (aiStyle == AIStyle.Strike)
-            {
+            if (aiStyle == AIStyle.Strike) {
                 Projectile.velocity *= 0.8f;
-                if (target != null)
-                {
+                if (target != null) {
                     Vector2 tpos = target.Center + (Projectile.Center - target.Center).normalize() * tofs;
 
                     if (CEUtils.getDistance(Projectile.Center, tpos) > 8)
@@ -214,19 +185,16 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 if (AttackTimer < 130)
                     Offset = float.Lerp(Offset, tofs + 10, 0.04f);
                 Projectile.rotation = num + num2 * MathHelper.ToRadians(520) * CEUtils.GetRepeatedCosFromZeroToOne(1 - AttackTimer / 180f, 2);
-                if (AttackTimer <= 0)
-                {
+                if (AttackTimer <= 0) {
                     aiStyle = AIStyle.Stop;
                     AttackTimer = (int)(70 / DelayMult);
                     num = 0;
                 }
             }
-            else
-            {
+            else {
                 Offset *= 0.95f;
             }
-            if (aiStyle == AIStyle.Idle)
-            {
+            if (aiStyle == AIStyle.Idle) {
                 Vector2 taretPos = player.Center + new Vector2(0, -140);
                 float targetRot = -MathHelper.PiOver2 + Projectile.velocity.X * 0.12f;
                 Projectile.velocity += (taretPos - Projectile.Center) * 0.001f;
@@ -235,64 +203,53 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             }
             OldRot.Add(Projectile.rotation);
             OldPos.Add(Projectile.Center + Projectile.rotation.ToRotationVector2() * Offset);
-            if (OldRot.Count > 32)
-            {
+            if (OldRot.Count > 32) {
                 OldRot.RemoveAt(0);
                 OldPos.RemoveAt(0);
             }
 
         }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
             base.ModifyHitNPC(target, ref modifiers);
             modifiers.SourceDamage *= 2;
 
         }
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             return (aiStyle == AIStyle.Strike || aiStyle == AIStyle.Smash) ? null : false;
         }
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             base.OnKill(timeLeft);
             if (trail != null)
                 trail.ShouldDraw = true;
 
         }
         public bool Shake = true;
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             base.OnHitNPC(target, hit, damageDone);
             CEUtils.PlaySound("ExoHit1", Main.rand.NextFloat(0.8f, 1.4f), Projectile.Center);
             CEUtils.PlaySound("metalhit", Main.rand.NextFloat(0.5f, 0.8f), Projectile.Center, volume: 0.5f);
 
-            if (aiStyle == AIStyle.Smash)
-            {
+            if (aiStyle == AIStyle.Smash) {
                 if (AttackTimer < 160)
                     AttackTimer = 0;
-                for (int i = 0; i < 32; i++)
-                {
+                for (int i = 0; i < 32; i++) {
                     PRTLoader.NewParticle<PRT_AltSpark>(target.Center, Projectile.velocity.normalize().RotatedByRandom(0.32f) * Main.rand.NextFloat(4, 16), Color.Lerp(new Color(236, 236, 236), Color.Gold, Main.rand.NextFloat()), Main.rand.NextFloat(0.4f, 1.2f)).Configure(false, 20);
                 }
-                for (int i = 0; i < 32; i++)
-                {
+                for (int i = 0; i < 32; i++) {
                     PRTLoader.NewParticle<PRT_AltSpark>(target.Center, CEUtils.randomPointInCircle(16), Color.Lerp(new Color(236, 236, 236), Color.Gold, Main.rand.NextFloat()), Main.rand.NextFloat(0.4f, 1.2f)).Configure(false, 20);
                 }
-                for (float i = 0f; i <= 1; i += 0.2f)
-                {
+                for (float i = 0f; i <= 1; i += 0.2f) {
                     PRTLoader.NewParticle<PRT_DirectionalPulseRing>(target.Center, Projectile.velocity * 0.01f, Color.Gold * (1.2f - i), 0.1f).Configure(new Vector2(0.2f, 1), Projectile.rotation, (i * 5 + 0.2f) * Projectile.scale, 42);
                 }
                 Projectile.velocity *= -0.2f;
                 if (Shake)
                     ScreenShaker.AddShake(new ScreenShake(Projectile.rotation.ToRotationVector2() * -5, Projectile.scale * 3 * Utils.Remap(CEUtils.getDistance(target.Center, Projectile.GetOwner().Center), 400, 1800, 1, 0)));
             }
-            else
-            {
+            else {
                 if (Shake)
                     ScreenShaker.AddShake(new ScreenShake(Vector2.Zero, Projectile.scale * 6 * Utils.Remap(CEUtils.getDistance(target.Center, Projectile.GetOwner().Center), 400, 1800, 1, 0)));
                 PRTLoader.NewParticle<PRT_DirectionalPulseRing>(target.Center, Vector2.Zero, Color.Gold, 0.1f).Configure(new Vector2(0.2f, 1), Projectile.rotation + MathHelper.PiOver2 * num2, 1.4f * Projectile.scale, 42);
-                for (int i = 0; i < 32; i++)
-                {
+                for (int i = 0; i < 32; i++) {
                     PRTLoader.NewParticle<PRT_AltSpark>(target.Center, Projectile.rotation.ToRotationVector2().RotatedBy(MathHelper.PiOver2 * num2).RotatedByRandom(0.32f) * Main.rand.NextFloat(4, 32), Color.Lerp(Color.Gold, Color.White, Main.rand.NextFloat()), Main.rand.NextFloat(0.4f, 1.2f)).Configure(false, 20);
                 }
             }

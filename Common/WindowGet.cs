@@ -15,14 +15,12 @@ namespace CalamityEntropy.Common
     public class ChargingYuzu : ModItem
     {
         public override string Texture => "CalamityEntropy/Assets/Extra/ChargingYuzu";
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.accessory = true;
             Item.width = Item.height = 32;
             Item.rare = ItemRarityID.Yellow;
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ItemID.Grapefruit, 6)
                 .AddCondition(Condition.NearShimmer)
@@ -30,8 +28,7 @@ namespace CalamityEntropy.Common
                 .AddTile(TileID.Honeyfall)
                 .Register();
         }
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.GetModPlayer<PGetPlayer>().accEquiped = true;
             if (!hideVisual)
                 player.GetModPlayer<PGetPlayer>().accVnTime = 3;
@@ -40,29 +37,23 @@ namespace CalamityEntropy.Common
             player.GetDamage(DamageClass.Generic) += player.GetModPlayer<PGetPlayer>().count * 0.01f;
             player.Entropy().moveSpeed += player.GetModPlayer<PGetPlayer>().count * 0.01f;
         }
-        public override void UpdateVanity(Player player)
-        {
+        public override void UpdateVanity(Player player) {
             player.GetModPlayer<PGetPlayer>().accVnTime = 3;
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             tooltips.Replace("[A]", Main.LocalPlayer.GetModPlayer<PGetPlayer>().count);
         }
-        public static void Ciallo(Vector2 position)
-        {
+        public static void Ciallo(Vector2 position) {
             CEUtils.PlaySound("yzc/cia" + Main.rand.Next(1, 11), 1, position);
         }
         public static List<SoundStyle> cialloSnd;
-        public override void Load()
-        {
+        public override void Load() {
             cialloSnd = new List<SoundStyle>();
-            for (int i = 1; i <= 10; i++)
-            {
+            for (int i = 1; i <= 10; i++) {
                 cialloSnd.Add(new SoundStyle("CalamityEntropy/Assets/Sounds/yzc/cia" + i));
             }
         }
-        public override void Unload()
-        {
+        public override void Unload() {
             cialloSnd = null;
         }
     }
@@ -78,41 +69,33 @@ namespace CalamityEntropy.Common
         public bool accVanity = false;
         public int accVnTime = 0;
         public static int _scytheType = -1;
-        public static int ScytheType()
-        {
+        public static int ScytheType() {
             if (_scytheType == -1)
                 _scytheType = ModContent.ItemType<TlipocasScythe>();
             return _scytheType;
         }
-        public override void OnHurt(Player.HurtInfo info)
-        {
-            if (accVanity && count > 0)
-            {
+        public override void OnHurt(Player.HurtInfo info) {
+            if (accVanity && count > 0) {
                 ChargingYuzu.Ciallo(Player.Center);
             }
         }
-        public static string RemoveCharAndToLower(string str)
-        {
+        public static string RemoveCharAndToLower(string str) {
             string ret = "";
-            for (int i = 0; i < str.Length; i++)
-            {
+            for (int i = 0; i < str.Length; i++) {
                 if ("-=!@#$%^&z8(){}[]/\\☆＊_".Contains("str[i]"))
                     continue;
                 ret += str[i].ToString().ToLower();
             }
             return ret;
         }
-        public override void ResetEffects()
-        {
+        public override void ResetEffects() {
             accVnTime--;
             accEquiped = false;
             accVanity = accVnTime > 0;
         }
-        public static int RunningGames()
-        {
+        public static int RunningGames() {
             int s = 0;
-            if (!OperatingSystem.IsWindows())
-            {
+            if (!OperatingSystem.IsWindows()) {
                 return 0;
             }
             var windows = WindowGet.GetAllVisibleWindows();
@@ -120,14 +103,11 @@ namespace CalamityEntropy.Common
 
             foreach (string name in yuzuGames)
                 copy.Add(name);
-            foreach (var win in windows)
-            {
+            foreach (var win in windows) {
                 bool flag = false;
-                for (int i = copy.Count - 1; i >= 0; i--)
-                {
+                for (int i = copy.Count - 1; i >= 0; i--) {
                     string name = copy[i];
-                    if (RemoveCharAndToLower(win.ProcessName).Contains(RemoveCharAndToLower(name)))
-                    {
+                    if (RemoveCharAndToLower(win.ProcessName).Contains(RemoveCharAndToLower(name))) {
                         copy.RemoveAt(i);
                         flag = true;
                         break;
@@ -138,16 +118,12 @@ namespace CalamityEntropy.Common
             }
             return s;
         }
-        public override void PostUpdate()
-        {
+        public override void PostUpdate() {
             if (Main.LocalPlayer != null && !Main.gameMenu)
                 TextureAssets.Item[ScytheType()] = TlipocasScythe.GetTexture(Main.LocalPlayer);
-            if (Main.GameUpdateCount % 120 == 0)
-            {
-                if (accEquiped || accVanity)
-                {
-                    ThreadPool.QueueUserWorkItem(_ =>
-                    {
+            if (Main.GameUpdateCount % 120 == 0) {
+                if (accEquiped || accVanity) {
+                    ThreadPool.QueueUserWorkItem(_ => {
                         count = RunningGames();
                     });
                 }
@@ -175,17 +151,14 @@ namespace CalamityEntropy.Common
 
             private delegate bool EnumWindowsProc(nint hWnd, nint lParam);
 
-            public static List<WindowInfo> GetAllVisibleWindows()
-            {
-                if (!OperatingSystem.IsWindows())
-                {
+            public static List<WindowInfo> GetAllVisibleWindows() {
+                if (!OperatingSystem.IsWindows()) {
                     return new List<WindowInfo>();
                 }
                 List<WindowInfo> windows = new List<WindowInfo>();
                 nint shellWindow = GetShellWindow();
 
-                EnumWindows((hWnd, lParam) =>
-                {
+                EnumWindows((hWnd, lParam) => {
                     // 跳过不可见窗口和Shell窗口
                     if (hWnd == shellWindow) return true;
                     if (!IsWindowVisible(hWnd)) return true;
@@ -204,23 +177,18 @@ namespace CalamityEntropy.Common
                     GetWindowThreadProcessId(hWnd, out uint processId);
 
                     // 获取进程信息
-                    try
-                    {
+                    try {
                         Process process = Process.GetProcessById((int)processId);
-                        windows.Add(new WindowInfo
-                        {
+                        windows.Add(new WindowInfo {
                             Handle = hWnd,
                             Title = title,
                             ProcessName = process.ProcessName,
                             ProcessId = process.Id,
                             FilePath = process.MainModule?.FileName ?? "Unknown"
                         });
-                    }
-                    catch
-                    {
+                    } catch {
                         // 无法获取进程信息
-                        windows.Add(new WindowInfo
-                        {
+                        windows.Add(new WindowInfo {
                             Handle = hWnd,
                             Title = title,
                             ProcessName = "Unknown",
@@ -241,8 +209,7 @@ namespace CalamityEntropy.Common
             [DllImport("user32.dll")]
             private static extern nint GetForegroundWindow();
 
-            public static WindowInfo GetActiveWindow()
-            {
+            public static WindowInfo GetActiveWindow() {
                 nint hWnd = GetForegroundWindow();
                 if (hWnd == nint.Zero) return null;
 
@@ -255,22 +222,17 @@ namespace CalamityEntropy.Common
 
                 GetWindowThreadProcessId(hWnd, out uint processId);
 
-                try
-                {
+                try {
                     Process process = Process.GetProcessById((int)processId);
-                    return new WindowInfo
-                    {
+                    return new WindowInfo {
                         Handle = hWnd,
                         Title = title,
                         ProcessName = process.ProcessName,
                         ProcessId = process.Id,
                         FilePath = process.MainModule?.FileName ?? "Unknown"
                     };
-                }
-                catch
-                {
-                    return new WindowInfo
-                    {
+                } catch {
+                    return new WindowInfo {
                         Handle = hWnd,
                         Title = title,
                         ProcessName = "Unknown",
@@ -289,8 +251,7 @@ namespace CalamityEntropy.Common
             public int ProcessId { get; set; }
             public string FilePath { get; set; }
 
-            public override string ToString()
-            {
+            public override string ToString() {
                 return $"{Title} ({ProcessName}) [PID: {ProcessId}]";
             }
         }

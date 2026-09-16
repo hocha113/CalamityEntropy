@@ -8,13 +8,11 @@ namespace CalamityEntropy.Content.Projectiles
     public class ElectricLaser : ModProjectile
     {
         public Vector2 endPos => new Vector2(Projectile.ai[0], Projectile.ai[1]);
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
 
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Generic;
             Projectile.width = 2;
             Projectile.height = 2;
@@ -29,29 +27,23 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public int frame = 0;
         public int framecounter = 0;
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
-        public override void AI()
-        {
+        public override void AI() {
             framecounter++;
             if (framecounter % 2 == 0) { frame++; }
         }
-        public override bool? CanHitNPC(NPC target)
-        {
-            if (Projectile.timeLeft < 15)
-            {
+        public override bool? CanHitNPC(NPC target) {
+            if (Projectile.timeLeft < 15) {
                 return false;
             }
             return base.CanHitNPC(target);
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center, endPos, targetHitbox, 6);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.UseBlendState(BlendState.AlphaBlend, SamplerState.LinearWrap);
             Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
             Rectangle rect = new Rectangle(64 * frame, 0, 64, (int)CEUtils.getDistance(Projectile.Center, endPos));

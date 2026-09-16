@@ -1,14 +1,13 @@
-﻿using Terraria;
+﻿using CalamityEntropy.Core.CalamityRef;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Books
 {
     public class AncientScriptures : EntropyBook
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.damage = 20;
             Item.crit = 4;
@@ -17,10 +16,8 @@ namespace CalamityEntropy.Content.Items.Books
         public override int HeldProjectileType => ModContent.ProjectileType<AncientScripturesHeld>();
         public override int SlotCount => 1;
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_LoreAwakening))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_LoreAwakening)) {
                 CreateRecipe().AddIngredient(CEID.Item_LoreAwakening)
                 .AddIngredient(ItemID.Leather, 6)
                 .AddIngredient(ItemID.ManaCrystal, 1)

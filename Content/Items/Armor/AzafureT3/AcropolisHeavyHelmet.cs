@@ -1,9 +1,10 @@
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Cooldowns;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Cooldowns;
 using CalamityEntropy.Core.Weapons;
 using InnoVault.PRT;
@@ -15,15 +16,13 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Armor.AzafureT3
 {
     [AutoloadEquip(EquipType.Head)]
     public class AcropolisHeavyHelmet : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 28;
             Item.height = 30;
             Item.value = Item.buyPrice(platinum: 1);
@@ -31,13 +30,11 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             Item.rare = ItemRarityID.Red;
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
+        public override bool IsArmorSet(Item head, Item body, Item legs) {
             return head.type == Type && body.type == ModContent.ItemType<AcropolisHeavyArmor>() && legs.type == ModContent.ItemType<AcropolisHeavyLegArmor>();
         }
 
-        public override void UpdateArmorSet(Player player)
-        {
+        public override void UpdateArmorSet(Player player) {
             player.setBonus = Mod.GetLocalization("AzafureSet3").Value.Replace("[KEY]", CEKeybinds.AcropolisMechTransformation.TooltipKeyHint());
             player.GetModPlayer<AcropolisArmorPlayer>().ArmorSetBonus = true;
             // 潜行体系退役:原潜行条(上限1.2)按容量×10%换算为大招充能速度;灾厄肾上腺素抑制随 ripper 系统退役删除
@@ -46,19 +43,16 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             player.maxMinions += 1;
             player.noKnockback = true;
             var mp = player.GetModPlayer<AcropolisArmorPlayer>();
-            if (mp.MechFrame > 18)
-            {
+            if (mp.MechFrame > 18) {
                 if (player.channel)
                     player.channel = false;
-                if (mp.DummyCannon == null)
-                {
+                if (mp.DummyCannon == null) {
                     mp.DummyCannon = new Item();
                     mp.DummyCannon.SetDefaults(0);
                 }
                 mp.DummyCannon.stack = 0;
                 mp.DummyCannon.type = 0;
-                if (Main.myPlayer == player.whoAmI)
-                {
+                if (Main.myPlayer == player.whoAmI) {
                     if (Main.mouseItem.type != 0 && Main.mouseItem.stack > 0)
                         Main.LocalPlayer.QuickSpawnItem(null, Main.mouseItem, Main.mouseItem.stack);
                     Main.mouseItem = mp.DummyCannon;
@@ -69,16 +63,13 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
 
             }
         }
-        public override void UpdateEquip(Player player)
-        {
+        public override void UpdateEquip(Player player) {
             player.GetDamage(DamageClass.Generic) += 0.1f;
             player.AddCritDamage(DamageClass.Generic, 0.1f);
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_UnholyEssence))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_UnholyEssence)) {
                 CreateRecipe()
                 .AddIngredient<AzafureSteamKnightHelmet>()
                 .AddIngredient(ItemID.LunarBar, 10)
@@ -107,8 +98,7 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             public int NoMoveTime = 0;
             public Vector2 targetPos;
             public int SoundCD = 0;
-            public AcropolisLeg(Player plr, Vector2 offset, float scale = 1)
-            {
+            public AcropolisLeg(Player plr, Vector2 offset, float scale = 1) {
                 Player = plr;
                 this.offset = offset;
                 this.Scale = scale;
@@ -117,19 +107,14 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             bool o = false;
             public bool OnTile => !CEUtils.isAir(StandPoint, true) && o;
             public bool sound = true;
-            public bool Update()
-            {
+            public bool Update() {
                 SoundCD--;
-                if (CEUtils.getDistance(StandPoint, targetPos) < ms * (Player.velocity.Y > 1f ? 3 : 1))
-                {
+                if (CEUtils.getDistance(StandPoint, targetPos) < ms * (Player.velocity.Y > 1f ? 3 : 1)) {
                     StandPoint = targetPos;
-                    if (sound)
-                    {
+                    if (sound) {
                         sound = false;
-                        if (!CEUtils.isAir(targetPos + new Vector2(0, 2), true))
-                        {
-                            if (SoundCD <= 0)
-                            {
+                        if (!CEUtils.isAir(targetPos + new Vector2(0, 2), true)) {
+                            if (SoundCD <= 0) {
                                 CEUtils.SpawnExplotionFriendly(Player.GetSource_FromThis(), Player, targetPos + new Vector2(0, -10), 220, 32, DamageClass.Generic);
                                 SoundCD = 6;
                                 CEUtils.PlaySound("mechStep", Main.rand.NextFloat(1.6f, 2f), StandPoint, 32, 0.16f);
@@ -137,27 +122,23 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
                         }
                     }
                 }
-                else
-                {
+                else {
                     StandPoint += (targetPos - StandPoint).normalize() * ms * (Player.velocity.Y > 0.5f ? 3 : 1);
                 }
                 NoMoveTime--;
                 float distToMove = 100;
-                if (Player.velocity.Y < -4)
-                {
+                if (Player.velocity.Y < -4) {
                     o = false;
                     targetPos = Player.Center + new Vector2(offset.X * 0.4f, 140);
                     ms = CEUtils.getDistance(targetPos, StandPoint) * 0.25f;
                     return false;
                 }
-                if (!OnTile || (NoMoveTime <= 0 && CEUtils.getDistance(StandPoint, Player.Center + Player.velocity * 8 + (offset * 1).RotatedBy(Player.direction > 0 ? Player.fullRotation : (Player.fullRotation))) > distToMove) || CEUtils.getDistance(StandPoint, Player.Center + Player.velocity * 16 + (offset * 1).RotatedBy(Player.fullRotation)) > distToMove * 1.8f)
-                {
+                if (!OnTile || (NoMoveTime <= 0 && CEUtils.getDistance(StandPoint, Player.Center + Player.velocity * 8 + (offset * 1).RotatedBy(Player.direction > 0 ? Player.fullRotation : (Player.fullRotation))) > distToMove) || CEUtils.getDistance(StandPoint, Player.Center + Player.velocity * 16 + (offset * 1).RotatedBy(Player.fullRotation)) > distToMove * 1.8f) {
                     targetPos = FindStandPoint(Player.Center + Player.velocity * 8 + (offset * 1).RotatedBy(Player.fullRotation) + new Vector2(Math.Sign(Player.velocity.X) == Math.Sign(offset.X) ? (Math.Sign(Player.velocity.X) * 12) : 0, 0), 85 * 1, 160);
                     ms = CEUtils.getDistance(targetPos, StandPoint) * 0.25f;
                     if (NoMoveTime < 7)
                         NoMoveTime = 7;
-                    if (!CEUtils.isAir(targetPos + new Vector2(0, 2), true))
-                    {
+                    if (!CEUtils.isAir(targetPos + new Vector2(0, 2), true)) {
                         sound = true;
                     }
                     return true;
@@ -166,27 +147,21 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             }
             public float ms;
             public bool LastOnTile = false;
-            public static bool CanStandOn(Vector2 pos)
-            {
+            public static bool CanStandOn(Vector2 pos) {
                 return !CEUtils.isAir(pos, true);
             }
-            public Vector2 FindStandPoint(Vector2 center, float MaxOffset, float MaxTry = 64)
-            {
+            public Vector2 FindStandPoint(Vector2 center, float MaxOffset, float MaxTry = 64) {
                 o = false;
-                for (int i = 0; i < MaxTry; i++)
-                {
+                for (int i = 0; i < MaxTry; i++) {
                     Vector2 pos = CEUtils.randomPointInCircle(MaxTry) * new Vector2(1f, 1f) + center;
-                    if (CEUtils.getDistance(pos, center) <= MaxOffset * 0.9f && CanStandOn(pos))
-                    {
+                    if (CEUtils.getDistance(pos, center) <= MaxOffset * 0.9f && CanStandOn(pos)) {
                         o = true;
                         Vector2 orgPos = pos;
                         int c = 128;
-                        while (CanStandOn(pos))
-                        {
+                        while (CanStandOn(pos)) {
                             c--;
                             pos.Y -= 2;
-                            if (c <= 0)
-                            {
+                            if (c <= 0) {
                                 return orgPos;
                             }
                         }
@@ -206,8 +181,7 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             public float Seg1MaxRadians = MathHelper.ToRadians(50);
             public Vector2 offset;
             public Player Player;
-            public Hand(Player n, Vector2 offset, float seg1Length, float seg1Rot, float seg2Rot)
-            {
+            public Hand(Player n, Vector2 offset, float seg1Length, float seg1Rot, float seg2Rot) {
                 Player = n;
                 Seg1Length = seg1Length;
                 Seg1Rot = seg1Rot;
@@ -215,25 +189,20 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
                 this.offset = offset;
             }
             public Vector2 TopPos => seg1end + Seg2Rot.ToRotationVector2() * 60;
-            public void PointAPos(Vector2 pos, float r = 0.06f)
-            {
+            public void PointAPos(Vector2 pos, float r = 0.06f) {
                 Seg1Rot = CEUtils.RotateTowardsAngle(Seg1Rot, (pos - (Player.Center + (offset * new Vector2(1, 1)).RotatedBy(Player.fullRotation))).ToRotation(), 0.06f, false);
-                if (CEUtils.GetAngleBetweenVectors(Seg1Rot.ToRotationVector2(), -Vector2.UnitY) > Seg1MaxRadians * 2)
-                {
-                    if (Seg1Rot > (MathHelper.PiOver2 + Seg1MaxRadians))
-                    {
+                if (CEUtils.GetAngleBetweenVectors(Seg1Rot.ToRotationVector2(), -Vector2.UnitY) > Seg1MaxRadians * 2) {
+                    if (Seg1Rot > (MathHelper.PiOver2 + Seg1MaxRadians)) {
                         Seg1Rot = (MathHelper.PiOver2 + Seg1MaxRadians);
                     }
-                    if (Seg1Rot < (MathHelper.PiOver2 - Seg1MaxRadians))
-                    {
+                    if (Seg1Rot < (MathHelper.PiOver2 - Seg1MaxRadians)) {
                         Seg1Rot = (MathHelper.PiOver2 - Seg1MaxRadians);
                     }
                 }
                 Seg2Rot = CEUtils.RotateTowardsAngle(Seg2Rot, (pos - seg1end).ToRotation(), r, false);
             }
 
-            public void Update()
-            {
+            public void Update() {
                 Seg1Rot += Seg1RotV;
                 Seg1RotV *= 0.96f;
             }
@@ -250,19 +219,15 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
         public PlayerDeathReason dmgSource = null;
         public LoopSound chargeSnd = null;
         public bool MechTrans = false;
-        public void SmokeParticle()
-        {
+        public void SmokeParticle() {
             CEUtils.PlaySound("chainsaw_break", 1.3f, Player.Center, 6, 0.6f);
-            for (int i = 0; i < 16; i++)
-            {
+            for (int i = 0; i < 16; i++) {
                 //EMediumSmoke走AlphaBlend桶,蒸汽甲那套和Wulfrum枪口烟一样
                 PRTLoader.NewParticle<PRT_EMediumSmoke>(Player.Center + CEUtils.randomPointInCircle(12), CEUtils.randomPointInCircle(16), Color.Lerp(new Color(255, 255, 0), Color.White, (float)Main.rand.NextDouble()), Main.rand.NextFloat(1f, 2f)).Configure(1, true, PRTDrawModeEnum.AlphaBlend, CEUtils.randomRot(), 120);
             }
         }
-        public void DeactiveMech()
-        {
-            if (MechTrans)
-            {
+        public void DeactiveMech() {
+            if (MechTrans) {
                 Player.AddCooldown(AcropolisCooldown.ID, (int)(1f * 60 * 60));
                 SmokeParticle();
                 DurabilityActive = false;
@@ -276,10 +241,8 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
         }
         public int MechFrame = 0;
         public int MechFrameCounter = 0;
-        public void MechSync()
-        {
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
+        public void MechSync() {
+            if (Main.netMode == NetmodeID.MultiplayerClient) {
                 ModPacket packet = Mod.GetPacket();
                 packet.Write((byte)CEMessageType.AcropolisTrans);
                 packet.Write(Player.whoAmI);
@@ -295,10 +258,8 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
         public List<AcropolisLeg> legs = null;
         public Hand cannon;
         public Hand harpoon;
-        public void UpdateParts()
-        {
-            if (legs == null || (!Main.dedServ && CEKeybinds.AcropolisMechTransformation.JustPressed))
-            {
+        public void UpdateParts() {
+            if (legs == null || (!Main.dedServ && CEKeybinds.AcropolisMechTransformation.JustPressed)) {
                 legs =
                 [
                     new AcropolisLeg(Player, new Vector2(-44, 100), 0.8f),
@@ -314,22 +275,16 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             // 脱离灾厄:跨端鼠标坐标改自研 MouseWorld(player-api.md §1),监听开关每帧置位
             Vector2 vec = Player.Entropy().MouseWorld;
             Player.Entropy().MouseWorldListener = true;
-            if (SlashP != 0)
-            {
+            if (SlashP != 0) {
                 vec = Player.Center + (Player.Entropy().MouseWorld - Player.Center).RotatedBy(3 * slashDir * (SlashP - 0.5f));
             }
             cannon.PointAPos(vec, SlashP == 0 ? 0.06f : 1);
             harpoon.PointAPos(Player.Entropy().MouseWorld);
-            foreach (var l in legs)
-            {
-                if (l.Update())
-                {
-                    foreach (var l2 in legs)
-                    {
-                        if (Math.Sign(l2.offset.X) == Math.Sign(l.offset.X))
-                        {
-                            if (l2.NoMoveTime < 7)
-                            {
+            foreach (var l in legs) {
+                if (l.Update()) {
+                    foreach (var l2 in legs) {
+                        if (Math.Sign(l2.offset.X) == Math.Sign(l.offset.X)) {
+                            if (l2.NoMoveTime < 7) {
                                 l2.NoMoveTime = 7;
                             }
                         }
@@ -338,13 +293,11 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             }
         }
         public bool PlayerVisual => MechFrame < 16;
-        public Vector2 CalculateLegJoints(Vector2 Center, Vector2 legStandPoint, float l1, float l2, float l3, out Vector2 P1, out Vector2 P2)
-        {
+        public Vector2 CalculateLegJoints(Vector2 Center, Vector2 legStandPoint, float l1, float l2, float l3, out Vector2 P1, out Vector2 P2) {
             P1 = Vector2.Zero;
             P2 = Vector2.Zero;
 
-            if (l1 <= 0 || l2 <= 0 || l3 <= 0)
-            {
+            if (l1 <= 0 || l2 <= 0 || l3 <= 0) {
                 return Center;
             }
 
@@ -352,8 +305,7 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             float dist = D.Length();
 
             Vector2 target = legStandPoint;
-            if (dist > l1 + l2 + l3)
-            {
+            if (dist > l1 + l2 + l3) {
                 target = Center + Vector2.Normalize(D) * (l1 + l2 + l3);
             }
 
@@ -376,12 +328,9 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             float y2 = target.Y - l3;
             float deltaY = y2 - P1.Y;
             float deltaX;
-            try
-            {
+            try {
                 deltaX = (float)Math.Sqrt(l2 * l2 - deltaY * deltaY);
-            }
-            catch
-            {
+            } catch {
                 deltaX = 0;
                 y2 = P1.Y - l2;
             }
@@ -393,16 +342,14 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             P2 = new Vector2(x2, y2);
 
             float distP2ToTarget = Vector2.Distance(P2, target);
-            if (Math.Abs(distP2ToTarget - l3) > 0.001f)
-            {
+            if (Math.Abs(distP2ToTarget - l3) > 0.001f) {
                 P2 = new Vector2(P1.X, P1.Y - l2);
                 target = new Vector2(P2.X, P2.Y + l3);
             }
 
             return target;
         }
-        public void DrawMech()
-        {
+        public void DrawMech() {
             if (MechFrame < 1)
                 return;
             string folder = "CalamityEntropy/Content/Items/Armor/AzafureT3/";
@@ -422,12 +369,9 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
 
             int drawDir = (Player.Entropy().MouseWorld.X - Player.Center.X) > 0 ? 1 : -1;
 
-            if (legs != null)
-            {
-                if (MechFrame == 19)
-                {
-                    foreach (var leg in legs)
-                    {
+            if (legs != null) {
+                if (MechFrame == 19) {
+                    foreach (var leg in legs) {
                         float l1 = 40 * leg.Scale;
                         float l2 = 36 * leg.Scale;
                         float l3 = 66 * leg.Scale;
@@ -451,11 +395,9 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
 
                 }
             }
-            if (MechFrame == 19)
-            {
+            if (MechFrame == 19) {
                 Main.EntitySpriteDraw(body, Player.Center - Main.screenPosition, null, drawColor, Player.fullRotation, body.Size() / 2f, 1, drawDir > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
-                if (Player.ownedProjectileCounts[ModContent.ProjectileType<AcropolisHarpoon>()] == 0)
-                {
+                if (Player.ownedProjectileCounts[ModContent.ProjectileType<AcropolisHarpoon>()] == 0) {
                     Main.EntitySpriteDraw(harpoonTex, harpoon.TopPos + harpoon.Seg2Rot.ToRotationVector2() * 38 + new Vector2(0, 0 * drawDir).RotatedBy(harpoon.Seg2Rot) - Main.screenPosition, null, drawColor, harpoon.Seg2Rot, new Vector2(70, harpoonTex.Height / 2f), 1, drawDir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);
                 }
                 var ht = CannonMode ? cannonTex : knife;
@@ -470,8 +412,7 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
                 Main.EntitySpriteDraw(ht, cannon.seg1end - Main.screenPosition, rect, drawColor, cannon.Seg2Rot + CannonRot, new Vector2(wo, cannonTex.Height / CannonFrameTotal / 2 - 1), 1, drawDir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);
 
             }
-            else
-            {
+            else {
                 Main.EntitySpriteDraw(trans, Player.Center - Main.screenPosition, new Rectangle(0, (trans.Height / 19) * MechFrame, trans.Width, trans.Height / 19 - 2), drawColor, Player.fullRotation, new Vector2(trans.Width / 2f, (trans.Height / 19 - 2) / 2f), 1, drawDir > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
             }
 
@@ -480,43 +421,34 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
         public int LandTime = 0;
         public bool ControlHook = false;
         public int HarpoonDelay = 0;
-        public override void SetControls()
-        {
+        public override void SetControls() {
             ControlHook = Player.controlHook;
-            if (MechTrans)
-            {
+            if (MechTrans) {
                 Player.controlHook = false;
                 Player.controlMount = false;
             }
         }
         public Item DummyCannon = null;
-        public void MechUpdate()
-        {
-            if (MechTrans)
-            {
+        public void MechUpdate() {
+            if (MechTrans) {
                 if (Player.mount.Active)
                     Player.mount.Dismount(Player);
             }
             Player.noFallDmg = true;
 
             int MaxFrame = 19;
-            if (MechTrans)
-            {
+            if (MechTrans) {
                 Player.gfxOffY = 0;
-                if (!Main.dedServ)
-                {
-                    if (Main.myPlayer == Player.whoAmI && CEKeybinds.AcropolisMechTransformation.JustPressed)
-                    {
+                if (!Main.dedServ) {
+                    if (Main.myPlayer == Player.whoAmI && CEKeybinds.AcropolisMechTransformation.JustPressed) {
                         DeactiveMech();
                     }
                 }
                 UpdateParts();
                 HarpoonDelay--;
-                if (MechFrame < MaxFrame)
-                {
+                if (MechFrame < MaxFrame) {
                     MechFrameCounter++;
-                    if (MechFrameCounter > 4)
-                    {
+                    if (MechFrameCounter > 4) {
                         MechFrameCounter = 0;
                         MechFrame++;
                     }
@@ -525,14 +457,12 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
                     if (Player.Entropy().immune < 5)
                         Player.Entropy().immune = 5;
                 }
-                else
-                {
+                else {
                     Player.gravity = 0;
                     Player.direction = (Player.Entropy().MouseWorld.X - Player.Center.X) > 0 ? 1 : -1;
                     int s = 0;
                     float y = 0;
-                    foreach (var leg in legs)
-                    {
+                    foreach (var leg in legs) {
                         y += leg.StandPoint.Y;
                         if (leg.OnTile)
                             s++;
@@ -540,18 +470,14 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
                     if (CEUtils.CheckSolidTile((Player.Center + new Vector2(0, 100)).getRectCentered(32, 32)))
                         s = 4;
                     y /= legs.Count;
-                    if (s < 3)
-                    {
+                    if (s < 3) {
                         Player.velocity.Y += (Player.wingTime > 0 && Player.controlJump) ? 0.2f : 0.5f;
                         LandTime = 0;
                     }
-                    else
-                    {
-                        if (!Player.controlDown)
-                        {
+                    else {
+                        if (!Player.controlDown) {
                             Player.position.Y += 4;
-                            if (CEUtils.CheckSolidTile(Player.getRect()))
-                            {
+                            if (CEUtils.CheckSolidTile(Player.getRect())) {
                                 Player.position.Y -= 15;
                                 if (CEUtils.CheckSolidTile(Player.getRect()))
                                     Player.position.Y += 15;
@@ -561,77 +487,59 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
 
                             Player.velocity.Y *= 0.9f;
                         }
-                        else
-                        {
+                        else {
                             Player.velocity.Y *= 0.96f;
                         }
                     }
-                    if (Player.controlDown)
-                    {
+                    if (Player.controlDown) {
                         Player.velocity.Y += 0.65f;
                         if (Player.Entropy().NoPlatformCollide < 4)
                             Player.Entropy().NoPlatformCollide = 4;
                     }
-                    if (s > 2)
-                    {
+                    if (s > 2) {
                         if (Math.Abs(Player.velocity.X) > 9)
                             Player.velocity.X *= 0.95f;
-                        if (LandTime == 2 && Player.velocity.Y > 5)
-                        {
+                        if (LandTime == 2 && Player.velocity.Y > 5) {
                             CEUtils.PlaySound("mechStepHeavy", Main.rand.NextFloat(1, 1.4f), Player.Center + new Vector2(0, 60), 6, Utils.Remap(Player.velocity.Y, 0, 10, 0, 1));
                         }
                         LandTime++;
-                        if (LandTime > 6)
-                        {
+                        if (LandTime > 6) {
                             Player.wingTime = Player.wingTimeMax;
                         }
-                        if (Player.controlUp)
-                        {
+                        if (Player.controlUp) {
                             Player.velocity.Y -= 0.3f;
                         }
 
-                        if (Player.controlJump && LandTime > 8)
-                        {
+                        if (Player.controlJump && LandTime > 8) {
                             Player.velocity.Y = -24;
                         }
                     }
-                    if (CannonMode && Bullet <= 0)
-                    {
+                    if (CannonMode && Bullet <= 0) {
                         switchDelay = 4;
-                        if (Reload-- == 0)
-                        {
+                        if (Reload-- == 0) {
                             Bullet = 6;
                         }
                     }
-                    if (!CannonMode && SlashP > 0)
-                    {
+                    if (!CannonMode && SlashP > 0) {
                         SlashP += 0.15f * Player.GetTotalAttackSpeed(Player.GetBestClass());
-                        if (SlashP > 1.25f)
-                        {
+                        if (SlashP > 1.25f) {
                             ShootDelay = (int)(16f / Player.GetTotalAttackSpeed(Player.GetBestClass()));
                             SlashP = 0;
                         }
                     }
-                    if (Main.myPlayer == Player.whoAmI)
-                    {
-                        if (ControlHook && !LastHook)
-                        {
-                            if (HarpoonDelay <= 0 && Player.ownedProjectileCounts[ModContent.ProjectileType<AcropolisHarpoon>()] == 0)
-                            {
+                    if (Main.myPlayer == Player.whoAmI) {
+                        if (ControlHook && !LastHook) {
+                            if (HarpoonDelay <= 0 && Player.ownedProjectileCounts[ModContent.ProjectileType<AcropolisHarpoon>()] == 0) {
                                 HarpoonDelay = 32;
                                 harpoon.PointAPos(Player.Entropy().MouseWorld, 1);
                                 int damage = ((int)(Player.GetTotalDamage(Player.GetBestClass()).ApplyTo(1500))).ApplyAccArmorDamageBonus(Player);
                                 Projectile.NewProjectile(Player.GetSource_FromThis(), harpoon.TopPos, harpoon.Seg2Rot.ToRotationVector2() * 48, ModContent.ProjectileType<AcropolisHarpoon>(), damage, 12, Player.whoAmI);
                             }
                         }
-                        if (!Player.mouseInterface && switchDelay-- <= 0)
-                        {
-                            if (Main.mouseLeft)
-                            {
-                                if (CannonMode)
-                                {
-                                    if (ShootDelay <= 0)
-                                    {
+                        if (!Player.mouseInterface && switchDelay-- <= 0) {
+                            if (Main.mouseLeft) {
+                                if (CannonMode) {
+                                    if (ShootDelay <= 0) {
                                         Bullet--;
                                         if (Bullet < 1)
                                             Reload = (int)(30f / Player.GetTotalAttackSpeed(Player.GetBestClass()));
@@ -642,17 +550,14 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
                                         CEUtils.PlaySound("AcropolisShoot", Main.rand.NextFloat(0.8f, 1.2f), cannon.TopPos);
                                         ShootDelay = (int)(5f / Player.GetTotalAttackSpeed(Player.GetBestClass()));
                                         int damage = ((int)(Player.GetTotalDamage(Player.GetBestClass()).ApplyTo(400))).ApplyAccArmorDamageBonus(Player);
-                                        if (!Main.dedServ)
-                                        {
+                                        if (!Main.dedServ) {
                                             Gore.NewGoreDirect(Player.GetSource_FromThis(), cannon.TopPos - cannon.Seg2Rot.ToRotationVector2() * 46, Player.velocity + (cannon.Seg2Rot + Player.direction * -2.4f).ToRotationVector2() * 12 + CEUtils.randomPointInCircle(3), Mod.Find<ModGore>("AcropolisShell").Type).timeLeft = 0;
                                         }
                                         Projectile.NewProjectile(Player.GetSource_FromThis(), cannon.TopPos, cannon.Seg2Rot.ToRotationVector2().RotatedByRandom(0.08f) * 43, ModContent.ProjectileType<AcropolisBullet>(), damage, 10, Player.whoAmI);
                                     }
                                 }
-                                else
-                                {
-                                    if (SlashP == 0 && ShootDelay <= 0)
-                                    {
+                                else {
+                                    if (SlashP == 0 && ShootDelay <= 0) {
                                         SlashP += 0.01f;
                                         int damage = ((int)(Player.GetTotalDamage(Player.GetBestClass()).ApplyTo(1500))).ApplyAccArmorDamageBonus(Player);
                                         Projectile.NewProjectile(Player.GetSource_FromThis(), cannon.TopPos, cannon.Seg2Rot.ToRotationVector2() * 8, ModContent.ProjectileType<AcropolisSlash>(), damage, 10, Player.whoAmI);
@@ -666,8 +571,7 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
                                     }
                                 }
                             }
-                            if (Main.mouseRight)
-                            {
+                            if (Main.mouseRight) {
                                 switchDelay = (int)(30f / Player.GetTotalAttackSpeed(Player.GetBestClass()));
                                 CannonFrame = 0;
                                 CannonMode = !CannonMode;
@@ -678,44 +582,33 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
 
                     CannonRot = float.Lerp(CannonRot, CannonMode ? 0 : MathHelper.Pi, 0.1f);
                 }
-                if (CannonMode)
-                {
+                if (CannonMode) {
                     SlashP = 0;
                     CannonFrame = 0;
-                    if (Bullet > 0)
-                    {
+                    if (Bullet > 0) {
                         CannonFrame = 2;
                     }
-                    if (Bullet > 2)
-                    {
+                    if (Bullet > 2) {
                         CannonFrame = 1;
                     }
-                    if (Bullet > 4)
-                    {
+                    if (Bullet > 4) {
                         CannonFrame = 0;
                     }
-                    if (Reload > 0)
-                    {
+                    if (Reload > 0) {
                         CannonFrame = 3 + (int)((1 - (Reload / 30f)) * 5);
                     }
                 }
-                else
-                {
-                    if (CannonFrame < 7)
-                    {
+                else {
+                    if (CannonFrame < 7) {
                         if (Main.GameUpdateCount % 4 == 0)
                             CannonFrame++;
                     }
                 }
             }
-            else
-            {
-                if (!Main.dedServ)
-                {
-                    if (Main.myPlayer == Player.whoAmI && CEKeybinds.AcropolisMechTransformation.JustPressed)
-                    {
-                        if (!Player.HasCooldown(AcropolisCooldown.ID))
-                        {
+            else {
+                if (!Main.dedServ) {
+                    if (Main.myPlayer == Player.whoAmI && CEKeybinds.AcropolisMechTransformation.JustPressed) {
+                        if (!Player.HasCooldown(AcropolisCooldown.ID)) {
                             MechTrans = true;
                             CEUtils.PlaySound("WulfrumBastionActivate", 1, Player.Center);
                             DurabilityActive = true;
@@ -727,8 +620,7 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
                 MechFrame = MechFrameCounter = 0;
             }
             ShootDelay--;
-            if (MechTrans && MechFrame < 16)
-            {
+            if (MechTrans && MechFrame < 16) {
                 Player.gravity = 0;
                 Player.velocity.Y = -0.6f;
             }
@@ -744,52 +636,41 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
         public int slashDir = 1;
         public int Bullet = 6;
         public float SlashP = 0;
-        public override void PostUpdate()
-        {
-            if (!Main.dedServ)
-            {
+        public override void PostUpdate() {
+            if (!Main.dedServ) {
                 if (chargeSnd != null && chargeSnd.timeleft <= 0)
                     chargeSnd = null;
-                if (chargeSnd != null)
-                {
+                if (chargeSnd != null) {
                     chargeSnd.setVolume_Dist(Player.Center, 100, 1600, 1);
                     chargeSnd.instance.Pitch = (1 - (DeathExplosion / 80f)) * 2f + 1.9f;
                 }
             }
         }
         public int ShootDelay = 0;
-        public override bool PreKill(double damage, int hitDirection, bool pvp, ref bool playSound, ref bool genDust, ref PlayerDeathReason damageSource)
-        {
+        public override bool PreKill(double damage, int hitDirection, bool pvp, ref bool playSound, ref bool genDust, ref PlayerDeathReason damageSource) {
             DeactiveMech();
-            if (DeathExplosionCD <= 0 && !ExplosionFlag)
-            {
+            if (DeathExplosionCD <= 0 && !ExplosionFlag) {
                 playSound = false;
             }
-            if (ExplosionFlag && DeathExplosion > 0)
-            {
+            if (ExplosionFlag && DeathExplosion > 0) {
                 playSound = false;
                 return false;
             }
-            if (ArmorSetBonus && !ExplosionFlag && DeathExplosionCD <= 0)
-            {
+            if (ArmorSetBonus && !ExplosionFlag && DeathExplosionCD <= 0) {
                 //damageSource = PlayerDeathReason.ByCustomReason(Mod.GetLocalization("Death").ToNetworkText(Player.name));
             }
             return true;
         }
-        public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
-        {
+        public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource) {
             DeactiveMech();
-            if (ArmorSetBonus)
-            {
-                if (DeathExplosionCD <= 0 && !ExplosionFlag)
-                {
+            if (ArmorSetBonus) {
+                if (DeathExplosionCD <= 0 && !ExplosionFlag) {
                     ExplosionFlag = true;
                     DeathExplosionCD = 10 * 60;
                     DeathExplosion = 80;
                     dmgSource = damageSource;
                     Player.dead = false;
-                    if (!Main.dedServ)
-                    {
+                    if (!Main.dedServ) {
                         chargeSnd = new LoopSound(CalamityEntropy.ofCharge);
                         chargeSnd.instance.Pitch = 0;
                         chargeSnd.instance.Volume = 0;
@@ -799,8 +680,7 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
                 }
                 else
                     ExplosionFlag = false;
-                if (Main.myPlayer == Player.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
-                {
+                if (Main.myPlayer == Player.whoAmI && Main.netMode == NetmodeID.MultiplayerClient) {
                     var mp = Mod.GetPacket();
                     mp.Write((byte)CEMessageType.SyncPlayerDead);
                     mp.Write(Player.whoAmI);
@@ -810,32 +690,26 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
                 }
             }
         }
-        public override bool CanBeHitByNPC(NPC npc, ref int cooldownSlot)
-        {
+        public override bool CanBeHitByNPC(NPC npc, ref int cooldownSlot) {
             return DeathExplosion < 0;
         }
-        public override bool CanBeHitByProjectile(Projectile proj)
-        {
+        public override bool CanBeHitByProjectile(Projectile proj) {
             return DeathExplosion < 0;
         }
-        public override void ResetEffects()
-        {
+        public override void ResetEffects() {
             ArmorSetBonus = false;
-            if (DeathExplosion > 0 && ExplosionFlag)
-            {
+            if (DeathExplosion > 0 && ExplosionFlag) {
                 DeathExplosion--;
                 Player.velocity *= 0;
                 Player.Entropy().noItemTime = 5;
-                if (DeathExplosion < 70 && DeathExplosion % 2 == 0)
-                {
+                if (DeathExplosion < 70 && DeathExplosion % 2 == 0) {
                     if (DeathExplosion % 6 == 0)
                         ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Vector2.Zero, Utils.Remap(Main.LocalPlayer.Center.Distance(Player.Center), 4000, 1000, 0, 12)));
 
                     //T3自爆用ShockParticle2(Additive),跟T1 Heavy的NonPremultiplied ShockParticle不是一回事
                     PRTLoader.NewParticle<PRT_ShockParticle2>(Player.Center, Vector2.Zero, Color.White, 0.1f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, CEUtils.randomRot());
                 }
-                if (DeathExplosion == 0 || DeathExplosion == 3 || DeathExplosion == 6 || DeathExplosion == 9 || DeathExplosion == 12 || DeathExplosion == 15 || DeathExplosion == 18 || DeathExplosion == 21)
-                {
+                if (DeathExplosion == 0 || DeathExplosion == 3 || DeathExplosion == 6 || DeathExplosion == 9 || DeathExplosion == 12 || DeathExplosion == 15 || DeathExplosion == 18 || DeathExplosion == 21) {
                     CEUtils.PlaySound("pulseBlast", 0.6f, Player.Center, 6, 1f);
                     CEUtils.PlaySound("blackholeEnd", 0.6f, Player.Center, 6, 1f);
 
@@ -845,18 +719,15 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
                     ScreenShaker.AddShakeWithRangeFade(new ScreenShaker.ScreenShake(Vector2.Zero, 100), 1200);
                     var proj = CEUtils.SpawnExplotionFriendly(Player.GetSource_FromThis(), Player, Player.Center, ((int)(Player.GetBestClassDamage().ApplyTo(3500))).ApplyAccArmorDamageBonus(Player), 1200, DamageClass.Generic);
                     proj.ArmorPenetration = 60;
-                    if (proj.ModProjectile is CommonExplotionFriendly cef)
-                    {
+                    if (proj.ModProjectile is CommonExplotionFriendly cef) {
                         cef.DamageMulToWormSegs = 0.16f;
                     }
                 }
-                if (DeathExplosion == 0)
-                {
+                if (DeathExplosion == 0) {
                     DeathExplosion = -1;
                     ExplosionFlag = false;
                     Player.KillMe(PlayerDeathReason.ByCustomReason(Mod.GetLocalization("DeathExplode").ToNetworkText(Player.name)), 10000, 0);
-                    if (Main.myPlayer == Player.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
-                    {
+                    if (Main.myPlayer == Player.whoAmI && Main.netMode == NetmodeID.MultiplayerClient) {
                         var mp = Mod.GetPacket();
                         mp.Write((byte)CEMessageType.SyncPlayerDead);
                         mp.Write(Player.whoAmI);
@@ -867,79 +738,63 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
                 }
             }
         }
-        public override void PreUpdate()
-        {
+        public override void PreUpdate() {
             if (ArmorSetBonus)
                 MechUpdate();
             else
                 MechFrame = 0;
         }
-        public override void PostUpdateRunSpeeds()
-        {
-            if (ArmorSetBonus && MechTrans)
-            {
-                if (Player.moveSpeed > 1)
-                {
+        public override void PostUpdateRunSpeeds() {
+            if (ArmorSetBonus && MechTrans) {
+                if (Player.moveSpeed > 1) {
                     Player.moveSpeed = 1 + (Player.moveSpeed - 1) * 0.2f;
                 }
             }
         }
-        public override void PostUpdateEquips()
-        {
+        public override void PostUpdateEquips() {
             if (!ExplosionFlag || DeathExplosion == 0)
                 DeathExplosion = -1;
             DeathExplosionCD--;
-            if (ArmorSetBonus)
-            {
+            if (ArmorSetBonus) {
                 Player.Entropy().moveSpeed += 0.1f;
                 DurabilityRegenDelay--;
-                if (DurabilityActive)
-                {
+                if (DurabilityActive) {
                     Player.Entropy().EDamageReduce += durability * 0.24f;
                     Player.statDefense += (int)(durability * 36);
                     Player.noKnockback = true;
                 }
-                else
-                {
+                else {
                     DurabilityRegenDelay = -1;
                 }
-                if (DurabilityRegenDelay <= 0)
-                {
+                if (DurabilityRegenDelay <= 0) {
                     durability += 0.001f;
-                    if (durability >= 1)
-                    {
+                    if (durability >= 1) {
                         durability = 1;
                         if (!DurabilityActive)
                             CEUtils.PlaySound("AuricQuantumCoolingCellInstallNew", 0.7f, Player.Center);
                         DurabilityActive = true;
                     }
                 }
-                if (MechTrans)
-                {
+                if (MechTrans) {
                     Player.Entropy().EDamageReduce += 0.10f;
                     Player.statDefense += 15;
                     Player.Entropy().FallSpeed += 0.5f;
                 }
             }
-            else
-            {
+            else {
                 DeactiveMech();
             }
         }
-        public override void OnHurt(Player.HurtInfo info)
-        {
-            if (ArmorSetBonus)
-            {
-                if (DurabilityActive)
-                {
+        public override void OnHurt(Player.HurtInfo info) {
+            if (ArmorSetBonus) {
+                if (DurabilityActive) {
                     CEUtils.PlaySound($"ExoHit{Main.rand.Next(1, 5)}", Main.rand.NextFloat(0.6f, 0.8f), Player.Center, 6, 0.45f);
                     if (DurabilityRegenDelay < 5 * 60)
                         DurabilityRegenDelay = 5 * 60;
                     durability -= float.Min(0.36f, info.SourceDamage / (MechTrans ? 2800f : 1200f));
 
                     //耐久没了暂时失效
-                    if (durability <= 0)
-                    {
+                    if (durability <= 0) {
                         durability = 0;
                         DurabilityActive = false;
                         SmokeParticle();
@@ -948,8 +803,7 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
                 }
             }
         }
-        public static void DrawDuraBar(float dura)
-        {
+        public static void DrawDuraBar(float dura) {
             Main.spriteBatch.UseSampleState_UI(SamplerState.PointClamp);
             // 脱离灾厄:灾厄客户端配置不可用,耐久条固定挂在原肾上腺素条默认屏幕位
             Vector2 pos = new Vector2(35.77f, 8.85f);
@@ -960,14 +814,12 @@ namespace CalamityEntropy.Content.Items.Armor.AzafureT3
             Color color = mplayer.DurabilityActive ? Color.White : new Color(255, 80, 80) * 0.5f;
             Color color2 = mplayer.DurabilityActive ? Color.White : new Color(255, 142, 142) * 0.7f;
             Vector2 Center = pos;// Main.ScreenSize.ToVector2() * 0.5f + new Vector2(0, -60);
-            if (dura < 0.32f && mplayer.DurabilityActive)
-            {
+            if (dura < 0.32f && mplayer.DurabilityActive) {
                 Center += new Vector2(Main.rand.NextFloat() * ((0.32f - dura) * 20), Main.rand.NextFloat() * ((0.32f - dura) * 20));
             }
             string folder = "CalamityEntropy/Content/Items/Armor/AzafureT3/";
             Texture2D tex1 = AzafureHeavyArmorPlayer.DuraBarFrontTex.Value;
-            if (Main.LocalPlayer.TryGetModPlayer<AcropolisArmorPlayer>(out var mp) && mp.MechTrans)
-            {
+            if (Main.LocalPlayer.TryGetModPlayer<AcropolisArmorPlayer>(out var mp) && mp.MechTrans) {
                 tex1 = CEUtils.RequestTex($"{folder}MechDura");
             }
             Texture2D tex2 = AzafureHeavyArmorPlayer.DuraBarBackTex.Value;

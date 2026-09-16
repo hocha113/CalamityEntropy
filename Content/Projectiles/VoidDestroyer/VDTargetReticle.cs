@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.VoidDestroyer;
+﻿using CalamityEntropy.Content.NPCs.VoidDestroyer;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -17,8 +17,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public int Life => (int)Math.Max(Projectile.ai[0], 10f);
         public int Age => Life - Projectile.timeLeft;
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 20;
             Projectile.height = 20;
             Projectile.hostile = false;
@@ -33,14 +32,11 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public override bool ShouldUpdatePosition() => false;
         public override bool? CanDamage() => false;
 
-        public override void AI()
-        {
-            if (Projectile.localAI[0] == 0f)
-            {
+        public override void AI() {
+            if (Projectile.localAI[0] == 0f) {
                 Projectile.localAI[0] = 1f;
                 Projectile.timeLeft = Life;
-                if (!Main.dedServ)
-                {
+                if (!Main.dedServ) {
                     CEUtils.PlaySound("vbapear", 1.4f, Projectile.Center, 6, 0.5f);
                 }
             }
@@ -48,8 +44,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Lighting.AddLight(Projectile.Center, VDVfx.VoidPurple.ToVector3() * (0.3f + 0.6f * p));
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             float p = MathHelper.Clamp(Age / (float)Life, 0f, 1f);
             int left = Projectile.timeLeft;
             float flicker = left <= 12 ? 0.55f + 0.45f * (float)Math.Sin(Age * 1.5f) : 1f;
@@ -65,8 +60,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Main.spriteBatch.Draw(ring, pos, null, c * 0.5f, -Age * 0.05f, ring.Size() / 2f, outer * 0.6f, SpriteEffects.None, 0f);
             //旋转十字
             float rot = Age * 0.06f;
-            for (int i = 0; i < 4; i++)
-            {
+            for (int i = 0; i < 4; i++) {
                 Vector2 d = (rot + MathHelper.PiOver2 * i).ToRotationVector2();
                 CEUtils.drawLine(Projectile.Center + d * 20f, Projectile.Center + d * (60f + 40f * (1f - p)), c * 0.8f, 2f);
             }

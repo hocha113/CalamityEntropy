@@ -3,7 +3,6 @@ using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Books.BookMarks
 {
@@ -14,23 +13,19 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         internal static Texture2D StreakFireTex;
         public override string Texture => "CalamityEntropy/Assets/Extra/white";
         public float w = 1f;
-        public override void AI()
-        {
+        public override void AI() {
             base.AI();
             w -= 0.034f;
-            if (w <= 0)
-            {
+            if (w <= 0) {
                 Projectile.Kill();
             }
         }
         public override Color baseColor => new Color(255, 200, 60);
         public override int OnHitEffectProb => 3;
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             List<Vector2> points = this.getSamplePoints();
             points.Insert(0, Projectile.Center - Projectile.velocity);
-            if (points.Count < 2)
-            {
+            if (points.Count < 2) {
                 return false;
             }
             Main.spriteBatch.End();
@@ -40,8 +35,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = this.color * w;
                 float p = -Main.GlobalTimeWrappedHourly * 2;
-                for (int i = 1; i < points.Count; i++)
-                {
+                for (int i = 1; i < points.Count; i++) {
                     ve.Add(new ColoredVertex(points[i] - Main.screenPosition + (points[i] - points[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 70 * Projectile.scale * w,
                           new Vector3(p, 1, 1),
                           b));
@@ -53,8 +47,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 
                 SpriteBatch sb = Main.spriteBatch;
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
@@ -66,8 +59,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = new Color(255, 255, 255) * w;
                 float p = -Main.GlobalTimeWrappedHourly * 2;
-                for (int i = 1; i < points.Count; i++)
-                {
+                for (int i = 1; i < points.Count; i++) {
                     ve.Add(new ColoredVertex(points[i] - Main.screenPosition + (points[i] - points[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 14 * Projectile.scale * w,
                           new Vector3(p, 1, 1),
                           b));
@@ -80,8 +72,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 
                 SpriteBatch sb = Main.spriteBatch;
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }

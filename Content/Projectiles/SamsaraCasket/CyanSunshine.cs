@@ -25,29 +25,22 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
         public List<Vector2> lightningPoints = new List<Vector2>();
         public float lightningWidth = 0;
         public int impotence = 0;
-        public override void AI()
-        {
-            if (lightningWidth > 0)
-            {
+        public override void AI() {
+            if (lightningWidth > 0) {
                 lightningWidth -= 0.1f;
             }
-            if (impotence > 0)
-            {
+            if (impotence > 0) {
                 impotence--;
             }
-            else
-            {
+            else {
 
-                if (light > 0)
-                {
+                if (light > 0) {
                     light -= 0.1f;
                 }
-                if (xscale < 1)
-                {
+                if (xscale < 1) {
                     xscale += 0.1f;
                 }
-                if (light2 > 0)
-                {
+                if (light2 > 0) {
                     light2 -= 1f / 60f;
                 }
             }
@@ -55,24 +48,19 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
 
         }
 
-        public override void attackAI(NPC t)
-        {
-            if (impotence > 0)
-            {
+        public override void attackAI(NPC t) {
+            if (impotence > 0) {
                 Vector2 targetpos = t.Center + new Vector2(-160 - (t.width + t.height) / 4, -160 - (t.width + t.height) / 4);
                 Projectile.velocity *= 0.92f;
                 Projectile.velocity += (targetpos - Projectile.Center).SafeNormalize(Vector2.Zero) * 2f;
                 return;
             }
-            if (charge == 50)
-            {
+            if (charge == 50) {
                 SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/light_bolt_delayed"), Projectile.Center);
             }
-            if (charge > 0)
-            {
+            if (charge > 0) {
                 charge--;
-                if (charge == 0)
-                {
+                if (charge == 0) {
 
                     SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/light_bolt"), Projectile.Center);
                 }
@@ -81,15 +69,12 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
                 Projectile.velocity += (targetpos - Projectile.Center).SafeNormalize(Vector2.Zero) * 2f;
                 light2 += 2f / 60f;
             }
-            else
-            {
-                if (CEUtils.getDistance(t.Center, Projectile.Center) < Projectile.velocity.Length() * 1.16f)
-                {
+            else {
+                if (CEUtils.getDistance(t.Center, Projectile.Center) < Projectile.velocity.Length() * 1.16f) {
                     Projectile.Center = t.Center;
                     Projectile.velocity *= 0f;
                 }
-                else
-                {
+                else {
                     light2 = 1;
                     Projectile.velocity = (t.Center - Projectile.Center).SafeNormalize(Vector2.Zero) * (42 + t.velocity.Length());
                 }
@@ -97,17 +82,13 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
             setDamage(3);
             Projectile.rotation = (t.Center - Projectile.Center).ToRotation();
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             base.OnHitNPC(target, hit, damageDone);
-            if (charge <= 0)
-            {
+            if (charge <= 0) {
                 SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
                 setDamage(1);
-                if (Main.myPlayer == Projectile.owner)
-                {
-                    for (int i = 0; i < 10; i++)
-                    {
+                if (Main.myPlayer == Projectile.owner) {
+                    for (int i = 0; i < 10; i++) {
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.Next(6, 10) - new Vector2(0, 8), ModContent.ProjectileType<CyanFeather>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     }
                 }
@@ -123,39 +104,30 @@ namespace CalamityEntropy.Content.Projectiles.SamsaraCasket
                 impotence = 100;
             }
         }
-        public override bool? CanHitNPC(NPC target)
-        {
-            if (impotence > 0)
-            {
+        public override bool? CanHitNPC(NPC target) {
+            if (impotence > 0) {
                 return false;
             }
             return base.CanHitNPC(target);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
 
-            if (hideTime > 0 || impotence > 0)
-            {
+            if (hideTime > 0 || impotence > 0) {
                 return false;
             }
 
-            for (int i = 1; i < lightningPoints.Count; i++)
-            {
+            for (int i = 1; i < lightningPoints.Count; i++) {
                 CEUtils.drawLine(lightningPoints[i - 1], lightningPoints[i], Color.White, (float)(Math.Cos(-MathHelper.PiOver2 + ((float)i / (float)lightningPoints.Count) * MathHelper.Pi) * lightningWidth * 6), 2);
             }
             Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
-            if (charge <= 0)
-            {
-                for (int i = 0; i < oldPos.Count; i++)
-                {
+            if (charge <= 0) {
+                for (int i = 0; i < oldPos.Count; i++) {
                     Main.spriteBatch.Draw(tex, oldPos[i] - Main.screenPosition, null, lightColor * ((float)i / (float)oldPos.Count) * 0.4f, oldRot[i] + MathHelper.PiOver4, tex.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
                 }
             }
             tex = TextureAssets.Projectile[Projectile.type].Value;
-            if (charge <= 0 || target == null)
-            {
-                for (int i = 0; i < oldPos.Count; i++)
-                {
+            if (charge <= 0 || target == null) {
+                for (int i = 0; i < oldPos.Count; i++) {
                     Main.spriteBatch.Draw(tex, oldPos[i] - Main.screenPosition, null, lightColor * ((float)i / (float)oldPos.Count) * 0.4f, oldRot[i] + MathHelper.PiOver4, tex.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
                 }
             }

@@ -1,12 +1,9 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo;
 using CalamityEntropy.Content.Items.Weapons.GrassSword;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Core.Graphics;
-using InnoVault;
 using InnoVault.PRT;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.DataStructures;
@@ -22,8 +19,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
         public static int MaxStick => 3;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxStick);
         public static int ExplodeRadius => 60;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.DefaultToRangedWeapon(ModContent.ProjectileType<CharredMissileProj>(), BaseMissileProj.AmmoType, singleShotTime: 18, shotVelocity: 40f, hasAutoReuse: true);
             Item.width = 90;
             Item.height = 42;
@@ -39,8 +35,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
         #region Animations
         public override void HoldItem(Player player) => player.Entropy().MouseWorldListener = true;
 
-        public override void UseStyle(Player player, Rectangle heldItemFrame)
-        {
+        public override void UseStyle(Player player, Rectangle heldItemFrame) {
             player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
@@ -51,8 +46,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
             base.UseStyle(player, heldItemFrame);
         }
 
-        public override void UseItemFrame(Player player)
-        {
+        public override void UseItemFrame(Player player) {
             player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
 
             float animProgress = 1 - player.itemTime / (float)player.itemTimeMax;
@@ -61,18 +55,15 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
                 rotation += (-0.2f) * (float)Math.Pow((0.5f - animProgress) / 0.5f, 2) * player.direction;
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
         }
-        public override Vector2? HoldoutOffset()
-        {
+        public override Vector2? HoldoutOffset() {
             return new Vector2(-27f, -4f);
         }
-        public override bool RangedPrefix()
-        {
+        public override bool RangedPrefix() {
             return true;
         }
         #endregion
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient<Pardon>()
                 .AddIngredient<OsseousRemains>(20)
@@ -81,12 +72,10 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
                 .Register();
         }
 
-        public static void struggleProjKilled(Projectile proj)
-        {
+        public static void struggleProjKilled(Projectile proj) {
 
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             position += (new Vector2(54, -16) * new Vector2(1, player.direction)).RotatedBy(velocity.ToRotation());
             int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, MaxStick, ExplodeRadius);
             int ztype = ModContent.ProjectileType<ZealShoot>();
@@ -98,13 +87,11 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
     }
     public class ZealShoot : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 12;
             Projectile.height = 12;
@@ -116,19 +103,15 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 0;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return Projectile.position.getRectCentered(20 * Projectile.scale, 20 * Projectile.scale).Intersects(targetHitbox);
         }
-        public override void AI()
-        {
-            if (Projectile.localAI[2]++ == 0)
-            {
+        public override void AI() {
+            if (Projectile.localAI[2]++ == 0) {
                 Projectile.scale *= 2;
             }
             NPC target = CEUtils.FindTarget_HomingProj(Projectile, Projectile.position, 2000);
-            if (target != null && drawcount > 8)
-            {
+            if (target != null && drawcount > 8) {
                 Projectile.velocity *= 0.94f;
                 Vector2 v = target.Center - Projectile.position;
                 v.Normalize();
@@ -139,11 +122,9 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
             Projectile.rotation = Projectile.velocity.ToRotation();
         }
         float drawcount = 0;
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             float sparkCount = 16;
-            for (int i = 0; i < sparkCount; i++)
-            {
+            for (int i = 0; i < sparkCount; i++) {
                 Vector2 sparkVelocity2 = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(4, 12);
                 int sparkLifetime2 = 12;
                 float sparkScale2 = 0.34f;
@@ -155,21 +136,18 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
             }
         }
         public override string Texture => CEUtils.WhiteTexPath;
-        public Color ColorFunction(float completionRatio, Vector2 vertex)
-        {
+        public Color ColorFunction(float completionRatio, Vector2 vertex) {
             return Color.Lerp(Color.White, Color.Violet, MathHelper.Clamp(completionRatio * 0.8f, 0f, 1f)) * base.Projectile.Opacity;
         }
 
-        public float WidthFunction(float completionRatio, Vector2 vertex)
-        {
+        public float WidthFunction(float completionRatio, Vector2 vertex) {
             float num = 8f;
             float num2 = ((!(completionRatio < 0.1f)) ? MathHelper.Lerp(num, 0f, Utils.GetLerpValue(0.1f, 1f, completionRatio, clamped: true)) : ((float)Math.Sin(completionRatio / 0.1f * (MathF.PI / 2f)) * num + 0.1f));
             return num2 * base.Projectile.Opacity * Projectile.scale
             ;
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityEntropy:ArtAttack"].SetShaderTexture(CEExtraAssets.StreakGoopAsset);
             GameShaders.Misc["CalamityEntropy:ArtAttack"].Apply();

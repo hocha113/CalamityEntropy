@@ -2,32 +2,26 @@
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles;
-using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Core.Graphics;
 using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using static Terraria.GameContent.Animations.IL_Actions.Sprites;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class AzafureImperialGuardMachineGun : ModItem, IAzafureEnhancable
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 23;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 76;
@@ -45,8 +39,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.channel = true;
             Item.noUseGraphic = true;
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ItemID.ClockworkAssaultRifle)
                 .AddIngredient<HellIndustrialComponents>(5)
@@ -59,21 +52,16 @@ namespace CalamityEntropy.Content.Items.Weapons
         //弹药条底图,加载期由 VaultLoaden 赋值,仅物品栏绘制读取
         [VaultLoaden("CalamityEntropy/Assets/GenericBarBack")]
         internal static Asset<Texture2D> BarBackTex;
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             tooltips.Replace("[AMMOMAX]", MaxAmmo);
         }
-        public static bool TryReload(Player player)
-        {
-            if (player.HeldItem.ModItem is AzafureImperialGuardMachineGun aigm)
-            {
+        public static bool TryReload(Player player) {
+            if (player.HeldItem.ModItem is AzafureImperialGuardMachineGun aigm) {
                 int hiType = ModContent.ItemType<HellIndustrialComponents>();
-                for (int i = 0; i < player.inventory.Length; i++)
-                {
+                for (int i = 0; i < player.inventory.Length; i++) {
                     Item item = player.inventory[i];
-                    if (!item.IsAir && item.stack > 0 && item.type == hiType)
-                    {
-                        if(ItemLoader.CanConsumeAmmo(player.HeldItem, item, player))
+                    if (!item.IsAir && item.stack > 0 && item.type == hiType) {
+                        if (ItemLoader.CanConsumeAmmo(player.HeldItem, item, player))
                             item.Shrink(1);
                         aigm.AmmoLeft = AzafureImperialGuardMachineGun.MaxAmmo;
                         return true;
@@ -82,8 +70,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             }
             return false;
         }
-        public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
+        public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale) {
             var barBG = BarBackTex.Value;
             float p = ((float)AmmoLeft / MaxAmmo);
             CEUtils.DrawChargeBar(scale * 2f, position + new Vector2(8, 40) * scale, p, Color.Lerp(Color.Firebrick, Color.Orange, p));
@@ -92,21 +79,17 @@ namespace CalamityEntropy.Content.Items.Weapons
 
         }
 
-        public override void NetSend(BinaryWriter writer)
-        {
+        public override void NetSend(BinaryWriter writer) {
             writer.Write(AmmoLeft);
         }
-        public override void NetReceive(BinaryReader reader)
-        {
+        public override void NetReceive(BinaryReader reader) {
             AmmoLeft = reader.ReadInt32();
         }
-        public override void SaveData(TagCompound tag)
-        {
+        public override void SaveData(TagCompound tag) {
             tag["Ammos"] = AmmoLeft;
         }
-        public override void LoadData(TagCompound tag)
-        {
-            if(tag.TryGet<int>("Ammos", out int ammo))
+        public override void LoadData(TagCompound tag) {
+            if (tag.TryGet<int>("Ammos", out int ammo))
                 AmmoLeft = ammo;
         }
     }
@@ -114,24 +97,19 @@ namespace CalamityEntropy.Content.Items.Weapons
     {
         public float rotup = 0;
         public float rotv = 0f;
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.HeldProjSetDefaults(DamageClass.Ranged);
         }
-        public override bool? CanDamage()
-        {
+        public override bool? CanDamage() {
             return false;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.GetOwner().Entropy().MouseWorldListener = true;
             Player player = Projectile.GetOwner();
-            if (player.dead)
-            {
+            if (player.dead) {
                 Projectile.Kill();
                 return;
             }
@@ -144,27 +122,22 @@ namespace CalamityEntropy.Content.Items.Weapons
             player.SetHandRotWithDir(Projectile.rotation, dir);
             player.itemAnimation = player.itemTime = 3;
             Projectile.timeLeft = 3;
-            if(Projectile.Entropy().FirstFrames)
-            {
+            if (Projectile.Entropy().FirstFrames) {
                 ShootDelay = 0;
             }
             if (ShootDelay > 0)
                 ShootDelay -= player.GetWeaponAttackSpeed(player.HeldItem);
 
-            if (!player.channel)
-            {
+            if (!player.channel) {
                 if (ShootDelay <= 0)
                     Projectile.Kill();
                 return;
             }
-            if (player.HeldItem.ModItem is AzafureImperialGuardMachineGun modItem)
-            {
-                if (ShootDelay <= 0)
-                {
+            if (player.HeldItem.ModItem is AzafureImperialGuardMachineGun modItem) {
+                if (ShootDelay <= 0) {
                     bool hasAmmo = modItem.AmmoLeft > 0;
 
-                    if (!hasAmmo)
-                    {
+                    if (!hasAmmo) {
                         bool reload = AzafureImperialGuardMachineGun.TryReload(player);
                         ShootDelay = 60;
                         float pitch = (reload ? 0 : 1.4f);
@@ -173,16 +146,13 @@ namespace CalamityEntropy.Content.Items.Weapons
                         if (!reload)
                             CombatText.NewText(player.Hitbox, Color.Orange, Mod.GetLocalization("NoAmmo").Value, false);
                     }
-                    else
-                    {
+                    else {
                         ShootDelay += 4;
                         CEUtils.PlaySound(Main.rand.NextBool() ? "GunShotSmall" : "GunShotSmallAlt", Main.rand.NextFloat(2f, 2.4f), Projectile.Center, 16, 0.3f);
                         modItem.AmmoLeft--;
                         Projectile.rotation += Main.rand.NextFloat(-0.15f, 0.15f);
-                        if (Main.myPlayer == Projectile.owner)
-                        {
-                            for (int i = 0; i < 3; i++)
-                            {
+                        if (Main.myPlayer == Projectile.owner) {
+                            for (int i = 0; i < 3; i++) {
                                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + new Vector2(16, -14 * dir).RotatedBy(Projectile.rotation), Projectile.velocity.RotatedByRandom(Main.rand.NextFloat(0, player.AzafureEnhance() ? 0.3f : 0.6f)) * Main.rand.NextFloat(1.2f, 1.42f) * (player.AzafureEnhance() ? 1.4f : 1), ModContent.ProjectileType<ImperialGuardShot>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
                             }
                         }
@@ -192,12 +162,10 @@ namespace CalamityEntropy.Content.Items.Weapons
             }
         }
         public float ShootDelay { get { return Projectile.ai[0]; } set { Projectile.ai[0] = value; } }
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             Projectile.GetOwner().itemTime = Projectile.GetOwner().itemAnimation = 0;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D t = Projectile.GetTexture();
             Main.EntitySpriteDraw(t, Projectile.Center - Main.screenPosition + new Vector2(18, -14 * (Projectile.velocity.X > 0 ? 1 : -1)).RotatedBy(Projectile.rotation), CEUtils.GetCutTexRect(t, 3, (int)Main.GameUpdateCount / 4 % 2, false), lightColor, Projectile.rotation, t.Size() * new Vector2(0.5f, 0.5f / 3f), Projectile.scale, (Projectile.velocity.X > 0) ? SpriteEffects.None : SpriteEffects.FlipVertically);
 
@@ -207,8 +175,7 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class ImperialGuardShot : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 16;
             Projectile.height = 16;
             Projectile.hostile = false;
@@ -221,12 +188,10 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public PRT_TrailParticle trail = null;
 
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.velocity *= 0.95f;
             Projectile.rotation = Projectile.velocity.ToRotation();
-            if (trail == null)
-            {
+            if (trail == null) {
                 //maxLength/Lifetime/ShouldDraw Configure前先赋,对齐旧TrailParticle字段
                 trail = PRTLoader.NewParticle<PRT_TrailParticle>(Projectile.Center, Vector2.Zero, Color.Orange, 0.8f);
                 trail.maxLength = 18;
@@ -239,8 +204,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             trail.Lifetime = (int)(12 * Projectile.Opacity);
             trail.AddPoint(Projectile.Center + Projectile.velocity);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             trail?.DrawTrail(Main.spriteBatch);
@@ -252,21 +216,17 @@ namespace CalamityEntropy.Content.Items.Weapons
             Main.spriteBatch.ExitShaderRegion();
             return false;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff<MechanicalTrauma>(3 * 60);
         }
-        public override void OnKill(int timeLeft)
-        {
-            if (timeLeft > 6)
-            {
+        public override void OnKill(int timeLeft) {
+            if (timeLeft > 6) {
                 PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.Orange, 0.4f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 8);
                 PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.White, 0.3f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 8);
                 CEUtils.PlaySound("beast_lavaball_rise1", Main.rand.NextFloat(2.4f, 2.8f), Projectile.Center, 36, 0.4f);
             }
         }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
             modifiers.ArmorPenetration += 60;
         }
     }

@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 
@@ -6,8 +6,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 {
     public class BookMarkGemini : BookMark
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.rare = ItemRarityID.Orange;
             Item.Entropy().stroke = true;
@@ -18,8 +17,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Gemini");
         public override Color tooltipColor => Color.LightBlue;
-        public override void ModifyStat(EBookStatModifer modifer)
-        {
+        public override void ModifyStat(EBookStatModifer modifer) {
             modifer.armorPenetration += 10;
             modifer.Homing += 1.2f;
             modifer.HomingRange += 0.5f;

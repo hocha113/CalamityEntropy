@@ -14,18 +14,15 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
         //发光层贴图改由 VaultLoaden 在加载期赋值,替代原 SetStaticDefaults 手动 Request(服务器上保持 null,只在绘制读取)
         [VaultLoaden("CalamityEntropy/Content/NPCs/FriendFinderNPC/SoulSlurperFriendlyGlow")]
         public static Asset<Texture2D> GlowTexture;
-        public override bool CheckActive()
-        {
+        public override bool CheckActive() {
             return false;
         }
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             NPCID.Sets.TrailingMode[NPC.type] = 1;
             this.HideFromBestiary();
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.npcSlots = 1f;
@@ -44,8 +41,7 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             NPC.friendly = true;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             this.applyCollisionDamage();
             bool provy = true;
             Entity target = this.FindTarget();
@@ -63,67 +59,52 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             float targetDistance = (float)Math.Sqrt((double)(targetX * targetX + targetY * targetY));
             float accelerateDistance = targetDistance;
             bool tooFar = false;
-            if (targetDistance == 0f)
-            {
+            if (targetDistance == 0f) {
                 targetX = NPC.velocity.X;
                 targetY = NPC.velocity.Y;
             }
-            else
-            {
+            else {
                 targetDistance = npcSpeed / targetDistance;
                 targetX *= targetDistance;
                 targetY *= targetDistance;
             }
-            if (accelerateDistance > 100f)
-            {
+            if (accelerateDistance > 100f) {
                 NPC.ai[0] += 1f;
-                if (NPC.ai[0] > 0f)
-                {
+                if (NPC.ai[0] > 0f) {
                     NPC.velocity.Y += 0.023f;
                 }
-                else
-                {
+                else {
                     NPC.velocity.Y -= 0.023f;
                 }
-                if (NPC.ai[0] < -100f || NPC.ai[0] > 100f)
-                {
+                if (NPC.ai[0] < -100f || NPC.ai[0] > 100f) {
                     NPC.velocity.X += 0.023f;
                 }
-                else
-                {
+                else {
                     NPC.velocity.X -= 0.023f;
                 }
-                if (NPC.ai[0] > 200f)
-                {
+                if (NPC.ai[0] > 200f) {
                     NPC.ai[0] = -200f;
                 }
             }
-            if (NPC.velocity.X < targetX)
-            {
+            if (NPC.velocity.X < targetX) {
                 NPC.velocity.X += npcAcceleration;
             }
-            else if (NPC.velocity.X > targetX)
-            {
+            else if (NPC.velocity.X > targetX) {
                 NPC.velocity.X -= npcAcceleration;
             }
-            if (NPC.velocity.Y < targetY)
-            {
+            if (NPC.velocity.Y < targetY) {
                 NPC.velocity.Y += npcAcceleration;
             }
-            else if (NPC.velocity.Y > targetY)
-            {
+            else if (NPC.velocity.Y > targetY) {
                 NPC.velocity.Y -= npcAcceleration;
             }
             NPC.localAI[0] += 1f;
-            if (NPC.justHit)
-            {
+            if (NPC.justHit) {
                 NPC.localAI[0] = 0f;
             }
-            if (Main.myPlayer == NPC.Entropy().friendFinderOwner && NPC.localAI[0] >= 120f)
-            {
+            if (Main.myPlayer == NPC.Entropy().friendFinderOwner && NPC.localAI[0] >= 120f) {
                 NPC.localAI[0] = 0f;
-                if (target is NPC)
-                {
+                if (target is NPC) {
                     int dmg = NPC.damage;
                     int projType = ModContent.ProjectileType<BrimstoneBarrageFriendly>();
                     Vector2 projectileVelocity = new Vector2(targetX, targetY);
@@ -135,69 +116,54 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             int npcTileY = (int)NPC.Center.Y;
             npcTileX /= 16;
             npcTileY /= 16;
-            if (!WorldGen.SolidTile(npcTileX, npcTileY))
-            {
+            if (!WorldGen.SolidTile(npcTileX, npcTileY)) {
                 Lighting.AddLight((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16, 0.75f, 0f, 0f);
             }
-            if (targetX > 0f)
-            {
+            if (targetX > 0f) {
                 NPC.spriteDirection = 1;
                 NPC.rotation = (float)Math.Atan2((double)targetY, (double)targetX);
             }
-            if (targetX < 0f)
-            {
+            if (targetX < 0f) {
                 NPC.spriteDirection = -1;
                 NPC.rotation = (float)Math.Atan2((double)targetY, (double)targetX) + MathHelper.Pi;
             }
             float recoilSpeed = 0.7f;
-            if (NPC.collideX)
-            {
+            if (NPC.collideX) {
                 NPC.netUpdate = true;
                 NPC.velocity.X = NPC.oldVelocity.X * -recoilSpeed;
-                if (NPC.direction == -1 && NPC.velocity.X > 0f && NPC.velocity.X < 2f)
-                {
+                if (NPC.direction == -1 && NPC.velocity.X > 0f && NPC.velocity.X < 2f) {
                     NPC.velocity.X = 2f;
                 }
-                if (NPC.direction == 1 && NPC.velocity.X < 0f && NPC.velocity.X > -2f)
-                {
+                if (NPC.direction == 1 && NPC.velocity.X < 0f && NPC.velocity.X > -2f) {
                     NPC.velocity.X = -2f;
                 }
             }
-            if (NPC.collideY)
-            {
+            if (NPC.collideY) {
                 NPC.netUpdate = true;
                 NPC.velocity.Y = NPC.oldVelocity.Y * -recoilSpeed;
-                if (NPC.velocity.Y > 0f && NPC.velocity.Y < 1.5f)
-                {
+                if (NPC.velocity.Y > 0f && NPC.velocity.Y < 1.5f) {
                     NPC.velocity.Y = 2f;
                 }
-                if (NPC.velocity.Y < 0f && NPC.velocity.Y > -1.5f)
-                {
+                if (NPC.velocity.Y < 0f && NPC.velocity.Y > -1.5f) {
                     NPC.velocity.Y = -2f;
                 }
             }
-            if (tooFar)
-            {
-                if ((NPC.velocity.X > 0f && targetX > 0f) || (NPC.velocity.X < 0f && targetX < 0f))
-                {
-                    if (Math.Abs(NPC.velocity.X) < 12f)
-                    {
+            if (tooFar) {
+                if ((NPC.velocity.X > 0f && targetX > 0f) || (NPC.velocity.X < 0f && targetX < 0f)) {
+                    if (Math.Abs(NPC.velocity.X) < 12f) {
                         NPC.velocity.X *= 1.05f;
                     }
                 }
-                else
-                {
+                else {
                     NPC.velocity.X *= 0.9f;
                 }
             }
-            if (((NPC.velocity.X > 0f && NPC.oldVelocity.X < 0f) || (NPC.velocity.X < 0f && NPC.oldVelocity.X > 0f) || (NPC.velocity.Y > 0f && NPC.oldVelocity.Y < 0f) || (NPC.velocity.Y < 0f && NPC.oldVelocity.Y > 0f)) && !NPC.justHit)
-            {
+            if (((NPC.velocity.X > 0f && NPC.oldVelocity.X < 0f) || (NPC.velocity.X < 0f && NPC.oldVelocity.X > 0f) || (NPC.velocity.Y > 0f && NPC.oldVelocity.Y < 0f) || (NPC.velocity.Y < 0f && NPC.oldVelocity.Y > 0f)) && !NPC.justHit) {
                 NPC.netUpdate = true;
             }
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) {
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
@@ -208,8 +174,7 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
 
             // 灾厄残影客户端开关移除，恒定绘制
             {
-                for (int i = 1; i < afterimageAmt; i += 2)
-                {
+                for (int i = 1; i < afterimageAmt; i += 2) {
                     Color afterimageColor = drawColor;
                     afterimageColor = Color.Lerp(afterimageColor, Color.White, 0.5f);
                     afterimageColor = NPC.GetAlpha(afterimageColor);
@@ -230,8 +195,7 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
             Color redGlow = Color.Lerp(Color.White, Color.Red, 0.5f);
 
             {
-                for (int j = 1; j < afterimageAmt; j++)
-                {
+                for (int j = 1; j < afterimageAmt; j++) {
                     Color glowmaskAfterimageColor = redGlow;
                     glowmaskAfterimageColor = Color.Lerp(glowmaskAfterimageColor, Color.White, 0.5f);
                     glowmaskAfterimageColor *= (float)(afterimageAmt - j) / 15f;
@@ -246,33 +210,27 @@ namespace CalamityEntropy.Content.NPCs.FriendFinderNPC
 
             return false;
         }
-        public override void HitEffect(NPC.HitInfo hit)
-        {
+        public override void HitEffect(NPC.HitInfo hit) {
             // 硫火尘暂以原版红火把尘近似；灾厄 gore 资产不复存在，碎块演出删除
-            for (int k = 0; k < 3; k++)
-            {
+            for (int k = 0; k < 3; k++) {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.RedTorch, hit.HitDirection, -1f, 0, default, 1f);
             }
-            if (NPC.life <= 0)
-            {
+            if (NPC.life <= 0) {
                 NPC.position.X = NPC.position.X + (float)(NPC.width / 2);
                 NPC.position.Y = NPC.position.Y + (float)(NPC.height / 2);
                 NPC.width = 50;
                 NPC.height = 50;
                 NPC.position.X = NPC.position.X - (float)(NPC.width / 2);
                 NPC.position.Y = NPC.position.Y - (float)(NPC.height / 2);
-                for (int i = 0; i < 10; i++)
-                {
+                for (int i = 0; i < 10; i++) {
                     int brimDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.RedTorch, 0f, 0f, 100, default, 2f);
                     Main.dust[brimDust].velocity *= 3f;
-                    if (Main.rand.NextBool())
-                    {
+                    if (Main.rand.NextBool()) {
                         Main.dust[brimDust].scale = 0.5f;
                         Main.dust[brimDust].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
                     }
                 }
-                for (int j = 0; j < 20; j++)
-                {
+                for (int j = 0; j < 20; j++) {
                     int brimDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.RedTorch, 0f, 0f, 100, default, 3f);
                     Main.dust[brimDust2].noGravity = true;
                     Main.dust[brimDust2].velocity *= 5f;

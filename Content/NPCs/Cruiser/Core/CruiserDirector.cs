@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.CalamityRef;
+﻿using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.Cruiser.Core
@@ -193,27 +193,22 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.Core
         /// 新星的难度折算。装灾厄读复仇/死亡,缺席仍走专家/大师兜底;
         /// 原代码里专家与大师是<b>叠在</b>复仇/死亡之上的,顺序不可换
         /// </summary>
-        public static void NovaScale(ref int num, ref int counts, ref float speed)
-        {
-            if (CECal.IsRevengeance)
-            {
+        public static void NovaScale(ref int num, ref int counts, ref float speed) {
+            if (CECal.IsRevengeance) {
                 num = 11;
                 counts = 4;
                 speed = 12f;
             }
-            if (CECal.IsDeathMode)
-            {
+            if (CECal.IsDeathMode) {
                 num = 11;
                 counts = 5;
                 speed = 18f;
             }
-            if (Main.expertMode)
-            {
+            if (Main.expertMode) {
                 num += 2;
                 speed *= 1.25f;
             }
-            if (Main.masterMode)
-            {
+            if (Main.masterMode) {
                 num += 2;
                 counts += 1;
                 speed *= 1.4f;

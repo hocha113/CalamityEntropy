@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Core.AI;
 using InnoVault;
 using InnoVault.PRT;
@@ -106,47 +106,39 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// <summary>状态总龄超时上限(帧),超过即强制收招。演出态返回 int.MaxValue</summary>
         public virtual int TimeoutFrames => VDDirector.AttackTimeoutFrames;
 
-        public virtual void OnEnter(VDStateContext context)
-        {
+        public virtual void OnEnter(VDStateContext context) {
             Timer = 0;
             Counter = 0;
         }
 
         public abstract IVDState OnUpdate(VDStateContext context);
 
-        public virtual void OnExit(VDStateContext context)
-        {
+        public virtual void OnExit(VDStateContext context) {
         }
 
-        public sealed override void OnEnter(VaultStateMachine<VDStateContext> machine, VDStateContext ctx)
-        {
+        public sealed override void OnEnter(VaultStateMachine<VDStateContext> machine, VDStateContext ctx) {
             OnEnter(ctx);
         }
 
-        public sealed override IVaultState<VDStateContext> OnUpdate(VaultStateMachine<VDStateContext> machine, VDStateContext ctx)
-        {
+        public sealed override IVaultState<VDStateContext> OnUpdate(VaultStateMachine<VDStateContext> machine, VDStateContext ctx) {
             //闪现期间状态计时暂停(落地后再接着出手),演出态例外
-            if (ctx.BlinkTimer > 0 && !RunsDuringBlink)
-            {
+            if (ctx.BlinkTimer > 0 && !RunsDuringBlink) {
                 return null;
             }
-            if (ContactByDefault)
-            {
+            if (ContactByDefault) {
                 ctx.ContactWindow = true;
             }
             Counter++;
             IVDState next = OnUpdate(ctx);
             //超时兜底:状态机永远不许死在这里,靠惯性飘走
-            if (next == null && Counter > TimeoutFrames)
-            {
+            if (next == null && Counter > TimeoutFrames) {
                 ctx.Npc.velocity *= 0.6f;
                 next = EndAttack(ctx);
             }
             return next;
         }
 
-        public sealed override void OnExit(VaultStateMachine<VDStateContext> machine, VDStateContext ctx)
-        {
+        public sealed override void OnExit(VaultStateMachine<VDStateContext> machine, VDStateContext ctx) {
             OnExit(ctx);
         }
 
@@ -154,15 +146,13 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// 收养权威端随快照过线的状态计时(客户端)。容差内不动本地值:
         /// 只差一两帧是网络抖动的常态,硬对齐会让 Timer == X 型一次性拍被跳过或重放
         /// </summary>
-        public void AdoptNetTiming(int timer, int counter)
-        {
+        public void AdoptNetTiming(int timer, int counter) {
             Timer = CEBossNetMotion.AdoptTimer(Timer, timer);
             Counter = counter;
         }
 
         /// <summary>换拍:Timer 归零,不在一个计时器上串烧</summary>
-        protected void ResetTimer()
-        {
+        protected void ResetTimer() {
             Timer = 0;
         }
 
@@ -170,17 +160,13 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         protected static bool IsServer => !VaultUtils.isClient;
 
         /// <summary>结束攻击:有连击队列且合法直接接招,否则回 hub 挂冷却</summary>
-        protected static IVDState EndAttack(VDStateContext ctx)
-        {
-            if (ctx.QueuedChainState >= 0 && ctx.TargetValid)
-            {
+        protected static IVDState EndAttack(VDStateContext ctx) {
+            if (ctx.QueuedChainState >= 0 && ctx.TargetValid) {
                 VDStateIndex next = (VDStateIndex)ctx.QueuedChainState;
                 ctx.QueuedChainState = -1;
-                if (VDRotation.IsLegal(ctx, next))
-                {
+                if (VDRotation.IsLegal(ctx, next)) {
                     IVDState chained = VDRotation.Create(next);
-                    if (chained != null)
-                    {
+                    if (chained != null) {
                         VDRotation.Commit(ctx, next);
                         return chained;
                     }
@@ -196,42 +182,34 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
             => ctx.Target.Center + ctx.Target.velocity * leadFrames;
 
         /// <summary>服务端生成敌对弹幕,伤害按大师显示值折算;客户端返回 -1</summary>
-        protected static int Shoot<T>(VDStateContext ctx, Vector2 pos, Vector2 vel, int masterShown, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile
-        {
-            if (!IsServer)
-            {
+        protected static int Shoot<T>(VDStateContext ctx, Vector2 pos, Vector2 vel, int masterShown, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile {
+            if (!IsServer) {
                 return -1;
             }
             return Projectile.NewProjectile(ctx.Npc.GetSource_FromAI(), pos, vel, ModContent.ProjectileType<T>(), ctx.Owner.ProjDamage(masterShown), 0f, Main.myPlayer, ai0, ai1, ai2);
         }
 
         /// <summary>纯演出弹幕(传送门/无人机装饰/预警),伤害 0;客户端返回 -1</summary>
-        protected static int SpawnVisual<T>(VDStateContext ctx, Vector2 pos, Vector2 vel, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile
-        {
-            if (!IsServer)
-            {
+        protected static int SpawnVisual<T>(VDStateContext ctx, Vector2 pos, Vector2 vel, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile {
+            if (!IsServer) {
                 return -1;
             }
             return Projectile.NewProjectile(ctx.Npc.GetSource_FromAI(), pos, vel, ModContent.ProjectileType<T>(), 0, 0f, Main.myPlayer, ai0, ai1, ai2);
         }
 
         /// <summary>核心出手的通用演出:后坐、能量翼张开、核心亮起、火花、音效</summary>
-        protected static void MuzzleCue(VDStateContext ctx, Vector2 dir, float recoil, string sound, float pitch = 1f, float volume = 1f)
-        {
+        protected static void MuzzleCue(VDStateContext ctx, Vector2 dir, float recoil, string sound, float pitch = 1f, float volume = 1f) {
             ctx.Npc.velocity -= dir * recoil;
             ctx.WingPulse = Math.Max(ctx.WingPulse, 1f);
             ctx.CoreGlow = 1f;
-            if (Main.dedServ)
-            {
+            if (Main.dedServ) {
                 return;
             }
             Vector2 core = ctx.Owner.CorePos;
-            if (sound != null)
-            {
+            if (sound != null) {
                 CEUtils.PlaySound(sound, pitch, core, 6, volume);
             }
-            for (int i = 0; i < 8; i++)
-            {
+            for (int i = 0; i < 8; i++) {
                 Vector2 v = dir.RotatedBy(Main.rand.NextFloat(-0.6f, 0.6f)) * Main.rand.NextFloat(4f, 10f);
                 PRTLoader.NewParticle<PRT_GlowSpark>(core, v, VDVfx.VoidPurple, Main.rand.NextFloat(0.5f, 1f))
                     .Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), 20);
@@ -239,8 +217,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         }
 
         /// <summary>声明:朝目标点平滑飞行(速度上限 + 进入减速带按距离比例减速)</summary>
-        protected static void DeclareHoverTo(VDStateContext ctx, Vector2 dest, float maxSpeed, float accel = 0.1f, float slowRadius = 120f)
-        {
+        protected static void DeclareHoverTo(VDStateContext ctx, Vector2 dest, float maxSpeed, float accel = 0.1f, float slowRadius = 120f) {
             ctx.Mode = VDMoveMode.HoverTo;
             ctx.MoveTarget = dest;
             ctx.MoveSpeed = maxSpeed;
@@ -249,8 +226,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         }
 
         /// <summary>声明:与目标保持相对静止(前馈目标速度 + 偏差回位)</summary>
-        protected static void DeclareHoldRelative(VDStateContext ctx, Vector2 offset, float stiffness = 0.12f, float lerp = 0.35f, float maxSpeed = 40f)
-        {
+        protected static void DeclareHoldRelative(VDStateContext ctx, Vector2 offset, float stiffness = 0.12f, float lerp = 0.35f, float maxSpeed = 40f) {
             ctx.Mode = VDMoveMode.HoldRelative;
             ctx.HoldOffset = offset;
             ctx.Stiffness = stiffness;
@@ -259,23 +235,19 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         }
 
         /// <summary>声明:状态自管速度(冲刺/演出),宿主不再碰 velocity</summary>
-        protected static void DeclareDirect(VDStateContext ctx)
-        {
+        protected static void DeclareDirect(VDStateContext ctx) {
             ctx.Mode = VDMoveMode.Direct;
         }
 
         /// <summary>声明本帧透明度与绘制缩放(不声明则宿主自动拉回 1)</summary>
-        protected static void DeclareAlpha(VDStateContext ctx, float alpha, float scale = 1f)
-        {
+        protected static void DeclareAlpha(VDStateContext ctx, float alpha, float scale = 1f) {
             ctx.AlphaDeclared = alpha;
             ctx.DrawScaleDeclared = scale;
         }
 
         /// <summary>汇聚粒子:从四周向核心收束(蓄力语法的第一层)</summary>
-        protected static void ConvergeSparks(VDStateContext ctx, Color color, float minDist = 80f, float maxDist = 160f, float pull = 0.09f)
-        {
-            if (Main.dedServ)
-            {
+        protected static void ConvergeSparks(VDStateContext ctx, Color color, float minDist = 80f, float maxDist = 160f, float pull = 0.09f) {
+            if (Main.dedServ) {
                 return;
             }
             Vector2 core = ctx.Owner.CorePos;
@@ -287,10 +259,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         }
 
         /// <summary>决策点同步(权威端)</summary>
-        protected static void MarkNetUpdate(VDStateContext ctx)
-        {
-            if (IsServer)
-            {
+        protected static void MarkNetUpdate(VDStateContext ctx) {
+            if (IsServer) {
                 ctx.Npc.netUpdate = true;
             }
         }

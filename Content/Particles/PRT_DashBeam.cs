@@ -18,8 +18,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/DashBeam";
 
         public PRT_DashBeam Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -29,15 +28,13 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 30;   //旧DashBeam默认,漏设-1永生120点轨迹堆满很离谱
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             //addPoint同Antivoid,冲刺光束采样权在调用点不在AI
             if (addPoint)
                 AddPoint(Position);
@@ -45,19 +42,16 @@ namespace CalamityEntropy.Content.Particles
             Color.A = (byte)(255 * ((Lifetime - Time) / 30f));
         }
 
-        public void AddPoint(Vector2 pos)
-        {
+        public void AddPoint(Vector2 pos) {
             odp.Insert(0, pos);
             if (odp.Count > maxLength)
                 odp.RemoveAt(odp.Count - 1);
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);   //光束贴图沿轨迹UV,LinearWrap
-            if (odp.Count < 3)
-            {
+            if (odp.Count < 3) {
                 sb.End();
                 PRTLoader.BeginDrawingWithMode(PRTDrawMode, sb);   //早退也得还批次
                 return false;
@@ -70,8 +64,7 @@ namespace CalamityEntropy.Content.Particles
             ve.Add(new ColoredVertex(odp[0] - Main.screenPosition + (odp[1] - odp[0]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 60 * Scale,
                   new Vector3((((float)0) / odp.Count), 0, 1),
                   b));
-            for (int i = 1; i < odp.Count; i++)
-            {
+            for (int i = 1; i < odp.Count; i++) {
                 ve.Add(new ColoredVertex(odp[i] - Main.screenPosition + (odp[i] - odp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 60 * Scale,
                       new Vector3((((float)i) / odp.Count), 1, 1),
                       b));
@@ -79,8 +72,7 @@ namespace CalamityEntropy.Content.Particles
                       new Vector3((((float)i) / odp.Count), 0, 1),
                       b));
             }
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 var gd = Main.graphics.GraphicsDevice;
                 gd.Textures[0] = PRTSharedAssets.DashBeam.Value;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);

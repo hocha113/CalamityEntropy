@@ -8,8 +8,7 @@ namespace CalamityEntropy.Content.Projectiles
     public class NetherRiftCrack : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Assets/Extra/white";
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 360;
             Projectile.height = 360;
@@ -23,20 +22,17 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.localNPCHitCooldown = -1;
             Projectile.ArmorPenetration = 56;
         }
-        public override void AI()
-        {
+        public override void AI() {
             //原盗贼职业判定改魔法: 两个发射源里 CrossBorderPursuit 已裁定为魔法, 其裂隙保持 1.4 倍体积
             if (Projectile.DamageType.CountsAsClass(DamageClass.Magic))
                 Projectile.scale = 1.4f;
-            if (Projectile.ai[0] == 0)
-            {
+            if (Projectile.ai[0] == 0) {
                 Projectile.rotation = CEUtils.randomRot();
             }
             Projectile.Opacity = Projectile.timeLeft / 60f;
             Projectile.ai[0]++;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             Texture2D t = CEUtils.getExtraTex("Cracks");
             Main.spriteBatch.Draw(t, Projectile.Center - Main.screenPosition, null, new Color(200, 200, 255) * Projectile.Opacity, Projectile.rotation, t.Size() / 2f, 3.6f * Projectile.scale, SpriteEffects.None, 0);
@@ -44,8 +40,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.spriteBatch.begin_();
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return Projectile.Center.getRectCentered(280 * Projectile.scale, 280 * Projectile.scale).Intersects(targetHitbox);
         }
     }

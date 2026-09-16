@@ -2,6 +2,7 @@
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,14 +13,12 @@ using Terraria.DataStructures;
 using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Fractal
 {
     public class AbyssFractal : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 80;
             Item.DamageType = DamageClass.Melee;
             Item.width = 60;
@@ -38,21 +37,17 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Item.scale *= 0.66f;
         }
         public int atkType = 1;
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, atkType == 0 ? -1 : atkType);
             atkType *= -1;
             return false;
         }
 
-        public override bool MeleePrefix()
-        {
+        public override bool MeleePrefix() {
             return true;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_AbyssBlade, CEID.Item_Floodtide, CEID.Item_Lumenyl))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_AbyssBlade, CEID.Item_Floodtide, CEID.Item_Lumenyl)) {
                 CreateRecipe().AddIngredient<BrilliantFractal>()
                 .AddIngredient(CEID.Item_AbyssBlade)
                 .AddIngredient(CEID.Item_Floodtide)
@@ -70,15 +65,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
     {
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/Fractal/AbyssFractal";
         List<float> odr = new List<float>();
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 12;
 
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
@@ -95,43 +88,34 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public float alpha = 0;
         public bool init = true;
         public bool shoot = true;
-        public override void AI()
-        {
+        public override void AI() {
             Player owner = Projectile.GetOwner();
             float MaxUpdateTimes = owner.itemTimeMax * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
             counter++;
-            if (Main.myPlayer == Projectile.owner)
-            {
-                if (spawnProj && progress > 0.4f)
-                {
+            if (Main.myPlayer == Projectile.owner) {
+                if (spawnProj && progress > 0.4f) {
                     int dir = (int)(Projectile.ai[0]) * (Projectile.velocity.X > 0 ? -1 : 1);
                     spawnProj = false;
-                    for (int i = 0; i < 3; i++)
-                    {
+                    for (int i = 0; i < 3; i++) {
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + Projectile.rotation.ToRotationVector2() * 80, (Vector2)(CEUtils.normalize(Projectile.velocity.RotatedBy(dir * MathHelper.PiOver2 * 0.7f)) * 12 + CEUtils.randomPointInCircle(5)), ModContent.ProjectileType<AbyssalBullet>(), Projectile.damage / 6, Projectile.knockBack, Projectile.owner);
                     }
                 }
             }
-            if (init)
-            {
+            if (init) {
                 float scale_ = owner.HeldItem.scale;
                 owner.ApplyMeleeScale(ref scale_);
                 Projectile.scale *= scale_;
-                if (Projectile.ai[0] == 2)
-                {
+                if (Projectile.ai[0] == 2) {
                     CEUtils.PlaySound("powerwhip", 1, Projectile.Center, volume: 0.6f * CEUtils.WeapSound);
                 }
-                if (Projectile.ai[0] < 2)
-                {
+                if (Projectile.ai[0] < 2) {
                     CEUtils.PlaySound("sf_use", 1 + Projectile.ai[0] * 0.12f, Projectile.Center, volume: 0.6f * CEUtils.WeapSound);
                 }
                 init = false;
             }
-            if (progress > 0.46 && Projectile.owner == Main.myPlayer)
-            {
-                if (shoot)
-                {
+            if (progress > 0.46 && Projectile.owner == Main.myPlayer) {
+                if (shoot) {
                     shoot = false;
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 0.16f, ModContent.ProjectileType<FractalAbyssalBlade>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                 }
@@ -145,55 +129,46 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Projectile.Center = Projectile.GetOwner().MountedCenter;
 
 
-            if (odr.Count > 60)
-            {
+            if (odr.Count > 60) {
                 odr.RemoveAt(0);
             }
-            if (Projectile.velocity.X > 0)
-            {
+            if (Projectile.velocity.X > 0) {
                 owner.direction = 1;
                 owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - (float)(Math.PI * 0.5f));
             }
-            else
-            {
+            else {
                 owner.direction = -1;
                 owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - (float)(Math.PI * 0.5f));
             }
             owner.heldProj = Projectile.whoAmI;
             owner.itemTime = 2;
             owner.itemAnimation = 2;
-            if (counter > MaxUpdateTimes)
-            {
+            if (counter > MaxUpdateTimes) {
                 owner.itemTime = 1;
                 owner.itemAnimation = 1;
                 Projectile.Kill();
             }
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
 
         public bool playHitSound = true;
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff(ModContent.BuffType<CrushDepth>(), 400);
-            if (playHitSound)
-            {
+            if (playHitSound) {
                 playHitSound = false;
                 CEUtils.PlaySound("sf_hit", 1, Projectile.Center, volume: CEUtils.WeapSound);
                 CEUtils.PlaySound("FractalHit", 1, Projectile.Center, volume: CEUtils.WeapSound);
 
             }
-            ParticleOrchestrator.RequestParticleSpawn(clientOnly: true, ParticleOrchestraType.TownSlimeTransform, new ParticleOrchestraSettings
-            {
+            ParticleOrchestrator.RequestParticleSpawn(clientOnly: true, ParticleOrchestraType.TownSlimeTransform, new ParticleOrchestraSettings {
                 PositionInWorld = target.Center,
                 MovementVector = Vector2.Zero
             });
             //PRT_Abyssal不进常规桶,EffectLoader DrawParticleEffectsAlt RT画,vd/ad直赋对齐旧AbyssalParticles
             //slash那套AbyssalLine是常规PRT桶,Configure设AdditiveBlend就行
-            for (int i = 0; i < 64; i++)
-            {
+            for (int i = 0; i < 64; i++) {
                 var p = PRTLoader.NewParticle<PRT_Abyssal>(
                     CEUtils.randomPoint(target.Hitbox),
                     Projectile.velocity.RotatedByRandom(0.16f).normalize() * Main.rand.NextFloat(8, 48),
@@ -204,12 +179,10 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             }
         }
         public bool spawnProj = true;
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Projectile.GetTexture();
             int dir = (int)(Projectile.ai[0]) * (Projectile.velocity.X > 0 ? -1 : 1);
-            if (Projectile.ai[0] == 2)
-            {
+            if (Projectile.ai[0] == 2) {
                 dir = Math.Sign(Projectile.velocity.X);
             }
             Vector2 origin = dir > 0 ? new Vector2(0, tex.Height) : new Vector2(tex.Width, tex.Height);
@@ -230,12 +203,10 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
 
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * (160) * Projectile.scale * scale, targetHitbox, 64);
         }
-        public override void CutTiles()
-        {
+        public override void CutTiles() {
             Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * (156) * Projectile.scale * scale, 84, DelegateMethods.CutTiles);
         }
     }

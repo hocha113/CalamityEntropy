@@ -1,4 +1,4 @@
-using InnoVault.StateMachines;
+﻿using InnoVault.StateMachines;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -30,8 +30,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.Core
         /// <see cref="NihilityStateContext.Nz"/> / <see cref="NihilityStateContext.ChaseTimer"/>——
         /// 原代码也不清,残值会原样带进下一手
         /// </summary>
-        public static IVaultState<NihilityStateContext> Regroup(NihilityStateContext ctx)
-        {
+        public static IVaultState<NihilityStateContext> Regroup(NihilityStateContext ctx) {
             ctx.Num1 = 0;
             return Create(NihilityStateIndex.Regroup);
         }
@@ -40,13 +39,11 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.Core
         /// 随机选下一手(原 <c>randomAI</c>)。<b>只该由权威端调用</b>:它带副作用(清计数、吃随机数)。
         /// 抑制条件与原代码同构,包括「重掷」是整段重来而不是换一个面
         /// </summary>
-        public static IVaultState<NihilityStateContext> Pick(NihilityStateContext ctx)
-        {
+        public static IVaultState<NihilityStateContext> Pick(NihilityStateContext ctx) {
             ctx.Num1 = 0;
             int roll = Main.rand.Next(NihilityDirector.AttackRollFaces);
             if (ctx.Phase == 2 && roll == NihilityDirector.SplitRoll
-                && NihilityDirector.CountSmallCells(ModContent.NPCType<ChaoticCellSmall>()) > NihilityDirector.SpawnCellCap)
-            {
+                && NihilityDirector.CountSmallCells(ModContent.NPCType<ChaoticCellSmall>()) > NihilityDirector.SpawnCellCap) {
                 //原代码在这里递归调用 randomAI():整段重掷,而不是在剩下六面里挑
                 return Pick(ctx);
             }

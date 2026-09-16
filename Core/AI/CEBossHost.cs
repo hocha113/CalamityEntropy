@@ -1,4 +1,4 @@
-using InnoVault;
+﻿using InnoVault;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -26,15 +26,12 @@ namespace CalamityEntropy.Core.AI
         /// 那一处管「包本身就是换态包」(新实例的 OnEnter 刚把计时清零)
         /// </summary>
         public static void AdoptTimingAtFrameStart<TCtx>(CEBossNetMotion motion, VaultStateMachine<TCtx> machine)
-            where TCtx : CEBossStateContext
-        {
-            if (!VaultUtils.isClient || motion == null)
-            {
+            where TCtx : CEBossStateContext {
+            if (!VaultUtils.isClient || motion == null) {
                 return;
             }
             if (machine?.CurrentState is ICEBossNetTiming timed
-                && motion.TryTakeTiming(timed.StateId, out int timer, out int counter))
-            {
+                && motion.TryTakeTiming(timed.StateId, out int timer, out int counter)) {
                 timed.AdoptNetTiming(timer, counter);
             }
         }
@@ -45,17 +42,13 @@ namespace CalamityEntropy.Core.AI
         /// 所以让客户端换态的那一包携带的正是新状态的计时
         /// </summary>
         public static void HookStateSwapAdoption<TCtx>(CEBossNetMotion motion, VaultStateMachine<TCtx> machine)
-            where TCtx : CEBossStateContext
-        {
-            if (motion == null || machine == null)
-            {
+            where TCtx : CEBossStateContext {
+            if (motion == null || machine == null) {
                 return;
             }
-            machine.OnStateChanged += (_, next, _) =>
-            {
+            machine.OnStateChanged += (_, next, _) => {
                 if (VaultUtils.isClient && next is ICEBossNetTiming timed
-                    && motion.TryTakeTiming(timed.StateId, out int timer, out int counter))
-                {
+                    && motion.TryTakeTiming(timed.StateId, out int timer, out int counter)) {
                     timed.AdoptNetTiming(timer, counter);
                 }
             };
@@ -69,10 +62,8 @@ namespace CalamityEntropy.Core.AI
         /// 包间隔从 N 帧拉到 45 帧会让每包误差按 <c>a·N²/2</c> 涨一个量级——那不是修复,是放大器
         /// </para>
         /// </summary>
-        public static void Heartbeat(NPC npc)
-        {
-            if (npc != null && !VaultUtils.isClient && Main.GameUpdateCount % CEBossNetMotion.HeartbeatFrames == 0)
-            {
+        public static void Heartbeat(NPC npc) {
+            if (npc != null && !VaultUtils.isClient && Main.GameUpdateCount % CEBossNetMotion.HeartbeatFrames == 0) {
                 npc.netUpdate = true;
             }
         }
@@ -86,10 +77,8 @@ namespace CalamityEntropy.Core.AI
         /// </para>
         /// <para>本体走两段式的 <c>BeginFrame</c> / <c>EndFrame</c>,锚定部件<b>绝不</b>调 <c>EndFrame</c>。</para>
         /// </summary>
-        public static void RunAnchoredPartFrame(NPC npc)
-        {
-            if (npc != null)
-            {
+        public static void RunAnchoredPartFrame(NPC npc) {
+            if (npc != null) {
                 CEBossNetMotion.ClearSmoothing(npc);
             }
         }

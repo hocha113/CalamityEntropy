@@ -1,15 +1,14 @@
 ﻿using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class OverloadFurnace : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 24;
             Item.height = 24;
             Item.damage = 10;
@@ -30,10 +29,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.mana = 6;
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_DubiousPlating, CEID.Item_MysteriousCircuitry))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_DubiousPlating, CEID.Item_MysteriousCircuitry)) {
                 CreateRecipe().
                 AddIngredient(CEID.Item_DubiousPlating, 5).
                 AddIngredient(CEID.Item_MysteriousCircuitry, 2).
@@ -57,8 +54,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 .Register();
         }
 
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
     }

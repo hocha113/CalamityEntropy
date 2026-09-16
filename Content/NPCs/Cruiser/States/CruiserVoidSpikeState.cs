@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Cruiser.Core;
+﻿using CalamityEntropy.Content.NPCs.Cruiser.Core;
 using CalamityEntropy.Content.Projectiles.Cruiser;
 using InnoVault.StateMachines;
 using Terraria;
@@ -20,8 +20,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
     {
         public override CruiserStateIndex StateIndex => CruiserStateIndex.VoidSpike;
 
-        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx)
-        {
+        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
 
@@ -35,20 +34,16 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
             if (ctx.ChangeCounter == CruiserDirector.SpikeRingFrameA
                 || ctx.ChangeCounter == CruiserDirector.SpikeRingFrameB
                 || ctx.ChangeCounter == CruiserDirector.SpikeRingFrameC
-                || ctx.ChangeCounter == CruiserDirector.SpikeRingFrameD)
-            {
-                if (IsServer)
-                {
-                    for (float i = 0; i < 360; i += CruiserDirector.SpikeRingAngleStep)
-                    {
+                || ctx.ChangeCounter == CruiserDirector.SpikeRingFrameD) {
+                if (IsServer) {
+                    for (float i = 0; i < 360; i += CruiserDirector.SpikeRingAngleStep) {
                         Shoot(ctx, ModContent.ProjectileType<VoidSpike>(), npc.Center,
                             MathHelper.ToRadians(i).ToRotationVector2() * CruiserDirector.SpikeRingSpeed);
                     }
                     MarkNetUpdate(ctx);
                 }
             }
-            if (ctx.ChangeCounter > CruiserDirector.SpikeDuration)
-            {
+            if (ctx.ChangeCounter > CruiserDirector.SpikeDuration) {
                 return NextAttack(ctx);
             }
             return null;

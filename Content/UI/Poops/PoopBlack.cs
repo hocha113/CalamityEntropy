@@ -5,8 +5,7 @@ namespace CalamityEntropy.Content.UI.Poops
 {
     public class PoopBlack : Poop
     {
-        public override int ProjectileType()
-        {
+        public override int ProjectileType() {
             return ModContent.ProjectileType<PoopBlackProjectile>();
         }
     }

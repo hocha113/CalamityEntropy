@@ -22,8 +22,7 @@ namespace CalamityEntropy.Common
                 Action<Projectile, NPC, int> onHitNPC = null,
                 Action<Projectile, NPC, NPC.HitModifiers> modifyHitNPC = null,
                 Action<Projectile, bool> bookUpdate = null,
-                Action<Player, Vector2, Vector2, int, float> onStandaloneAttack = null)
-        {
+                Action<Player, Vector2, Vector2, int, float> onStandaloneAttack = null) {
             CustomBMEffectsByName[name] = new BookmarkEffectFunctionGroups(onShoot, onActive, onProjectileSpawn, updateProjectile, onHitNPC, modifyHitNPC, bookUpdate, onStandaloneAttack);
         }
 
@@ -42,10 +41,8 @@ namespace CalamityEntropy.Common
        Func<int, int> modifyProjectileType = null,
        Func<int> modifyBaseProjectileType = null,
        Func<int, int> modifyShootCooldown = null,
-       Func<Item, Item, bool> canBeEq = null)
-        {
-            CustomBMByID[ItemType] = new BookMarkTag(tex == null ? null : tex.Value, effectName, canBeEq == null ? default : canBeEq)
-            {
+       Func<Item, Item, bool> canBeEq = null) {
+            CustomBMByID[ItemType] = new BookMarkTag(tex == null ? null : tex.Value, effectName, canBeEq == null ? default : canBeEq) {
                 ModifyStat_Damage = modifyStat_Damage,
                 ModifyStat_Knockback = modifyStat_Knockback,
                 ModifyStat_ShootSpeed = modifyStat_ShootSpeed,
@@ -62,33 +59,25 @@ namespace CalamityEntropy.Common
                 ModifyShootCooldown = modifyShootCooldown
             };
         }
-        public static bool GetPlayerHeldEntropyBook(Player player, out EntropyBookHeldProjectile eb)
-        {
+        public static bool GetPlayerHeldEntropyBook(Player player, out EntropyBookHeldProjectile eb) {
             eb = null;
-            foreach (Projectile p in Main.ActiveProjectiles)
-            {
-                if (p.owner == player.whoAmI && p.ModProjectile != null && p.ModProjectile is EntropyBookHeldProjectile ebh)
-                {
+            foreach (Projectile p in Main.ActiveProjectiles) {
+                if (p.owner == player.whoAmI && p.ModProjectile != null && p.ModProjectile is EntropyBookHeldProjectile ebh) {
                     eb = ebh;
                     return true;
                 }
             }
             return false;
         }
-        public static bool HeldingBookAndHasBookmarkEffect<T>(Player player) where T : EBookProjectileEffect
-        {
-            if (player.HeldItem.ModItem != null && player.HeldItem.ModItem is EntropyBook ebi && GetPlayerHeldEntropyBook(player, out var eb))
-            {
+        public static bool HeldingBookAndHasBookmarkEffect<T>(Player player) where T : EBookProjectileEffect {
+            if (player.HeldItem.ModItem != null && player.HeldItem.ModItem is EntropyBook ebi && GetPlayerHeldEntropyBook(player, out var eb)) {
                 if (eb.UIOpen)
                     return false;
                 int c = player.GetMyMaxActiveBookMarks(player.HeldItem);
-                if (c > 0)
-                {
-                    for (int i = 0; i < c; i++)
-                    {
+                if (c > 0) {
+                    for (int i = 0; i < c; i++) {
                         Item it = player.Entropy().EBookStackItems[i];
-                        if (IsABookMark(it) && GetEffect(it) is T)
-                        {
+                        if (IsABookMark(it) && GetEffect(it) is T) {
                             return true;
                         }
                     }
@@ -96,112 +85,84 @@ namespace CalamityEntropy.Common
             }
             return false;
         }
-        public static bool HasEmptyBookMarkSlot(Item item, Player player)
-        {
+        public static bool HasEmptyBookMarkSlot(Item item, Player player) {
             bool f = false;
             int c = player.GetMyMaxActiveBookMarks(item);
-            if (c > 0)
-            {
-                for (int i = 0; i < c; i++)
-                {
+            if (c > 0) {
+                for (int i = 0; i < c; i++) {
                     Item it = player.Entropy().EBookStackItems[i];
-                    if (it.IsAir)
-                    {
+                    if (it.IsAir) {
                         return true;
                     }
                 }
             }
             return f;
         }
-        public static void OnShoot(string Name, ModProjectile mp)
-        {
-            if (CustomBMEffectsByName.ContainsKey(Name))
-            {
+        public static void OnShoot(string Name, ModProjectile mp) {
+            if (CustomBMEffectsByName.ContainsKey(Name)) {
                 CustomBMEffectsByName[Name].OnShoot?.Invoke(mp);
             }
         }
-        public static void OnActive(string Name, ModProjectile mp)
-        {
-            if (CustomBMEffectsByName.ContainsKey(Name))
-            {
+        public static void OnActive(string Name, ModProjectile mp) {
+            if (CustomBMEffectsByName.ContainsKey(Name)) {
                 CustomBMEffectsByName[Name].OnActive?.Invoke(mp);
             }
         }
-        public static void OnProjectileSpawn(string Name, Projectile p, bool ownerClient)
-        {
-            if (CustomBMEffectsByName.ContainsKey(Name))
-            {
+        public static void OnProjectileSpawn(string Name, Projectile p, bool ownerClient) {
+            if (CustomBMEffectsByName.ContainsKey(Name)) {
                 CustomBMEffectsByName[Name].OnProjectileSpawn?.Invoke(p, ownerClient);
             }
         }
-        public static void UpdateProjectile(string Name, Projectile p, bool ownerClient)
-        {
-            if (CustomBMEffectsByName.ContainsKey(Name))
-            {
+        public static void UpdateProjectile(string Name, Projectile p, bool ownerClient) {
+            if (CustomBMEffectsByName.ContainsKey(Name)) {
                 CustomBMEffectsByName[Name].UpdateProjectile?.Invoke(p, ownerClient);
             }
         }
-        public static void OnHitNPC(string Name, Projectile proj, NPC npc, int damageDone)
-        {
-            if (CustomBMEffectsByName.ContainsKey(Name))
-            {
+        public static void OnHitNPC(string Name, Projectile proj, NPC npc, int damageDone) {
+            if (CustomBMEffectsByName.ContainsKey(Name)) {
                 CustomBMEffectsByName[Name].OnHitNPC?.Invoke(proj, npc, damageDone);
             }
         }
-        public static void ModifyHitNPC(string Name, Projectile proj, NPC npc, NPC.HitModifiers modifiers)
-        {
-            if (CustomBMEffectsByName.ContainsKey(Name))
-            {
+        public static void ModifyHitNPC(string Name, Projectile proj, NPC npc, NPC.HitModifiers modifiers) {
+            if (CustomBMEffectsByName.ContainsKey(Name)) {
                 CustomBMEffectsByName[Name].ModifyHitNPC?.Invoke(proj, npc, modifiers);
             }
         }
-        public static void BookUpdate(string Name, Projectile projectile, bool ownerClient)
-        {
-            if (CustomBMEffectsByName.ContainsKey(Name))
-            {
+        public static void BookUpdate(string Name, Projectile projectile, bool ownerClient) {
+            if (CustomBMEffectsByName.ContainsKey(Name)) {
                 CustomBMEffectsByName[Name].BookUpdate?.Invoke(projectile, ownerClient);
             }
         }
 
 
-        public static int GetMyMaxActiveBookMarks(this Player player, Item book)
-        {
+        public static int GetMyMaxActiveBookMarks(this Player player, Item book) {
             if (player.Entropy().EBookStackItems == null)
                 return 0;
             return Math.Min(EBookUI.getMaxSlots(player, book), player.Entropy().EBookStackItems.Count);
         }
-        public static Texture2D GetUITexture(Item item)
-        {
-            if (item.ModItem is BookMark bm)
-            {
+        public static Texture2D GetUITexture(Item item) {
+            if (item.ModItem is BookMark bm) {
                 return bm.UITexture;
             }
-            if (CustomBMByID.ContainsKey(item.type))
-            {
+            if (CustomBMByID.ContainsKey(item.type)) {
                 return CustomBMByID[item.type].UITexture;
             }
             return null;
         }
-        public static EBookProjectileEffect GetEffect(Item item)
-        {
-            if (item.ModItem is BookMark bm)
-            {
+        public static EBookProjectileEffect GetEffect(Item item) {
+            if (item.ModItem is BookMark bm) {
                 return bm.getEffect();
             }
-            if (CustomBMByID.ContainsKey(item.type))
-            {
+            if (CustomBMByID.ContainsKey(item.type)) {
                 return CustomBMByID[item.type].getEffect();
             }
             return null;
         }
-        public static void ModifyStat(Item item, EBookStatModifer modifer)
-        {
-            if (item.ModItem is BookMark bm)
-            {
+        public static void ModifyStat(Item item, EBookStatModifer modifer) {
+            if (item.ModItem is BookMark bm) {
                 bm.ModifyStat(modifer);
             }
-            if (CustomBMByID.ContainsKey(item.type))
-            {
+            if (CustomBMByID.ContainsKey(item.type)) {
                 var tag = CustomBMByID[item.type];
                 if (tag.ModifyStat_Damage != null)
                     modifer.Damage = tag.ModifyStat_Damage(modifer.Damage);
@@ -227,69 +188,52 @@ namespace CalamityEntropy.Common
                     modifer.lifeSteal = tag.ModifyStat_LifeSteal(modifer.lifeSteal);
             }
         }
-        public static int ModifyProjectile(Item item, int origProj)
-        {
-            if (item.ModItem is BookMark bm)
-            {
+        public static int ModifyProjectile(Item item, int origProj) {
+            if (item.ModItem is BookMark bm) {
                 return bm.modifyProjectile(origProj);
             }
-            if (CustomBMByID.ContainsKey(item.type))
-            {
+            if (CustomBMByID.ContainsKey(item.type)) {
                 var tag = CustomBMByID[item.type];
-                if (tag.ModifyProjectileType != null)
-                {
+                if (tag.ModifyProjectileType != null) {
                     return tag.ModifyProjectileType(origProj);
                 }
             }
             return -1;
         }
-        public static int ModifyBaseProjectile(Item item)
-        {
-            if (item.ModItem is BookMark bm)
-            {
+        public static int ModifyBaseProjectile(Item item) {
+            if (item.ModItem is BookMark bm) {
                 return bm.modifyBaseProjectile();
             }
-            if (CustomBMByID.ContainsKey(item.type))
-            {
+            if (CustomBMByID.ContainsKey(item.type)) {
                 var tag = CustomBMByID[item.type];
-                if (tag.ModifyBaseProjectileType != null)
-                {
+                if (tag.ModifyBaseProjectileType != null) {
                     return tag.ModifyBaseProjectileType();
                 }
             }
             return -1;
         }
-        public static void modifyShootCooldown(Item item, ref int shootCd)
-        {
-            if (item.ModItem is BookMark bm)
-            {
+        public static void modifyShootCooldown(Item item, ref int shootCd) {
+            if (item.ModItem is BookMark bm) {
                 bm.modifyShootCooldown(ref shootCd);
             }
-            if (CustomBMByID.ContainsKey(item.type))
-            {
+            if (CustomBMByID.ContainsKey(item.type)) {
                 var tag = CustomBMByID[item.type];
-                if (tag.ModifyShootCooldown != null)
-                {
+                if (tag.ModifyShootCooldown != null) {
                     shootCd = tag.ModifyShootCooldown(shootCd);
                 }
             }
         }
-        public static bool IsABookMark(Item item)
-        {
+        public static bool IsABookMark(Item item) {
             return item.ModItem is BookMark || CustomBMByID.ContainsKey(item.type);
         }
-        private static bool CanBeEquipWith_Base(Item a, Item b)
-        {
+        private static bool CanBeEquipWith_Base(Item a, Item b) {
             return a.type != b.type;
         }
-        public static bool CanBeEquipWith(Item a, Item b)
-        {
-            if (a.ModItem is BookMark bm)
-            {
+        public static bool CanBeEquipWith(Item a, Item b) {
+            if (a.ModItem is BookMark bm) {
                 return bm.CanBeEquipWith(b);
             }
-            if (IsABookMark(a))
-            {
+            if (IsABookMark(a)) {
                 return CustomBMByID[a.type].CanBeEquipWith.Invoke(a, b);
             }
             return false;
@@ -314,8 +258,7 @@ namespace CalamityEntropy.Common
                 Action<Projectile, NPC, NPC.HitModifiers> modifyHitNPC = null,
                 Action<Projectile, bool> bookUpdate = null,
                 Action<Player, Vector2, Vector2, int, float> onStandaloneAttack = null
-                )
-            {
+                ) {
                 OnShoot = onShoot;
                 OnActive = onActive;
                 OnProjectileSpawn = onProjectileSpawn;
@@ -328,42 +271,33 @@ namespace CalamityEntropy.Common
         }
         public class BookmarkEffect_OtherMod : EBookProjectileEffect
         {
-            public override void OnShoot(EntropyBookHeldProjectile book)
-            {
+            public override void OnShoot(EntropyBookHeldProjectile book) {
                 BookMarkLoader.OnShoot(this.BMOtherMod_Name, book);
             }
-            public override void OnActive(EntropyBookHeldProjectile book)
-            {
+            public override void OnActive(EntropyBookHeldProjectile book) {
                 BookMarkLoader.OnActive(this.BMOtherMod_Name, book);
             }
-            public override void OnProjectileSpawn(Projectile projectile, bool ownerClient)
-            {
+            public override void OnProjectileSpawn(Projectile projectile, bool ownerClient) {
                 BookMarkLoader.OnProjectileSpawn(this.BMOtherMod_Name, projectile, ownerClient);
             }
-            public override void UpdateProjectile(Projectile projectile, bool ownerClient)
-            {
+            public override void UpdateProjectile(Projectile projectile, bool ownerClient) {
                 BookMarkLoader.UpdateProjectile(this.BMOtherMod_Name, projectile, ownerClient);
             }
 
-            public override void OnHitNPC(Projectile projectile, NPC target, int damageDone)
-            {
+            public override void OnHitNPC(Projectile projectile, NPC target, int damageDone) {
                 BookMarkLoader.OnHitNPC(this.BMOtherMod_Name, projectile, target, damageDone);
             }
 
-            public override void ModifyHitNPC(Projectile projectile, NPC target, ref NPC.HitModifiers modifiers)
-            {
+            public override void ModifyHitNPC(Projectile projectile, NPC target, ref NPC.HitModifiers modifiers) {
                 BookMarkLoader.ModifyHitNPC(this.BMOtherMod_Name, projectile, target, modifiers);
             }
 
-            public override void BookUpdate(Projectile projectile, bool ownerClient)
-            {
+            public override void BookUpdate(Projectile projectile, bool ownerClient) {
                 BookMarkLoader.BookUpdate(this.BMOtherMod_Name, projectile, ownerClient);
             }
 
-            public override void OnStandaloneAttack(Player player, Vector2 position, Vector2 direction, int damage, float knockback)
-            {
-                if (CustomBMEffectsByName.TryGetValue(this.BMOtherMod_Name, out var funcs))
-                {
+            public override void OnStandaloneAttack(Player player, Vector2 position, Vector2 direction, int damage, float knockback) {
+                if (CustomBMEffectsByName.TryGetValue(this.BMOtherMod_Name, out var funcs)) {
                     funcs.OnStandaloneAttack?.Invoke(player, position, direction, damage, knockback);
                 }
             }
@@ -373,18 +307,15 @@ namespace CalamityEntropy.Common
             public string CustomBMEffectName;
             public Texture2D uiTex;
             public Func<Item, Item, bool> CanBeEquipWith = CanBeEquipWith_Base;
-            public BookMarkTag(Texture2D uiTexture, string customBMEffectName = null, Func<Item, Item, bool> canBeEquipWith = default)
-            {
+            public BookMarkTag(Texture2D uiTexture, string customBMEffectName = null, Func<Item, Item, bool> canBeEquipWith = default) {
                 uiTex = uiTexture;
                 this.CustomBMEffectName = customBMEffectName;
-                if (canBeEquipWith != default)
-                {
+                if (canBeEquipWith != default) {
                     CanBeEquipWith = canBeEquipWith;
                 }
             }
             public Texture2D UITexture => uiTex;
-            public EBookProjectileEffect getEffect()
-            {
+            public EBookProjectileEffect getEffect() {
                 return CustomBMEffectsByName.ContainsKey(this.CustomBMEffectName) ? new BookmarkEffect_OtherMod() { BMOtherMod_Name = this.CustomBMEffectName } : null;
             }
             public Func<float, float> ModifyStat_Damage;
@@ -419,18 +350,15 @@ namespace CalamityEntropy.Common
             int baseProjectileType = -1,
             float baseShootSpeed = 12f,
             int baseCooldown = 20,
-            DamageClass damageClass = null)
-        {
+            DamageClass damageClass = null) {
             if (!IsABookMark(bookmarkItem))
                 return new BookmarkAttackResult { Success = false, CooldownTicks = 0 };
 
             damageClass ??= DamageClass.Magic;
 
             //如果是内部BookMark且重写了PerformAttack，优先使用
-            if (bookmarkItem.ModItem is BookMark bm)
-            {
-                var context = new BookmarkAttackContext
-                {
+            if (bookmarkItem.ModItem is BookMark bm) {
+                var context = new BookmarkAttackContext {
                     Player = player,
                     Position = position,
                     Direction = direction,
@@ -454,8 +382,7 @@ namespace CalamityEntropy.Common
         private static BookmarkAttackResult PerformDefaultBookmarkAttack(
             Item bookmarkItem, Player player, Vector2 position, Vector2 direction,
             int baseDamage, float baseKnockback, int baseProjectileType, float baseShootSpeed,
-            int baseCooldown, DamageClass damageClass)
-        {
+            int baseCooldown, DamageClass damageClass) {
             var result = new BookmarkAttackResult();
 
             //收集属性修改
@@ -507,23 +434,20 @@ namespace CalamityEntropy.Common
             EBookProjectileEffect effect = GetEffect(bookmarkItem);
 
             //若为EBookBaseProjectile，挂载书签效果
-            if (proj.ModProjectile is EBookBaseProjectile bp)
-            {
+            if (proj.ModProjectile is EBookBaseProjectile bp) {
                 bp.mainProj = true;
                 bp.homing += modifer.Homing;
                 bp.homingRange *= modifer.HomingRange;
                 bp.attackSpeed = modifer.attackSpeed;
                 bp.lifeSteal += modifer.lifeSteal;
 
-                if (effect != null)
-                {
+                if (effect != null) {
                     bp.ProjectileEffects.Add(effect);
                 }
             }
 
             //调用OnStandaloneAttack，复现OnShoot/OnActive中的独立逻辑
-            if (effect != null)
-            {
+            if (effect != null) {
                 effect.OnStandaloneAttack(player, position, direction, dmg, kb);
             }
 
@@ -534,8 +458,7 @@ namespace CalamityEntropy.Common
         /// <summary>
         /// 查询书签的能力信息，不触发任何攻击
         /// </summary>
-        public static BookmarkInfo GetBookmarkInfo(Item bookmarkItem)
-        {
+        public static BookmarkInfo GetBookmarkInfo(Item bookmarkItem) {
             if (!IsABookMark(bookmarkItem))
                 return null;
 

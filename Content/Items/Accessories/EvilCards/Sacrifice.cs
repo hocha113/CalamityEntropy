@@ -1,16 +1,15 @@
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories.EvilCards
 {
     public class Sacrifice : ModItem
     {
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 22;
             Item.height = 22;
             Item.value = Item.buyPrice(gold: 5);
@@ -19,16 +18,13 @@ namespace CalamityEntropy.Content.Items.Accessories.EvilCards
 
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.GetModPlayer<EModPlayer>().SacrificeCard = true;
             player.GetDamage(DamageClass.Generic) += 0.1f;
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_EssenceofHavoc, CEID.Item_PerennialBar))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_EssenceofHavoc, CEID.Item_PerennialBar)) {
                 CreateRecipe()
                 .AddIngredient(CEID.Item_EssenceofHavoc, 6)
                 .AddIngredient(CEID.Item_PerennialBar, 2)

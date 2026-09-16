@@ -8,7 +8,6 @@ using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -22,8 +21,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
 {
     public class FinalFractal : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 760;
             Item.DamageType = DamageClass.Melee;
             Item.width = 48;
@@ -42,54 +40,43 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Item.scale *= 0.66f;
         }
         public int atkType = 0;
-        public override bool CanUseItem(Player player)
-        {
-            if (player.altFunctionUse == 2 && player.chaosState)
-            {
+        public override bool CanUseItem(Player player) {
+            if (player.altFunctionUse == 2 && player.chaosState) {
                 return false;
             }
             return true;
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            if (player.altFunctionUse == 2)
-            {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
+            if (player.altFunctionUse == 2) {
                 CEUtils.PlaySound("VoidAnticipation", 1, position, volume: CEUtils.WeapSound);
                 player.AddBuff(BuffID.ChaosState, 10 * 60);
                 Projectile.NewProjectile(source, position, velocity * 4, ModContent.ProjectileType<VoidSlash>(), damage * 10, 0, player.whoAmI, 1);
                 return false;
             }
             int at = 2;
-            if (atkType == 0 || atkType == 2 || atkType == 4 || atkType == 6)
-            {
+            if (atkType == 0 || atkType == 2 || atkType == 4 || atkType == 6) {
                 at = -1;
             }
-            if (atkType == 1 || atkType == 3 || atkType == 5 || atkType == 7)
-            {
+            if (atkType == 1 || atkType == 3 || atkType == 5 || atkType == 7) {
                 at = 1;
             }
-            if (atkType == 9)
-            {
+            if (atkType == 9) {
                 at = 3;
             }
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, at, 0, Main.MouseWorld.Distance(position) + 180);
             atkType += 1;
-            if (atkType > 9)
-            {
+            if (atkType > 9) {
                 atkType = 0;
             }
             return false;
         }
-        public override bool MeleePrefix()
-        {
+        public override bool MeleePrefix() {
             return true;
         }
-        public override bool AltFunctionUse(Player player)
-        {
+        public override bool AltFunctionUse(Player player) {
             return true;
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ItemID.Zenith)
                 .AddIngredient<VoidFractal>()
@@ -104,18 +91,15 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         [VaultLoaden("CalamityEntropy/Assets/Effects/FinalFrac", AssetMode.EffectValue, "EffectPass")]
         internal static Effect FinalFracShader;
         public int s = 0;
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            if (Projectile.ai[0] == 3)
-            {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+            if (Projectile.ai[0] == 3) {
                 return null;
             }
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * (120) * Projectile.scale, targetHitbox, 64);
         }
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/Fractal/FinalFractal";
         List<float> odr = new List<float>();
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
@@ -129,51 +113,42 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Projectile.light = 1;
         }
         public float rotSpeed = 0;
-        public override void AI()
-        {
+        public override void AI() {
             Player owner = Projectile.GetOwner();
 
             rotSpeed += 0.0002f;
             rotSpeed *= 0.99f;
             Projectile.rotation += rotSpeed;
             odr.Add(Projectile.rotation);
-            if (odr.Count > 42)
-            {
+            if (odr.Count > 42) {
                 odr.RemoveAt(0);
             }
-            if (owner.whoAmI != Main.myPlayer || (owner.whoAmI == Main.myPlayer && Mouse.GetState().RightButton == ButtonState.Pressed))
-            {
+            if (owner.whoAmI != Main.myPlayer || (owner.whoAmI == Main.myPlayer && Mouse.GetState().RightButton == ButtonState.Pressed)) {
                 owner.heldProj = Projectile.whoAmI;
                 owner.itemTime = 4;
                 owner.itemAnimation = 4;
                 Projectile.timeLeft = 4;
             }
-            if (owner.whoAmI == Main.myPlayer)
-            {
+            if (owner.whoAmI == Main.myPlayer) {
                 Projectile.ai[1]++;
-                if (Projectile.ai[1] > Projectile.MaxUpdates * 0.8f && s < 3)
-                {
+                if (Projectile.ai[1] > Projectile.MaxUpdates * 0.8f && s < 3) {
                     Projectile.ai[1] = 0;
                     s++;
                     int max = 8 * s;
                     float a = 0;
-                    for (float i = 0; i < 358; i += 360f / max)
-                    {
+                    for (float i = 0; i < 358; i += 360f / max) {
                         a += 360f / max;
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<FinalFractalBlade>(), Projectile.damage / 3, Projectile.knockBack, Projectile.owner, 1, s * 360, a);
                     }
                 }
             }
         }
-        public override void OnKill(int timeLeft)
-        {
-            if (s >= 3)
-            {
+        public override void OnKill(int timeLeft) {
+            if (s >= 3) {
                 Projectile.GetOwner().Teleport(Projectile.GetOwner().mouseWorld(), -1);
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             float alpha = 1;
             float texAlpha = 1;
             Player owner = Projectile.GetOwner();
@@ -184,8 +159,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Texture2D trail = CEExtraAssets.MotionTrail2;
             List<ColoredVertex> ve = new List<ColoredVertex>();
 
-            for (int i = 0; i < odr.Count; i++)
-            {
+            for (int i = 0; i < odr.Count; i++) {
                 Color b = new Color(220, 200, 255);
                 ve.Add(new ColoredVertex(Projectile.Center - Main.screenPosition + (new Vector2(240, 0).RotatedBy(odr[i])),
                       new Vector3((i) / ((float)odr.Count - 1), 1, 1),
@@ -194,8 +168,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                       new Vector3((i) / ((float)odr.Count - 1), 0, 1),
                       b));
             }
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 SpriteBatch sb = Main.spriteBatch;
                 Effect shader = FinalFracRightClick.FinalFracShader;
                 sb.End();
@@ -222,8 +195,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
     {
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/Fractal/FinalFractal";
         List<float> odr = new List<float>();
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
@@ -243,51 +215,41 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public bool shoot = true;
         public float length = 1200;
         public float spawnProjCounter = 0;
-        public override void AI()
-        {
+        public override void AI() {
             Player owner = Projectile.GetOwner();
 
             float MaxUpdateTimes = owner.itemTimeMax * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
-            if (!(Projectile.ai[0] == 3 && OnNPC != null && OnNPCTime > 0))
-            {
+            if (!(Projectile.ai[0] == 3 && OnNPC != null && OnNPCTime > 0)) {
                 counter += 1 * (Projectile.ai[0] == 3 ? 1f : Projectile.ai[0] == 2 ? 1 : 2.5f);
             }
-            else
-            {
+            else {
                 OnNPCTime--;
             }
 
-            if (init)
-            {
+            if (init) {
                 float scale_ = owner.HeldItem.scale;
                 owner.ApplyMeleeScale(ref scale_);
                 Projectile.scale *= scale_;
-                if (Projectile.ai[0] == 2)
-                {
+                if (Projectile.ai[0] == 2) {
                     CEUtils.PlaySound("sf_use", 0.6f, Projectile.Center, volume: 0.8f * CEUtils.WeapSound);
                     CEUtils.PlaySound("CastTriangles", 1, Projectile.Center, volume: CEUtils.WeapSound);
 
                 }
-                if (Projectile.ai[0] < 2)
-                {
+                if (Projectile.ai[0] < 2) {
                     CEUtils.PlaySound("sf_use", 1 + Projectile.ai[0] * 0.12f, Projectile.Center, volume: 0.6f * CEUtils.WeapSound);
                 }
-                if (Projectile.ai[0] == 3)
-                {
+                if (Projectile.ai[0] == 3) {
                     CEUtils.PlaySound("sf_use", 0.75f, Projectile.Center, volume: CEUtils.WeapSound);
                 }
                 init = false;
             }
 
             Projectile.timeLeft = 3;
-            if (Projectile.ai[0] == 2)
-            {
-                if (shoot)
-                {
+            if (Projectile.ai[0] == 2) {
+                if (shoot) {
                     shoot = false;
-                    if (Main.myPlayer == Projectile.owner)
-                    {
+                    if (Main.myPlayer == Projectile.owner) {
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Projectile.velocity.normalize() * 1100, Projectile.velocity.normalize() * 10, ModContent.ProjectileType<FractalLaser>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
                     }
                     CalamityEntropy.FlashEffectStrength = 0.3f;
@@ -300,19 +262,15 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 Projectile.Center = Projectile.GetOwner().MountedCenter + Projectile.velocity.normalize() * (-34 + l * 34);
 
             }
-            else
-            {
-                if (Projectile.ai[0] == 3)
-                {
+            else {
+                if (Projectile.ai[0] == 3) {
                     Projectile.Resize(64, 64);
                     Projectile.Center = CEUtils.GetOwner(Projectile).MountedCenter + CEUtils.normalize(Projectile.velocity) * (CEUtils.Parabola(progress, length));
-                    if (OnNPC != null && OnNPCTime > 0)
-                    {
+                    if (OnNPC != null && OnNPCTime > 0) {
                         Projectile.Center = OnNPC.Center;
                         length = CEUtils.getDistance(owner.Center, OnNPC.Center);
                         Projectile.velocity = new Vector2(Projectile.velocity.Length(), 0).RotatedBy((OnNPC.Center - owner.Center).ToRotation());
-                        if (!OnNPC.active)
-                        {
+                        if (!OnNPC.active) {
                             OnNPCTime = 0;
                         }
                         counter = MaxUpdateTimes / 2f;
@@ -321,17 +279,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                     alpha = 1;
                     scale = 2;
                 }
-                else
-                {
-                    if (shoot)
-                    {
+                else {
+                    if (shoot) {
                         shoot = false;
 
-                        if (Projectile.owner == Main.myPlayer)
-                        {
+                        if (Projectile.owner == Main.myPlayer) {
                             int type = ModContent.ProjectileType<FinalFractalBlade>();
-                            for (int i = 0; i < 6; i++)
-                            {
+                            for (int i = 0; i < 6; i++) {
                                 Vector2 spawnPos = Projectile.GetOwner().mouseWorld() + CEUtils.randomRot().ToRotationVector2() * Main.rand.Next(1200, 2400);
                                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), spawnPos, (Projectile.GetOwner().mouseWorld() - spawnPos) * 0.01f * Main.rand.NextFloat(0.8f, 1.2f), type, Projectile.damage, Projectile.knockBack, Projectile.owner);
                             }
@@ -344,18 +298,15 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                     Projectile.rotation = Projectile.rotation.ToRotationVector2().ToRotation();
                     Projectile.Center = Projectile.GetOwner().MountedCenter;
                     odr.Add(Projectile.rotation);
-                    if (odr.Count > 20)
-                    {
+                    if (odr.Count > 20) {
                         odr.RemoveAt(0);
                     }
                 }
-                if (Projectile.velocity.X > 0)
-                {
+                if (Projectile.velocity.X > 0) {
                     owner.direction = 1;
                     owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - (float)(Math.PI * 0.5f));
                 }
-                else
-                {
+                else {
                     owner.direction = -1;
                     owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - (float)(Math.PI * 0.5f));
                 }
@@ -365,8 +316,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             owner.heldProj = Projectile.whoAmI;
             owner.itemTime = 2;
             owner.itemAnimation = 2;
-            if (counter > MaxUpdateTimes)
-            {
+            if (counter > MaxUpdateTimes) {
                 Projectile.Kill();
                 owner.itemTime = 1;
                 owner.itemAnimation = 1;
@@ -374,38 +324,30 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         }
         public NPC OnNPC = null;
         public int OnNPCTime = 140;
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
 
         public bool playHitSound = true;
-        public override bool? CanHitNPC(NPC target)
-        {
-            if (Projectile.ai[0] == 3)
-            {
+        public override bool? CanHitNPC(NPC target) {
+            if (Projectile.ai[0] == 3) {
                 Projectile.localNPCHitCooldown = 2 * 10;
             }
             return null;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             //dedServ时PRTLoader.NewParticle给孤儿实例,Configure照常
             PRTLoader.NewParticle<PRT_ShineParticle>(target.Center, Vector2.Zero, new Color(225, 200, 255), 0.6f)
                 .Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 12);
 
-            if (Projectile.ai[0] == 3 && OnNPCTime > 0 && OnNPC == null)
-            {
+            if (Projectile.ai[0] == 3 && OnNPCTime > 0 && OnNPC == null) {
                 OnNPC = target;
             }
-            if (Projectile.ai[0] == 3)
-            {
+            if (Projectile.ai[0] == 3) {
                 scale = 2;
                 //dedServ时NewParticle给孤儿实例不是null,后面字段赋值照常别挡
-                if (!Main.dedServ)
-                {
-                    for (int i = 0; i < 6; i++)
-                    {
+                if (!Main.dedServ) {
+                    for (int i = 0; i < 6; i++) {
                         Vector2 ver = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(-12, 12);
                         //PRT_Light burst,Configure opacity/glow/mode对齐旧spawnNew
                         PRTLoader.NewParticle<PRT_Light>(target.Center, ver, new Color(220, 180, 255), Main.rand.NextFloat(1.3f, 1.7f))
@@ -415,37 +357,32 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 CEUtils.PlaySound("runesonghit", Main.rand.NextFloat(0.6f, 1.4f), target.Center, 64, volume: CEUtils.WeapSound);
             }
             EGlobalNPC.AddVoidTouch(target, 40, 1.4f, 600, 16);
-            if (playHitSound)
-            {
+            if (playHitSound) {
                 playHitSound = false;
                 CEUtils.PlaySound("sf_hit", 1, Projectile.Center, volume: CEUtils.WeapSound);
                 CEUtils.PlaySound("FractalHit", 1, Projectile.Center, volume: CEUtils.WeapSound);
 
             }
-            ParticleOrchestrator.RequestParticleSpawn(clientOnly: true, ParticleOrchestraType.TrueExcalibur, new ParticleOrchestraSettings
-            {
+            ParticleOrchestrator.RequestParticleSpawn(clientOnly: true, ParticleOrchestraType.TrueExcalibur, new ParticleOrchestraSettings {
                 PositionInWorld = target.Center,
                 MovementVector = Vector2.Zero
             });
         }
         public bool spawnProj = true;
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Player owner = Projectile.GetOwner();
             float MaxUpdateTimes = owner.itemTimeMax * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
             Texture2D tex = Projectile.GetTexture();
             Texture2D phantom = this.getTextureGlow();
             GraphicsDevice gd = Main.spriteBatch.GraphicsDevice;
-            if (Projectile.ai[0] == 3)
-            {
+            if (Projectile.ai[0] == 3) {
                 CEUtils.drawChain(Projectile.Center, CEUtils.GetOwner(Projectile).Center, 18, "CalamityEntropy/Assets/Extra/FFChain");
             }
             Texture2D trail = CEExtraAssets.MotionTrail2;
             List<ColoredVertex> ve = new List<ColoredVertex>();
 
-            for (int i = 0; i < odr.Count; i++)
-            {
+            for (int i = 0; i < odr.Count; i++) {
                 Color b = new Color(220, 200, 255);
                 ve.Add(new ColoredVertex(Projectile.Center - Main.screenPosition + (new Vector2(240 * Projectile.scale, 0).RotatedBy(odr[i])),
                       new Vector3((i) / ((float)odr.Count - 1), 1, 1),
@@ -454,8 +391,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                       new Vector3((i) / ((float)odr.Count - 1), 0, 1),
                       b));
             }
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 SpriteBatch sb = Main.spriteBatch;
                 Effect shader = FinalFracRightClick.FinalFracShader;
                 sb.End();
@@ -473,13 +409,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             float texAlpha = 1;
             float phantomAlpha = 0;
             int dir = (int)(Projectile.ai[0] <= 1 ? Projectile.ai[0] : -1) * (Projectile.velocity.X > 0 ? -1 : 1);
-            if (Projectile.ai[0] == 2)
-            {
+            if (Projectile.ai[0] == 2) {
                 dir = Math.Sign(Projectile.velocity.X);
             }
             Vector2 origin = dir > 0 ? new Vector2(0, tex.Height) : new Vector2(tex.Width, tex.Height);
-            if (Projectile.ai[0] == 3)
-            {
+            if (Projectile.ai[0] == 3) {
                 origin = tex.Size() / 2f;
             }
             SpriteEffects effect = dir > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
@@ -493,16 +427,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
 
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            if (Projectile.ai[0] == 3)
-            {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+            if (Projectile.ai[0] == 3) {
                 return null;
             }
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * (120) * Projectile.scale * scale, targetHitbox, 64);
         }
-        public override void CutTiles()
-        {
+        public override void CutTiles() {
             Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * (120) * Projectile.scale * scale, 84, DelegateMethods.CutTiles);
         }
 
@@ -510,33 +441,26 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
     public class FinalFractalBlade : ModProjectile
     {
         public static List<int> swords;
-        public override void Load()
-        {
+        public override void Load() {
             swords = new List<int>();
         }
-        public override void Unload()
-        {
+        public override void Unload() {
             swords = null;
         }
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.GetOwner().Entropy().MouseWorldListener = true;
             Projectile.rotation = Projectile.velocity.ToRotation();
-            if (Projectile.ai[0] == 1)
-            {
+            if (Projectile.ai[0] == 1) {
                 Projectile.timeLeft = 200 * 8;
                 Projectile.localAI[0] += (Projectile.ai[1] - Projectile.localAI[0]) * 0.001f;
                 Projectile.ai[2] += 0.0001f;
                 Projectile.Center = Projectile.GetOwner().MountedCenter + new Vector2(Projectile.localAI[0], 0).RotatedBy(Projectile.ai[2] + Main.GameUpdateCount * 0.06f * (Projectile.ai[1] == 720 ? -1 : 1));
-                if (Projectile.GetOwner().itemTime == 0)
-                {
-                    if (Projectile.localAI[0] > 0.9f)
-                    {
+                if (Projectile.GetOwner().itemTime == 0) {
+                    if (Projectile.localAI[0] > 0.9f) {
                         Projectile.ai[0] = 0;
                         Projectile.velocity = (Projectile.GetOwner().Entropy().MouseWorld - Projectile.Center) * 0.02f;
                     }
-                    else
-                    {
+                    else {
                         Projectile.Kill();
                     }
                 }
@@ -544,13 +468,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             }
 
         }
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 24;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 32;
             Projectile.height = 32;
@@ -568,14 +490,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
         public float counter = 0;
         public float rotSpeed;
         public float pg = 0;
-        public override bool PreDraw(ref Color lightColor)
-        {
-            if (texType == -1)
-            {
+        public override bool PreDraw(ref Color lightColor) {
+            if (texType == -1) {
                 texType = Main.rand.Next(swords.Count);
             }
-            if (swords.Count == 0)
-            {
+            if (swords.Count == 0) {
                 swords = new List<int>(){
                     ModContent.ItemType<FinalFractal>(),
                 ModContent.ItemType<SpiritFractal>(),
@@ -606,8 +525,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 ;
             }
             Main.spriteBatch.UseBlendState(BlendState.Additive);
-            for (int i = 0; i < ProjectileID.Sets.TrailCacheLength[Type]; i++)
-            {
+            for (int i = 0; i < ProjectileID.Sets.TrailCacheLength[Type]; i++) {
                 float prog = ((float)i / ProjectileID.Sets.TrailCacheLength[Type]);
                 Color clr = Color.White * 0.36f * (1 - prog);
                 Draw(Projectile.oldPos[i] + new Vector2(Projectile.width, Projectile.height) * 0.5f, clr, Projectile.oldRot[i], (int)Projectile.ai[1]);
@@ -617,14 +535,12 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
             Draw(Projectile.Center, Color.White * 0.8f, Projectile.rotation, (int)Projectile.ai[1]);
             return false;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             CEUtils.PlaySound("runesonghit", Main.rand.NextFloat(0.6f, 1.4f), target.Center, volume: CEUtils.WeapSound);
         }
         public int texType = -1;
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/Fractal/FinalFractalGlow";
-        public void Draw(Vector2 pos, Color lightColor, float rotation, int dir)
-        {
+        public void Draw(Vector2 pos, Color lightColor, float rotation, int dir) {
             SpriteEffects effect = dir > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             float rot = dir > 0 ? rotation + MathHelper.PiOver4 : rotation + MathHelper.Pi * 0.75f;
             Main.instance.LoadItem(swords[texType]);

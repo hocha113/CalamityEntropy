@@ -11,13 +11,11 @@ namespace CalamityEntropy.Content.Items
     {
         public static List<int> summonList;
         public static int CooldownSec = CEUtils.SecondsToFrames(20);
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             summonList = new List<int>() { ModContent.NPCType<AeroSlimeFriendly>(), ModContent.NPCType<DespairStoneFriendly>(), ModContent.NPCType<IceClasperFriendly>(), ModContent.NPCType<ScryllarFriendly>(), ModContent.NPCType<SkyfinFriendly>(), ModContent.NPCType<SoulSlurperFriendly>() };
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 62;
             Item.height = 70;
             Item.useTime = 22;
@@ -28,8 +26,7 @@ namespace CalamityEntropy.Content.Items
             Item.rare = ItemRarityID.Green;
             Item.scale = 0.6f;
         }
-        public override bool CanUseItem(Player player)
-        {
+        public override bool CanUseItem(Player player) {
             if (player.altFunctionUse == 2)
                 return true;
             if (Main.netMode == NetmodeID.MultiplayerClient)
@@ -37,24 +34,17 @@ namespace CalamityEntropy.Content.Items
 
             return !(player.Entropy().ffinderCd > 0);
         }
-        public override bool AltFunctionUse(Player player)
-        {
+        public override bool AltFunctionUse(Player player) {
             return true;
         }
 
-        public override bool? UseItem(Player player)
-        {
-            if (player.altFunctionUse == 2)
-            {
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    foreach (NPC npc in Main.ActiveNPCs)
-                    {
-                        if (npc.ModNPC is FriendFindNPC && npc.Entropy().friendFinderOwner == player.whoAmI)
-                        {
+        public override bool? UseItem(Player player) {
+            if (player.altFunctionUse == 2) {
+                if (Main.netMode != NetmodeID.MultiplayerClient) {
+                    foreach (NPC npc in Main.ActiveNPCs) {
+                        if (npc.ModNPC is FriendFindNPC && npc.Entropy().friendFinderOwner == player.whoAmI) {
                             npc.active = false;
-                            if (Main.dedServ)
-                            {
+                            if (Main.dedServ) {
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
                             }
                         }
@@ -64,15 +54,13 @@ namespace CalamityEntropy.Content.Items
             }
             if (!Main.dedServ)
                 player.AddCooldown("FriendfinderCd", CooldownSec);
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
+            if (Main.netMode == NetmodeID.MultiplayerClient) {
                 return true;
             }
             int n = NPC.NewNPC(player.GetSource_FromAI(), (int)player.position.X, (int)player.position.Y, summonList[Main.rand.Next(0, summonList.Count)]);
             n.ToNPC().localAI[3] = player.whoAmI + 1;
             n.ToNPC().Center = player.Center - new Vector2(0, 60);
-            if (Main.dedServ)
-            {
+            if (Main.dedServ) {
                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, n);
             }
             player.Entropy().ffinderCd = (int)(CooldownSec * player.Entropy().CooldownTimeMult);
@@ -80,8 +68,7 @@ namespace CalamityEntropy.Content.Items
             return true;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ItemID.GoldBar, 10)
                 .AddIngredient(ItemID.Ruby, 10)

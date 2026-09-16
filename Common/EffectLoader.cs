@@ -92,14 +92,11 @@ namespace CalamityEntropy.Common
         public const string AssetPath2 = "Assets/";
         public const int MaxScreenSlot = 4;
         [VaultLoaden("CalamityEntropy/Assets/Effects/Outline", AssetMode.EffectValue, "Pass1")]
-        public static Effect OutlineShader
-        {
-            get
-            {
+        public static Effect OutlineShader {
+            get {
                 return EBookUI.shader;
             }
-            set
-            {
+            set {
                 EBookUI.shader = value;
             }
         }
@@ -123,10 +120,8 @@ namespace CalamityEntropy.Common
         //这不是最佳的选择，要我说EndCapture就应该去死，该他妈的沉没在历史的粪坑中。万物都有自己的道理唯独它没有
         //如果有机会，我会把Red绑上十字架然后用白磷火刑慢慢的把他净化，神皇会赞许我的行为的，因为那帮家伙全他妈的是异端邪祟
         //----HoCha113 2025-5-6
-        private static void CE_EffectHandler(GraphicsDevice graphicsDevice)
-        {
-            if (!Main.gameMenu && ModContent.GetInstance<Config>().EnablePixelEffect)
-            {
+        private static void CE_EffectHandler(GraphicsDevice graphicsDevice) {
+            if (!Main.gameMenu && ModContent.GetInstance<Config>().EnablePixelEffect) {
                 //初始化
                 InitializeEffectHandler();
 
@@ -186,8 +181,7 @@ namespace CalamityEntropy.Common
                 DrawScreenRotation(graphicsDevice);
             }
         }
-        public static void DrawCylinder(Texture2D tex, Vector2 pos, Color color, BlendState blend, float Height = 1, float scale = 1, float rad = 0.5f, float rot = 0, int tiles = 2, float FullRot = 0, bool inner = false, bool startBatch = true)
-        {
+        public static void DrawCylinder(Texture2D tex, Vector2 pos, Color color, BlendState blend, float Height = 1, float scale = 1, float rad = 0.5f, float rot = 0, int tiles = 2, float FullRot = 0, bool inner = false, bool startBatch = true) {
             Effect shader = Cylinder.Value;
             if (shader == null)
                 return;
@@ -206,23 +200,18 @@ namespace CalamityEntropy.Common
 
         }
         public static float ScreenRotAmp = 0;
-        private static void DrawScreenRotation(GraphicsDevice graphicsDevice)
-        {
+        private static void DrawScreenRotation(GraphicsDevice graphicsDevice) {
             bool enabled = false;
-            if (!ModContent.GetInstance<Config>().ScreenWarpEffects)
-            {
+            if (!ModContent.GetInstance<Config>().ScreenWarpEffects) {
                 enabled = false;
             }
-            if (enabled)
-            {
+            if (enabled) {
                 ScreenRotAmp += (1 - ScreenRotAmp) * 0.01f;
             }
-            else
-            {
+            else {
                 ScreenRotAmp *= 0.95f;
             }
-            if (ScreenRotAmp > 0.001f)
-            {
+            if (ScreenRotAmp > 0.001f) {
                 Texture2D mask = HollowCircleMaskTex.Value;
 
                 float rotation = (float)Math.Sin(Main.GameUpdateCount * 0.02f) * 0.6f;
@@ -253,8 +242,7 @@ namespace CalamityEntropy.Common
             }
         }
 
-        private static void DrawRandomEffect(GraphicsDevice graphicsDevice)
-        {
+        private static void DrawRandomEffect(GraphicsDevice graphicsDevice) {
             graphicsDevice.SetRenderTarget(Screen0);
             graphicsDevice.Clear(Color.Transparent);
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
@@ -266,25 +254,19 @@ namespace CalamityEntropy.Common
 
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-            foreach (Projectile p in Main.ActiveProjectiles)
-            {
-                if (p.ModProjectile == null)
-                {
+            foreach (Projectile p in Main.ActiveProjectiles) {
+                if (p.ModProjectile == null) {
                     continue;
                 }
-                if (p.ModProjectile is VoidStar)
-                {
-                    if (p.ai[0] >= 60 || p.ai[2] == 0)
-                    {
+                if (p.ModProjectile is VoidStar) {
+                    if (p.ai[0] >= 60 || p.ai[2] == 0) {
                         VoidStar mp = (VoidStar)p.ModProjectile;
                         mp.odp.Add(p.Center);
-                        if (mp.odp.Count > 2)
-                        {
+                        if (mp.odp.Count > 2) {
                             float size = 10;
                             float sizej = size / mp.odp.Count;
                             Color cl = new Color(200, 235, 255);
-                            for (int i = mp.odp.Count - 1; i >= 1; i--)
-                            {
+                            for (int i = mp.odp.Count - 1; i >= 1; i--) {
                                 CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, mp.odp[i], mp.odp[i - 1], cl * ((255 - p.alpha) / 255f), size * 0.25f);
                                 size -= sizej;
                             }
@@ -293,21 +275,17 @@ namespace CalamityEntropy.Common
                     }
 
                 }
-                if (p.ModProjectile is VoidStarF)
-                {
+                if (p.ModProjectile is VoidStarF) {
                     VoidStarF mp = (VoidStarF)p.ModProjectile;
                     mp.odp.Add(p.Center);
-                    if (mp.odp.Count > 2)
-                    {
+                    if (mp.odp.Count > 2) {
                         float size = 10;
                         float sizej = size / mp.odp.Count;
                         Color cl = new Color(200, 235, 255);
-                        if (p.ai[2] > 0)
-                        {
+                        if (p.ai[2] > 0) {
                             cl = new Color(255, 160, 160);
                         }
-                        for (int i = mp.odp.Count - 1; i >= 1; i--)
-                        {
+                        for (int i = mp.odp.Count - 1; i >= 1; i--) {
                             CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, mp.odp[i], mp.odp[i - 1], cl * ((255 - p.alpha) / 255f), size * 0.25f);
                             size -= sizej;
                         }
@@ -315,37 +293,29 @@ namespace CalamityEntropy.Common
                     mp.odp.RemoveAt(mp.odp.Count - 1);
 
                 }
-                if (p.ModProjectile is LightWisperFlame lwf)
-                {
+                if (p.ModProjectile is LightWisperFlame lwf) {
                     lwf.draw();
                 }
             }
             Main.spriteBatch.End();
 
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-            foreach (Player p in Main.ActivePlayers)
-            {
-                if (!p.dead && p.Entropy().MagiShield > 0 && p.Entropy().visualMagiShield)
-                {
+            foreach (Player p in Main.ActivePlayers) {
+                if (!p.dead && p.Entropy().MagiShield > 0 && p.Entropy().visualMagiShield) {
                     Texture2D shieldTexture = ShieldTex.Value;
                     Main.spriteBatch.Draw(shieldTexture, p.Center - Main.screenPosition, null, new Color(186, 120, 255), 0, shieldTexture.Size() / 2, 0.47f, SpriteEffects.None, 0);
                 }
             }
-            foreach (Projectile p in Main.ActiveProjectiles)
-            {
-                if (p.ModProjectile != null && p.ModProjectile is MoonlightShieldBreak)
-                {
+            foreach (Projectile p in Main.ActiveProjectiles) {
+                if (p.ModProjectile != null && p.ModProjectile is MoonlightShieldBreak) {
                     Texture2D shieldTexture = ShieldTex.Value;
                     Main.spriteBatch.Draw(shieldTexture, p.Center - Main.screenPosition, null, new Color(186, 120, 255) * p.ai[2], 0, shieldTexture.Size() / 2, 0.47f * (1 + p.ai[1]), SpriteEffects.None, 0);
                 }
-                if (p.ModProjectile != null && p.ModProjectile is CruiserShadow aw)
-                {
-                    if (aw.alphaPor > 0)
-                    {
+                if (p.ModProjectile != null && p.ModProjectile is CruiserShadow aw) {
+                    if (aw.alphaPor > 0) {
                         float s = 0;
                         float sj = 1;
-                        for (int i = 0; i <= 30; i++)
-                        {
+                        for (int i = 0; i <= 30; i++) {
                             aw.DrawPortal(aw.spawnPos, new Color(50, 35, 240) * aw.alphaPor, aw.spawnRot, 270 * s, 0.3f, i * 3f);
                             s = s + (sj - s) * 0.05f;
                         }
@@ -367,20 +337,16 @@ namespace CalamityEntropy.Common
             Main.spriteBatch.End();
         }
 
-        private static void DrawBloodEffect(GraphicsDevice graphicsDevice)
-        {
+        private static void DrawBloodEffect(GraphicsDevice graphicsDevice) {
             if (!CEUtils.AnyActiveProj<BloodCrack>())
                 return;
             bool f = false;
-            foreach (var p in Main.ActiveProjectiles)
-            {
-                if (p.ModProjectile != null && p.ModProjectile is BloodCrack)
-                {
+            foreach (var p in Main.ActiveProjectiles) {
+                if (p.ModProjectile != null && p.ModProjectile is BloodCrack) {
                     f = true;
                 }
             }
-            if (!f)
-            {
+            if (!f) {
                 return;
             }
             graphicsDevice.SetRenderTarget(Screen0);
@@ -395,10 +361,8 @@ namespace CalamityEntropy.Common
 
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null);
 
-            foreach (Projectile proj in Main.ActiveProjectiles)
-            {
-                if (proj.ModProjectile is BloodCrack ac)
-                {
+            foreach (Projectile proj in Main.ActiveProjectiles) {
+                if (proj.ModProjectile is BloodCrack ac) {
                     ac.draw();
                 }
             }
@@ -423,8 +387,7 @@ namespace CalamityEntropy.Common
             Main.spriteBatch.End();
         }
         //PRT_Abyssal mask绘制,粒子枚举在DrawParticleEffectsAlt,和PRT_Void那套RT分流
-        private static void DrawAbyssalEffect(GraphicsDevice graphicsDevice)
-        {
+        private static void DrawAbyssalEffect(GraphicsDevice graphicsDevice) {
             graphicsDevice.SetRenderTarget(Screen0);
             graphicsDevice.Clear(Color.Transparent);
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
@@ -437,24 +400,19 @@ namespace CalamityEntropy.Common
 
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null);
 
-            foreach (Projectile proj in Main.ActiveProjectiles)
-            {
-                if (proj.ModProjectile is AbyssalCrack ac)
-                {
+            foreach (Projectile proj in Main.ActiveProjectiles) {
+                if (proj.ModProjectile is AbyssalCrack ac) {
                     ac.draw();
                 }
                 if (proj.ModProjectile is AbyssalRift ar)
                     ar.draw();
-                if (proj.ModProjectile is AbyssBookmarkCrack ac2)
-                {
+                if (proj.ModProjectile is AbyssBookmarkCrack ac2) {
                     ac2.drawVoid();
                 }
-                if (proj.ModProjectile is NxCrack nc)
-                {
+                if (proj.ModProjectile is NxCrack nc) {
                     nc.drawCrack();
                 }
-                if (proj.ModProjectile is YstralynProj yst)
-                {
+                if (proj.ModProjectile is YstralynProj yst) {
                     yst.draw_crack();
                 }
             }
@@ -480,23 +438,19 @@ namespace CalamityEntropy.Common
             Main.spriteBatch.End();
         }
 
-        private static void InitializeEffectHandler()
-        {
+        private static void InitializeEffectHandler() {
             Instance.screenShakeAmp *= 0.9f;
         }
 
-        private static void DrawInitialScreen(GraphicsDevice graphicsDevice)
-        {
+        private static void DrawInitialScreen(GraphicsDevice graphicsDevice) {
             graphicsDevice.SetRenderTarget(Screen0);
             graphicsDevice.Clear(Color.Transparent);
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             Main.spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);
             Main.spriteBatch.End();
         }
-        public static void PreparePixelShader(GraphicsDevice graphicsDevice)
-        {
-            if (ModContent.GetInstance<Config>().EnablePixelEffect)
-            {
+        public static void PreparePixelShader(GraphicsDevice graphicsDevice) {
+            if (ModContent.GetInstance<Config>().EnablePixelEffect) {
                 DrawInitialScreen(graphicsDevice);
                 graphicsDevice.SetRenderTarget(Screen2);   //IPixelPassPRT画进这层,ApplyPixelShader再过Pixel shader
                 graphicsDevice.Clear(Color.Transparent);
@@ -504,30 +458,24 @@ namespace CalamityEntropy.Common
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.Transform);
 
         }
-        private static void DrawNPCsAndProjectiles(GraphicsDevice graphicsDevice)
-        {
+        private static void DrawNPCsAndProjectiles(GraphicsDevice graphicsDevice) {
 
             int cruiserEnergyBallType = ModContent.ProjectileType<CruiserEnergyBall>();
             int runeTorrentType = ModContent.ProjectileType<RuneTorrent>();
             int runeTorrentRangerType = ModContent.ProjectileType<RuneTorrentRanger>();
             int prophetVoidSpikeType = ModContent.ProjectileType<ProphetVoidSpike>();
 
-            foreach (Projectile proj in Main.ActiveProjectiles)
-            {
-                if (proj.type == cruiserEnergyBallType && proj.ModProjectile is CruiserEnergyBall ceb)
-                {
+            foreach (Projectile proj in Main.ActiveProjectiles) {
+                if (proj.type == cruiserEnergyBallType && proj.ModProjectile is CruiserEnergyBall ceb) {
                     ceb.Draw();
                 }
-                else if (proj.type == runeTorrentType && proj.ModProjectile is RuneTorrent rt)
-                {
+                else if (proj.type == runeTorrentType && proj.ModProjectile is RuneTorrent rt) {
                     rt.Draw();
                 }
-                else if (proj.type == runeTorrentRangerType && proj.ModProjectile is RuneTorrentRanger rt_)
-                {
+                else if (proj.type == runeTorrentRangerType && proj.ModProjectile is RuneTorrentRanger rt_) {
                     rt_.Draw();
                 }
-                else if (proj.type == prophetVoidSpikeType && proj.ModProjectile is ProphetVoidSpike vs)
-                {
+                else if (proj.type == prophetVoidSpikeType && proj.ModProjectile is ProphetVoidSpike vs) {
                     vs.Draw();
                 }
                 /*if(proj.ModProjectile is OblivionThresherHoldout vt)
@@ -549,23 +497,18 @@ namespace CalamityEntropy.Common
 
             //IAdditivePRT自己管绘制,PRT分桶对不上,攒一批单独开Additive画
             List<IAdditivePRT> prtAdditives = new List<IAdditivePRT>();
-            foreach (var prt in PRTLoader.PRT_InGame_World_Inds)
-            {
-                if (!prt.active || prt.Mod != Instance)
-                {
+            foreach (var prt in PRTLoader.PRT_InGame_World_Inds) {
+                if (!prt.active || prt.Mod != Instance) {
                     continue;
                 }
-                if (prt is IAdditivePRT additivePRT)
-                {
+                if (prt is IAdditivePRT additivePRT) {
                     prtAdditives.Add(additivePRT);
                 }
             }
-            if (prtAdditives.Count > 0)
-            {
+            if (prtAdditives.Count > 0) {
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.AnisotropicClamp
                     , DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-                foreach (var iaddDrawin in prtAdditives)
-                {
+                foreach (var iaddDrawin in prtAdditives) {
                     iaddDrawin.Draw(Main.spriteBatch);
                 }
                 Main.spriteBatch.End();
@@ -576,25 +519,20 @@ namespace CalamityEntropy.Common
         /// IPixelPassPRT 画进 Screen2 RT，之后 ApplyPixelShader 过 Pixel shader
         /// 三桶顺序 AlphaBlend → NonPremultiplied → Additive，对齐旧 PixelParticle 绘制序
         /// </summary>
-        private static void DrawPixelPassPRT()
-        {
+        private static void DrawPixelPassPRT() {
             List<IPixelPassPRT> alphaBlendDraw = new();
             List<IPixelPassPRT> nonPremultipliedDraw = new();
             List<IPixelPassPRT> additiveDraw = new();
 
-            foreach (var prt in PRTLoader.PRT_InGame_World_Inds)
-            {
-                if (!prt.active || prt.Mod != Instance)
-                {
+            foreach (var prt in PRTLoader.PRT_InGame_World_Inds) {
+                if (!prt.active || prt.Mod != Instance) {
                     continue;
                 }
-                if (prt is not IPixelPassPRT { PixelPass: true } pixelPRT)
-                {
+                if (prt is not IPixelPassPRT { PixelPass: true } pixelPRT) {
                     continue;
                 }
 
-                switch (prt.PRTDrawMode)
-                {
+                switch (prt.PRTDrawMode) {
                     case PRTDrawModeEnum.AdditiveBlend:
                         additiveDraw.Add(pixelPRT);
                         break;
@@ -607,36 +545,29 @@ namespace CalamityEntropy.Common
                 }
             }
 
-            if (alphaBlendDraw.Count == 0 && nonPremultipliedDraw.Count == 0 && additiveDraw.Count == 0)
-            {
+            if (alphaBlendDraw.Count == 0 && nonPremultipliedDraw.Count == 0 && additiveDraw.Count == 0) {
                 return;
             }
 
             //PreparePixelShader开的批次得先End,再按桶重开画像素粒子
             Main.spriteBatch.End();
-            if (alphaBlendDraw.Count > 0)
-            {
+            if (alphaBlendDraw.Count > 0) {
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-                foreach (var p in alphaBlendDraw)
-                {
+                foreach (var p in alphaBlendDraw) {
                     p.DrawPixelPass(Main.spriteBatch);
                 }
                 Main.spriteBatch.End();
             }
-            if (nonPremultipliedDraw.Count > 0)
-            {
+            if (nonPremultipliedDraw.Count > 0) {
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.AnisotropicClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-                foreach (var p in nonPremultipliedDraw)
-                {
+                foreach (var p in nonPremultipliedDraw) {
                     p.DrawPixelPass(Main.spriteBatch);
                 }
                 Main.spriteBatch.End();
             }
-            if (additiveDraw.Count > 0)
-            {
+            if (additiveDraw.Count > 0) {
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-                foreach (var p in additiveDraw)
-                {
+                foreach (var p in additiveDraw) {
                     p.DrawPixelPass(Main.spriteBatch);
                 }
                 Main.spriteBatch.End();
@@ -645,12 +576,9 @@ namespace CalamityEntropy.Common
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.AnisotropicClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
         }
 
-        public static void ApplyPixelShader(GraphicsDevice graphicsDevice, int dye = 0, Entity dyeEnt = null, bool GameZoom = false, BlendState state = null)
-        {
-            if (ModContent.GetInstance<Config>().EnablePixelEffect)
-            {
-                if (state == null)
-                {
+        public static void ApplyPixelShader(GraphicsDevice graphicsDevice, int dye = 0, Entity dyeEnt = null, bool GameZoom = false, BlendState state = null) {
+            if (ModContent.GetInstance<Config>().EnablePixelEffect) {
+                if (state == null) {
                     state = BlendState.AlphaBlend;
                 }
                 graphicsDevice.SetRenderTarget(Screen1);
@@ -672,8 +600,7 @@ namespace CalamityEntropy.Common
 
                 Main.spriteBatch.End();
                 Effect dyeShader = null;
-                if (dye != 0)
-                {
+                if (dye != 0) {
                     //GameShaders.Armor.Apply(GameShaders.Armor.GetShaderIdFromItemId(dye), dyeEnt, new Terraria.DataStructures.DrawData(Screen1, Vector2.Zero, Color.White));
 
                     dyeShader = GameShaders.Armor.GetShaderFromItemId(dye).Shader;
@@ -684,16 +611,14 @@ namespace CalamityEntropy.Common
                 else
                     Main.spriteBatch.Begin(SpriteSortMode.Immediate, state, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null);
 
-                if (dye != 0)
-                {
+                if (dye != 0) {
                     GameShaders.Armor.GetShaderFromItemId(dye).Apply(null, new(Screen1, Vector2.Zero, Color.White));
                 }
                 Main.spriteBatch.Draw(Screen1, Vector2.Zero, Color.White);
                 Main.spriteBatch.End();
             }
         }
-        public static Texture2D ScaleTexture(Texture2D originalTexture, float scale, GraphicsDevice graphicsDevice)
-        {
+        public static Texture2D ScaleTexture(Texture2D originalTexture, float scale, GraphicsDevice graphicsDevice) {
             // 计算新尺寸
             int newWidth = (int)(originalTexture.Width * scale);
             int newHeight = (int)(originalTexture.Height * scale);
@@ -731,10 +656,8 @@ namespace CalamityEntropy.Common
 
             return renderTarget;
         }
-        private static void DrawProjectileEffects(GraphicsDevice graphicsDevice)
-        {
-            if (Screen0 == null)
-            {
+        private static void DrawProjectileEffects(GraphicsDevice graphicsDevice) {
+            if (Screen0 == null) {
                 return;
             }
 
@@ -755,57 +678,43 @@ namespace CalamityEntropy.Common
             int voidBulletType = ModContent.ProjectileType<VoidBullet>();
             int voidMonsterType = ModContent.ProjectileType<VoidMonster>();
 
-            foreach (Projectile p in Main.ActiveProjectiles)
-            {
-                if (p.type == cruiserSlashType)
-                {
-                    if (p.ModProjectile is CruiserSlash cs && cs.ct > 60)
-                    {
+            foreach (Projectile p in Main.ActiveProjectiles) {
+                if (p.type == cruiserSlashType) {
+                    if (p.ModProjectile is CruiserSlash cs && cs.ct > 60) {
                         Main.spriteBatch.Draw(cruiserSlash.Value, p.Center - Main.screenPosition + new Vector2((p.ai[0] + p.ai[1]) / 2 - 300, 0).RotatedBy(p.rotation), null, Color.White, p.rotation, new Vector2(cruiserSlash.Value.Width, cruiserSlash.Value.Height) / 2, new Vector2((p.ai[0] - p.ai[1]) / cruiserSlash.Value.Width, 1.2f), SpriteEffects.None, 0);
                     }
                 }
-                else if (p.type == cruiserBlackholeBulletType)
-                {
+                else if (p.type == cruiserBlackholeBulletType) {
                     Main.spriteBatch.Draw(cruiserBlackholeBullet.Value, p.Center - Main.screenPosition, null, Color.White, p.rotation, new Vector2(cruiserBlackholeBullet.Value.Width, cruiserBlackholeBullet.Value.Height) / 2, p.scale, SpriteEffects.None, 0);
                 }
-                else if (p.type == voidBulletType)
-                {
+                else if (p.type == voidBulletType) {
                     Main.spriteBatch.Draw(cruiserBlackholeBullet.Value, p.Center - Main.screenPosition, null, Color.White, p.rotation, new Vector2(cruiserBlackholeBullet.Value.Width, cruiserBlackholeBullet.Value.Height) / 2, p.scale, SpriteEffects.None, 0);
                 }
-                else if (p.type == voidMonsterType)
-                {
-                    if (p.ModProjectile is VoidMonster vmnpc)
-                    {
+                else if (p.type == voidMonsterType) {
+                    if (p.ModProjectile is VoidMonster vmnpc) {
                         vmnpc.draw();
                     }
                 }
             }
 
 
-            foreach (var pt in PRTLoader.PRT_InGame_World_Inds)
-            {
-                if (!pt.active || pt.Mod != Instance)
-                {
+            foreach (var pt in PRTLoader.PRT_InGame_World_Inds) {
+                if (!pt.active || pt.Mod != Instance) {
                     continue;
                 }
                 //is PRT_Void && is not PRT_Abyssal:两套RT shader分流,条件写反就画错桶
-                if (pt is not PRT_Void || pt is PRT_Abyssal)
-                {
+                if (pt is not PRT_Void || pt is PRT_Abyssal) {
                     continue;
                 }
-                if (cvmask == null)
-                {
+                if (cvmask == null) {
                     continue;
                 }
                 Main.spriteBatch.Draw(cvmask.Value, pt.Position - Main.screenPosition, null, Color.White * 0.06f, pt.Rotation, cvmask.Value.Size() / 2, (5.4f * pt.Opacity) * 0.05f, SpriteEffects.None, 0);
             }
 
-            foreach (Projectile p in Main.ActiveProjectiles)
-            {
-                if (p.ModProjectile != null)
-                {
-                    if (p.ModProjectile is Pioneer1 p1)
-                    {
+            foreach (Projectile p in Main.ActiveProjectiles) {
+                if (p.ModProjectile != null) {
+                    if (p.ModProjectile is Pioneer1 p1) {
                         p1.drawVoid();
                     }
                 }
@@ -815,21 +724,17 @@ namespace CalamityEntropy.Common
         }
 
         //PRT_Void shape4→Screen1(Additive)→kscreen2 shader→Screen2,不进常规PRT桶
-        private static void DrawParticleEffects(GraphicsDevice graphicsDevice)
-        {
+        private static void DrawParticleEffects(GraphicsDevice graphicsDevice) {
             graphicsDevice.SetRenderTarget(Screen1);
             graphicsDevice.Clear(Color.Transparent);
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null);
 
-            foreach (var pt in PRTLoader.PRT_InGame_World_Inds)
-            {
-                if (!pt.active || pt.Mod != Instance)
-                {
+            foreach (var pt in PRTLoader.PRT_InGame_World_Inds) {
+                if (!pt.active || pt.Mod != Instance) {
                     continue;
                 }
                 //过滤条件和DrawNonPixVoidEffects/DrawParticleEffectsAlt镜像,is PRT_Abyssal走另一套RT
-                if (pt is not PRT_Void || pt is PRT_Abyssal)
-                {
+                if (pt is not PRT_Void || pt is PRT_Abyssal) {
                     continue;
                 }
                 if (pt is PRT_Void voidPt && voidPt.shape != 4)   //只有shape4进kscreen2合成,别的走常规PRT桶
@@ -854,10 +759,8 @@ namespace CalamityEntropy.Common
             Main.spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
             Main.spriteBatch.End();
         }
-        private static void DrawNonPixVoidEffects(GraphicsDevice graphicsDevice)
-        {
-            if (Screen0 == null || !CEUtils.AnyActiveProj<WOHHeld>())
-            {
+        private static void DrawNonPixVoidEffects(GraphicsDevice graphicsDevice) {
+            if (Screen0 == null || !CEUtils.AnyActiveProj<WOHHeld>()) {
                 return;
             }
 
@@ -872,10 +775,8 @@ namespace CalamityEntropy.Common
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null);
 
 
-            foreach (Projectile p in Main.ActiveProjectiles)
-            {
-                if (p.ModProjectile != null)
-                {
+            foreach (Projectile p in Main.ActiveProjectiles) {
+                if (p.ModProjectile != null) {
                     if (p.ModProjectile is WOHHeld woh)
                         woh.DrawVoid();
                 }
@@ -899,29 +800,23 @@ namespace CalamityEntropy.Common
             Main.spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
             Main.spriteBatch.End();
         }
-        private static void DrawParticleEffectsAlt()
-        {
+        private static void DrawParticleEffectsAlt() {
             //深渊粒子单独走DrawAbyssalEffect,过滤条件和上面虚空那套镜像
-            foreach (var prt in PRTLoader.PRT_InGame_World_Inds)
-            {
-                if (!prt.active || prt.Mod != Instance)
-                {
+            foreach (var prt in PRTLoader.PRT_InGame_World_Inds) {
+                if (!prt.active || prt.Mod != Instance) {
                     continue;
                 }
-                if (prt is not PRT_Abyssal pt)
-                {
+                if (prt is not PRT_Abyssal pt) {
                     continue;
                 }
-                if (cvmask == null)
-                {
+                if (cvmask == null) {
                     continue;
                 }
                 Main.spriteBatch.Draw(cvmask.Value, pt.Position - Main.screenPosition, null, Color.White * 0.06f, pt.Rotation, cvmask.Value.Size() / 2, (5.4f * pt.Opacity) * 0.05f, SpriteEffects.None, 0);
             }
         }
 
-        private static void ApplyBackgroundShader(GraphicsDevice graphicsDevice)
-        {
+        private static void ApplyBackgroundShader(GraphicsDevice graphicsDevice) {
             graphicsDevice.SetRenderTarget(Main.screenTarget);
             graphicsDevice.Clear(Color.Transparent);
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null);
@@ -944,10 +839,8 @@ namespace CalamityEntropy.Common
             Main.spriteBatch.End();
         }
 
-        private static void DrawPlayerAndProjectileEffects(GraphicsDevice graphicsDevice)
-        {
-            if (Screen1 == null)
-            {
+        private static void DrawPlayerAndProjectileEffects(GraphicsDevice graphicsDevice) {
+            if (Screen1 == null) {
                 return;
             }
 
@@ -961,15 +854,12 @@ namespace CalamityEntropy.Common
             graphicsDevice.Clear(Color.Transparent);
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-            foreach (Player player in Main.ActivePlayers)
-            {
-                if (!player.dead && player.Entropy().daPoints.Count > 2)
-                {
+            foreach (Player player in Main.ActivePlayers) {
+                if (!player.dead && player.Entropy().daPoints.Count > 2) {
                     float scj = 1f / player.Entropy().daPoints.Count;
                     float sc = scj;
                     Color color = player.Entropy().VaMoving > 0 ? Color.Blue : Color.Black;
-                    for (int i = 1; i < player.Entropy().daPoints.Count; i++)
-                    {
+                    for (int i = 1; i < player.Entropy().daPoints.Count; i++) {
                         CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, CEUtils.Entropy(player).daPoints[i - 1], CEUtils.Entropy(player).daPoints[i], color * 0.6f, 12 * sc, 0);
                         sc += scj;
                     }
@@ -987,43 +877,33 @@ namespace CalamityEntropy.Common
             int voidStarFType = ModContent.ProjectileType<VoidStarF>();
 
             //遍历投射物，使用类型 ID 判断
-            foreach (Projectile p in Main.ActiveProjectiles)
-            {
-                if (p.ModProjectile == null)
-                {
+            foreach (Projectile p in Main.ActiveProjectiles) {
+                if (p.ModProjectile == null) {
                     continue;
                 }
 
-                if (p.type == voidBottleThrowType || p.type == cruiserShadowType)
-                {
+                if (p.type == voidBottleThrowType || p.type == cruiserShadowType) {
                     Color color = Color.White;
                     p.ModProjectile.PreDraw(ref color);
                 }
-                if (p.ModProjectile is CrossBorderPursuitProj cbp)
-                {
+                if (p.ModProjectile is CrossBorderPursuitProj cbp) {
                     cbp.DrawEye();
                 }
-                else if (p.type == voidWraithType)
-                {
-                    if (p.ModProjectile is VoidWraith vw)
-                    {
+                else if (p.type == voidWraithType) {
+                    if (p.ModProjectile is VoidWraith vw) {
                         vw.draw();
                     }
                 }
-                else if (p.type == abyssPetType || p.type == voidPalProjType)
-                {
+                else if (p.type == abyssPetType || p.type == voidPalProjType) {
                     Color color = Color.White;
                     p.ModProjectile.PreDraw(ref color);
                 }
-                else if (p.type == shadewindLanceThrowType)
-                {
-                    if (p.ModProjectile is ShadewindLanceThrow sp)
-                    {
+                else if (p.type == shadewindLanceThrowType) {
+                    if (p.ModProjectile is ShadewindLanceThrow sp) {
                         sp.draw();
                     }
                 }
-                else if (p.type == voidStarType || p.type == voidStarFType)
-                {
+                else if (p.type == voidStarType || p.type == voidStarFType) {
                     Color c = p.type == voidStarFType && p.ai[2] > 0 ? new Color(255, 100, 100) : Color.White;
                     Main.spriteBatch.Draw(voidStar.Value, p.Center - Main.screenPosition, null, c * ((255 - p.alpha) / 255f), p.rotation, voidStar.Value.Size() / 2, new Vector2(1.45f, 0.25f) * p.scale, SpriteEffects.None, 0);
                     Main.spriteBatch.Draw(voidStar.Value, p.Center - Main.screenPosition, null, c * ((255 - p.alpha) / 255f), p.rotation, voidStar.Value.Size() / 2, new Vector2(0.25f, 1.45f) * p.scale, SpriteEffects.None, 0);
@@ -1040,8 +920,7 @@ namespace CalamityEntropy.Common
             Main.spriteBatch.End();
         }
 
-        private static void DrawSlashEffects(GraphicsDevice graphicsDevice)
-        {
+        private static void DrawSlashEffects(GraphicsDevice graphicsDevice) {
             if (Screen0 == null || Screen1 == null) return;
             if (!ModContent.GetInstance<Config>().ScreenWarpEffects)
                 return;
@@ -1063,35 +942,27 @@ namespace CalamityEntropy.Common
             int starlessNightProjType = ModContent.ProjectileType<StarlessNightProj>();
 
             //遍历投射物，使用类型 ID 判断
-            foreach (Projectile p in Main.ActiveProjectiles)
-            {
-                if (p.ModProjectile == null)
-                {
+            foreach (Projectile p in Main.ActiveProjectiles) {
+                if (p.ModProjectile == null) {
                     continue;
                 }
 
-                if (p.type == slashType)
-                {
+                if (p.type == slashType) {
                     Main.spriteBatch.Draw(ksc1.Value, p.Center - Main.screenPosition + new Vector2((p.ai[0] + p.ai[1]) / 2 - 165, 0).RotatedBy(p.rotation), null, Color.White, p.rotation + (float)Math.PI / 2, new Vector2(ksc1.Value.Width, ksc1.Value.Height) / 2, new Vector2((p.ai[0] - p.ai[1]) / ksc1.Value.Width * 0.4f, 0.1f), SpriteEffects.None, 0);
                 }
-                else if (p.type == slash2Type)
-                {
+                else if (p.type == slash2Type) {
                     Main.spriteBatch.Draw(ksc1.Value, p.Center - Main.screenPosition + new Vector2((p.ai[0] + p.ai[1]) / 2 - 300, 0).RotatedBy(p.rotation), null, Color.White, p.rotation + (float)Math.PI / 2, new Vector2(ksc1.Value.Width, ksc1.Value.Height) / 2, new Vector2((p.ai[0] - p.ai[1]) / ksc1.Value.Width * 1.4f, 1f), SpriteEffects.None, 0);
                 }
-                else if (p.type == voidExplodeType)
-                {
-                    if (p.ModProjectile is VoidExplode ve)
-                    {
+                else if (p.type == voidExplodeType) {
+                    if (p.ModProjectile is VoidExplode ve) {
                         float ks = ve.Projectile.timeLeft * 0.1f;
                         if (ve.Projectile.timeLeft > 10) ks = (20 - (float)ve.Projectile.timeLeft) / 10f;
                         ks *= (1 + ve.Projectile.ai[1]);
                         Main.spriteBatch.Draw(ksc1.Value, ve.Projectile.Center - Main.screenPosition, null, Color.White, 0, new Vector2(ksc1.Value.Width, ksc1.Value.Height) / 2, ks * 2, SpriteEffects.None, 0);
                     }
                 }
-                else if (p.type == voidRExpType)
-                {
-                    if (p.ModProjectile is VoidRExp vre)
-                    {
+                else if (p.type == voidRExpType) {
+                    if (p.ModProjectile is VoidRExp vre) {
                         float ks = (90f - vre.Projectile.timeLeft) * 0.4f;
                         if (p.ai[0] == 1)
                             ks = p.timeLeft * 0.4f;
@@ -1099,10 +970,8 @@ namespace CalamityEntropy.Common
                         Main.spriteBatch.Draw(shockwave.Value, vre.Projectile.Center - Main.screenPosition, null, Color.White * a, 0, new Vector2(shockwave.Value.Width, shockwave.Value.Height) / 2, ks, SpriteEffects.None, 0);
                     }
                 }
-                else if (p.type == starlessNightProjType)
-                {
-                    if (p.ModProjectile is StarlessNightProj sl)
-                    {
+                else if (p.type == starlessNightProjType) {
+                    if (p.ModProjectile is StarlessNightProj sl) {
                         sl.drawSlash();
                     }
                 }
@@ -1123,8 +992,7 @@ namespace CalamityEntropy.Common
         public static int votype = -1;
         public static int cruiserEnergyBallType = -1;
         public static int voidRsType = -1;
-        private static void DrawFragEffects(GraphicsDevice graphicsDevice)
-        {
+        private static void DrawFragEffects(GraphicsDevice graphicsDevice) {
             if (voidRsType < 0)
                 voidRsType = ModContent.ProjectileType<VoidResidue>();
             if (cruiserEnergyBallType < 0)
@@ -1147,30 +1015,23 @@ namespace CalamityEntropy.Common
             bool startBatch = false;
             int ratzielStype = ModContent.ProjectileType<RatzielSentry>();
             Texture2D rGlowTex = CEExtraAssets.Circle;
-            foreach (Projectile p in Main.ActiveProjectiles)
-            {
-                if (p.type == cruiserEnergyBallType && p.ModProjectile is CruiserEnergyBall ceb)
-                {
-                    if (!startBatch)
-                    {
+            foreach (Projectile p in Main.ActiveProjectiles) {
+                if (p.type == cruiserEnergyBallType && p.ModProjectile is CruiserEnergyBall ceb) {
+                    if (!startBatch) {
                         Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                         startBatch = true;
                     }
                     CEUtils.DrawGlow(p.Center, Color.White * p.Opacity * 0.72f, 14 * ceb.Scale);
                 }
-                if (p.type == voidRsType)
-                {
-                    if (!startBatch)
-                    {
+                if (p.type == voidRsType) {
+                    if (!startBatch) {
                         Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                         startBatch = true;
                     }
                     CEUtils.DrawGlow(p.Center, Color.White * p.Opacity * 0.4f, 3);
                 }
-                if (p.type == ratzielStype)
-                {
-                    if (!startBatch)
-                    {
+                if (p.type == ratzielStype) {
+                    if (!startBatch) {
                         Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                         startBatch = true;
                     }
@@ -1195,8 +1056,7 @@ namespace CalamityEntropy.Common
             Main.spriteBatch.Draw(Screen0, Vector2.Zero, Color.White);
             Main.spriteBatch.End();
         }
-        public static void DrawVoidOres(int types)
-        {
+        public static void DrawVoidOres(int types) {
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             float gfxQuality = Main.gfxQuality;
             int offScreenRange = Main.offScreenRange;
@@ -1216,8 +1076,7 @@ namespace CalamityEntropy.Common
             int num3 = (int)((float)num * 0.35f);
             int num4 = (int)((float)num * 0.3f);
             Vector2 vector = new Vector2(offScreenRange, offScreenRange);
-            if (true)
-            {
+            if (true) {
                 vector = Vector2.Zero;
             }
             int num5 = (int)((screenPosition.X - vector.X) / 16f - 1f);
@@ -1226,44 +1085,35 @@ namespace CalamityEntropy.Common
             int num8 = (int)((screenPosition.Y + (float)screenHeight + vector.Y) / 16f) + 5;
             int num9 = offScreenRange / 16;
             int num10 = offScreenRange / 16;
-            if (num5 - num9 < 4)
-            {
+            if (num5 - num9 < 4) {
                 num5 = num9 + 4;
             }
-            if (num6 + num9 > maxTilesX - 4)
-            {
+            if (num6 + num9 > maxTilesX - 4) {
                 num6 = maxTilesX - num9 - 4;
             }
-            if (num7 - num10 < 4)
-            {
+            if (num7 - num10 < 4) {
                 num7 = num10 + 4;
             }
-            if (num8 + num10 > maxTilesY - 4)
-            {
+            if (num8 + num10 > maxTilesY - 4) {
                 num8 = maxTilesY - num10 - 4;
             }
             VertexColors vertices = default(VertexColors);
             Rectangle value = new Rectangle(0, 0, 16, 16);
             int underworldLayer = Main.UnderworldLayer;
             Point screenOverdrawOffset = Main.GetScreenOverdrawOffset();
-            for (int i = num7 - num10 + screenOverdrawOffset.Y; i < num8 + num10 - screenOverdrawOffset.Y; i++)
-            {
-                for (int j = num5 - num9 + screenOverdrawOffset.X; j < num6 + num9 - screenOverdrawOffset.X; j++)
-                {
+            for (int i = num7 - num10 + screenOverdrawOffset.Y; i < num8 + num10 - screenOverdrawOffset.Y; i++) {
+                for (int j = num5 - num9 + screenOverdrawOffset.X; j < num6 + num9 - screenOverdrawOffset.X; j++) {
                     Tile tile = _tileArray[j, i];
                     ushort wall = tile.WallType;
-                    if (tile.HasTile && tile.TileType == types)
-                    {
+                    if (tile.HasTile && tile.TileType == types) {
                         value.X = tile.TileFrameX;
                         value.Y = tile.TileFrameY + Main.tileFrame[tile.TileType] * 0;
 
-                        Texture2D GetTileDrawTexture(Tile tile, int tileX, int tileY)
-                        {
+                        Texture2D GetTileDrawTexture(Tile tile, int tileX, int tileY) {
                             Texture2D result = TextureAssets.Tile[tile.TileType].Value;
                             int wall = tile.TileType;
                             Texture2D texture2D = Main.instance.TilePaintSystem.TryGetTileAndRequestIfNotReady(wall, 0, tile.TileColor);
-                            if (texture2D != null)
-                            {
+                            if (texture2D != null) {
                                 result = texture2D;
                             }
                             return result;
@@ -1277,10 +1127,8 @@ namespace CalamityEntropy.Common
             }
             Main.spriteBatch.End();
         }
-        private static void ApplyFinalShader(GraphicsDevice graphicsDevice)
-        {
-            if (FlashEffectStrength > 0)
-            {
+        private static void ApplyFinalShader(GraphicsDevice graphicsDevice) {
+            if (FlashEffectStrength > 0) {
                 graphicsDevice.SetRenderTarget(Screen0);
                 graphicsDevice.Clear(Color.Transparent);
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
@@ -1294,8 +1142,7 @@ namespace CalamityEntropy.Common
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive);
 
-                for (float i = 1; i <= 16; i++)
-                {
+                for (float i = 1; i <= 16; i++) {
                     Main.spriteBatch.Draw(Screen0, Screen0.Size() / 2, null, Color.White * ((16f / i) * 0.1f * FlashEffectStrength), 0, Screen0.Size() / 2, 1 + FlashEffectStrength * 0.08f * i, SpriteEffects.None, 0);
                 }
                 Main.spriteBatch.End();
@@ -1306,10 +1153,8 @@ namespace CalamityEntropy.Common
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
             int cruiserHeadType = ModContent.NPCType<CruiserHead>();
-            foreach (NPC npc in Main.ActiveNPCs)
-            {
-                if (npc.type == cruiserHeadType && npc.ModNPC is CruiserHead ch && ch.phase == 2)
-                {
+            foreach (NPC npc in Main.ActiveNPCs) {
+                if (npc.type == cruiserHeadType && npc.ModNPC is CruiserHead ch && ch.phase == 2) {
                     ch.candraw = true;
                     NPCLoader.PreDraw(npc, Main.spriteBatch, Main.screenPosition, Color.White);
                     ch.PreDraw(Main.spriteBatch, Main.screenPosition, Color.White);
@@ -1319,17 +1164,14 @@ namespace CalamityEntropy.Common
             }
 
             int starlessNightType = ModContent.ProjectileType<StarlessNightProj>();
-            foreach (Projectile proj in Main.ActiveProjectiles)
-            {
+            foreach (Projectile proj in Main.ActiveProjectiles) {
                 if (proj.ModProjectile != null && proj.ModProjectile is CruiserPhantomPet crp)
                     crp.draw();
-                if (proj.type != starlessNightType)
-                {
+                if (proj.type != starlessNightType) {
                     continue;
                 }
 
-                if (proj.ModProjectile is StarlessNightProj sl)
-                {
+                if (proj.ModProjectile is StarlessNightProj sl) {
                     sl.drawSword();
                 }
             }
@@ -1337,10 +1179,8 @@ namespace CalamityEntropy.Common
             Main.spriteBatch.End();
         }
 
-        private static void HandleCutScreenEffect(GraphicsDevice graphicsDevice)
-        {
-            if (cutScreen <= 0)
-            {
+        private static void HandleCutScreenEffect(GraphicsDevice graphicsDevice) {
+            if (cutScreen <= 0) {
                 return;
             }
             if (!ModContent.GetInstance<Config>().ScreenWarpEffects)
@@ -1377,15 +1217,12 @@ namespace CalamityEntropy.Common
             Main.spriteBatch.End();
         }
 
-        private static void DrawBlackMask()
-        {
+        private static void DrawBlackMask() {
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-            if (blackMaskTime > 0)
-            {
+            if (blackMaskTime > 0) {
                 blackMaskAlpha = Math.Min(blackMaskAlpha + 0.05f, 1f);
             }
-            else
-            {
+            else {
                 blackMaskAlpha = Math.Max(blackMaskAlpha - 0.025f, 0f);
             }
             Main.spriteBatch.Draw(CEUtils.pixelTex, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Black * 0.5f * blackMaskAlpha);

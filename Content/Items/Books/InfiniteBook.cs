@@ -5,8 +5,7 @@ namespace CalamityEntropy.Content.Items.Books
 {
     public class InfiniteBook : EntropyBook
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.useTime = Item.useAnimation = 6;
             Item.damage = 80;

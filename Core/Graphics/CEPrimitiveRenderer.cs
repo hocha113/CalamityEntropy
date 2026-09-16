@@ -1,5 +1,4 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -28,8 +27,7 @@ namespace CalamityEntropy.Core.Graphics
         private static readonly List<Vector2> controlCache = new(MaxPositions);
 
         // 与原实现一致: 关背面剔除并按屏幕矩形做剪裁
-        private static readonly RasterizerState cullNoneScissor = new()
-        {
+        private static readonly RasterizerState cullNoneScissor = new() {
             CullMode = CullMode.None,
             ScissorTestEnable = true,
         };
@@ -40,8 +38,7 @@ namespace CalamityEntropy.Core.Graphics
         public static void RenderTrail(List<Vector2> positions, CEPrimitiveSettings settings, int? pointsToCreate = null)
             => RenderTrail(positions.ToArray(), settings, pointsToCreate);
 
-        public static void RenderTrail(Vector2[] positions, CEPrimitiveSettings settings, int? pointsToCreate = null)
-        {
+        public static void RenderTrail(Vector2[] positions, CEPrimitiveSettings settings, int? pointsToCreate = null) {
             // 点数不足或超限直接放弃, 与原实现一致
             if (positions.Length <= 2 || positions.Length > MaxPositions)
                 return;
@@ -61,16 +58,13 @@ namespace CalamityEntropy.Core.Graphics
         }
 
         /// <summary>把输入点整理为屏幕坐标点列: 过滤零点, 按需平滑重采样, 应用偏移委托。</summary>
-        private static bool BuildPoints(Vector2[] positions, CEPrimitiveSettings settings, int desired)
-        {
+        private static bool BuildPoints(Vector2[] positions, CEPrimitiveSettings settings, int desired) {
             pointCount = 0;
 
-            if (!settings.Smoothen)
-            {
+            if (!settings.Smoothen) {
                 // 非平滑: 过滤零点后按索引线性重采样到目标点数
                 int validCount = 0;
-                for (int i = 0; i < positions.Length; i++)
-                {
+                for (int i = 0; i < positions.Length; i++) {
                     if (positions[i] == Vector2.Zero)
                         continue;
                     validIndices[validCount++] = i;
@@ -80,8 +74,7 @@ namespace CalamityEntropy.Core.Graphics
 
                 int last = validCount - 1;
                 float step = 1f / (desired - 1);
-                for (int i = 0; i < desired; i++)
-                {
+                for (int i = 0; i < desired; i++) {
                     float ratio = i * step;
                     float scaled = ratio * last;
                     int cur = (int)scaled;
@@ -97,8 +90,7 @@ namespace CalamityEntropy.Core.Graphics
 
             // 平滑: 先建控制点(零点剔除+偏移), 再沿 Catmull-Rom 曲线重采样
             controlCache.Clear();
-            for (int i = 0; i < positions.Length; i++)
-            {
+            for (int i = 0; i < positions.Length; i++) {
                 if (positions[i] == Vector2.Zero)
                     continue;
                 Vector2 offset = -Main.screenPosition;
@@ -108,15 +100,13 @@ namespace CalamityEntropy.Core.Graphics
             }
 
             int count = controlCache.Count;
-            if (count <= 1)
-            {
+            if (count <= 1) {
                 controlCache.Clear();
                 return false;
             }
 
             float lastIndex = count - 1f;
-            for (int j = 0; j < desired && pointCount < MaxPositions - 1; j++)
-            {
+            for (int j = 0; j < desired && pointCount < MaxPositions - 1; j++) {
                 float onCurve = j / (float)desired * lastIndex;
                 int idx = (int)onCurve;
                 float t = onCurve - idx;
@@ -132,50 +122,42 @@ namespace CalamityEntropy.Core.Graphics
         }
 
         /// <summary>按弧长累计并归一化每个点的拖尾进度(0-1)。</summary>
-        private static void BuildCompletionRatios()
-        {
+        private static void BuildCompletionRatios() {
             float total = 0f;
             ratios[0] = 0f;
-            for (int i = 1; i < pointCount; i++)
-            {
+            for (int i = 1; i < pointCount; i++) {
                 total += Vector2.Distance(points[i], points[i - 1]);
                 ratios[i] = total;
             }
 
-            if (total > Epsilon)
-            {
+            if (total > Epsilon) {
                 float inverse = 1f / total;
                 for (int i = 1; i < pointCount; i++)
                     ratios[i] *= inverse;
                 ratios[pointCount - 1] = 1f;
             }
-            else
-            {
+            else {
                 for (int i = 1; i < pointCount; i++)
                     ratios[i] = 0f;
             }
         }
 
         /// <summary>逐点求切线与法线。法线用平行传输沿链传播, 避免急转处翻面。</summary>
-        private static void BuildFrames()
-        {
+        private static void BuildFrames() {
             Vector2 fallback = Vector2.UnitX;
-            for (int i = 0; i < pointCount; i++)
-            {
+            for (int i = 0; i < pointCount; i++) {
                 Vector2 tangent = ComputeTangent(i, fallback).SafeNormalize(Vector2.UnitX);
                 tangents[i] = tangent;
                 fallback = tangent;
             }
 
             Vector2 prevNormal = Vector2.Zero;
-            for (int i = 0; i < pointCount; i++)
-            {
+            for (int i = 0; i < pointCount; i++) {
                 Vector2 tangent = tangents[i];
                 Vector2 baseNormal = new(-tangent.Y, tangent.X);
                 Vector2 normal;
 
-                if (i > 0 && prevNormal.LengthSquared() > Epsilon)
-                {
+                if (i > 0 && prevNormal.LengthSquared() > Epsilon) {
                     // 平行传输: 上一法线按相邻切线的夹角旋转
                     Vector2 prevTangent = tangents[i - 1];
                     float cos = MathHelper.Clamp(Vector2.Dot(prevTangent, tangent), -1f, 1f);
@@ -194,8 +176,7 @@ namespace CalamityEntropy.Core.Graphics
             }
         }
 
-        private static Vector2 ComputeTangent(int index, Vector2 fallback)
-        {
+        private static Vector2 ComputeTangent(int index, Vector2 fallback) {
             int last = pointCount - 1;
             Vector2 tangent;
 
@@ -205,8 +186,7 @@ namespace CalamityEntropy.Core.Graphics
                 tangent = points[1] - points[0];
             else if (index >= last)
                 tangent = points[last] - points[last - 1];
-            else
-            {
+            else {
                 // 内点取前后差分之和; 折返导致抵消时取较长的一侧
                 Vector2 forward = points[index + 1] - points[index];
                 Vector2 backward = points[index] - points[index - 1];
@@ -222,13 +202,11 @@ namespace CalamityEntropy.Core.Graphics
         }
 
         /// <summary>把点列扩展成左右成对的三角带顶点。</summary>
-        private static void BuildVertices(CEPrimitiveSettings settings)
-        {
+        private static void BuildVertices(CEPrimitiveSettings settings) {
             vertexCount = 0;
             BuildFrames();
 
-            for (int i = 0; i < pointCount; i++)
-            {
+            for (int i = 0; i < pointCount; i++) {
                 float ratio = ratios[i];
                 Vector2 pos = points[i];
                 float halfWidth = Math.Max(settings.WidthFunction(ratio, pos), 0f);
@@ -237,14 +215,12 @@ namespace CalamityEntropy.Core.Graphics
 
                 Vector2 left, right;
                 float effectiveHalfWidth;
-                if (halfWidth <= 0f)
-                {
+                if (halfWidth <= 0f) {
                     left = pos;
                     right = pos;
                     effectiveHalfWidth = Epsilon;
                 }
-                else
-                {
+                else {
                     Vector2 normal = normals[i];
                     // 内点做平滑接角: 与前后法线取平均
                     if (i > 0 && i < pointCount - 1 && pointCount > 2)
@@ -262,8 +238,7 @@ namespace CalamityEntropy.Core.Graphics
             }
         }
 
-        private static void Render(CEPrimitiveSettings settings)
-        {
+        private static void Render(CEPrimitiveSettings settings) {
             GraphicsDevice device = Main.instance.GraphicsDevice;
             device.RasterizerState = cullNoneScissor;
             // 裁剪矩形取真实视口而非 Main.screenWidth/Height:
@@ -280,8 +255,7 @@ namespace CalamityEntropy.Core.Graphics
         }
 
         /// <summary>屏幕空间正交投影, 含缩放与反重力翻转。</summary>
-        public static void CalculatePerspectiveMatrices(out Matrix view, out Matrix projection)
-        {
+        public static void CalculatePerspectiveMatrices(out Matrix view, out Matrix projection) {
             Vector2 zoom = Main.GameViewMatrix.Zoom;
             Matrix zoomScale = Matrix.CreateScale(zoom.X, zoom.Y, 1f);
             int width = Main.instance.GraphicsDevice.Viewport.Width;
@@ -316,8 +290,7 @@ namespace CalamityEntropy.Core.Graphics
             new(12, VertexElementFormat.Vector3, VertexElementUsage.TextureCoordinate, 0),
         });
 
-        public CEPrimitiveVertex(Vector2 position, Color color, Vector2 textureCoordinates, float halfWidth)
-        {
+        public CEPrimitiveVertex(Vector2 position, Color color, Vector2 textureCoordinates, float halfWidth) {
             Position = position;
             Color = color;
             TextureCoordinates = new Vector3(textureCoordinates, halfWidth);

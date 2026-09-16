@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.SpiritFountain.Core;
+﻿using CalamityEntropy.Content.NPCs.SpiritFountain.Core;
 using InnoVault.StateMachines;
 
 namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
@@ -17,8 +17,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
     {
         public override SpiritFountainStateIndex StateIndex => SpiritFountainStateIndex.PhaseTranse1;
 
-        protected override IVaultState<SpiritFountainStateContext> RunBody(SpiritFountainStateContext ctx)
-        {
+        protected override IVaultState<SpiritFountainStateContext> RunBody(SpiritFountainStateContext ctx) {
             SpiritFountain owner = ctx.Owner;
 
             ctx.DontTakeDmg = true;
@@ -28,8 +27,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
             //块内的第二次自增:基类在状态体之后还会再加一次,合起来每帧 +2
             Timer++;
 
-            if (Timer > SpiritFountainDirector.TransDuration)
-            {
+            if (Timer > SpiritFountainDirector.TransDuration) {
                 ctx.DontTakeDmg = false;
                 IVaultState<SpiritFountainStateContext> next = Advance(ctx, StateIndex);
                 owner.column2.alpha = SpiritFountainDirector.TransColumn2Alpha;

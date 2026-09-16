@@ -1,4 +1,4 @@
-using InnoVault.PRT;
+﻿using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -16,8 +16,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             OriginalScale = 0f;
             FinalScale = 0f;
@@ -29,8 +28,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_PulseRing Configure(float finalScale, int lifetime,
-            PRTDrawModeEnum mode = PRTDrawModeEnum.AdditiveBlend)
-        {
+            PRTDrawModeEnum mode = PRTDrawModeEnum.AdditiveBlend) {
             OriginalScale = Scale;
             FinalScale = finalScale;
             BaseColor = Color;
@@ -40,8 +38,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 30;
@@ -49,8 +46,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             opacity = 0f;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             float pulseProgress = 1f - MathF.Pow(1f - LifetimeCompletion, 4f);   //脉冲缩放曲线,别换成LifetimeCompletion线性
             Scale = MathHelper.Lerp(OriginalScale, FinalScale, pulseProgress);
 
@@ -61,8 +57,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             Velocity *= 0.95f;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch) {
             Texture2D tex = PRTSharedAssets.HollowCircleHardEdge.Value;   //脉冲环贴图,HollowCircleHardEdge
             spriteBatch.Draw(tex, Position - Main.screenPosition, null, Color * opacity, Rotation, tex.Size() / 2f,
                 Scale, SpriteEffects.None, 0);

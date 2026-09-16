@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Cruiser.Core;
+﻿using CalamityEntropy.Content.NPCs.Cruiser.Core;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
     {
         public override CruiserStateIndex StateIndex => CruiserStateIndex.AroundPlayerAndShootVoidStar;
 
-        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx)
-        {
+        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
 
@@ -25,13 +24,11 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
             npc.velocity *= CruiserDirector.AroundDrag;
 
             ctx.ChangeCounter++;
-            if (ctx.ChangeCounter % CruiserDirector.AroundWhipInterval == 0)
-            {
+            if (ctx.ChangeCounter % CruiserDirector.AroundWhipInterval == 0) {
                 ctx.TailWhipCue = true;
                 MarkNetUpdate(ctx);
             }
-            if (ctx.ChangeCounter > CruiserDirector.AroundDuration)
-            {
+            if (ctx.ChangeCounter > CruiserDirector.AroundDuration) {
                 return NextAttack(ctx);
             }
             return null;

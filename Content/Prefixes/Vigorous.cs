@@ -11,10 +11,8 @@ namespace CalamityEntropy.Content.Prefixes
         public override string LocalizationCategory => "Prefixes.Weapon";
         public override PrefixCategory Category => PrefixCategory.AnyWeapon;
         public override bool CanRoll(Item item) => item.maxStack == 1 || item.AllowReforgeForStackableItem;
-        public override IEnumerable<TooltipLine> GetTooltipLines(Item item)
-        {
-            TooltipLine t = new TooltipLine(Mod, "PrefixDescription", AdditionalTooltip.Value)
-            {
+        public override IEnumerable<TooltipLine> GetTooltipLines(Item item) {
+            TooltipLine t = new TooltipLine(Mod, "PrefixDescription", AdditionalTooltip.Value) {
                 IsModifier = true,
                 IsModifierBad = false
             };

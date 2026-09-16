@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Acropolis.Core;
+﻿using CalamityEntropy.Content.NPCs.Acropolis.Core;
 using CalamityEntropy.Content.Projectiles;
 using InnoVault.StateMachines;
 using System;
@@ -23,8 +23,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.States
     {
         public override AcropolisStateIndex StateIndex => AcropolisStateIndex.JumpShoot;
 
-        public override void OnEnter(AcropolisStateContext ctx)
-        {
+        public override void OnEnter(AcropolisStateContext ctx) {
             base.OnEnter(ctx);
             NPC npc = ctx.Npc;
             ctx.TeslaCD = AcropolisDirector.TeslaCDAfterSpecial;
@@ -32,8 +31,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.States
             ctx.Owner.JumpCD = AcropolisDirector.JumpShootJumpCD;
             ctx.JumpAndShoot = AcropolisDirector.JumpShootFrames;
             ctx.TeslaUpCD = AcropolisDirector.JumpShootTeslaUpInit;
-            if (ctx.Target != null)
-            {
+            if (ctx.Target != null) {
                 //起跳冲量各端都写:横向的 /scale*scale 在原式里互相抵消,这里保持原写法不化简
                 npc.velocity = new Vector2(
                     AcropolisDirector.JumpLaunchSpeedX * Math.Sign(ctx.Target.Center.X - npc.Center.X) / npc.scale,
@@ -41,25 +39,21 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.States
             }
         }
 
-        public override IVaultState<AcropolisStateContext> OnUpdate(AcropolisStateContext ctx)
-        {
+        public override IVaultState<AcropolisStateContext> OnUpdate(AcropolisStateContext ctx) {
             NPC npc = ctx.Npc;
             AcropolisHand cannon = ctx.Cannon;
 
             //对齐原代码 `JumpAndShoot-- > 0`:自减无条件发生,取自减前的值判分支
             int before = ctx.JumpAndShoot;
             ctx.JumpAndShoot = before - 1;
-            if (before > 0)
-            {
+            if (before > 0) {
                 ctx.CannonAim = npc.Center + cannon.offset * npc.scale + new Vector2(0f, AcropolisDirector.JumpShootAimDrop);
                 ctx.CannonAimTimes = AcropolisDirector.JumpShootAimTimes;
                 ctx.TeslaUpCD -= ctx.Enrange;
-                if (ctx.TeslaUpCD <= 0f)
-                {
+                if (ctx.TeslaUpCD <= 0f) {
                     ctx.TeslaUpCD = AcropolisDirector.JumpShootInterval;
                     CEUtils.PlaySound("ofshoot", 1, cannon.TopPos);
-                    if (IsServer)
-                    {
+                    if (IsServer) {
                         Shoot<AcropolisTeslaBall>(ctx, cannon.TopPos,
                             cannon.Seg2Rot.ToRotationVector2().RotatedByRandom(AcropolisDirector.JumpShootSpread) * AcropolisDirector.JumpShootSpeed,
                             1f, AcropolisDirector.JumpShootProjAi0, npc.whoAmI);
@@ -68,8 +62,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.States
             }
 
             //落地由宿主的落地判定清掉腾空标记,本状态下一帧才收招——与原代码的执行顺序一致
-            if (!ctx.Airborne)
-            {
+            if (!ctx.Airborne) {
                 return BackToWalk(ctx);
             }
             return null;

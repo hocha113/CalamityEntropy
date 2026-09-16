@@ -10,8 +10,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Nemesis
 {
     internal class NemesisAlt : ModProjectile
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = Projectile.height = 254;
             Projectile.timeLeft = 180;
             Projectile.friendly = true;
@@ -25,28 +24,23 @@ namespace CalamityEntropy.Content.Items.Weapons.Nemesis
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.rotation = Projectile.velocity.ToRotation();
-            if (++Projectile.ai[0] > 60)
-            {
+            if (++Projectile.ai[0] > 60) {
                 Projectile.scale += 0.004f;
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             float thirdDustScale = Main.rand.NextFloat(2, 4);
             Vector2 dustRotation = (target.rotation - MathHelper.PiOver2).ToRotationVector2();
             Vector2 dustVelocity = dustRotation * target.velocity.Length() / 6;
             _ = SoundEngine.PlaySound(SoundID.Item14, target.Center);
-            for (int j = 0; j < 60; j++)
-            {
+            for (int j = 0; j < 60; j++) {
                 thirdDustScale = Main.rand.NextFloat(2, 4);
                 bool noGvk = true;
                 int dustId = DustID.InfernoFork;
-                if (Main.rand.NextBool(2))
-                {
+                if (Main.rand.NextBool(2)) {
                     thirdDustScale /= 6f;
                     noGvk = false;
                     dustId = DustID.FireworkFountain_Red;
@@ -64,12 +58,10 @@ namespace CalamityEntropy.Content.Items.Weapons.Nemesis
             Projectile.damage = (int)(Projectile.damage * 0.9f);
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawOrigin = texture.Size() / 2;
-            for (int k = 0; k < Projectile.oldPos.Length; k++)
-            {
+            for (int k = 0; k < Projectile.oldPos.Length; k++) {
                 Vector2 offsetPos = Projectile.oldPos[k].To(Projectile.position);
                 Vector2 drawPos = Projectile.Center - Main.screenPosition - offsetPos;
                 Color color = Projectile.GetAlpha(Color.Pink) * ((Projectile.oldPos.Length - k) / (float)Projectile.oldPos.Length);

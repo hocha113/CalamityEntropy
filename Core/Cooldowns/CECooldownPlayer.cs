@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using Terraria;
 using Terraria.Audio;
@@ -24,8 +24,7 @@ namespace CalamityEntropy.Core.Cooldowns
         /// <summary>该玩家的具名充能计量器。</summary>
         public Dictionary<string, CEChargeMeter> charges;
 
-        public override void Initialize()
-        {
+        public override void Initialize() {
             cooldowns = new Dictionary<string, CECooldownInstance>(16);
             charges = new Dictionary<string, CEChargeMeter>();
         }
@@ -36,12 +35,10 @@ namespace CalamityEntropy.Core.Cooldowns
         /// (替代原 EModILEdit 对灾厄 AddCooldown 的钩子)。
         /// 返回创建的实例;ID 未注册时返回 null。
         /// </summary>
-        public CECooldownInstance Add(string id, int duration, bool overwrite = true)
-        {
+        public CECooldownInstance Add(string id, int duration, bool overwrite = true) {
             duration = (int)(duration * Player.Entropy().CooldownTimeMult);
             var instance = new CECooldownInstance(Player, id, duration);
-            if (instance.handler == null)
-            {
+            if (instance.handler == null) {
                 CalamityEntropy.Instance?.Logger?.Warn($"冷却 \"{id}\" 未注册,AddCooldown 被忽略。");
                 return null;
             }
@@ -61,11 +58,9 @@ namespace CalamityEntropy.Core.Cooldowns
         public void Clear() => cooldowns.Clear();
 
         /// <summary>应显示在冷却栏上的实例列表。</summary>
-        public IList<CECooldownInstance> GetDisplayed()
-        {
+        public IList<CECooldownInstance> GetDisplayed() {
             List<CECooldownInstance> result = new List<CECooldownInstance>(cooldowns.Count);
-            foreach (CECooldownInstance instance in cooldowns.Values)
-            {
+            foreach (CECooldownInstance instance in cooldowns.Values) {
                 if (instance.handler.ShouldDisplay)
                     result.Add(instance);
             }
@@ -73,15 +68,12 @@ namespace CalamityEntropy.Core.Cooldowns
         }
 
         /// <summary>取具名充能计量器,不存在则按 max 创建。已存在时同步 Max 到最新值。</summary>
-        public CEChargeMeter GetCharge(string key, float max)
-        {
-            if (!charges.TryGetValue(key, out CEChargeMeter meter))
-            {
+        public CEChargeMeter GetCharge(string key, float max) {
+            if (!charges.TryGetValue(key, out CEChargeMeter meter)) {
                 meter = new CEChargeMeter(max);
                 charges[key] = meter;
             }
-            else
-            {
+            else {
                 meter.Max = max;
             }
             return meter;
@@ -89,19 +81,16 @@ namespace CalamityEntropy.Core.Cooldowns
         #endregion
 
         #region 逐帧推进
-        public override void PostUpdateMiscEffects()
-        {
+        public override void PostUpdateMiscEffects() {
             TickCooldowns();
         }
 
-        private void TickCooldowns()
-        {
+        private void TickCooldowns() {
             if (cooldowns.Count == 0)
                 return;
 
             List<string> expired = null;
-            foreach (var kv in cooldowns)
-            {
+            foreach (var kv in cooldowns) {
                 CECooldownInstance instance = kv.Value;
                 CECooldownHandler handler = instance.handler;
 
@@ -111,8 +100,7 @@ namespace CalamityEntropy.Core.Cooldowns
                 // Tick 总是执行,与计时是否递减无关
                 handler.Tick();
 
-                if (instance.timeLeft < 0)
-                {
+                if (instance.timeLeft < 0) {
                     handler.OnCompleted();
                     if (!Main.dedServ && handler.EndSound != null && handler.ShouldPlayEndSound)
                         SoundEngine.PlaySound(handler.EndSound.GetValueOrDefault(), Player.Center);
@@ -120,26 +108,22 @@ namespace CalamityEntropy.Core.Cooldowns
                 }
             }
 
-            if (expired != null)
-            {
+            if (expired != null) {
                 foreach (string id in expired)
                     cooldowns.Remove(id);
             }
         }
 
-        public override void UpdateDead()
-        {
+        public override void UpdateDead() {
             if (cooldowns.Count == 0)
                 return;
 
             List<string> removed = null;
-            foreach (var kv in cooldowns)
-            {
+            foreach (var kv in cooldowns) {
                 if (!kv.Value.handler.PersistsThroughDeath)
                     (removed ??= new List<string>()).Add(kv.Key);
             }
-            if (removed != null)
-            {
+            if (removed != null) {
                 foreach (string id in removed)
                     cooldowns.Remove(id);
             }
@@ -147,32 +131,26 @@ namespace CalamityEntropy.Core.Cooldowns
         #endregion
 
         #region 存档
-        public override void SaveData(TagCompound tag)
-        {
+        public override void SaveData(TagCompound tag) {
             TagCompound cdTag = new TagCompound();
-            foreach (var kv in cooldowns)
-            {
+            foreach (var kv in cooldowns) {
                 if (kv.Value.handler.SavedWithPlayer)
                     cdTag[kv.Key] = kv.Value.Save();
             }
             tag[CooldownsSaveKey] = cdTag;
 
             TagCompound chargeTag = new TagCompound();
-            foreach (var kv in charges)
-            {
+            foreach (var kv in charges) {
                 if (kv.Value.Charge > 0)
                     chargeTag[kv.Key] = kv.Value.Save();
             }
             tag[ChargesSaveKey] = chargeTag;
         }
 
-        public override void LoadData(TagCompound tag)
-        {
+        public override void LoadData(TagCompound tag) {
             cooldowns.Clear();
-            if (tag.TryGet(CooldownsSaveKey, out TagCompound cdTag))
-            {
-                foreach (var kv in cdTag)
-                {
+            if (tag.TryGet(CooldownsSaveKey, out TagCompound cdTag)) {
+                foreach (var kv in cdTag) {
                     var instance = new CECooldownInstance(Player, kv.Key, cdTag.GetCompound(kv.Key));
                     if (instance.handler != null)
                         cooldowns[kv.Key] = instance;
@@ -182,8 +160,7 @@ namespace CalamityEntropy.Core.Cooldowns
             }
 
             charges.Clear();
-            if (tag.TryGet(ChargesSaveKey, out TagCompound chargeTag))
-            {
+            if (tag.TryGet(ChargesSaveKey, out TagCompound chargeTag)) {
                 foreach (var kv in chargeTag)
                     charges[kv.Key] = CEChargeMeter.Load(chargeTag.GetCompound(kv.Key));
             }
@@ -192,8 +169,7 @@ namespace CalamityEntropy.Core.Cooldowns
 
         #region 加入同步序列化(发包见 CENetWork 的 SyncCooldowns 分支)
         /// <summary>把该玩家全部冷却写入流。由 CENetWork 的 SyncPlayer 路径调用后发包。</summary>
-        public void WriteAllCooldowns(BinaryWriter writer)
-        {
+        public void WriteAllCooldowns(BinaryWriter writer) {
             writer.Write((byte)Player.whoAmI);
             writer.Write((ushort)cooldowns.Count);
             foreach (var kv in cooldowns)
@@ -201,15 +177,13 @@ namespace CalamityEntropy.Core.Cooldowns
         }
 
         /// <summary>从流恢复目标玩家的全部冷却。由 CENetWork.Handle 的 SyncCooldowns 分支调用。</summary>
-        public static void ReceiveAllCooldowns(BinaryReader reader)
-        {
+        public static void ReceiveAllCooldowns(BinaryReader reader) {
             int whoAmI = reader.ReadByte();
             int count = reader.ReadUInt16();
             Player target = Main.player[whoAmI];
             var modPlayer = target.GetModPlayer<CECooldownPlayer>();
             modPlayer.cooldowns.Clear();
-            for (int i = 0; i < count; i++)
-            {
+            for (int i = 0; i < count; i++) {
                 CECooldownInstance instance = CECooldownInstance.Read(reader, target);
                 if (instance.handler != null)
                     modPlayer.cooldowns[instance.ID] = instance;

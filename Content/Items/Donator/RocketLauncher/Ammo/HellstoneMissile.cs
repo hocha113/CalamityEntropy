@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
 using Terraria;
@@ -10,8 +10,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
 {
     public class HellstoneMissile : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 24;
             Item.height = 24;
             Item.maxStack = 9999;
@@ -25,8 +24,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
             Item.shootSpeed = 4;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe(100)
                 .AddIngredient(ModContent.ItemType<OsseousRemains>())
                 .AddIngredient(ItemID.HellstoneBar, 1)
@@ -38,24 +36,19 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
     public class HellstoneMissileProj : BaseMissileProj
     {
         public override float StickDamageAddition => 0.02f;
-        public override void SetupStats()
-        {
+        public override void SetupStats() {
             Projectile.ai[1] += 60;
         }
         public override string Texture => "CalamityEntropy/Content/Items/Donator/RocketLauncher/Ammo/HellstoneMissile";
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             base.OnHitNPC(target, hit, damageDone);
             target.AddBuff(BuffID.OnFire3, 3 * 60);
         }
-        public override void StickUpdate(NPC target)
-        {
+        public override void StickUpdate(NPC target) {
             target.AddBuff(BuffID.OnFire3, 3 * 60);
         }
-        public override void ExplodeVisual()
-        {
-            for (int i = 0; i < 36; i++)
-            {
+        public override void ExplodeVisual() {
+            for (int i = 0; i < 36; i++) {
                 var d = Dust.NewDustDirect(Projectile.Center, Projectile.width, Projectile.height, DustID.Flare);
                 d.noGravity = true;
                 d.scale = 1.5f;
@@ -74,10 +67,8 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
             PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Firebrick * 1.6f, 0.005f).Configure("CalamityEntropy/Assets/Particles/SmokeExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.025f, 14);
 
         }
-        public override void SpawnParticle(Vector2 vel)
-        {
-            for (int i = 0; i < 8; i++)
-            {
+        public override void SpawnParticle(Vector2 vel) {
+            for (int i = 0; i < 8; i++) {
                 var d = Dust.NewDustDirect(Projectile.position, 0, 0, DustID.Flare);
                 d.noGravity = true;
                 d.position = Projectile.Center + CEUtils.randomPointInCircle(6) + vel * (i / 8f);

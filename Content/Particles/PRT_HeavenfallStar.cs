@@ -15,8 +15,7 @@ namespace CalamityEntropy.Content.Particles
         public override bool CanPool => true;
 
         //CanPool复用,InitialColor/xScale/drawScale/orgScale/Inverse新加字段都得来Reset登记
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             Glow = true;
             InitialColor = default;
@@ -26,8 +25,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Assets/Extra/StarTexture_White";
 
         public PRT_HeavenfallStar Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -37,23 +35,20 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             InitialColor = Color;   //spawn色快照,AI里Lerp淡出去,2/3同理
             if (Lifetime <= 0)
                 Lifetime = 200;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Scale *= 0.92f;
             Color = Color.Lerp(InitialColor, Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D));   //三次方=前段亮得久,旧fade曲线
             Velocity *= 0.92f;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Texture2D tex = PRTExtraTextures.StarTexture_White.Value;
             //双层Draw叠辉光,第二层scale*0.45,旧Draw一行没动
             Vector2 scaled = new Vector2(0.2f, 1.6f * xScale) * Scale;
@@ -75,8 +70,7 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             Glow = true;
             InitialColor = default;
@@ -89,8 +83,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Assets/Extra/StarTexture_White";
 
         public PRT_HeavenfallStar2 Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -100,8 +93,7 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             InitialColor = Color;
             InitialScale = Scale;
@@ -110,29 +102,24 @@ namespace CalamityEntropy.Content.Particles
                 Lifetime = 26;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             //orgScale第一帧AI才抓,Inverse分支Scale算法另算,Reset里清回-1
-            if (orgScale == -1)
-            {
+            if (orgScale == -1) {
                 orgScale = Scale;
                 Scale = 0;
             }
-            if (Inverse)
-            {
+            if (Inverse) {
                 Scale += (Lifetime - Time) * orgScale * 0.002f;
                 Color = InitialColor * (1f - LifetimeCompletion);
             }
-            else
-            {
+            else {
                 Scale = InitialScale * (1f - LifetimeCompletion);
                 Color = Color.Lerp(InitialColor, Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D));
             }
             Velocity *= 0.92f;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Texture2D tex = PRTExtraTextures.StarTexture_White.Value;
             Vector2 scaled = drawScale * Scale;
             sb.Draw(tex, Position - Main.screenPosition, null, Color, Rotation + MathHelper.PiOver2, tex.Size() * 0.5f, scaled, 0, 0f);
@@ -152,8 +139,7 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             Glow = true;
             InitialColor = default;
@@ -165,8 +151,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Assets/Extra/StarTexture_White";
 
         public PRT_HeavenfallStar3 Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -176,8 +161,7 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             InitialColor = Color;
             InitialScale = Scale;
@@ -185,15 +169,13 @@ namespace CalamityEntropy.Content.Particles
                 Lifetime = 200;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Scale *= 0.92f;
             Color = Color.Lerp(InitialColor, Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D));
             Velocity *= 0.92f;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Texture2D tex = PRTExtraTextures.StarTexture_White.Value;
             Vector2 scaled = drawScale * Scale;
             sb.Draw(tex, Position - Main.screenPosition, null, Color, Rotation + MathHelper.PiOver2, tex.Size() * 0.5f, scaled, 0, 0f);

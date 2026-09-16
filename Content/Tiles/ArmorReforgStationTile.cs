@@ -13,12 +13,10 @@ namespace CalamityEntropy.Content.Tiles
 {
     public class ArmorReforgStationTile : ModTile
     {
-        public override bool IsLoadingEnabled(Mod mod)
-        {
+        public override bool IsLoadingEnabled(Mod mod) {
             return false;
         }
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             RegisterItemDrop(ModContent.ItemType<ArmorReforgStation>());
             Main.tileFrameImportant[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
@@ -39,21 +37,17 @@ namespace CalamityEntropy.Content.Tiles
 
 
 
-        public override void AnimateTile(ref int frame, ref int frameCounter)
-        {
+        public override void AnimateTile(ref int frame, ref int frameCounter) {
             frameCounter++;
-            if (frameCounter >= 7)
-            {
+            if (frameCounter >= 7) {
                 frameCounter = 0;
-                if (++frame >= 4)
-                {
+                if (++frame >= 4) {
                     frame = 0;
                 }
             }
         }
 
-        public override void MouseOver(int i, int j)
-        {
+        public override void MouseOver(int i, int j) {
             Player player = Main.LocalPlayer;
             player.noThrow = 2;
 
@@ -63,15 +57,12 @@ namespace CalamityEntropy.Content.Tiles
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
 
-        public override bool RightClick(int i, int j)
-        {
-            if (ArmorForgingStationUI.Visible)
-            {
+        public override bool RightClick(int i, int j) {
+            if (ArmorForgingStationUI.Visible) {
                 Main.playerInventory = false;
 
             }
-            else
-            {
+            else {
                 ArmorForgingStationUI.Visible = true;
                 Main.playerInventory = true;
             }

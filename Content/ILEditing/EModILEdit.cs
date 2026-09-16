@@ -16,26 +16,21 @@ namespace CalamityEntropy.Content.ILEditing
 {
     public static class EModILEdit
     {
-        public static void load()
-        {
-            if (ModLoader.TryGetMod("AlchemistNPCLite", out var anpc))
-            {
+        public static void load() {
+            if (ModLoader.TryGetMod("AlchemistNPCLite", out var anpc)) {
                 ANPCSupport.ANPCShopAdd.LoadHook();
             }
             var Item_Name_Get_Method = typeof(Item).GetProperty("Name", BindingFlags.Instance | BindingFlags.Public).GetGetMethod();
-            if (Item_Name_Get_Method != null)
-            {
+            if (Item_Name_Get_Method != null) {
                 EModHooks.Add(Item_Name_Get_Method, On_Name_Get_Hook);
             }
 
             var NPC_Get_Name = typeof(NPC).GetProperty("TypeName", BindingFlags.Instance | BindingFlags.Public).GetGetMethod();
-            if (NPC_Get_Name != null)
-            {
+            if (NPC_Get_Name != null) {
                 EModHooks.Add(NPC_Get_Name, On_NPC_Get_Hook);
             }
 
-            if (CERef.Has)
-            {
+            if (CERef.Has) {
                 StoreForbiddenArchivePositionHook.LoadHook();
                 LoreItemCanUseHook.LoadHook();
             }
@@ -46,11 +41,9 @@ namespace CalamityEntropy.Content.ILEditing
         //脱离灾厄死代码裁决:GetNPCDRMultiply随EntropyBossbar的DR显示移除失去唯一调用点,已删
         public delegate string On_GetNPCName_get_Delegate(NPC npc);
         public static List<int> LostNPCsEntropy = new() { 454, 455, 456, 457, 458, 459, 521 };
-        public static string On_NPC_Get_Hook(On_GetNPCName_get_Delegate orig, NPC npc)
-        {
+        public static string On_NPC_Get_Hook(On_GetNPCName_get_Delegate orig, NPC npc) {
             string n = orig(npc);
-            if (CalamityEntropy.EntropyMode)
-            {
+            if (CalamityEntropy.EntropyMode) {
                 if (npc.type == NPCID.CultistBoss || npc.type == NPCID.Golem || npc.type == NPCID.GolemFistLeft || npc.type == NPCID.GolemFistRight || npc.type == NPCID.GolemHead || npc.type == NPCID.GolemHeadFree || LostNPCsEntropy.Contains(npc.type))
                     n = (Language.ActiveCulture == GameCulture.FromCultureName(GameCulture.CultureName.Chinese) ? "失心" : "Lost") + " " + n;
             }
@@ -58,16 +51,13 @@ namespace CalamityEntropy.Content.ILEditing
                 n = CalamityEntropy.Instance.GetLocalization("Luminariswarm").Value;
             return n;
         }
-        public static string On_Name_Get_Hook(On_GetItemName_get_Delegate orig, Item item)
-        {
+        public static string On_Name_Get_Hook(On_GetItemName_get_Delegate orig, Item item) {
             if (Main.gameMenu || item.ModItem == null)
                 return orig(item);
             string orgName = orig.Invoke(item);
-            if (item.active)
-            {
+            if (item.active) {
                 string name = orgName;
-                if (EGlobalItem.GetOverrideName(item, orgName, out string NameNew))
-                {
+                if (EGlobalItem.GetOverrideName(item, orgName, out string NameNew)) {
                     name = NameNew;
                 }
                 return name;
@@ -81,46 +71,37 @@ namespace CalamityEntropy.Content.ILEditing
     {
         private delegate void PlaceArchiveOrig();
 
-        public static void LoadHook()
-        {
+        public static void LoadHook() {
             Type archiveType = CERef.DungeonArchiveType;
-            if (archiveType == null)
-            {
+            if (archiveType == null) {
                 return;
             }
             MethodInfo method = archiveType.GetMethod("PlaceArchive", BindingFlags.Public | BindingFlags.Static);
-            if (method == null)
-            {
+            if (method == null) {
                 CalamityEntropy.Instance.Logger.Warn("[CERef] 反射失败 Method: PlaceArchive");
                 return;
             }
             EModHooks.Add(method, On_PlaceArchive);
         }
 
-        private static void On_PlaceArchive(PlaceArchiveOrig orig)
-        {
+        private static void On_PlaceArchive(PlaceArchiveOrig orig) {
             orig();
-            if (CERef.Has)
-            {
+            if (CERef.Has) {
                 CopyDungeonArchivePos();
             }
         }
 
-        public static void CopyDungeonArchivePos()
-        {
+        public static void CopyDungeonArchivePos() {
             Type sysType = CERef.WorldgenManagementSystemType;
-            if (sysType == null)
-            {
+            if (sysType == null) {
                 return;
             }
             FieldInfo field = sysType.GetField("DungeonArchivePos", BindingFlags.Public | BindingFlags.Static);
-            if (field == null)
-            {
+            if (field == null) {
                 return;
             }
             object raw = field.GetValue(null);
-            if (raw is Point pos && pos != Point.Zero)
-            {
+            if (raw is Point pos && pos != Point.Zero) {
                 EDownedBosses.ForbiddenArchiveCenter = pos;
             }
         }
@@ -133,29 +114,24 @@ namespace CalamityEntropy.Content.ILEditing
     {
         private delegate bool CanUseItemOrig(ModItem self, Player player);
 
-        public static void LoadHook()
-        {
+        public static void LoadHook() {
             Type loreType = CERef.LoreItemType;
-            if (loreType == null)
-            {
+            if (loreType == null) {
                 return;
             }
             MethodInfo method = loreType.GetMethod("CanUseItem", BindingFlags.Public | BindingFlags.Instance);
-            if (method == null)
-            {
+            if (method == null) {
                 CalamityEntropy.Instance.Logger.Warn("[CERef] 反射失败 Method: LoreItem.CanUseItem");
                 return;
             }
             EModHooks.Add(method, On_CanUseItem);
         }
 
-        private static bool On_CanUseItem(CanUseItemOrig orig, ModItem self, Player player)
-        {
+        private static bool On_CanUseItem(CanUseItemOrig orig, ModItem self, Player player) {
             //只放行本模组真正挂了 LoreEffect 的那些,其余维持灾厄原样
             if (LoreEffect.Enabled && self != null
                 && LoreReworkSystem.loreEffects != null
-                && LoreReworkSystem.loreEffects.ContainsKey(self.Type))
-            {
+                && LoreReworkSystem.loreEffects.ContainsKey(self.Type)) {
                 return true;
             }
             return orig(self, player);
@@ -164,14 +140,11 @@ namespace CalamityEntropy.Content.ILEditing
 
     public class ForbiddenArchiveCenterSync : ModSystem
     {
-        public override void OnWorldLoad()
-        {
-            if (EDownedBosses.ForbiddenArchiveCenter.X >= 0)
-            {
+        public override void OnWorldLoad() {
+            if (EDownedBosses.ForbiddenArchiveCenter.X >= 0) {
                 return;
             }
-            if (CERef.Has)
-            {
+            if (CERef.Has) {
                 StoreForbiddenArchivePositionHook.CopyDungeonArchivePos();
             }
         }
@@ -181,56 +154,44 @@ namespace CalamityEntropy.Content.ILEditing
     {
         private static ConcurrentDictionary<(MethodBase, Delegate), Hook> _hooks = new ConcurrentDictionary<(MethodBase, Delegate), Hook>();
         public static ConcurrentDictionary<(MethodBase, Delegate), Hook> Hooks => _hooks;
-        public static Hook Add(MethodBase method, Delegate hookDelegate)
-        {
-            if (method == null)
-            {
+        public static Hook Add(MethodBase method, Delegate hookDelegate) {
+            if (method == null) {
                 CalamityEntropy.Instance.Logger.Warn($"CalamityEntropy: Error when add hook to method: The MethodBase passed in is Null");
                 return null;
             }
-            if (hookDelegate == null)
-            {
+            if (hookDelegate == null) {
                 CalamityEntropy.Instance.Logger.Warn($"CalamityEntropy: Error when add hook to {method.Name}: The HookDelegate passed in is Null");
                 return null;
             }
 
             Hook hook = new Hook(method, hookDelegate);
 
-            if (!hook.IsApplied)
-            {
+            if (!hook.IsApplied) {
                 hook.Apply();
             }
             _hooks.TryAdd((method, hookDelegate), hook);
             return hook;
         }
 
-        public static bool CheckHookStatus()
-        {
+        public static bool CheckHookStatus() {
             int hookDownNum = 0;
-            foreach (var hook in _hooks.Values)
-            {
-                if (!hook.IsApplied)
-                {
+            foreach (var hook in _hooks.Values) {
+                if (!hook.IsApplied) {
                     hookDownNum++;
                 }
             }
-            if (hookDownNum > 0)
-            {
+            if (hookDownNum > 0) {
                 return false;
             }
             return true;
         }
 
-        public static void UnLoadData()
-        {
-            foreach (var hook in _hooks.Values)
-            {
-                if (hook == null)
-                {
+        public static void UnLoadData() {
+            foreach (var hook in _hooks.Values) {
+                if (hook == null) {
                     continue;
                 }
-                if (hook.IsApplied)
-                {
+                if (hook.IsApplied) {
                     hook.Undo();
                 }
                 hook.Dispose();

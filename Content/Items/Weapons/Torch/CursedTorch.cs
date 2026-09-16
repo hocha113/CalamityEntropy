@@ -14,14 +14,12 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
 {
     public class CursedTorch : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ItemID.Sets.GamepadWholeScreenUseRange[Item.type] = true;
             ItemID.Sets.LockOnIgnoresCollision[Item.type] = true;
             ItemID.Sets.StaffMinionSlotsRequired[Item.type] = 2;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 10;
             Item.DamageType = DamageClass.Summon;
             Item.width = 46;
@@ -40,8 +38,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
             Item.buffType = ModContent.BuffType<CursingFire>();
             Item.rare = ItemRarityID.Orange;
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             player.AddBuff(Item.buffType, 3);
             int projectile = Projectile.NewProjectile(source, Main.MouseWorld, velocity, type, Item.damage, knockback, player.whoAmI, 0, 1, 0);
             Main.projectile[projectile].originalDamage = Item.damage;
@@ -57,15 +54,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
         //咒眼贴图,加载期由 VaultLoaden 赋值,仅绘制路径读取
         [VaultLoaden("CalamityEntropy/Content/Items/Weapons/Torch/CursedEye")]
         internal static Asset<Texture2D> CursedEyeTex;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
             base.SetStaticDefaults();
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Summon;
             Projectile.width = 20;
             Projectile.height = 20;
@@ -80,24 +75,19 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
             Projectile.minionSlots = 2;
             Projectile.light = 0.4f;
         }
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             return false;
         }
-        public override bool? CanCutTiles()
-        {
+        public override bool? CanCutTiles() {
             return false;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Player player = Projectile.GetOwner();
             Projectile.MinionCheck<CursingFire>();
 
-            if (Projectile.localAI[0] == 0)
-            {
-                for (int i = 0; i < 64; i++)
-                {
+            if (Projectile.localAI[0] == 0) {
+                for (int i = 0; i < 64; i++) {
                     //FlameCal CalamityPorts,寿命走Configure尾参
                     PRTLoader.NewParticle<PRT_FlameCal>(base.Projectile.Center, CEUtils.randomPointInCircle(6), Color.Yellow, 0.05f).Configure(20, Main.rand.NextFloat(0.3f, 0.6f), Color.Firebrick);
                 }
@@ -105,48 +95,40 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
             //拖尾FlameCal单发,Configure寿命/color参数跟批量spawn那套一样
             PRTLoader.NewParticle<PRT_FlameCal>(base.Projectile.Center, new Vector2(Main.rand.NextFloat(-2, 2), -10f).RotatedByRandom(0.004999999888241291) * Main.rand.NextFloat(0.8f, 1f), Color.Yellow, 0.05f).Configure(18, Main.rand.NextFloat(0.5f, 0.65f), Color.Firebrick);
             PRTLoader.NewParticle<PRT_FlameCal>(base.Projectile.Center, new Vector2(Main.rand.NextFloat(-2, 2), -10f).RotatedByRandom(0.004999999888241291) * Main.rand.NextFloat(0.8f, 1f), Color.Yellow, 0.05f).Configure(18, Main.rand.NextFloat(0.5f, 0.65f), Color.Firebrick);
-            if (Projectile.localAI[0]++ < 3)
-            {
+            if (Projectile.localAI[0]++ < 3) {
                 Projectile.timeLeft++;
                 return;
             }
-            if (Projectile.Distance(player.Center) > 4000)
-            {
+            if (Projectile.Distance(player.Center) > 4000) {
                 Projectile.Center = player.Center + CEUtils.randomPointInCircle(128);
             }
             Projectile.pushByOther(0.6f);
             Projectile.rotation = Projectile.velocity.X * 0.02f;
             Projectile.velocity *= 0.95f;
             Projectile.frameCounter++;
-            if (Projectile.frameCounter > 3)
-            {
+            if (Projectile.frameCounter > 3) {
                 Projectile.frameCounter = 0;
                 Projectile.frame++;
                 if (Projectile.frame > 4)
                     Projectile.frame = 0;
             }
             NPC target = Projectile.FindMinionTarget(1400, true);
-            if (target != null)
-            {
+            if (target != null) {
                 if (CEUtils.getDistance(target.Center + new Vector2(0, -60), Projectile.Center) > 240)
                     Projectile.velocity += (target.Center + new Vector2(0, -60) - Projectile.Center).normalize() * 1.4f;
-                if (Projectile.ai[0]++ > 12)
-                {
+                if (Projectile.ai[0]++ > 12) {
                     Projectile.ai[0] = 0;
-                    if (Main.myPlayer == Projectile.owner)
-                    {
+                    if (Main.myPlayer == Projectile.owner) {
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + new Vector2(0, -16).RotatedBy(Projectile.rotation), (target.Center + target.velocity * 6 - Projectile.Center - Projectile.velocity * 10).normalize() * 8 + Projectile.velocity * 0.25f, ModContent.ProjectileType<CursingFlame>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     }
                 }
             }
-            else
-            {
+            else {
                 if (CEUtils.getDistance(Projectile.Center, player.Center) > 200)
                     Projectile.velocity += (player.Center - Projectile.Center).normalize() * 0.9f;
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Projectile.GetTexture();
             Texture2D eye = CursedEyeTex.Value;
             int total = 5;
@@ -163,8 +145,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
         [VaultLoaden("CalamityEntropy/Assets/Particles/MediumMist")]
         internal static Asset<Texture2D> MediumMistTex;
         public override string Texture => "CalamityEntropy/Assets/Extra/Ports/FireProj";
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.MinionShot[Type] = true;
         }
         public static int Lifetime => 100;
@@ -172,8 +153,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
         public ref float Time => ref Projectile.ai[0];
         public int MistType = -1;
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = Projectile.height = 10;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
@@ -187,16 +167,13 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
             Projectile.tileCollide = false;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Time++;
-            if (Time < Fadetime && Main.rand.NextBool(6))
-            {
+            if (Time < Fadetime && Main.rand.NextBool(6)) {
                 Vector2 cinderPos = Projectile.Center + Main.rand.NextVector2Circular(60f, 60f) * Utils.Remap(Time, 0f, Lifetime, 0.5f, 1f);
                 float cinderSize = Utils.GetLerpValue(2f, 4f, Time, true);
                 Dust cinder = Dust.NewDustDirect(cinderPos, 4, 4, DustID.CursedTorch, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f);
-                if (Main.rand.NextBool(3))
-                {
+                if (Main.rand.NextBool(3)) {
                     cinder.scale *= 2f;
                     cinder.velocity *= 2f;
                 }
@@ -213,8 +190,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
         }
 
 
-        public override void ModifyDamageHitbox(ref Rectangle hitbox)
-        {
+        public override void ModifyDamageHitbox(ref Rectangle hitbox) {
             int size = (int)Utils.Remap(Time, 0f, Fadetime, 4f, 15f);
 
             if (Time > Fadetime)
@@ -222,12 +198,10 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
             hitbox.Inflate(size, size);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D fire = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Texture2D mist = MediumMistTex.Value;
 
@@ -244,8 +218,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
             if (timeRatio >= 1f)
                 return false;
 
-            for (float j = 1f; j >= 0f; j -= length)
-            {
+            for (float j = 1f; j >= 0f; j -= length) {
                 Color fireColor = ((timeRatio < 0.1f) ? Color.Lerp(Color.Transparent, color1, Utils.GetLerpValue(0f, 0.1f, timeRatio)) :
                 ((timeRatio < 0.2f) ? Color.Lerp(color1, color2, Utils.GetLerpValue(0.1f, 0.2f, timeRatio)) :
                 ((timeRatio < 0.35f) ? color2 :

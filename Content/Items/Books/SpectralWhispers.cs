@@ -1,4 +1,4 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Core.Graphics;
@@ -16,8 +16,7 @@ namespace CalamityEntropy.Content.Items.Books
 {
     public class SpectralWhispers : EntropyBook
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.damage = 7;
             Item.useAnimation = Item.useTime = 38;
@@ -35,8 +34,7 @@ namespace CalamityEntropy.Content.Items.Books
         public override int HeldProjectileType => ModContent.ProjectileType<SpectralWhispersHeld>();
         public override int SlotCount => 1;
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient(ItemID.Silk, 10)
                 .AddIngredient(ItemID.ShadowScale, 10)
@@ -53,19 +51,16 @@ namespace CalamityEntropy.Content.Items.Books
         public override string PageAnimationPath => $"{EntropyBook.BaseFolder}/Textures/SpectralWhispers/Page";
         public override string UIOpenAnimationPath => $"{EntropyBook.BaseFolder}/Textures/SpectralWhispers/UI";
 
-        public override EBookStatModifer getBaseModifer()
-        {
+        public override EBookStatModifer getBaseModifer() {
             var m = base.getBaseModifer();
             m.armorPenetration += 40;
             return m;
         }
-        public override void AI()
-        {
+        public override void AI() {
             base.AI();
             Projectile.GetOwner().Entropy().MouseWorldListener = true;
         }
-        public override bool Shoot()
-        {
+        public override bool Shoot() {
             base.Shoot();
             base.Shoot();
             base.Shoot();
@@ -76,8 +71,7 @@ namespace CalamityEntropy.Content.Items.Books
     }
     public class WhisperingSpike : EBookBaseProjectile
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Projectile.width = 14;
             Projectile.height = 14;
@@ -87,45 +81,36 @@ namespace CalamityEntropy.Content.Items.Books
             Projectile.timeLeft = 800;
             Projectile.penetrate = 1;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center + Projectile.rotation.ToRotationVector2() * 14 * Projectile.scale, Projectile.Center - Projectile.rotation.ToRotationVector2() * 14 * Projectile.scale, targetHitbox, (int)(Projectile.scale * 16));
         }
         public int Penetrate = -1;
-        public override bool PreAI()
-        {
-            if (Projectile.localAI[0]++ == 1)
-            {
+        public override bool PreAI() {
+            if (Projectile.localAI[0]++ == 1) {
                 Penetrate = Projectile.penetrate;
                 Projectile.penetrate = -1;
             }
             return base.PreAI();
         }
-        public override void ApplyHoming()
-        {
+        public override void ApplyHoming() {
             if (ShouldUpdatePosition())
                 base.ApplyHoming();
         }
-        public override void AI()
-        {
+        public override void AI() {
             base.AI();
             HideTime--;
 
-            if (Projectile.localAI[0] == 1)
-            {
+            if (Projectile.localAI[0] == 1) {
                 CEUtils.PlaySound("SoulSpawn" + Main.rand.Next(2).ToString(), Main.rand.NextFloat(0.8f, 1.2f), Projectile.Center);
                 Projectile.Center -= Projectile.velocity.normalize().RotatedByRandom(1.6f) * 120;
             }
-            if (HideTime == 0)
-            {
-                for (int i = 0; i < 12; i++)
-                {
+            if (HideTime == 0) {
+                for (int i = 0; i < 12; i++) {
                     //CritSparkCal CalamityPorts,Configure(color,lifetime,scale)不是统一五参
                     PRTLoader.NewParticle<PRT_CritSparkCal>(Projectile.Center, CEUtils.randomPointInCircle(9), color * 4, Main.rand.NextFloat(0.5f, 1.2f) * Projectile.scale).Configure(color, 18, 0.3f);
                 }
             }
-            if (stick > 0)
-            {
+            if (stick > 0) {
                 NPC t = ((int)Projectile.ai[2]).ToNPC();
                 Projectile.tileCollide = false;
                 if (stick == 1)
@@ -137,15 +122,12 @@ namespace CalamityEntropy.Content.Items.Books
                 if (!t.active)
                     stick = 2;
             }
-            if (Projectile.localAI[0] < 24)
-            {
+            if (Projectile.localAI[0] < 24) {
                 Projectile.position += Projectile.GetOwner().velocity / 2;
                 Projectile.velocity = (Projectile.GetOwner().Entropy().MouseWorld - Projectile.Center).normalize() * Projectile.velocity.Length();
             }
-            if (Projectile.localAI[0] > 24 && stick == -1)
-            {
-                for (float i = 0; i < 1; i += 0.1f)
-                {
+            if (Projectile.localAI[0] > 24 && stick == -1) {
+                for (float i = 0; i < 1; i += 0.1f) {
                     var p = PRTLoader.NewParticle<PRT_GlowLightParticle>(Projectile.Center - Projectile.velocity * Main.rand.NextFloat(), Vector2.Zero, color * 3f, 0.9f);
                     p.lightColor = color * 0.1f;
                     p.AlphaShrink = false;
@@ -157,8 +139,7 @@ namespace CalamityEntropy.Content.Items.Books
         public int HideTime = Main.rand.Next(1, 16);
         public override Color baseColor => new Color(42, 40, 82);
         public float size = 1;
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Vector2 offset = Vector2.Zero;
             if (HideTime > 0)
                 return false;
@@ -178,57 +159,46 @@ namespace CalamityEntropy.Content.Items.Books
             Main.spriteBatch.ExitShaderRegion();
             return false;
         }
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             if (Main.myPlayer == Projectile.owner)
                 CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromAI(), Projectile.GetOwner(), Projectile.Center, Projectile.damage, 130 * Projectile.scale, Projectile.DamageType).ArmorPenetration = Projectile.ArmorPenetration + 10;
-            if (!Main.dedServ)
-            {
-                for (float i = 0; i <= 1; i += 0.05f)
-                {
+            if (!Main.dedServ) {
+                for (float i = 0; i <= 1; i += 0.05f) {
                     PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.Lerp(color * 4.5f, color, i) * 0.8f, 0.005f).Configure("CalamityEntropy/Assets/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.005f, i * 0.165f * Projectile.scale, (int)((1.2f - i) * 20));
                 }
                 SoundEngine.PlaySound(SoundID.Item122 with { PitchRange = (1.2f, 1.6f) }, Projectile.Center);
             }
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             base.OnHitNPC(target, hit, damageDone);
             Penetrate--;
-            if (Penetrate == 0)
-            {
+            if (Penetrate == 0) {
                 Projectile.ai[2] = target.whoAmI;
                 stick = 1;
                 stickOffset = Projectile.Center - target.Center;
                 CEUtils.SyncProj(Projectile.whoAmI);
             }
         }
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(stick);
             writer.WriteVector2(stickOffset);
         }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             stick = reader.ReadInt32();
             stickOffset = reader.ReadVector2();
         }
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             return ShouldUpdatePosition() ? null : false;
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             if (stick > 0 || Projectile.localAI[0] < 24)
                 return false;
             return true;
         }
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
+        public override bool OnTileCollide(Vector2 oldVelocity) {
             Projectile.position += Projectile.rotation.ToRotationVector2() * 5;
             Projectile.velocity = oldVelocity;
-            if (stick == -1)
-            {
+            if (stick == -1) {
                 stick = 2;
             }
             if (Main.myPlayer == Projectile.owner)

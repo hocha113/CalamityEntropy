@@ -1,12 +1,12 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.CalamityRef;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator
 {
@@ -27,8 +27,7 @@ namespace CalamityEntropy.Content.Items.Donator
         public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(540, 12f, 3f);
 
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 50;
             Item.height = 50;
             Item.value = Item.buyPrice(platinum: 2, gold: 80);
@@ -36,27 +35,21 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.accessory = true;
         }
 
-        public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
-        {
+        public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend) {
             ascentWhenFalling = BonusAscentWhileFalling;
             ascentWhenRising = BonusAscentWhileRising;
             maxCanAscendMultiplier = RisingSpeedThreshold;
             maxAscentMultiplier = MaxAscentSpeed;
             constantAscend = BaseAscent;
         }
-        public override void ModifyTooltips(List<TooltipLine> list)
-        {
-            if (!Config.Instance.TextEffects)
-            {
+        public override void ModifyTooltips(List<TooltipLine> list) {
+            if (!Config.Instance.TextEffects) {
                 list.Replace("$", "");
             }
         }
-        public override bool PreDrawTooltipLine(DrawableTooltipLine line, ref int yOffset)
-        {
-            if (line.Text.StartsWith("$"))
-            {
-                if (!Config.Instance.TextEffects)
-                {
+        public override bool PreDrawTooltipLine(DrawableTooltipLine line, ref int yOffset) {
+            if (line.Text.StartsWith("$")) {
+                if (!Config.Instance.TextEffects) {
                     return true;
                 }
                 DrawableTooltipLine nLine = new DrawableTooltipLine(new(Mod, "-", line.Text.Replace("$", "")), line.Index, line.X, line.Y, line.Color);
@@ -66,8 +59,7 @@ namespace CalamityEntropy.Content.Items.Donator
             }
             return true;
         }
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.Entropy().addEquip("FlowingLightWing", !hideVisual);
             player.accRunSpeed = 9f;
             player.moveSpeed += 0.18f;
@@ -78,19 +70,15 @@ namespace CalamityEntropy.Content.Items.Donator
             player.buffImmune[BuffID.OnFire] = true;
             player.noFallDmg = true;
 
-            if (player.controlJump && player.controlDown && player.wingTime > 0)
-            {
+            if (player.controlJump && player.controlDown && player.wingTime > 0) {
                 player.velocity.Y = BonusAscentWhileFalling + 0.142f;
             }
         }
-        public override void UpdateVanity(Player player)
-        {
+        public override void UpdateVanity(Player player) {
             player.Entropy().addEquipVisual("FlowingLightWing");
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_SeraphTracers, CEID.Item_WingsofRebirth))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_SeraphTracers, CEID.Item_WingsofRebirth)) {
                 CreateRecipe()
                 .AddIngredient(CEID.Item_SeraphTracers)
                 .AddIngredient(CEID.Item_WingsofRebirth)

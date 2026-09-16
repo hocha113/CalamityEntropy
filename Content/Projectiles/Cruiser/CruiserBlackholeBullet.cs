@@ -2,7 +2,6 @@
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,18 +11,15 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
 
     public class CruiserBlackholeBullet : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 5000;
 
         }
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) {
             target.AddBuff(ModContent.BuffType<VoidTouch>(), 160);
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 32;
             Projectile.height = 32;
             Projectile.friendly = false;
@@ -36,25 +32,21 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
             Projectile.extraUpdates = 1;
         }
         public float ap = 0;
-        public override void AI()
-        {
+        public override void AI() {
             //PRT_Void字段直赋对齐旧VoidParticles,Opacity/ad/multShrink Configure管不了
             var p = PRTLoader.NewParticle<PRT_Void>(Projectile.Center, Vector2.Zero, Color.White, 1f);
             p.Opacity = 0.5f;  //Opacity旧初始化器字段,Configure管不了
             Projectile.rotation = (new Vector2(Projectile.ai[1], Projectile.ai[2]) - Projectile.position).ToRotation();
             Projectile.velocity += Projectile.rotation.ToRotationVector2() * 0.08f;
-            if (CEUtils.getDistance(new Vector2(Projectile.ai[1], Projectile.ai[2]), Projectile.Center) < Projectile.velocity.Length() + 20)
-            {
+            if (CEUtils.getDistance(new Vector2(Projectile.ai[1], Projectile.ai[2]), Projectile.Center) < Projectile.velocity.Length() + 20) {
                 Projectile.Kill();
             }
-            if (ap < 1)
-            {
+            if (ap < 1) {
                 ap += 0.01f;
             }
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             CEUtils.drawLine(Main.spriteBatch, CEExtraAssets.white, Projectile.Center, new Vector2(Projectile.ai[1], Projectile.ai[2]), Color.Purple * ap * 0.45f, 5 * ap);
             return false;
         }

@@ -12,8 +12,7 @@ namespace CalamityEntropy.Common.DrawLayers
         [VaultLoaden("CalamityEntropy/Content/Items/Vanity/Ttiz/Horn")]
         internal static Asset<Texture2D> HornTex;
 
-        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
-        {
+        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) {
             if (drawInfo.drawPlayer.dead)
                 return false;
             return drawInfo.drawPlayer.head == EquipLoader.GetEquipSlot(Mod, "TerraTiz", EquipType.Head);
@@ -21,13 +20,11 @@ namespace CalamityEntropy.Common.DrawLayers
 
         public override bool IsHeadLayer => true;
 
-        public override Position GetDefaultPosition()
-        {
+        public override Position GetDefaultPosition() {
             return new BeforeParent(PlayerDrawLayers.Head);
         }
 
-        protected override void Draw(ref PlayerDrawSet drawInfo)
-        {
+        protected override void Draw(ref PlayerDrawSet drawInfo) {
             var player = drawInfo.drawPlayer;
             Texture2D texture = HornTex.Value;
             Vector2 headPos = drawInfo.HeadPosition(true) + new Vector2(0, -2);
@@ -42,8 +39,7 @@ namespace CalamityEntropy.Common.DrawLayers
         [VaultLoaden("CalamityEntropy/Content/Items/Vanity/Ttiz/Wings2")]
         internal static Asset<Texture2D> Wings2Tex;
 
-        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
-        {
+        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) {
             if (drawInfo.drawPlayer.dead)
                 return false;
             return drawInfo.drawPlayer.body == EquipLoader.GetEquipSlot(Mod, "TerraTiz", EquipType.Body);
@@ -51,13 +47,11 @@ namespace CalamityEntropy.Common.DrawLayers
 
         public override bool IsHeadLayer => true;
 
-        public override Position GetDefaultPosition()
-        {
+        public override Position GetDefaultPosition() {
             return new BeforeParent(PlayerDrawLayers.Wings);
         }
 
-        protected override void Draw(ref PlayerDrawSet drawInfo)
-        {
+        protected override void Draw(ref PlayerDrawSet drawInfo) {
             var player = drawInfo.drawPlayer;
             Texture2D texture = WingsTex.Value;
             if (player.velocity.Y != 0 && (player.mount == null || !player.mount.Active))

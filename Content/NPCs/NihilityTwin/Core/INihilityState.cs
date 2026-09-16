@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.AI;
+﻿using CalamityEntropy.Core.AI;
 using InnoVault.StateMachines;
 using Terraria;
 using Terraria.DataStructures;
@@ -100,11 +100,9 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.Core
         /// 沿本帧位移均匀撒十组尾迹尘。原代码在四个冲刺类状态里各抄了一遍同样的循环。
         /// 纯表现:<c>Dust.NewDust</c> 在服务端会直接返回,不吃随机数
         /// </summary>
-        protected static void TrailBurst(NihilityStateContext ctx)
-        {
+        protected static void TrailBurst(NihilityStateContext ctx) {
             NPC npc = ctx.Npc;
-            for (int i = 0; i < NihilityDirector.TrailSamples; i++)
-            {
+            for (int i = 0; i < NihilityDirector.TrailSamples; i++) {
                 ctx.Owner.SpawnParticle(npc.Center + npc.velocity * ((float)i / NihilityDirector.TrailSamples));
             }
         }
@@ -115,10 +113,8 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.Core
         /// 本体出的用 <c>NPC.GetSource_FromThis()</c>),继承链会被别的系统读到,不要统一
         /// </summary>
         protected static void Shoot<T>(IEntitySource source, Vector2 pos, Vector2 velocity,
-            int damage, float knockback, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile
-        {
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
+            int damage, float knockback, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile {
+            if (Main.netMode == NetmodeID.MultiplayerClient) {
                 return;
             }
             Projectile.NewProjectile(source, pos, velocity, ModContent.ProjectileType<T>(), damage, knockback, -1, ai0, ai1, ai2);

@@ -152,8 +152,7 @@ namespace CalamityEntropy.Core
         /// <summary>
         /// 是否绘制弧光，默认为<see langword="false"/>
         /// </summary>
-        protected bool canDrawSlashTrail
-        {
+        protected bool canDrawSlashTrail {
             get => _canDrawSlashTrail;
             set => _canDrawSlashTrail = value;
         }
@@ -285,15 +284,12 @@ namespace CalamityEntropy.Core
             public SwingDataStruct() { }
         }
         #endregion
-        public sealed override void SetDefaults()
-        {
-            if (!Main.dedServ)
-            {
+        public sealed override void SetDefaults() {
+            if (!Main.dedServ) {
                 canDrawGlow = SwingSystem.glowTextures.TryGetValue(Type, out glowTexValue);
             }
             Length = OrigLength;
-            if (PreSetSwingProperty())
-            {
+            if (PreSetSwingProperty()) {
                 Projectile.DamageType = DamageClass.Melee;
                 Projectile.width = Projectile.height = 22;
                 Projectile.tileCollide = false;
@@ -309,8 +305,7 @@ namespace CalamityEntropy.Core
         }
 
         #region Utils
-        public void LoadTrailCountData()
-        {
+        public void LoadTrailCountData() {
             drawTrailCount *= updateCount;
             oldRotate = new float[drawTrailCount];
             oldDistanceToOwner = new float[drawTrailCount];
@@ -318,8 +313,7 @@ namespace CalamityEntropy.Core
             InitializeCaches();
         }
 
-        public Vector2 RodingToVer(float radius, float theta)
-        {
+        public Vector2 RodingToVer(float radius, float theta) {
             Vector2 vector2 = theta.ToRotationVector2();
             vector2.X *= radius;
             vector2.Y *= radius;
@@ -328,10 +322,8 @@ namespace CalamityEntropy.Core
 
         public float SetSwingSpeed(float speed) => speed / Owner.GetWeaponAttackSpeed(Item);
 
-        protected virtual void InitializeCaches()
-        {
-            for (int j = drawTrailCount - 1; j >= 0; j--)
-            {
+        protected virtual void InitializeCaches() {
+            for (int j = drawTrailCount - 1; j >= 0; j--) {
                 oldRotate[j] = 100f;
                 oldDistanceToOwner[j] = distanceToOwner;
                 oldLength[j] = (IgnoreImpactBoxSize ? 22 : Projectile.height) * Projectile.scale;
@@ -345,37 +337,30 @@ namespace CalamityEntropy.Core
         /// <param name="sparkCount"></param>
         /// <param name="rotToTargetSpeedTrengsVumVer"></param>
         /// <param name="newSparkCount"></param>
-        protected void HitEffectValue(Entity target, int sparkCount, out Vector2 rotToTargetSpeedTrengsVumVer, out int newSparkCount)
-        {
+        protected void HitEffectValue(Entity target, int sparkCount, out Vector2 rotToTargetSpeedTrengsVumVer, out int newSparkCount) {
             Vector2 toTarget = Owner.Center.To(target.Center);
             Vector2 norlToTarget = toTarget.GetNormalVector();
             int ownerToTargetSetDir = Math.Sign(toTarget.X);
             ownerToTargetSetDir = ownerToTargetSetDir != DirSign ? -1 : 1;
 
-            if (rotSpeed > 0)
-            {
+            if (rotSpeed > 0) {
                 norlToTarget *= -1;
             }
-            if (rotSpeed < 0)
-            {
+            if (rotSpeed < 0) {
                 norlToTarget *= 1;
             }
 
             int pysCount = PRTLoader.PRT_IDToInGame_World_Count[PRTLoader.GetParticleID<PRT_Spark>()];
-            if (pysCount > 120)
-            {
+            if (pysCount > 120) {
                 sparkCount = 10;
             }
-            if (pysCount > 220)
-            {
+            if (pysCount > 220) {
                 sparkCount = 8;
             }
-            if (pysCount > 350)
-            {
+            if (pysCount > 350) {
                 sparkCount = 6;
             }
-            if (pysCount > 500)
-            {
+            if (pysCount > 500) {
                 sparkCount = 3;
             }
 
@@ -388,56 +373,46 @@ namespace CalamityEntropy.Core
         public virtual void SwingBehavior(float starArg = 33, float baseSwingSpeed = 4
             , float ler1_UpLengthSengs = 0.08f, float ler1_UpSpeedSengs = 0.1f, float ler1_UpSizeSengs = 0.012f
             , float ler2_DownLengthSengs = 0.01f, float ler2_DownSpeedSengs = 0.1f, float ler2_DownSizeSengs = 0
-            , int minClampLength = 0, int maxClampLength = 0, int ler1Time = 0, int maxSwingTime = 0, float overSpeedUpSengs = 1)
-        {
-            if (minClampLength == 0)
-            {
+            , int minClampLength = 0, int maxClampLength = 0, int ler1Time = 0, int maxSwingTime = 0, float overSpeedUpSengs = 1) {
+            if (minClampLength == 0) {
                 minClampLength = (int)(OrigLength * 1.2f);
             }
-            if (maxClampLength == 0)
-            {
+            if (maxClampLength == 0) {
                 maxClampLength = (int)(OrigLength * 1.4f);
             }
-            if (maxSwingTime == 0)
-            {
+            if (maxSwingTime == 0) {
                 maxSwingTime = this.maxSwingTime;
             }
-            if (ler1Time == 0)
-            {
+            if (ler1Time == 0) {
                 ler1Time = (int)(maxSwingTime * 0.4f);
             }
 
             float speedUp = SetSwingSpeed(1f);
             speedUp *= overSpeedUpSengs;
 
-            if (Time == 0)
-            {
+            if (Time == 0) {
                 Rotation = MathHelper.ToRadians(starArg * -Owner.direction);
                 startVector = RodingToVer(1, Projectile.velocity.ToRotation() - MathHelper.PiOver2 * Projectile.spriteDirection);
                 speed = MathHelper.ToRadians(baseSwingSpeed) / speedUp;
             }
-            if (Time < ler1Time * speedUp)
-            {
+            if (Time < ler1Time * speedUp) {
                 Length *= 1 + ler1_UpLengthSengs / updateCount;
                 Rotation += speed * Projectile.spriteDirection;
                 speed *= 1 + ler1_UpSpeedSengs / updateCount;
                 vector = startVector.RotatedBy(Rotation) * Length;
                 Projectile.scale += ler1_UpSizeSengs;
             }
-            else
-            {
+            else {
                 Length *= 1 - ler2_DownLengthSengs / updateCount;
                 Rotation += speed * Projectile.spriteDirection;
                 speed *= 1 - ler2_DownSpeedSengs / updateCount / speedUp;
                 vector = startVector.RotatedBy(Rotation) * Length;
                 Projectile.scale -= ler2_DownSizeSengs;
             }
-            if (Time >= maxSwingTime * updateCount * speedUp)
-            {
+            if (Time >= maxSwingTime * updateCount * speedUp) {
                 Projectile.Kill();
             }
-            if (Time % updateCount == updateCount - 1)
-            {
+            if (Time % updateCount == updateCount - 1) {
                 Length = MathHelper.Clamp(Length, minClampLength, maxClampLength);
             }
         }
@@ -472,10 +447,8 @@ namespace CalamityEntropy.Core
         /// <summary>
         /// 处理一些与玩家相关的逻辑，比如跟随和初始化一些基本数据，运行在<see cref="SwingAI"/>之前
         /// </summary>
-        public virtual void InOwner()
-        {
-            if (Time == 0)
-            {
+        public virtual void InOwner() {
+            if (Time == 0) {
                 dirs = Projectile.spriteDirection = Owner.direction;
             }
 
@@ -484,17 +457,14 @@ namespace CalamityEntropy.Core
             Owner.itemAnimation = 2;
             Projectile.Center = Owner.GetPlayerStabilityCenter() + vector * (1f + (MeleeSize - 1f) / 2f);
 
-            if (canFormOwnerSetDir)
-            {
+            if (canFormOwnerSetDir) {
                 Projectile.spriteDirection = Owner.direction;
             }
-            if (canSetOwnerArmBver)
-            {
+            if (canSetOwnerArmBver) {
                 Owner.SetCompositeArmFront(true, Length >= 80 ? Player.CompositeArmStretchAmount.Full : Player.CompositeArmStretchAmount.Quarter
                     , (Owner.Center - Projectile.Center).ToRotation() + MathHelper.PiOver2);
             }
-            if (ownerOrientationLock)
-            {
+            if (ownerOrientationLock) {
                 Owner.direction = Projectile.spriteDirection = dirs;
             }
 
@@ -505,15 +475,12 @@ namespace CalamityEntropy.Core
 
         public virtual bool PreInOwnerUpdate() { return true; }
         public virtual void PostInOwnerUpdate() { }
-        public virtual void UpdateFrame()
-        {
-            if (AnimationMaxFrme > 1)
-            {
+        public virtual void UpdateFrame() {
+            if (AnimationMaxFrme > 1) {
                 VaultUtils.ClockFrame(ref Projectile.frame, CuttingFrmeInterval, AnimationMaxFrme - 1);
             }
         }
-        public virtual void NoServUpdate()
-        {
+        public virtual void NoServUpdate() {
 
         }
 
@@ -521,36 +488,29 @@ namespace CalamityEntropy.Core
         /// 几乎所有的逻辑更新都在这里进行
         /// </summary>
         /// <returns></returns>
-        public sealed override bool PreUpdate()
-        {
+        public sealed override bool PreUpdate() {
             canShoot = Time == (int)(maxSwingTime * shootSengs);
-            if (!isInitialize)
-            {
+            if (!isInitialize) {
                 _meleeSize = 1f;
-                if (Item.type != ItemID.None)
-                {
+                if (Item.type != ItemID.None) {
                     _meleeSize = Owner.GetAdjustedItemScale(Item);
                 }
                 Initialize();
                 isInitialize = true;
             }
-            if (PreInOwnerUpdate())
-            {
+            if (PreInOwnerUpdate()) {
                 InOwner();
                 SwingAI();
-                if (Projectile.IsOwnedByLocalPlayer() && canShoot)
-                {
+                if (Projectile.IsOwnedByLocalPlayer() && canShoot) {
                     Shoot();
                 }
-                if (canDrawSlashTrail)
-                {
+                if (canDrawSlashTrail) {
                     UpdateCaches();
                 }
             }
             PostInOwnerUpdate();
             UpdateFrame();
-            if (!VaultUtils.isServer)
-            {
+            if (!VaultUtils.isServer) {
                 NoServUpdate();
             }
             rotSpeed = Rotation - oldRot;
@@ -562,8 +522,7 @@ namespace CalamityEntropy.Core
         /// <summary>
         /// 用这个函数来处理挥舞相关的逻辑更新，运行在<see cref="InOwner"/>之后，<see cref="UpdateCaches"/>之前
         /// </summary>
-        public virtual void SwingAI()
-        {
+        public virtual void SwingAI() {
 
         }
         /// <summary>
@@ -571,8 +530,7 @@ namespace CalamityEntropy.Core
         /// </summary>
         public sealed override void AI() { }
 
-        public override void ModifyDamageHitbox(ref Rectangle hitbox)
-        {
+        public override void ModifyDamageHitbox(ref Rectangle hitbox) {
             Vector2 recCenter = hitbox.TopLeft() + hitbox.Size() / 2;
             int wid = (int)(hitbox.Width * MeleeSize);
             int hig = (int)(hitbox.Height * MeleeSize);
@@ -582,16 +540,13 @@ namespace CalamityEntropy.Core
         }
 
         #region Draw
-        public virtual void WarpDraw()
-        {
+        public virtual void WarpDraw() {
             List<ColoredVertex> bars = [];
             GetCurrentTrailCount(out float count);
 
             float w = 1f;
-            for (int i = 0; i < count; i++)
-            {
-                if (oldRotate[i] == 100f)
-                {
+            for (int i = 0; i < count; i++) {
+                if (oldRotate[i] == 100f) {
                     continue;
                 }
 
@@ -621,8 +576,7 @@ namespace CalamityEntropy.Core
             Main.graphics.GraphicsDevice.Textures[0] = TrailTexture;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
             effect.CurrentTechnique.Passes[0].Apply();
-            if (bars.Count >= 3)
-            {
+            if (bars.Count >= 3) {
                 Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip, bars.ToArray(), 0, bars.Count - 2);
             }
 
@@ -631,18 +585,14 @@ namespace CalamityEntropy.Core
                 , RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
         }
 
-        public virtual void GetCurrentTrailCount(out float count)
-        {
+        public virtual void GetCurrentTrailCount(out float count) {
             count = 0f;
-            if (oldRotate == null)
-            {
+            if (oldRotate == null) {
                 return;
             }
 
-            for (int i = 0; i < oldRotate.Length; i++)
-            {
-                if (oldRotate[i] != 100f)
-                {
+            for (int i = 0; i < oldRotate.Length; i++) {
+                if (oldRotate[i] != 100f) {
                     count += 1f;
                 }
             }
@@ -650,15 +600,12 @@ namespace CalamityEntropy.Core
         /// <summary>
         /// 在逻辑帧<see cref="PreUpdate"/>中被最后调用，用于更新弧光相关的点数据
         /// </summary>
-        public virtual void UpdateCaches()
-        {
-            if (Time < 2)
-            {
+        public virtual void UpdateCaches() {
+            if (Time < 2) {
                 return;
             }
 
-            for (int i = drawTrailCount - 1; i > 0; i--)
-            {
+            for (int i = drawTrailCount - 1; i > 0; i--) {
                 oldRotate[i] = oldRotate[i - 1];
                 oldDistanceToOwner[i] = oldDistanceToOwner[i - 1];
                 oldLength[i] = oldLength[i - 1];
@@ -670,8 +617,7 @@ namespace CalamityEntropy.Core
         }
 
         public void DrawTrailHander(List<VertexPositionColorTexture> bars, GraphicsDevice device, BlendState blendState = null
-            , SamplerState samplerState = null, RasterizerState rasterizerState = null)
-        {
+            , SamplerState samplerState = null, RasterizerState rasterizerState = null) {
 
             RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
             BlendState originalBlendState = Main.graphics.GraphicsDevice.BlendState;
@@ -689,8 +635,7 @@ namespace CalamityEntropy.Core
             Main.pixelShader.CurrentTechnique.Passes[0].Apply();
         }
 
-        public virtual void DrawTrail(List<VertexPositionColorTexture> bars)
-        {
+        public virtual void DrawTrail(List<VertexPositionColorTexture> bars) {
             Effect effect = EffectLoader.KnifeRendering.Value;
 
             effect.Parameters["transformMatrix"].SetValue(GetTransfromMaxrix());
@@ -699,8 +644,7 @@ namespace CalamityEntropy.Core
             effect.Parameters["sampleTexture"].SetValue(TrailTexture);
             effect.Parameters["gradientTexture"].SetValue(GradientTexture);
             //应用shader，并绘制顶点
-            foreach (EffectPass pass in effect.CurrentTechnique.Passes)
-            {
+            foreach (EffectPass pass in effect.CurrentTechnique.Passes) {
                 pass.Apply();
                 Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip, bars.ToArray(), 0, bars.Count - 2);
                 Main.graphics.GraphicsDevice.BlendState = BlendState.Additive;
@@ -708,28 +652,24 @@ namespace CalamityEntropy.Core
             }
         }
 
-        public virtual Matrix GetTransfromMaxrix()
-        {
+        public virtual Matrix GetTransfromMaxrix() {
             Matrix world = Matrix.CreateTranslation(-Main.screenPosition.ToVector3());
             Matrix view = Main.GameViewMatrix.TransformationMatrix;
             Matrix projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, -1, 1);
             return world * view * projection;
         }
 
-        public virtual float ControlTrailBottomWidth(float factor)
-        {
+        public virtual float ControlTrailBottomWidth(float factor) {
             return drawTrailBtommWidth * Projectile.scale;
         }
 
         public virtual Vector2 GetDrawTrailOrig() => Owner.GetPlayerStabilityCenter();
 
-        public virtual void DrawSlashTrail()
-        {
+        public virtual void DrawSlashTrail() {
             List<VertexPositionColorTexture> bars = [];
             GetCurrentTrailCount(out float count);
 
-            for (int i = 0; i < count; i++)
-            {
+            for (int i = 0; i < count; i++) {
                 if (oldRotate[i] == 100f)
                     continue;
 
@@ -744,8 +684,7 @@ namespace CalamityEntropy.Core
                 bars.Add(new VertexPositionColorTexture(Bottom.ToVector3(), bottomColor, new Vector2(factor, 1)));
             }
 
-            if (bars.Count > 2)
-            {
+            if (bars.Count > 2) {
                 DrawTrailHander(bars, Main.graphics.GraphicsDevice, BlendState.Additive, SamplerState.PointWrap, RasterizerState.CullNone);
 
                 Main.spriteBatch.End();
@@ -753,8 +692,7 @@ namespace CalamityEntropy.Core
             }
         }
 
-        public virtual void DrawSwing(SpriteBatch spriteBatch, Color lightColor)
-        {
+        public virtual void DrawSwing(SpriteBatch spriteBatch, Color lightColor) {
             Texture2D texture = TextureValue;
             Rectangle rect = VaultUtils.GetRectangle(texture, Projectile.frame, AnimationMaxFrme);
             Vector2 drawOrigin = rect.Size() / 2;
@@ -762,13 +700,11 @@ namespace CalamityEntropy.Core
 
             Vector2 offsetOwnerPos = safeInSwingUnit.GetNormalVector() * unitOffsetDrawZkMode * Projectile.spriteDirection * MeleeSize;
             float drawRoting = Projectile.rotation;
-            if (Projectile.spriteDirection == -1)
-            {
+            if (Projectile.spriteDirection == -1) {
                 drawRoting += MathHelper.Pi;
             }
             //烦人的对角线翻转代码，我凑出来了这个效果，它很稳靠，但我仍旧不想细究这其中的数学逻辑
-            if (inDrawFlipdiagonally)
-            {
+            if (inDrawFlipdiagonally) {
                 effects = Projectile.spriteDirection == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
                 drawRoting += MathHelper.PiOver2;
                 offsetOwnerPos *= -1;
@@ -776,8 +712,7 @@ namespace CalamityEntropy.Core
 
             Vector2 drawPosValue = Projectile.Center - RodingToVer(toProjCoreMode, (Projectile.Center - Owner.Center).ToRotation()) + offsetOwnerPos;
             Color color = Projectile.GetAlpha(lightColor);
-            if (Incandescence)
-            {
+            if (Incandescence) {
                 color = Color.White;
             }
 
@@ -785,17 +720,14 @@ namespace CalamityEntropy.Core
 
             Main.EntitySpriteDraw(texture, trueDrawPos, new Rectangle?(rect)
                 , color, drawRoting, drawOrigin, Projectile.scale * MeleeSize, effects, 0);
-            if (canDrawGlow)
-            {
+            if (canDrawGlow) {
                 Main.EntitySpriteDraw(glowTexValue.Value, trueDrawPos, new Rectangle?(rect)
                     , Color.White, drawRoting, drawOrigin, Projectile.scale * MeleeSize, effects, 0);
             }
         }
 
-        public sealed override bool PreDraw(ref Color lightColor)
-        {
-            if (canDrawSlashTrail)
-            {
+        public sealed override bool PreDraw(ref Color lightColor) {
+            if (canDrawSlashTrail) {
                 DrawSlashTrail();
             }
             DrawSwing(Main.spriteBatch, lightColor);

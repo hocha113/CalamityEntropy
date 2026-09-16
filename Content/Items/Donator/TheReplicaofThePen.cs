@@ -1,5 +1,6 @@
 ﻿using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -9,15 +10,13 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator
 {
     public class TheReplicaofThePen : ModItem, IDonatorItem
     {
         public string DonatorName => Mod.GetLocalization("RPDonorName").Value;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 20;
             Item.height = 30;
             Item.useTime = 20;
@@ -30,10 +29,8 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.mountType = ModContent.MountType<ReplicaPenMount>();
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_DarkPlasma, CEID.Item_RuinousSoul))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_DarkPlasma, CEID.Item_RuinousSoul)) {
                 CreateRecipe()
                 .AddIngredient<VoidBar>(6)
                 .AddIngredient(CEID.Item_DarkPlasma, 4)
@@ -54,14 +51,12 @@ namespace CalamityEntropy.Content.Items.Donator
     }
     public class PenMountBuff : ModBuff
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.buffNoTimeDisplay[Type] = true;
             Main.buffNoSave[Type] = true;
         }
 
-        public override void Update(Player player, ref int buffIndex)
-        {
+        public override void Update(Player player, ref int buffIndex) {
             player.mount.SetMount(ModContent.MountType<ReplicaPenMount>(), player);
             player.buffTime[buffIndex] = 10;
         }
@@ -73,8 +68,7 @@ namespace CalamityEntropy.Content.Items.Donator
 
         }
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             MountData.spawnDustNoGravity = true;
             MountData.flightTimeMax = int.MaxValue - 1;
             MountData.fatigueMax = int.MaxValue - 1;
@@ -128,31 +122,25 @@ namespace CalamityEntropy.Content.Items.Donator
 
 
 
-            if (!Main.dedServ)
-            {
+            if (!Main.dedServ) {
                 MountData.textureWidth = MountData.backTexture.Width() + 20;
                 MountData.textureHeight = MountData.backTexture.Height();
             }
         }
 
-        public override void UpdateEffects(Player player)
-        {
+        public override void UpdateEffects(Player player) {
             player.fullRotation = Math.Sign(player.velocity.X) * player.velocity.Length() * 0.02f;
             int type = ModContent.ProjectileType<InkTrail>();
-            if (Main.myPlayer == player.whoAmI && player.ownedProjectileCounts[type] < 1)
-            {
+            if (Main.myPlayer == player.whoAmI && player.ownedProjectileCounts[type] < 1) {
                 Projectile.NewProjectile(player.GetSource_FromAI(), player.Center, Vector2.Zero, type, 200, 0, player.whoAmI);
             }
         }
 
-        public override void SetMount(Player player, ref bool skipDust)
-        {
+        public override void SetMount(Player player, ref bool skipDust) {
             player.mount._mountSpecificData = new PenMountData();
 
-            if (!Main.dedServ)
-            {
-                for (int i = 0; i < 16; i++)
-                {
+            if (!Main.dedServ) {
+                for (int i = 0; i < 16; i++) {
                     Dust.NewDustPerfect(player.Center + new Vector2(80, 0).RotatedBy(i * Math.PI * 2 / 16f), MountData.spawnDust);
                 }
 
@@ -163,8 +151,7 @@ namespace CalamityEntropy.Content.Items.Donator
         //坐骑贴图,加载期就位,不再逐帧请求
         [VaultLoaden("CalamityEntropy/Assets/Extra/PenMount")]
         internal static Texture2D PenMountTex;
-        public override bool Draw(List<DrawData> playerDrawData, int drawType, Player drawPlayer, ref Texture2D texture, ref Texture2D glowTexture, ref Vector2 drawPosition, ref Rectangle frame, ref Color drawColor, ref Color glowColor, ref float rotation, ref SpriteEffects spriteEffects, ref Vector2 drawOrigin, ref float drawScale, float shadow)
-        {
+        public override bool Draw(List<DrawData> playerDrawData, int drawType, Player drawPlayer, ref Texture2D texture, ref Texture2D glowTexture, ref Vector2 drawPosition, ref Rectangle frame, ref Color drawColor, ref Color glowColor, ref float rotation, ref SpriteEffects spriteEffects, ref Vector2 drawOrigin, ref float drawScale, float shadow) {
             var tex = PenMountTex;
             playerDrawData.Add(new DrawData(tex, drawPosition, null, drawColor, drawPlayer.bodyRotation, tex.Size() / 2f, 1, drawPlayer.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally));
             return false;

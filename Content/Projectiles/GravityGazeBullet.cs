@@ -1,8 +1,7 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Core.Graphics;
-using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -15,12 +14,10 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class GravityGazeBullet : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Magic;
             Projectile.width = 24;
             Projectile.height = 24;
@@ -33,14 +30,11 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.localNPCHitCooldown = 20;
         }
         float alpha = 1f;
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center - Projectile.velocity, targetHitbox, Projectile.height);
         }
-        public override void AI()
-        {
-            if (s)
-            {
+        public override void AI() {
+            if (s) {
                 tail = Projectile.Center - Projectile.velocity;
                 Projectile.ai[1] = Main.rand.Next(0, 1024);
                 s = false;
@@ -50,17 +44,14 @@ namespace CalamityEntropy.Content.Projectiles
             else
                 Projectile.velocity *= 0.96f;
             tail = tail + (Projectile.Center - tail) * 0.05f;
-            if (Projectile.timeLeft < 30)
-            {
+            if (Projectile.timeLeft < 30) {
                 alpha -= 1f / 30f;
             }
             Projectile.rotation = Projectile.velocity.ToRotation();
-            for (float i = 0.1f; i <= 1; i += 0.2f)
-            {
+            for (float i = 0.1f; i <= 1; i += 0.2f) {
                 odp.Add(Vector2.Lerp(Projectile.Center, Projectile.Center + Projectile.velocity, i));
                 rots.Add(Projectile.rotation);
-                if (odp.Count > 42)
-                {
+                if (odp.Count > 42) {
                     rots.RemoveAt(0);
                     odp.RemoveAt(0);
                 }
@@ -72,8 +63,7 @@ namespace CalamityEntropy.Content.Projectiles
         public List<Vector2> odp = new List<Vector2>();
         public List<float> rots = new List<float>();
         public bool s = true;
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             if (Projectile.velocity.Length() >= 14f)
                 CEUtils.PlaySound("CrystalBreak", 1.2f, target.Center, 8, 0.7f);
             float s = Projectile.velocity.Length() >= 14 ? 1 : 0.5f;
@@ -83,16 +73,13 @@ namespace CalamityEntropy.Content.Projectiles
             for (int i = 0; i < 4; i++)
                 PRTLoader.NewParticle<PRT_GlowSparkCal>(target.Center, (i * MathHelper.PiOver2).ToRotationVector2() * 10 * s, Main.rand.NextBool() ? Color.DeepSkyBlue : Color.LightGoldenrodYellow, 0.05f * s).Configure(false, 12, new Vector2(1.5f, 1));
         }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
             if (Projectile.velocity.Length() >= 14f)
                 modifiers.SourceDamage *= 1.5f;
             modifiers.SourceDamage *= alpha;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            if (s)
-            {
+        public override bool PreDraw(ref Color lightColor) {
+            if (s) {
                 return false;
             }
 
@@ -102,10 +89,8 @@ namespace CalamityEntropy.Content.Projectiles
             Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
             Asset<Texture2D> texture = CEExtraAssets.EnchantedAsset;
 
-            if (odp != null && rots != null)
-            {
-                if (odp.Count > 1)
-                {
+            if (odp != null && rots != null) {
+                if (odp.Count > 1) {
                     Main.spriteBatch.End();
                     Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                     {
@@ -113,8 +98,7 @@ namespace CalamityEntropy.Content.Projectiles
                         List<ColoredVertex> ve = new List<ColoredVertex>();
                         Color b = new Color(255, 255, 255) * 0.7f;
                         float p = -Main.GlobalTimeWrappedHourly * 1;
-                        for (int i = 0; i < odp.Count; i++)
-                        {
+                        for (int i = 0; i < odp.Count; i++) {
                             float pg = i / (odp.Count - 1f);
                             float w = CEUtils.Parabola(pg, 1);
                             float pgl = CEUtils.Frac(pg + Main.GlobalTimeWrappedHourly * 6f);
@@ -135,8 +119,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                         SpriteBatch sb = Main.spriteBatch;
                         GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                        if (ve.Count >= 3)
-                        {
+                        if (ve.Count >= 3) {
                             gd.Textures[0] = tx;
                             gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
 

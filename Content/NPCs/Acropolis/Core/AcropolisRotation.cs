@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Projectiles;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -27,16 +27,13 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.Core
         /// 而 <see cref="VaultStateMachine{TContext}"/> 在客户端会照常跑 <c>OnUpdate</c> 却丢弃返回值。
         /// 返回 <see langword="null"/> 表示「这一手是单发,留在行走态」
         /// </summary>
-        public static IVaultState<AcropolisStateContext> Pick(AcropolisStateContext ctx)
-        {
-            if (Main.rand.NextBool(AcropolisDirector.BarrageRollDenominator))
-            {
+        public static IVaultState<AcropolisStateContext> Pick(AcropolisStateContext ctx) {
+            if (Main.rand.NextBool(AcropolisDirector.BarrageRollDenominator)) {
                 return VaultStateRegistry<AcropolisStateContext>.Create((int)AcropolisStateIndex.CannonBarrage);
             }
 
             //第二个骰子必须先摇再看门槛,与原代码的短路顺序一致
-            if (Main.rand.NextBool(AcropolisDirector.JumpRollDenominator) && !ctx.Airborne && ctx.HarpoonOnLauncher)
-            {
+            if (Main.rand.NextBool(AcropolisDirector.JumpRollDenominator) && !ctx.Airborne && ctx.HarpoonOnLauncher) {
                 return VaultStateRegistry<AcropolisStateContext>.Create((int)AcropolisStateIndex.JumpShoot);
             }
 

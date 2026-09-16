@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Apsychos.Core;
+﻿using CalamityEntropy.Content.NPCs.Apsychos.Core;
 using CalamityEntropy.Content.Projectiles.ApsychosProjs;
 using InnoVault.StateMachines;
 using Terraria;
@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.States
     {
         public override ApsychosStateIndex StateIndex => ApsychosStateIndex.FireballBig;
 
-        public override IVaultState<ApsychosStateContext> OnUpdate(ApsychosStateContext ctx)
-        {
+        public override IVaultState<ApsychosStateContext> OnUpdate(ApsychosStateContext ctx) {
             NPC npc = ctx.Npc;
             NPC tail = ctx.Tail;
             Player player = ctx.Target;
@@ -29,21 +28,18 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.States
 
             ctx.Num1++;
             float charge = ApsychosDirector.BigChargeBase - ctx.Phase * ApsychosDirector.BigChargePerPhase;
-            if (ctx.Num1 < charge)
-            {
+            if (ctx.Num1 < charge) {
                 tail.Center = Vector2.Lerp(tail.Center, npc.Center + npc.rotation.ToRotationVector2() * ApsychosDirector.BigTailReach * npc.scale, ApsychosDirector.BigTailLerp * enrange);
                 ctx.TailLight += ApsychosDirector.BigTailLightRise;
             }
-            if (ctx.Num1 >= charge)
-            {
+            if (ctx.Num1 >= charge) {
                 bool replay = CuePassed(ctx.Num1, (int)charge);
                 ctx.Num1 = 0f;
                 ctx.TailLight = 0f;
                 ctx.Num2++;
                 //后坐各端都写;音效中途加入静默;弹幕只在权威端
                 tail.velocity -= tail.rotation.ToRotationVector2() * ApsychosDirector.BigRecoil;
-                if (!replay)
-                {
+                if (!replay) {
                     CEUtils.PlaySound("YharonFireball1", 0.9f, npc.Center);
                     CEUtils.PlaySound("YharonFireball1", 0.9f, npc.Center);
                 }
@@ -51,8 +47,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.States
                     ApsychosDirector.BigDamageMult, 0f, ctx.Phase);
                 MarkNetUpdate(ctx);
             }
-            if (ctx.Num2 > ApsychosDirector.BigShotCount)
-            {
+            if (ctx.Num2 > ApsychosDirector.BigShotCount) {
                 return NextAttack(ctx);
             }
             return null;

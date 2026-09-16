@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Particles.CalamityPorts;
+﻿using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
 using Terraria;
 using Terraria.ID;
@@ -8,15 +8,13 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class CondensedBulletProjectile : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
 
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 6;
             Projectile.height = 6;
             Projectile.aiStyle = 1;
@@ -33,20 +31,16 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
-        public override void ModifyDamageHitbox(ref Rectangle hitbox)
-        {
+        public override void ModifyDamageHitbox(ref Rectangle hitbox) {
             hitbox = hitbox.Center.ToVector2().getRectCentered(26, 26);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             return false;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.localAI[2]++;
-            if (Projectile.localAI[2] > 13)
-            {
+            if (Projectile.localAI[2] > 13) {
                 Projectile.velocity = Projectile.velocity.normalize() * 16;
                 Projectile.rotation = Projectile.velocity.ToRotation();
                 Vector2 center = Projectile.Center - Projectile.velocity * 2;
@@ -57,12 +51,10 @@ namespace CalamityEntropy.Content.Projectiles
                 Color org = new Color(sparkColor.R, sparkColor.G, sparkColor.B);
                 sparkColor *= Main.rand.NextFloat(0.6f, 1);
                 sparkColor.A = 255;
-                if (Main.rand.NextBool(4))
-                {
+                if (Main.rand.NextBool(4)) {
                     sparkColor.R = org.R;
                 }
-                if (Main.rand.NextBool(4))
-                {
+                if (Main.rand.NextBool(4)) {
                     sparkColor.B = org.B;
                 }
                 //PRT_AltSpark跟LineCal随机混用,旧Calamity spark/Lines二选一
@@ -70,20 +62,16 @@ namespace CalamityEntropy.Content.Projectiles
                 PRTLoader.NewParticle<PRT_LineCal>(center, sparkVelo, sparkColor, sparkScale * 0.8f).Configure(false, (int)(sparkLifetime));
             }
         }
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
+        public override bool OnTileCollide(Vector2 oldVelocity) {
             SpawnHitParticle(oldVelocity);
             return true;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             SpawnHitParticle(Projectile.velocity);
             Projectile.damage = (int)(Projectile.damage * 0.75f);
         }
-        public void SpawnHitParticle(Vector2 vel)
-        {
-            for (int i = 0; i < 12; i++)
-            {
+        public void SpawnHitParticle(Vector2 vel) {
+            for (int i = 0; i < 12; i++) {
                 Vector2 center = Projectile.Center;
                 Vector2 sparkVelo = vel.RotatedBy(MathHelper.Pi).RotatedByRandom(0.5f) * Main.rand.NextFloat(0.3f, 0.6f);
                 int sparkLifetime = 10;
@@ -92,12 +80,10 @@ namespace CalamityEntropy.Content.Projectiles
                 Color org = new Color(sparkColor.R, sparkColor.G, sparkColor.B);
                 sparkColor *= Main.rand.NextFloat(0.6f, 1);
                 sparkColor.A = 255;
-                if (Main.rand.NextBool(4))
-                {
+                if (Main.rand.NextBool(4)) {
                     sparkColor.R = org.R;
                 }
-                if (Main.rand.NextBool(4))
-                {
+                if (Main.rand.NextBool(4)) {
                     sparkColor.B = org.B;
                 }
                 //AltSpark Configure(bool,int)是Ports签名,不是opacity/glow/mode那套

@@ -1,4 +1,4 @@
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.NPCs.SpiritFountain.Core;
 using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
@@ -25,8 +25,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
     {
         public override SpiritFountainStateIndex StateIndex => SpiritFountainStateIndex.SpawnAnimation;
 
-        protected override IVaultState<SpiritFountainStateContext> RunBody(SpiritFountainStateContext ctx)
-        {
+        protected override IVaultState<SpiritFountainStateContext> RunBody(SpiritFountainStateContext ctx) {
             NPC npc = ctx.Npc;
             SpiritFountain owner = ctx.Owner;
 
@@ -34,8 +33,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
             //所以演出期间那条 else 不执行
             ctx.StareAtLocalPlayer = false;
 
-            if (!ctx.SetPos)
-            {
+            if (!ctx.SetPos) {
                 owner.column1.rotation = -MathHelper.PiOver2;
                 npc.Opacity = 0;
                 ctx.SetPos = true;
@@ -50,8 +48,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
                 MarkNetUpdate(ctx);
             }
 
-            if (ctx.GatheringAnimation == SpiritFountainDirector.GatheringShineFrame && IsLocal)
-            {
+            if (ctx.GatheringAnimation == SpiritFountainDirector.GatheringShineFrame && IsLocal) {
                 //出场首帧双 Shine,lifetime 320 的一次性大粒子
                 PRT_ShineParticle shine1 = PRTLoader.NewParticle<PRT_ShineParticle>(npc.Center, Vector2.Zero, Color.AliceBlue, SpiritFountainDirector.GatheringShineScale1);
                 shine1.flag = true;
@@ -62,15 +59,12 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
             }
 
             //自减写在判据里:无论是否还在聚魂期都会减,演出后半段它一路走进负数,照搬
-            if (ctx.GatheringAnimation-- > 0)
-            {
-                if (ctx.GatheringAnimation > SpiritFountainDirector.GatheringSpiritStopAt && IsLocal)
-                {
+            if (ctx.GatheringAnimation-- > 0) {
+                if (ctx.GatheringAnimation > SpiritFountainDirector.GatheringSpiritStopAt && IsLocal) {
                     //归魂概率 0.2~1 随倒计时递减,后半段才密起来
                     float chance = SpiritFountainDirector.GatheringSpiritChanceBase
                         + (1 - (ctx.GatheringAnimation - SpiritFountainDirector.GatheringSpiritChanceOffset) / SpiritFountainDirector.GatheringSpiritChanceSpan);
-                    if (Main.rand.NextFloat() < chance)
-                    {
+                    if (Main.rand.NextFloat() < chance) {
                         float rr = CEUtils.randomRot();
                         PRT_HomingSpiritParticle spirit = PRTLoader.NewParticle<PRT_HomingSpiritParticle>(
                             npc.Center + rr.ToRotationVector2() * SpiritFountainDirector.GatheringSpiritRadius,
@@ -88,37 +82,30 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
                 return null;
             }
 
-            if (Timer > SpiritFountainDirector.SpawnStareStartFrame)
-            {
+            if (Timer > SpiritFountainDirector.SpawnStareStartFrame) {
                 ctx.StarePoint = Vector2.Lerp(ctx.StarePoint, Main.LocalPlayer.Center, SpiritFountainDirector.SpawnStareLerp);
             }
-            if (npc.Opacity < 1 && ctx.EyeAlpha >= SpiritFountainDirector.SpawnEyeAlphaGate)
-            {
+            if (npc.Opacity < 1 && ctx.EyeAlpha >= SpiritFountainDirector.SpawnEyeAlphaGate) {
                 npc.Opacity += SpiritFountainDirector.SpawnOpacityStep;
             }
-            else
-            {
-                if (ctx.EyeAlpha < SpiritFountainDirector.SpawnEyeAlphaGate)
-                {
+            else {
+                if (ctx.EyeAlpha < SpiritFountainDirector.SpawnEyeAlphaGate) {
                     ctx.EyeAlpha += SpiritFountainDirector.SpawnEyeAlphaStep;
                 }
             }
             owner.column1.alpha = npc.Opacity * SpiritFountainDirector.SpawnColumnAlphaFactor;
-            if (Timer > SpiritFountainDirector.SpawnSlowDownFrame)
-            {
+            if (Timer > SpiritFountainDirector.SpawnSlowDownFrame) {
                 ctx.FountainSpeed = float.Lerp(ctx.FountainSpeed, SpiritFountainDirector.SpawnFountainSpeedTarget, SpiritFountainDirector.SpawnFountainSpeedLerp);
             }
 
             IVaultState<SpiritFountainStateContext> next = null;
-            if (Timer > SpiritFountainDirector.SpawnEndFrame)
-            {
+            if (Timer > SpiritFountainDirector.SpawnEndFrame) {
                 npc.Opacity = 1;
                 owner.column1.alpha = SpiritFountainDirector.SpawnEndColumnAlpha;
                 ctx.EyeAlpha = SpiritFountainDirector.SpawnEndEyeAlpha;
                 ctx.FountainSpeed = SpiritFountainDirector.SpawnFountainSpeedTarget;
                 next = Advance(ctx, StateIndex);
-                if (ctx.SpawnSpirits)
-                {
+                if (ctx.SpawnSpirits) {
                     ctx.SpawnSpirits = false;
                     ctx.CenterRing = (int)Math.Ceiling(owner.SpiritCount / 2f);
                     owner.SpawnRingSet(0);

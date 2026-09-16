@@ -1,6 +1,7 @@
 ﻿using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Dash;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,7 +10,6 @@ using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -28,8 +28,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         /// <summary>一次冲刺的充能开销;阿扎弗强化时减半。</summary>
         public static float DashCost(Player player) => player.AzafureEnhance() ? 0.5f : 1f;
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 60;
             Item.height = 54;
             Item.value = Item.buyPrice(gold: 5);
@@ -38,27 +37,21 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.rare = ModContent.RarityType<AzafureOrange>();
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            if (charge < maxCharge)
-            {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
+            if (charge < maxCharge) {
                 charge += 1f / 300f;
             }
             player.Entropy().AzafureChargeShieldItem = Item;
             player.GetModPlayer<CEDashPlayer>().Offer(CEDashRegistry.Get<AzafureShieldDash>());
         }
-        public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
-            if (charge < maxCharge)
-            {
+        public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale) {
+            if (charge < maxCharge) {
                 CEUtils.DrawChargeBar(scale * 1.2f, position + new Vector2(0, 18) * scale, ((float)charge / maxCharge), (charge < 1) ? Color.DarkOrange : Color.Orange);
             }
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_DubiousPlating, CEID.Item_AerialiteBar))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_DubiousPlating, CEID.Item_AerialiteBar)) {
                 CreateRecipe()
                 .AddIngredient<HellIndustrialComponents>(6)
                 .AddIngredient(CEID.Item_DubiousPlating, 10)
@@ -100,23 +93,20 @@ namespace CalamityEntropy.Content.Items.Accessories
         public override bool CanStart(Player player)
             => TryGetCharge(player, out float charge) && charge >= AzafureChargeShield.DashCost(player);
 
-        public override void OnStart(Player player, CEDashState state)
-        {
+        public override void OnStart(Player player, CEDashState state) {
             if (!state.Remote)
                 ConsumeCharge(player, AzafureChargeShield.DashCost(player));
             CEUtils.PlaySound("Dash2", Main.rand.NextFloat(0.9f, 1.1f), player.Center, 6, 0.55f);
 
             Vector2 back = -state.Direction;
-            for (int i = 0; i < 10; i++)
-            {
+            for (int i = 0; i < 10; i++) {
                 Vector2 vel = back.RotatedByRandom(0.5f) * Main.rand.NextFloat(4f, 10f);
                 PRTLoader.NewParticle<PRT_LineCal>(player.Center + CEUtils.randomPointInCircle(12), vel,
                     Color.Lerp(Color.OrangeRed, Color.LightGoldenrodYellow, Main.rand.NextFloat()), Main.rand.NextFloat(0.8f, 1.3f)).Configure(false, Main.rand.Next(16, 24));
             }
         }
 
-        public override void OnVisuals(Player player, CEDashState state)
-        {
+        public override void OnVisuals(Player player, CEDashState state) {
             // 火花强度随冲刺进度收束,收尾时只剩少量余火
             float intensity = 1f - state.Progress;
             Vector2 axis = state.Direction;
@@ -124,8 +114,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Vector2 back = -axis * Math.Max(4f, state.CurrentSpeed) * 0.4f;
             int dir = state.HorizontalSign(player);
 
-            if (intensity > 0.2f)
-            {
+            if (intensity > 0.2f) {
                 Color sparkColor = Color.Lerp(Color.OrangeRed, Color.Firebrick, Main.rand.NextFloat());
                 float sparkScale = Main.rand.NextFloat(1f, 1.4f) * (0.6f + 0.4f * intensity);
                 int sparkLifetime = Main.rand.Next(18, 28);
@@ -136,8 +125,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             }
 
             int dustCount = 1 + (int)(2 * intensity);
-            for (int i = 0; i < dustCount; i++)
-            {
+            for (int i = 0; i < dustCount; i++) {
                 float f = axis.ToRotation() + state.Timer / 5f;
                 float radius = 15f + (float)Math.Cos(state.Timer / 3f) * 12f;
                 Dust dust = Dust.NewDustPerfect(player.Center - axis * 24f + f.ToRotationVector2().RotatedBy(i / 5f * MathHelper.TwoPi) * radius, Main.rand.NextBool(5) ? DustID.Torch : DustID.FlameBurst);
@@ -153,8 +141,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             }
         }
 
-        public override void OnHit(Player player, NPC npc, CEDashState state, ref CEDashHit hit)
-        {
+        public override void OnHit(Player player, NPC npc, CEDashState state, ref CEDashHit hit) {
             var mp = player.Entropy();
             if (mp.AzChargeShieldSteamTime <= 0)
                 mp.AzChargeShieldSteamTime = 32;
@@ -163,14 +150,12 @@ namespace CalamityEntropy.Content.Items.Accessories
 
             Vector2 axis = state.Direction;
             Vector2 side = axis.RotatedBy(MathHelper.PiOver2);
-            for (int i = 0; i < 16; i++)
-            {
+            for (int i = 0; i < 16; i++) {
                 Vector2 top = npc.Center + side * Main.rand.NextFloat(-12f, 12f);
                 Vector2 sparkVelocity = -axis.RotatedByRandom(0.4f) * Main.rand.NextFloat(3f, 10f);
                 PRTLoader.NewParticle<PRT_LineCal>(top, sparkVelocity, Color.Lerp(Color.Goldenrod, Color.Yellow, Main.rand.NextFloat()), Main.rand.NextFloat(0.6f, 1.4f)).Configure(false, Main.rand.Next(24, 28));
             }
-            for (int i = 0; i < 16; i++)
-            {
+            for (int i = 0; i < 16; i++) {
                 Vector2 sparkVelocity = -axis.RotatedByRandom(0.6f) * Main.rand.NextFloat(5f, 14f);
                 PRTLoader.NewParticle<PRT_AltSpark>(npc.Center, sparkVelocity, Color.Lerp(Color.Red, Color.Firebrick, Main.rand.NextFloat()), Main.rand.NextFloat(1f, 1.8f)).Configure(false, Main.rand.Next(24, 28));
             }
@@ -194,8 +179,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         protected override float HitKnockback => AzafureChargeShield.DashKnockback;
         protected override int HitImmuneFrames => AzafureChargeShield.DashImmuneFrames;
 
-        protected override bool TryGetCharge(Player player, out float charge)
-        {
+        protected override bool TryGetCharge(Player player, out float charge) {
             charge = 0f;
             if (player.Entropy().AzafureChargeShieldItem?.ModItem is not AzafureChargeShield shield)
                 return false;
@@ -203,8 +187,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             return true;
         }
 
-        protected override void ConsumeCharge(Player player, float cost)
-        {
+        protected override void ConsumeCharge(Player player, float cost) {
             if (player.Entropy().AzafureChargeShieldItem?.ModItem is AzafureChargeShield shield)
                 shield.charge = Math.Max(0f, shield.charge - cost);
         }

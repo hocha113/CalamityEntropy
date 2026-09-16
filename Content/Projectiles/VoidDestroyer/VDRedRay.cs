@@ -1,6 +1,5 @@
-using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
 
@@ -23,8 +22,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public float Width => BaseWidth * (Main.getGoodWorld ? 1.5f : 1f);
         public Vector2 Dir => Projectile.velocity.SafeNormalize(Vector2.UnitY);
 
-        public override void SetExtraDefaults()
-        {
+        public override void SetExtraDefaults() {
             Projectile.width = 20;
             Projectile.height = 20;
         }
@@ -32,30 +30,25 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public override bool ShouldUpdatePosition() => false;
 
         /// <summary>宽度包络:前 6 帧张开,最后 10 帧收拢</summary>
-        public float Envelope()
-        {
+        public float Envelope() {
             int age = Duration - Projectile.timeLeft;
             float open = MathHelper.Clamp(age / 6f, 0f, 1f);
             float close = MathHelper.Clamp(Projectile.timeLeft / 10f, 0f, 1f);
             return Math.Min(open, close);
         }
 
-        public override void AI()
-        {
-            if (Projectile.localAI[0] == 0f)
-            {
+        public override void AI() {
+            if (Projectile.localAI[0] == 0f) {
                 Projectile.localAI[0] = 1f;
                 Projectile.timeLeft = Duration;
-                if (!Main.dedServ)
-                {
+                if (!Main.dedServ) {
                     CEUtils.PlaySound("void_laser", 0.7f, Projectile.Center, 3, 1f);
                     CEUtils.SetShake(Projectile.Center, 7f, 2400f);
                 }
             }
             Projectile.rotation = Dir.ToRotation();
             Lighting.AddLight(Projectile.Center + Dir * 300f, RayColor.ToVector3() * 0.8f);
-            if (!Main.dedServ && Main.rand.NextBool(2))
-            {
+            if (!Main.dedServ && Main.rand.NextBool(2)) {
                 Vector2 pos = Projectile.Center + Dir * Main.rand.NextFloat(0f, Length * 0.6f);
                 Vector2 v = Dir.RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-4f, 4f);
                 var s = PRTLoader.NewParticle<PRT_GlowSpark>(pos, v, RayColor, Main.rand.NextFloat(0.4f, 0.8f))
@@ -64,17 +57,14 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            if (Envelope() < 0.5f)
-            {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+            if (Envelope() < 0.5f) {
                 return false;
             }
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Dir * Length, targetHitbox, (int)Width);
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             //射线主体走 VDVoidBeam 着色器(湍流 + 白热核心 + 边缘辉光),红色板
             float env = Envelope();
             VDBeamDraw.Draw(Projectile.Center, Dir, Length, Width * 1.6f, RayColor, new Color(255, 200, 160), env, 1f, Projectile.whoAmI * 0.37f);

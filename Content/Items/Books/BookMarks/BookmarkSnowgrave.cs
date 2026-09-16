@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -10,29 +10,24 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 {
     public class BookmarkSnowgrave : BookMark
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.rare = ItemRarityID.Orange;
             Item.value = Item.buyPrice(gold: 5);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Snowgrave");
-        public override EBookProjectileEffect getEffect()
-        {
+        public override EBookProjectileEffect getEffect() {
             return new SnowgraveBMEffect();
         }
         public override Color tooltipColor => new Color(160, 160, 255);
     }
     public class SnowgraveBMEffect : EBookProjectileEffect
     {
-        public override void OnHitNPC(Projectile projectile, NPC target, int damageDone)
-        {
+        public override void OnHitNPC(Projectile projectile, NPC target, int damageDone) {
             int sgtype = ModContent.ProjectileType<Snowgrave>();
-            if (projectile.GetOwner().ownedProjectileCounts[sgtype] < 1)
-            {
+            if (projectile.GetOwner().ownedProjectileCounts[sgtype] < 1) {
                 projectile.GetOwner().Entropy().SnowgraveChargeTime = 20;
-                if (projectile.GetOwner().Entropy().SnowgraveCharge >= 1 && projectile.ModProjectile is EBookBaseProjectile ebp && ebp.ShooterModProjectile is EntropyBookHeldProjectile eb)
-                {
+                if (projectile.GetOwner().Entropy().SnowgraveCharge >= 1 && projectile.ModProjectile is EBookBaseProjectile ebp && ebp.ShooterModProjectile is EntropyBookHeldProjectile eb) {
                     projectile.GetOwner().Entropy().SnowgraveCharge = 0;
                     projectile.GetOwner().Entropy().SnowgraveChargeTime = 0;
                     Projectile.NewProjectile(projectile.GetSource_FromAI(), target.Center, Vector2.Zero, sgtype, EBookProjectileEffect.FixedDamage(projectile.GetOwner(), 10, projectile.DamageType), 0.4f, projectile.owner);
@@ -43,8 +38,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     public class Snowgrave : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Content/Particles/SnowPiece";
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Magic, false, -1);
             Projectile.width = 360;
             Projectile.height = 2048;
@@ -54,14 +48,11 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             Projectile.ArmorPenetration = 6400;
         }
 
-        public void SpawnSnow()
-        {
+        public void SpawnSnow() {
             Vector2 scaledSize = Main.Camera.ScaledSize;
             Vector2 scaledPosition = Main.Camera.ScaledPosition;
-            for (int i = 0; (float)i < 42; i++)
-            {
-                try
-                {
+            for (int i = 0; (float)i < 42; i++) {
+                try {
 
                     int num5 = Main.rand.Next((int)scaledSize.X + 1500) - 750;
                     int num6 = (int)scaledPosition.Y - Main.rand.Next(50);
@@ -84,13 +75,11 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
                     Main.dust[num9].velocity.Y = 3f + (float)Main.rand.Next(30) * 0.1f;
                     Main.dust[num9].velocity.Y *= Main.dust[num9].scale;
                     float windSpeedCurrent = 1.6f;
-                    if (!Main.raining)
-                    {
+                    if (!Main.raining) {
                         Main.dust[num9].velocity.X = windSpeedCurrent + (float)Main.rand.Next(-10, 10) * 0.1f;
                         Main.dust[num9].velocity.X += windSpeedCurrent * 15f;
                     }
-                    else
-                    {
+                    else {
                         Main.dust[num9].velocity.X = (float)Math.Sqrt(Math.Abs(windSpeedCurrent)) * (float)Math.Sign(windSpeedCurrent) * (cloudAlpha + 0.5f) * 10f + Main.rand.NextFloat() * 0.2f - 0.1f;
                         Main.dust[num9].velocity.Y *= 0.5f;
                     }
@@ -102,14 +91,11 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 
 
                     continue;
-                }
-                catch
-                {
+                } catch {
                 }
             }
         }
-        public override void AI()
-        {
+        public override void AI() {
             Main.LocalPlayer.Entropy().snowgrave = 16;
             if (!Main.dedServ)
                 SpawnSnow();
@@ -118,16 +104,14 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 
             float wave = (0.4f + 0.6f * (float)(Math.Sin(Main.GameUpdateCount * 0.35f) * 0.5f + 0.5f));
             Player owner = Projectile.GetOwner();
-            void SpawnSnowPiece(Vector2 pos)
-            {
+            void SpawnSnowPiece(Vector2 pos) {
                 //owner绑射弹寿命,SnowPiece里ownedProjectileCounts<1才开始Opacity衰减
                 var snow = PRTLoader.NewParticle<PRT_SnowPiece>(pos, new Vector2(0, -80), Color.White, 1);
                 snow.owner = owner;
                 snow.Configure(1, true, PRTDrawModeEnum.AlphaBlend, 0, -1);
             }
 
-            for (float i = 0.2f; i <= 1; i += 0.2f)
-            {
+            for (float i = 0.2f; i <= 1; i += 0.2f) {
                 SpawnSnowPiece(Projectile.Center + new Vector2(-30, -Math.Abs(i) * 40) + new Vector2(wave * i * 160, 1024));
                 SpawnSnowPiece(Projectile.Center + new Vector2(-30, -Math.Abs(i) * 40) + new Vector2(0, -40) + new Vector2(wave * i * 160, 1024));
                 SpawnSnowPiece(Projectile.Center + new Vector2(30, -Math.Abs(i) * 40) + new Vector2(wave * i * 160, 1024));
@@ -144,13 +128,11 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
             storm.owner = owner;
             storm.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, -1);
         }
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             return Projectile.timeLeft < 330;
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             return false;
         }
     }

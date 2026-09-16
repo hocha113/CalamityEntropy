@@ -1,7 +1,6 @@
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
 using System;
 using Terraria;
-using Terraria.ModLoader;
 
 namespace CalamityEntropy.Core.CalamityRef
 {
@@ -94,38 +93,32 @@ namespace CalamityEntropy.Core.CalamityRef
         #region 进度 · 一对多
 
         /// <summary>灾厄之影分身(11.7)。兜底按落点:Silentpeak 传 true,其余传机械三王</summary>
-        public static bool DownedCalamitasClone(bool ownFallback)
-        {
+        public static bool DownedCalamitasClone(bool ownFallback) {
             return CERef.Has ? CERef.GetDowned(CERef.DownedFlag.CalamitasClone) : ownFallback;
         }
 
         /// <summary>亵渎天神(19)。活点兜底虚无双子,死档回生传 false</summary>
-        public static bool DownedProvidence(bool ownFallback)
-        {
+        public static bool DownedProvidence(bool ownFallback) {
             return CERef.Has ? CERef.GetDowned(CERef.DownedFlag.Providence) : ownFallback;
         }
 
         /// <summary>神明吞噬者(21)。兜底按落点:虚无双子或巡游者,死档回生传 false</summary>
-        public static bool DownedDoG(bool ownFallback)
-        {
+        public static bool DownedDoG(bool ownFallback) {
             return CERef.Has ? CERef.GetDowned(CERef.DownedFlag.DoG) : ownFallback;
         }
 
         /// <summary>丛林龙(22)。活点兜底巡游者,死档回生传 false</summary>
-        public static bool DownedYharon(bool ownFallback)
-        {
+        public static bool DownedYharon(bool ownFallback) {
             return CERef.Has ? CERef.GetDowned(CERef.DownedFlag.Yharon) : ownFallback;
         }
 
         /// <summary>星流巨械(22.99)。活点兜底巡游者,死档回生传 false</summary>
-        public static bool DownedExoMechs(bool ownFallback)
-        {
+        public static bool DownedExoMechs(bool ownFallback) {
             return CERef.Has ? CERef.GetDowned(CERef.DownedFlag.ExoMechs) : ownFallback;
         }
 
         /// <summary>至尊灾厄(23)。活点兜底巡游者,死档回生传 false</summary>
-        public static bool DownedCalamitas(bool ownFallback)
-        {
+        public static bool DownedCalamitas(bool ownFallback) {
             return CERef.Has ? CERef.GetDowned(CERef.DownedFlag.Calamitas) : ownFallback;
         }
 
@@ -149,18 +142,15 @@ namespace CalamityEntropy.Core.CalamityRef
 
         #region 群系
 
-        public static bool ZoneAstral(Player player, bool ownFallback)
-        {
+        public static bool ZoneAstral(Player player, bool ownFallback) {
             return CERef.Has ? CERef.GetZoneAstral(player) : ownFallback;
         }
 
-        public static bool ZoneSulphur(Player player, bool ownFallback)
-        {
+        public static bool ZoneSulphur(Player player, bool ownFallback) {
             return CERef.Has ? CERef.GetZoneSulphur(player) : ownFallback;
         }
 
-        public static bool ZoneAbyssLayer4(Player player, bool ownFallback)
-        {
+        public static bool ZoneAbyssLayer4(Player player, bool ownFallback) {
             return CERef.Has ? CERef.GetZoneAbyssLayer4(player) : ownFallback;
         }
 
@@ -169,51 +159,41 @@ namespace CalamityEntropy.Core.CalamityRef
         #region 稀有度
 
         /// <summary>灾厄 BurnishedAuric。4.0 兜底由调用点给</summary>
-        public static int RarityBurnishedAuric(int ownFallback)
-        {
+        public static int RarityBurnishedAuric(int ownFallback) {
             return RarityOr(CEID.Rarity_BurnishedAuric, ownFallback);
         }
 
-        public static int RarityTurquoise(int ownFallback)
-        {
+        public static int RarityTurquoise(int ownFallback) {
             return RarityOr(CEID.Rarity_Turquoise, ownFallback);
         }
 
-        public static int RarityCosmicPurple(int ownFallback)
-        {
+        public static int RarityCosmicPurple(int ownFallback) {
             return RarityOr(CEID.Rarity_CosmicPurple, ownFallback);
         }
 
-        public static int RarityHotPink(int ownFallback)
-        {
+        public static int RarityHotPink(int ownFallback) {
             return RarityOr(CEID.Rarity_HotPink, ownFallback);
         }
 
-        public static int RarityCalamityRed(int ownFallback)
-        {
+        public static int RarityCalamityRed(int ownFallback) {
             return RarityOr(CEID.Rarity_CalamityRed, ownFallback);
         }
 
-        public static int RarityPureGreen(int ownFallback)
-        {
+        public static int RarityPureGreen(int ownFallback) {
             return RarityOr(CEID.Rarity_PureGreen, ownFallback);
         }
 
-        public static int RarityDarkOrange(int ownFallback)
-        {
+        public static int RarityDarkOrange(int ownFallback) {
             return RarityOr(CEID.Rarity_DarkOrange, ownFallback);
         }
 
-        public static int RarityExoticRainbow(int ownFallback)
-        {
+        public static int RarityExoticRainbow(int ownFallback) {
             return RarityOr(CEID.Rarity_ExoticRainbow, ownFallback);
         }
 
         //ModRarity 的 Type 从 12 起,未命中的 0 与任何真实模组稀有度都不会混淆
-        private static int RarityOr(int calRarity, int ownFallback)
-        {
-            if (!CERef.Has || calRarity <= 0)
-            {
+        private static int RarityOr(int calRarity, int ownFallback) {
+            if (!CERef.Has || calRarity <= 0) {
                 return ownFallback;
             }
             return calRarity;
@@ -224,20 +204,17 @@ namespace CalamityEntropy.Core.CalamityRef
         #region NPC 状态
 
         /// <summary>灾厄 NPC 处于激怒态。4.0 兜底:false</summary>
-        public static bool NPCEnraged(NPC npc)
-        {
+        public static bool NPCEnraged(NPC npc) {
             return CERef.Has ? CERef.GetNPCEnraged(npc) : false;
         }
 
         /// <summary>灾厄 NPC 正在提防/提 DR。4.0 兜底:false</summary>
-        public static bool NPCIncreasingDefenseOrDR(NPC npc)
-        {
+        public static bool NPCIncreasingDefenseOrDR(NPC npc) {
             return CERef.Has ? CERef.GetNPCIncreasingDefenseOrDR(npc) : false;
         }
 
         /// <summary>灾厄 NPC 的 DR,供血条显示。4.0 兜底:0</summary>
-        public static float GetDisplayDR(NPC npc)
-        {
+        public static float GetDisplayDR(NPC npc) {
             return CERef.Has ? CERef.GetNPCDR(npc) : 0f;
         }
 
@@ -247,10 +224,8 @@ namespace CalamityEntropy.Core.CalamityRef
 
         /// <summary>把自有 Boss 的从属部件登记进灾厄血条排除表。灾厄只看 npc.boss 不看 realLife,
         /// 不登记就一个部件一根条。走的是灾厄自己对第三方公开的 ModCall,无灾厄时空操作</summary>
-        public static void ExcludeFromCalBossBar(int npcType)
-        {
-            if (!CERef.Has || npcType <= 0)
-            {
+        public static void ExcludeFromCalBossBar(int npcType) {
+            if (!CERef.Has || npcType <= 0) {
                 return;
             }
             CERef.Call("ExcludeBossFromHealthBar", npcType);
@@ -265,10 +240,8 @@ namespace CalamityEntropy.Core.CalamityRef
         //无灾厄时全部空操作,所以调用点不需要自己判 CERef.Has
 
         /// <summary>血神圣杯:+25% 生命上限与伤害延迟结算。showHeart 对应灾厄的心形显示</summary>
-        public static void GrantChaliceOfTheBloodGod(Player player, bool showHeart)
-        {
-            if (!CERef.Has)
-            {
+        public static void GrantChaliceOfTheBloodGod(Player player, bool showHeart) {
+            if (!CERef.Has) {
                 return;
             }
             CERef.SetChaliceOfTheBloodGod(player, true);
@@ -276,30 +249,24 @@ namespace CalamityEntropy.Core.CalamityRef
         }
 
         /// <summary>阴阳吸星石:受击光环、移速跳跃、荆棘与命中回血</summary>
-        public static void GrantAbsorber(Player player)
-        {
-            if (!CERef.Has)
-            {
+        public static void GrantAbsorber(Player player) {
+            if (!CERef.Has) {
                 return;
             }
             CERef.SetAbsorber(player, true);
         }
 
         /// <summary>辐辉:按缺失生命的动态再生与 DoT 削减</summary>
-        public static void GrantRadiance(Player player)
-        {
-            if (!CERef.Has)
-            {
+        public static void GrantRadiance(Player player) {
+            if (!CERef.Has) {
                 return;
             }
             CERef.SetPurity(player, true);
         }
 
         /// <summary>灾厄的无限飞行旗标。只影响灾厄自家飞行条的显示,翼力本身由调用点自己补</summary>
-        public static void GrantInfiniteFlight(Player player)
-        {
-            if (!CERef.Has)
-            {
+        public static void GrantInfiniteFlight(Player player) {
+            if (!CERef.Has) {
                 return;
             }
             CERef.SetInfiniteFlight(player, true);
@@ -307,10 +274,8 @@ namespace CalamityEntropy.Core.CalamityRef
 
         /// <summary>深渊视野。灾厄的深渊黑暗是自己一套渲染,不看原版 Lighting,所以本模组的发光饰品
         /// 必须另外写灾厄的三个深渊量才能真正看清。strength 取 0..1,1 表示这件装备给满档照明</summary>
-        public static void GrantAbyssVision(Player player, float strength)
-        {
-            if (!CERef.Has || strength <= 0f)
-            {
+        public static void GrantAbyssVision(Player player, float strength) {
+            if (!CERef.Has || strength <= 0f) {
                 return;
             }
             strength = Math.Clamp(strength, 0f, 1f);
@@ -325,20 +290,15 @@ namespace CalamityEntropy.Core.CalamityRef
         #endregion
 
         /// <summary>整链双注册的守卫:灾厄在场,且这一链需要的全部灾厄内容都解析到了,才走 3.33 链</summary>
-        public static bool CalChainReady(params int[] calTypes)
-        {
-            if (!CERef.Has)
-            {
+        public static bool CalChainReady(params int[] calTypes) {
+            if (!CERef.Has) {
                 return false;
             }
-            if (calTypes == null)
-            {
+            if (calTypes == null) {
                 return true;
             }
-            for (int i = 0; i < calTypes.Length; i++)
-            {
-                if (calTypes[i] <= 0)
-                {
+            for (int i = 0; i < calTypes.Length; i++) {
+                if (calTypes[i] <= 0) {
                     return false;
                 }
             }
@@ -349,30 +309,24 @@ namespace CalamityEntropy.Core.CalamityRef
     internal static class CECalRecipeExtensions
     {
         /// <summary>灾厄在场且该内容存在时用灾厄原料,否则用自有/原版原料。两侧数量相同</summary>
-        public static Recipe AddCalOrOwn(this Recipe recipe, int calType, int ownType, int stack = 1)
-        {
-            if (!CERef.Has || calType <= 0)
-            {
+        public static Recipe AddCalOrOwn(this Recipe recipe, int calType, int ownType, int stack = 1) {
+            if (!CERef.Has || calType <= 0) {
                 return recipe.AddIngredient(ownType, stack);
             }
             return recipe.AddIngredient(calType, stack);
         }
 
         /// <summary>两侧数量不等的重载</summary>
-        public static Recipe AddCalOrOwn(this Recipe recipe, int calType, int calStack, int ownType, int ownStack)
-        {
-            if (!CERef.Has || calType <= 0)
-            {
+        public static Recipe AddCalOrOwn(this Recipe recipe, int calType, int calStack, int ownType, int ownStack) {
+            if (!CERef.Has || calType <= 0) {
                 return recipe.AddIngredient(ownType, ownStack);
             }
             return recipe.AddIngredient(calType, calStack);
         }
 
         /// <summary>合成站同理</summary>
-        public static Recipe AddCalTileOrOwn(this Recipe recipe, int calTileType, int ownTileType)
-        {
-            if (!CERef.Has || calTileType <= 0)
-            {
+        public static Recipe AddCalTileOrOwn(this Recipe recipe, int calTileType, int ownTileType) {
+            if (!CERef.Has || calTileType <= 0) {
                 return recipe.AddTile(ownTileType);
             }
             return recipe.AddTile(calTileType);

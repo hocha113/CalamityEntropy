@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using CalamityEntropy.Content.Items;
+﻿using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.NPCs.Cruiser;
 using CalamityEntropy.Core.CalamityRef;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -13,8 +13,7 @@ namespace CalamityEntropy.Content.Tiles
 {
     public class AbyssalAltarTile : ModTile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             RegisterItemDrop(ModContent.ItemType<AbyssalAltar>());
             TileObjectData.newTile.CopyFrom(TileObjectData.Style6x3);
             TileObjectData.newTile.LavaDeath = false;
@@ -42,33 +41,26 @@ namespace CalamityEntropy.Content.Tiles
                 TileID.LunarCraftingStation,
                 TileID.DemonAltar
             };
-            if (CERef.Has)
-            {
-                if (CEID.Tile_CosmicAnvil > 0)
-                {
+            if (CERef.Has) {
+                if (CEID.Tile_CosmicAnvil > 0) {
                     adj.Add(CEID.Tile_CosmicAnvil);
                 }
-                if (CEID.Tile_DraedonsForge > 0)
-                {
+                if (CEID.Tile_DraedonsForge > 0) {
                     adj.Add(CEID.Tile_DraedonsForge);
                 }
-                if (CEID.Tile_SCalAltarLarge > 0)
-                {
+                if (CEID.Tile_SCalAltarLarge > 0) {
                     adj.Add(CEID.Tile_SCalAltarLarge);
                 }
             }
             AdjTiles = adj.ToArray();
         }
 
-        public override bool RightClick(int i, int j)
-        {
-            if (Main.LocalPlayer.HeldItem.type == ModContent.ItemType<WyrmTooth>())
-            {
+        public override bool RightClick(int i, int j) {
+            if (Main.LocalPlayer.HeldItem.type == ModContent.ItemType<WyrmTooth>()) {
                 // 脱离灾厄:原召唤灾厄渊海灾虫,其进度槽位已并入自有巡游者(progression-map)
                 Player player = Main.LocalPlayer;
                 int type = ModContent.NPCType<CruiserHead>();
-                if (NPC.AnyNPCs(type))
-                {
+                if (NPC.AnyNPCs(type)) {
                     return false;
                 }
                 if (Main.netMode != NetmodeID.MultiplayerClient)

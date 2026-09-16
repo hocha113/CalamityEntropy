@@ -15,23 +15,19 @@ namespace CalamityEntropy.Common.DrawLayers
         [VaultLoaden("CalamityEntropy/Assets/Extra/SoarRuneWings/f")]
         internal static Asset<Texture2D> WingIdleTex;
 
-        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
-        {
+        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) {
             if (drawInfo.drawPlayer.dead || (drawInfo.drawPlayer.Entropy().vanityWing != null && !(drawInfo.drawPlayer.Entropy().vanityWing.ModItem is RuneWing)))
                 return false;
             return drawInfo.drawPlayer.Entropy().hasAccVisual("RuneWing");
         }
 
-        public override Position GetDefaultPosition()
-        {
+        public override Position GetDefaultPosition() {
             return new BeforeParent(PlayerDrawLayers.Wings);
         }
 
-        protected override void Draw(ref PlayerDrawSet drawInfo)
-        {
+        protected override void Draw(ref PlayerDrawSet drawInfo) {
             var player = drawInfo.drawPlayer;
-            if (player.Entropy().wingData.FrameCount >= player.Entropy().wingData.MaxFrame)
-            {
+            if (player.Entropy().wingData.FrameCount >= player.Entropy().wingData.MaxFrame) {
                 player.Entropy().wingData.FrameCount = 0;
             }
             Texture2D tex = player.Entropy().wingData.FrameCount == -1 ? WingIdleTex.Value : WingFrames[player.Entropy().wingData.FrameCount];

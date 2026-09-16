@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Acropolis.Core;
+﻿using CalamityEntropy.Content.NPCs.Acropolis.Core;
 using System;
 using System.IO;
 using Terraria;
@@ -33,8 +33,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         public int StepSeed;
 
         /// <summary>过线块:定长,写读顺序必须逐字对应</summary>
-        public void NetSend(BinaryWriter writer)
-        {
+        public void NetSend(BinaryWriter writer) {
             writer.Write(NoMoveTime);
             writer.WriteVector2(targetPos);
             writer.WriteVector2(StandPoint);
@@ -43,8 +42,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             writer.Write(o);
         }
 
-        public void NetReceive(BinaryReader reader)
-        {
+        public void NetReceive(BinaryReader reader) {
             NoMoveTime = reader.ReadInt32();
             targetPos = reader.ReadVector2();
             StandPoint = reader.ReadVector2();
@@ -53,8 +51,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             o = reader.ReadBoolean();
         }
 
-        public AcropolisLeg(NPC npc, Vector2 offset, float scale = 1, int index = 0)
-        {
+        public AcropolisLeg(NPC npc, Vector2 offset, float scale = 1, int index = 0) {
             NPC = npc;
             this.offset = offset;
             Scale = scale;
@@ -69,13 +66,10 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         public bool OnTile => !CEUtils.isAir(StandPoint, true) && o;
 
         /// <summary>返回 true 表示本帧换了落点(宿主据此压同侧腿的迈步冷却)</summary>
-        public bool Update()
-        {
-            if (NPC.ModNPC is AcropolisMachine am)
-            {
+        public bool Update() {
+            if (NPC.ModNPC is AcropolisMachine am) {
                 //未晋升形态 / 还没有落点:腿直接贴着本体,不做地形搜索
-                if (am.Dummy || targetPos == Vector2.Zero)
-                {
+                if (am.Dummy || targetPos == Vector2.Zero) {
                     StandPoint = Vector2.Lerp(StandPoint,
                         NPC.Center + ((offset * new Vector2(AcropolisDirector.LegDummySpreadX, AcropolisDirector.LegDummySpreadY))
                             .RotatedBy(am.Dummy ? NPC.rotation : 0) * NPC.scale),
@@ -86,12 +80,10 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             }
 
             //落脚点向目标收敛;下坠时收敛速度翻三倍(两处阈值不同,原代码如此)
-            if (CEUtils.getDistance(StandPoint, targetPos) < ms * (NPC.velocity.Y > AcropolisDirector.LegFastConvergeFallSpeed ? AcropolisDirector.LegFastConvergeMultiplier : 1))
-            {
+            if (CEUtils.getDistance(StandPoint, targetPos) < ms * (NPC.velocity.Y > AcropolisDirector.LegFastConvergeFallSpeed ? AcropolisDirector.LegFastConvergeMultiplier : 1)) {
                 StandPoint = targetPos;
             }
-            else
-            {
+            else {
                 StandPoint += (targetPos - StandPoint).normalize() * ms
                     * (NPC.velocity.Y > AcropolisDirector.LegFastConvergeFallSpeedAlt ? AcropolisDirector.LegFastConvergeMultiplier : 1);
             }
@@ -99,8 +91,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
 
             float distToMove = AcropolisDirector.LegStepDistance * NPC.scale;
             AcropolisMachine machine = (AcropolisMachine)NPC.ModNPC;
-            if (machine.Jumping)
-            {
+            if (machine.Jumping) {
                 //腾空:强制收腿,不再找地面
                 o = false;
                 targetPos = NPC.Center + new Vector2(offset.X * AcropolisDirector.LegTuckSideFactor, AcropolisDirector.LegTuckDrop) * NPC.scale;
@@ -114,10 +105,8 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             float anchorDist = CEUtils.getDistance(StandPoint, anchor);
             if (!OnTile
                 || (NPC.boss && NoMoveTime <= 0 && anchorDist > distToMove)
-                || ((NoMoveTime <= 0 || NPC.boss) && anchorDist > distToMove * AcropolisDirector.LegStepRelaxMultiplier))
-            {
-                if (!NPC.boss)
-                {
+                || ((NoMoveTime <= 0 || NPC.boss) && anchorDist > distToMove * AcropolisDirector.LegStepRelaxMultiplier)) {
+                if (!NPC.boss) {
                     NoMoveTime = AcropolisDirector.LegStepCooldown;
                 }
                 targetPos = FindStandPoint(
@@ -125,8 +114,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                         ? (Math.Sign(NPC.velocity.X) * AcropolisDirector.LegLookAheadSpread) : 0, 0),
                     AcropolisDirector.LegSearchRadius * Scale * NPC.scale, AcropolisDirector.LegSearchTries);
                 ms = CEUtils.getDistance(targetPos, StandPoint) * AcropolisDirector.LegConvergeFactor;
-                if (NoMoveTime < AcropolisDirector.LegStepCooldownMin)
-                {
+                if (NoMoveTime < AcropolisDirector.LegStepCooldownMin) {
                     NoMoveTime = AcropolisDirector.LegStepCooldownMin;
                 }
                 return true;
@@ -139,31 +127,25 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         /// 找落点:在挂点附近撒点,命中实体后沿 Y 轴上抬到贴地。
         /// 撒点用<b>按步数播种</b>的确定性随机,各端摇出同一串点
         /// </summary>
-        public Vector2 FindStandPoint(Vector2 center, float MaxOffset, float MaxTry = 64)
-        {
+        public Vector2 FindStandPoint(Vector2 center, float MaxOffset, float MaxTry = 64) {
             o = false;
-            if (!NPC.boss)
-            {
+            if (!NPC.boss) {
                 center.Y -= AcropolisDirector.LegSearchDummyRise;
             }
             UnifiedRandom rng = new UnifiedRandom(NPC.whoAmI * 7919 + Index * 131 + StepSeed);
             StepSeed++;
-            for (int i = 0; i < MaxTry; i++)
-            {
+            for (int i = 0; i < MaxTry; i++) {
                 //原式是 randomPointInCircle(MaxTry):半径直接拿尝试次数当数用,照搬
                 float rot = (float)(rng.NextDouble() * MathHelper.Pi * 2);
                 Vector2 pos = rot.ToRotationVector2() * rng.NextFloat(-MaxTry, MaxTry) + center;
-                if (CEUtils.getDistance(pos, center) <= MaxOffset * 0.9f && AcropolisMachine.CanStandOn(pos))
-                {
+                if (CEUtils.getDistance(pos, center) <= MaxOffset * 0.9f && AcropolisMachine.CanStandOn(pos)) {
                     o = true;
                     Vector2 orgPos = pos;
                     int c = AcropolisDirector.LegRaiseMaxSteps;
-                    while (AcropolisMachine.CanStandOn(pos))
-                    {
+                    while (AcropolisMachine.CanStandOn(pos)) {
                         c--;
                         pos.Y -= AcropolisDirector.LegRaiseStep * NPC.scale;
-                        if (c <= 0)
-                        {
+                        if (c <= 0) {
                             return orgPos;
                         }
                     }
@@ -171,8 +153,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                     return pos;
                 }
             }
-            if (!NPC.boss)
-            {
+            if (!NPC.boss) {
                 return Vector2.Zero;
             }
             return NPC.Center + new Vector2(offset.X, AcropolisDirector.LegTuckDrop)

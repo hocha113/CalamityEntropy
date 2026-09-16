@@ -7,13 +7,11 @@ namespace CalamityEntropy.Content.Items.Weapons
 {
     public class SlimeYoyo : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ItemID.Sets.Yoyo[Item.type] = true; ItemID.Sets.GamepadExtraRange[Item.type] = 16; ItemID.Sets.GamepadSmartQuickReach[Item.type] = true;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 10; Item.height = 10;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.useTime = Item.useAnimation = 25;
@@ -30,8 +28,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.shoot = ModContent.ProjectileType<SlimeYoyoProjectile>(); Item.shootSpeed = 16f;
         }
 
-        public override bool MeleePrefix()
-        {
+        public override bool MeleePrefix() {
             return true;
         }
     }

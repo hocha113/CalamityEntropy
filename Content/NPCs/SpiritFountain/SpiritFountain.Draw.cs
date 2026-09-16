@@ -1,4 +1,4 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.NPCs.SpiritFountain.Core;
 using CalamityEntropy.Core.Graphics;
@@ -32,8 +32,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
         /// <summary>瞳孔注视点。读的是 <c>Main.LocalPlayer</c>,天然是本地量</summary>
         public Vector2 starePoint => Context?.StarePoint ?? Vector2.Zero;
 
-        public void DrawColumn(FountainColumn column, Texture2D TrailTex)
-        {
+        public void DrawColumn(FountainColumn column, Texture2D TrailTex) {
             Main.spriteBatch.Draw(CEExtraAssets.MegaStreakBacking2, NPC.Center + column.offset - Main.screenPosition, new Rectangle(-(int)column.trailDrawOffset, 0, 3600, 256), Color.White * column.alpha * 1.4f, column.rotation, new Vector2(1800, 128), NPC.scale * 1.4f * column.scale, SpriteEffects.None, 0);
             EffectLoader.DrawCylinder(CEExtraAssets.B1, NPC.Center + column.offset - Main.screenPosition, Color.White * column.alpha, BlendState.AlphaBlend, 30, 0.26f * column.scale, 0.5f, Main.GlobalTimeWrappedHourly * 3f, 5, column.rotation - MathHelper.PiOver2, false, false);
             EffectLoader.DrawCylinder(CEExtraAssets.B1, NPC.Center + column.offset - Main.screenPosition, Color.White * column.alpha * 0.9f, BlendState.Additive, 30, 0.26f * column.scale, 0.5f, Main.GlobalTimeWrappedHourly * -3f, 5, column.rotation - MathHelper.PiOver2, false, false);
@@ -44,8 +43,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             Main.spriteBatch.Draw(CEExtraAssets.BasicTrail, NPC.Center + column.offset - Main.screenPosition, new Rectangle(-(int)column.trailDrawOffset, 0, 3600, 200), new Color(140, 140, 255) * column.alpha, column.rotation, new Vector2(1800, 100), NPC.scale * 3f * column.scale, SpriteEffects.None, 0);
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPosition, Color drawColor)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPosition, Color drawColor) {
             if (NPC.IsABestiaryIconDummy)
                 return false;
 
@@ -66,8 +64,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             Main.spriteBatch.ExitShaderRegion();
 
             //出场演出前 90 帧的立柱闪光。读的是状态号与状态体计时,和魂环读的是同一个量
-            if (ai == SpiritFountainStateIndex.SpawnAnimation && aiTimer < SpiritFountainDirector.SpawnFlashFrames)
-            {
+            if (ai == SpiritFountainStateIndex.SpawnAnimation && aiTimer < SpiritFountainDirector.SpawnFlashFrames) {
                 Main.spriteBatch.UseBlendState(BlendState.Additive);
                 Main.spriteBatch.Draw(CEExtraAssets.MegaStreakBacking2, NPC.Center - Main.screenPosition, null, Color.AliceBlue, MathHelper.PiOver2, CEExtraAssets.MegaStreakBacking2.Size() / 2f, new Vector2(SpiritFountainDirector.SpawnFlashWidth, CEUtils.Parabola(aiTimer / SpiritFountainDirector.SpawnFlashFrames, SpiritFountainDirector.SpawnFlashParabolaPower)), SpriteEffects.None, 0);
                 Main.spriteBatch.ExitShaderRegion();

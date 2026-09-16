@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -8,8 +8,7 @@ namespace CalamityEntropy.Content.Items.Armor.Smoldering
     public class SmolderingBreastplate : ModItem
     {
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 44;
             Item.height = 40;
             Item.value = Item.buyPrice(gold: 10);
@@ -17,8 +16,7 @@ namespace CalamityEntropy.Content.Items.Armor.Smoldering
             Item.rare = ItemRarityID.LightRed;
         }
 
-        public override void UpdateEquip(Player player)
-        {
+        public override void UpdateEquip(Player player) {
             player.lifeRegen += 4;
             player.endurance += 0.08f;
             player.lavaImmune = true;
@@ -27,8 +25,7 @@ namespace CalamityEntropy.Content.Items.Armor.Smoldering
             player.buffImmune[BuffID.Burning] = true;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe()
                 .AddIngredient<TectonicShard>(10)
                 .AddIngredient(ItemID.MoltenBreastplate)

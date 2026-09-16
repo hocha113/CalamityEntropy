@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
+﻿using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,18 +18,14 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public abstract Color HoloColor { get; }
 
         /// <summary>本体引用,无效时为 null</summary>
-        protected VoidDestroyerNPC Owner
-        {
-            get
-            {
+        protected VoidDestroyerNPC Owner {
+            get {
                 int idx = (int)Projectile.ai[0];
-                if (idx < 0 || idx >= Main.maxNPCs)
-                {
+                if (idx < 0 || idx >= Main.maxNPCs) {
                     return null;
                 }
                 NPC npc = Main.npc[idx];
-                if (!npc.active || npc.ModNPC is not VoidDestroyerNPC boss)
-                {
+                if (!npc.active || npc.ModNPC is not VoidDestroyerNPC boss) {
                     return null;
                 }
                 return boss;
@@ -37,28 +33,23 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         }
 
         /// <summary>本体仍在本状态里(且没死)</summary>
-        protected bool OwnerActive
-        {
-            get
-            {
+        protected bool OwnerActive {
+            get {
                 VoidDestroyerNPC boss = Owner;
                 return boss != null && !boss.Dying && boss.CurrentStateIndex == OwnerMode;
             }
         }
 
         /// <summary>整体透明度:出现 12 帧渐显,寿命末尾 20 帧渐隐</summary>
-        protected float HoloOpacity(float peak = 0.85f)
-        {
+        protected float HoloOpacity(float peak = 0.85f) {
             float fadeIn = MathHelper.Clamp(Projectile.localAI[1] / 12f, 0f, 1f);
             float fadeOut = MathHelper.Clamp(Projectile.timeLeft / 20f, 0f, 1f);
             return peak * Math.Min(fadeIn, fadeOut);
         }
 
         /// <summary>本体离开模式时收尾:把剩余寿命压到渐隐长度</summary>
-        protected void FadeOutIfOrphaned()
-        {
-            if (!OwnerActive && Projectile.timeLeft > 20)
-            {
+        protected void FadeOutIfOrphaned() {
+            if (!OwnerActive && Projectile.timeLeft > 20) {
                 Projectile.timeLeft = 20;
             }
         }
@@ -78,8 +69,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         private Vector2 lastAnchor;
         private float blinkPop;
 
-        public override void SetExtraDefaults()
-        {
+        public override void SetExtraDefaults() {
             Projectile.width = 40;
             Projectile.height = 60;
             Projectile.hostile = false;
@@ -88,31 +78,25 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public override bool? CanDamage() => false;
         public override bool ShouldUpdatePosition() => false;
 
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.localAI[1]++;
             FadeOutIfOrphaned();
             VoidDestroyerNPC boss = Owner;
-            if (boss == null)
-            {
+            if (boss == null) {
                 return;
             }
             //本体进入收尾拍时提前渐隐
-            if (boss.CurrentStateIndex == OwnerMode && boss.Context.HoloWrapUp && Projectile.timeLeft > 20)
-            {
+            if (boss.CurrentStateIndex == OwnerMode && boss.Context.HoloWrapUp && Projectile.timeLeft > 20) {
                 Projectile.timeLeft = 20;
             }
             Vector2 anchor = boss.AnchorPos;
-            if (Projectile.localAI[1] <= 1f)
-            {
+            if (Projectile.localAI[1] <= 1f) {
                 lastAnchor = anchor;
                 Projectile.Center = anchor;
             }
-            if (Vector2.DistanceSquared(anchor, lastAnchor) > 16f)
-            {
+            if (Vector2.DistanceSquared(anchor, lastAnchor) > 16f) {
                 //锚点换了 = 红恶魔传送:旧位置爆一圈全息碎片,新位置弹一下
-                if (!Main.dedServ)
-                {
+                if (!Main.dedServ) {
                     SpawnHoloBurst(Projectile.Center, HoloColor);
                     SpawnHoloBurst(anchor, HoloColor);
                 }
@@ -125,8 +109,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Lighting.AddLight(Projectile.Center, HoloColor.ToVector3() * 0.6f);
 
             //蓄力粒子:跟本体声明的蓄力读数走
-            if (!Main.dedServ && !boss.Context.HoloWrapUp && boss.Context.HoloCharge > 0.02f && Main.rand.NextBool(2))
-            {
+            if (!Main.dedServ && !boss.Context.HoloWrapUp && boss.Context.HoloCharge > 0.02f && Main.rand.NextBool(2)) {
                 Vector2 from = Projectile.Center + CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(50f, 110f);
                 Vector2 v = (Projectile.Center - from) * 0.08f;
                 var s = PRTLoader.NewParticle<PRT_GlowSpark>(from, v, HoloColor, Main.rand.NextFloat(0.4f, 0.8f))
@@ -135,18 +118,15 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
         }
 
-        public static void SpawnHoloBurst(Vector2 pos, Color color)
-        {
-            for (int i = 0; i < 14; i++)
-            {
+        public static void SpawnHoloBurst(Vector2 pos, Color color) {
+            for (int i = 0; i < 14; i++) {
                 Vector2 v = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(3f, 9f);
                 PRTLoader.NewParticle<PRT_GlowSpark>(pos, v, color, Main.rand.NextFloat(0.5f, 1f))
                     .Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), 22);
             }
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.instance.LoadNPC(NPCID.RedDevil);
             Texture2D tex = TextureAssets.Npc[NPCID.RedDevil].Value;
             int frames = Math.Max(1, Main.npcFrameCount[NPCID.RedDevil]);
@@ -161,16 +141,14 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 
             VoidDestroyerNPC boss = Owner;
             float charge = 0f;
-            if (boss != null && boss.CurrentStateIndex == OwnerMode && !boss.Context.HoloWrapUp)
-            {
+            if (boss != null && boss.CurrentStateIndex == OwnerMode && !boss.Context.HoloWrapUp) {
                 charge = MathHelper.Clamp(boss.Context.HoloCharge, 0f, 1f);
             }
 
             Main.spriteBatch.UseAdditive();
             Texture2D glow = CEUtils.getExtraTex("Glow");
             Main.spriteBatch.Draw(glow, drawPos, null, HoloColor * (0.35f * opacity), 0f, glow.Size() / 2f, 0.6f + blinkPop * 0.3f, SpriteEffects.None, 0f);
-            if (charge > 0f)
-            {
+            if (charge > 0f) {
                 Main.spriteBatch.Draw(glow, drawPos, null, new Color(255, 160, 120) * (0.8f * charge * opacity), 0f, glow.Size() / 2f, 0.25f + 0.35f * charge, SpriteEffects.None, 0f);
             }
             CEUtils.ReSetToEndShader();
@@ -186,20 +164,17 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public override string Texture => "CalamityEntropy/Assets/Extra/Empty";
         public override int DefaultTimeLeft => 150;
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.TrailCacheLength[Type] = 6;
             ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
-        public override void SetExtraDefaults()
-        {
+        public override void SetExtraDefaults() {
             Projectile.width = 20;
             Projectile.height = 20;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.localAI[1]++;
             float speed = Math.Min(Projectile.velocity.Length() * 1.03f + 0.05f, 30f);
             Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * speed;
@@ -207,15 +182,13 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Lighting.AddLight(Projectile.Center, VDHologramDraw.HellRed.ToVector3() * 0.4f);
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.instance.LoadProjectile(ProjectileID.UnholyTridentHostile);
             Texture2D tex = TextureAssets.Projectile[ProjectileID.UnholyTridentHostile].Value;
             Vector2 origin = tex.Size() / 2f;
             float opacity = MathHelper.Clamp(Projectile.localAI[1] / 8f, 0f, 1f) * 0.9f;
             VDHologramDraw.Begin();
-            for (int i = Projectile.oldPos.Length - 1; i >= 1; i--)
-            {
+            for (int i = Projectile.oldPos.Length - 1; i >= 1; i--) {
                 float a = (1f - i / (float)Projectile.oldPos.Length) * 0.35f;
                 Vector2 pos = Projectile.oldPos[i] + Projectile.Size / 2f - Main.screenPosition;
                 VDHologramDraw.DrawPart(tex, pos, null, VDHologramDraw.HellRed, opacity * a, Projectile.oldRot[i], origin, 1.1f, SpriteEffects.None);
@@ -251,8 +224,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         private Vector2 lastPos;
         private bool wasDashing;
 
-        public override void SetExtraDefaults()
-        {
+        public override void SetExtraDefaults() {
             Projectile.width = 128;
             Projectile.height = 128;
         }
@@ -264,23 +236,19 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 
         private int TotalDashes => Owner != null && Owner.Phase >= 3 ? 7 : 6;
 
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.localAI[1]++;
             FadeOutIfOrphaned();
             Player target = TargetPlayer(1);
-            if (target == null)
-            {
+            if (target == null) {
                 Projectile.Kill();
                 return;
             }
-            if (Projectile.localAI[1] <= 1f)
-            {
+            if (Projectile.localAI[1] <= 1f) {
                 lastPos = Projectile.Center;
             }
 
-            if (IsServer)
-            {
+            if (IsServer) {
                 ServerStateMachine(target);
             }
 
@@ -290,20 +258,16 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Lighting.AddLight(Projectile.Center, HoloColor.ToVector3() * 0.6f);
 
             //客户端演出靠"位置跳变 / 冲刺起落"这两个可观测量,不依赖服务端私有状态
-            if (!Main.dedServ)
-            {
-                if (Vector2.DistanceSquared(Projectile.Center, lastPos) > 300f * 300f)
-                {
+            if (!Main.dedServ) {
+                if (Vector2.DistanceSquared(Projectile.Center, lastPos) > 300f * 300f) {
                     VDHoloRedDevil.SpawnHoloBurst(lastPos, HoloColor);
                     VDHoloRedDevil.SpawnHoloBurst(Projectile.Center, HoloColor);
                     CEUtils.PlaySound("vbapear", 0.8f, Projectile.Center, 4, 0.9f);
                 }
-                if (dashing && !wasDashing)
-                {
+                if (dashing && !wasDashing) {
                     CEUtils.PlaySound("CruiserDash", 0.8f, Projectile.Center, 3, 0.9f);
                 }
-                if (dashing && Main.rand.NextBool(2))
-                {
+                if (dashing && Main.rand.NextBool(2)) {
                     Vector2 v = -Projectile.velocity * 0.1f + CEUtils.randomPointInCircle(2f);
                     var s = PRTLoader.NewParticle<PRT_GlowSpark>(Projectile.Center + CEUtils.randomPointInCircle(50f), v, HoloColor, Main.rand.NextFloat(0.5f, 1f))
                         .Configure(0.9f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), 18);
@@ -312,16 +276,13 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
 
             //冲刺中的纵向修正全端同算:尚未越过玩家时向玩家 y 轻微偏,越过后回直
-            if (dashing)
-            {
+            if (dashing) {
                 bool ahead = Math.Sign(target.Center.X - Projectile.Center.X) == Math.Sign(Projectile.velocity.X);
-                if (ahead)
-                {
+                if (ahead) {
                     float dy = target.Center.Y - Projectile.Center.Y;
                     Projectile.velocity.Y = MathHelper.Clamp(Projectile.velocity.Y + Math.Sign(dy) * 0.4f, -6f, 6f);
                 }
-                else
-                {
+                else {
                     Projectile.velocity.Y *= 0.9f;
                 }
             }
@@ -329,15 +290,11 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             wasDashing = dashing;
         }
 
-        private void ServerStateMachine(Player target)
-        {
-            if (phase == 0)
-            {
-                if (phaseTimer == 0)
-                {
+        private void ServerStateMachine(Player target) {
+            if (phase == 0) {
+                if (phaseTimer == 0) {
                     //首冲按玩家移动方向选侧,之后每次都回同一侧
-                    if (Projectile.ai[2] == 0)
-                    {
+                    if (Projectile.ai[2] == 0) {
                         Projectile.ai[2] = Math.Abs(target.velocity.X) > 0.5f ? Math.Sign(target.velocity.X) : (Main.rand.NextBool() ? 1 : -1);
                     }
                     Projectile.Center = target.Center + new Vector2(Projectile.ai[2] * StartOffset, 0f);
@@ -345,14 +302,12 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                     Projectile.netUpdate = true;
                 }
                 phaseTimer++;
-                if (phaseTimer >= AppearFrames)
-                {
+                if (phaseTimer >= AppearFrames) {
                     //起冲:朝玩家方向横冲 200 格,同时扇形 4 发毒刺
                     float dir = -Projectile.ai[2];
                     Projectile.velocity = new Vector2(dir * DashDistance / DashFrames, 0f);
                     Vector2 aim = (target.Center - Projectile.Center).SafeNormalize(new Vector2(dir, 0));
-                    for (int i = 0; i < 4; i++)
-                    {
+                    for (int i = 0; i < 4; i++) {
                         float ang = MathHelper.ToRadians(-30f + 20f * i);
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, aim.RotatedBy(ang) * 12f, ModContent.ProjectileType<VDHoloStinger>(), Owner != null ? Owner.ProjDamage(276) : Projectile.damage / 2, 0f, Main.myPlayer);
                     }
@@ -362,25 +317,20 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 }
                 return;
             }
-            if (phase == 1)
-            {
+            if (phase == 1) {
                 phaseTimer++;
-                if (phaseTimer % 30 == 0)
-                {
+                if (phaseTimer % 30 == 0) {
                     Projectile.netUpdate = true;
                 }
-                if (phaseTimer >= DashFrames)
-                {
+                if (phaseTimer >= DashFrames) {
                     dashesDone++;
                     Projectile.velocity = Vector2.Zero;
                     Projectile.netUpdate = true;
-                    if (dashesDone >= TotalDashes)
-                    {
+                    if (dashesDone >= TotalDashes) {
                         Projectile.timeLeft = Math.Min(Projectile.timeLeft, 20);
                         phase = 2;
                     }
-                    else
-                    {
+                    else {
                         phase = 0;
                         phaseTimer = 0;
                     }
@@ -388,17 +338,14 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            if (!Dashing)
-            {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+            if (!Dashing) {
                 return false;
             }
             return projHitbox.Intersects(targetHitbox);
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.instance.LoadNPC(NPCID.GiantTortoise);
             Texture2D tex = TextureAssets.Npc[NPCID.GiantTortoise].Value;
             int frames = Math.Max(1, Main.npcFrameCount[NPCID.GiantTortoise]);
@@ -415,10 +362,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             CEUtils.ReSetToEndShader();
 
             VDHologramDraw.Begin();
-            if (Dashing)
-            {
-                for (int i = 1; i <= 4; i++)
-                {
+            if (Dashing) {
+                for (int i = 1; i <= 4; i++) {
                     Vector2 pos = drawPos - Projectile.velocity * i * 1.5f;
                     VDHologramDraw.DrawPart(tex, pos, src, HoloColor, opacity * (0.3f - i * 0.06f), Projectile.rotation - i * 0.2f, origin, scale, SpriteEffects.None);
                 }
@@ -435,20 +380,17 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public override string Texture => "CalamityEntropy/Assets/Extra/Empty";
         public override int DefaultTimeLeft => 120;
 
-        public override void SetExtraDefaults()
-        {
+        public override void SetExtraDefaults() {
             Projectile.width = 12;
             Projectile.height = 12;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.localAI[1]++;
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.instance.LoadProjectile(ProjectileID.Stinger);
             Texture2D tex = TextureAssets.Projectile[ProjectileID.Stinger].Value;
             float opacity = MathHelper.Clamp(Projectile.localAI[1] / 6f, 0f, 1f) * 0.9f;
@@ -482,32 +424,27 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 
         public float OrbitRadius => (Main.getGoodWorld ? 60f : 75f) * 16f;
 
-        public override void SetExtraDefaults()
-        {
+        public override void SetExtraDefaults() {
             Projectile.width = 60;
             Projectile.height = 60;
         }
 
         public override bool ShouldUpdatePosition() => false;
 
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.localAI[1]++;
             FadeOutIfOrphaned();
             VoidDestroyerNPC boss = Owner;
-            if (boss == null)
-            {
+            if (boss == null) {
                 Projectile.Kill();
                 return;
             }
             Vector2 center = boss.NPC.Center;
-            if (!initialized)
-            {
+            if (!initialized) {
                 initialized = true;
                 orbitAngle = Projectile.ai[1];
                 Projectile.Center = center + orbitAngle.ToRotationVector2() * OrbitRadius;
-                for (int i = 0; i < SegmentCount; i++)
-                {
+                for (int i = 0; i < SegmentCount; i++) {
                     segments[i] = Projectile.Center;
                 }
             }
@@ -517,38 +454,31 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Vector2 orbitPos = center + orbitAngle.ToRotationVector2() * OrbitRadius;
             Player target = boss.NPC.HasValidTarget ? boss.Target : null;
 
-            switch (mode)
-            {
+            switch (mode) {
                 case 0:
                     Projectile.Center = orbitPos;
-                    if (target != null && Vector2.Distance(target.Center, center) > OrbitRadius + 60f && Projectile.timeLeft > 120)
-                    {
+                    if (target != null && Vector2.Distance(target.Center, center) > OrbitRadius + 60f && Projectile.timeLeft > 120) {
                         mode = 1;
                         modeTimer = 0;
-                        if (!Main.dedServ)
-                        {
+                        if (!Main.dedServ) {
                             CEUtils.PlaySound("CruiserDash", 0.7f, Projectile.Center, 3, 0.9f);
                         }
-                        if (IsServer)
-                        {
+                        if (IsServer) {
                             Projectile.netUpdate = true;
                         }
                     }
                     break;
                 case 1:
                     modeTimer++;
-                    if (target != null)
-                    {
+                    if (target != null) {
                         Vector2 toTarget = target.Center - Projectile.Center;
                         Projectile.Center += toTarget.SafeNormalize(Vector2.Zero) * Math.Min(42f, toTarget.Length());
-                        if (toTarget.Length() < 50f || modeTimer >= 40)
-                        {
+                        if (toTarget.Length() < 50f || modeTimer >= 40) {
                             mode = 2;
                             modeTimer = 0;
                         }
                     }
-                    else
-                    {
+                    else {
                         mode = 2;
                         modeTimer = 0;
                     }
@@ -556,8 +486,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 default:
                     modeTimer++;
                     Projectile.Center = Vector2.Lerp(Projectile.Center, orbitPos, 0.12f);
-                    if (modeTimer >= 30 || Vector2.Distance(Projectile.Center, orbitPos) < 30f)
-                    {
+                    if (modeTimer >= 30 || Vector2.Distance(Projectile.Center, orbitPos) < 30f) {
                         mode = 0;
                     }
                     break;
@@ -565,22 +494,18 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 
             //蠕虫跟随:每节钉在前一节后方定长处
             segments[0] = Projectile.Center;
-            for (int i = 1; i < SegmentCount; i++)
-            {
+            for (int i = 1; i < SegmentCount; i++) {
                 Vector2 diff = segments[i] - segments[i - 1];
-                if (diff.LengthSquared() < 0.01f)
-                {
+                if (diff.LengthSquared() < 0.01f) {
                     diff = -Projectile.velocity.SafeNormalize(Vector2.UnitX);
-                    if (diff == Vector2.Zero)
-                    {
+                    if (diff == Vector2.Zero) {
                         diff = Vector2.UnitX;
                     }
                 }
                 segments[i] = segments[i - 1] + diff.SafeNormalize(Vector2.UnitX) * SegmentLength;
             }
             Lighting.AddLight(Projectile.Center, HoloColor.ToVector3() * 0.7f);
-            if (!Main.dedServ && Main.rand.NextBool(3))
-            {
+            if (!Main.dedServ && Main.rand.NextBool(3)) {
                 int idx = Main.rand.Next(SegmentCount);
                 Vector2 v = CEUtils.randomPointInCircle(1.5f);
                 var s = PRTLoader.NewParticle<PRT_GlowSpark>(segments[idx] + CEUtils.randomPointInCircle(20f), v, HoloColor, Main.rand.NextFloat(0.4f, 0.8f))
@@ -589,26 +514,21 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            if (Projectile.localAI[1] < 12f)
-            {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
+            if (Projectile.localAI[1] < 12f) {
                 return false;
             }
             int half = (int)(26f * SegmentScale);
-            for (int i = 0; i < SegmentCount; i++)
-            {
+            for (int i = 0; i < SegmentCount; i++) {
                 Rectangle seg = new Rectangle((int)segments[i].X - half, (int)segments[i].Y - half, half * 2, half * 2);
-                if (seg.Intersects(targetHitbox))
-                {
+                if (seg.Intersects(targetHitbox)) {
                     return true;
                 }
             }
             return false;
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.instance.LoadNPC(NPCID.WyvernHead);
             Main.instance.LoadNPC(NPCID.WyvernLegs);
             Main.instance.LoadNPC(NPCID.WyvernBody);
@@ -618,23 +538,18 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             float opacity = HoloOpacity(0.8f);
 
             VDHologramDraw.Begin();
-            for (int i = SegmentCount - 1; i >= 0; i--)
-            {
+            for (int i = SegmentCount - 1; i >= 0; i--) {
                 int type;
-                if (i == 0)
-                {
+                if (i == 0) {
                     type = NPCID.WyvernHead;
                 }
-                else if (i == SegmentCount - 1)
-                {
+                else if (i == SegmentCount - 1) {
                     type = NPCID.WyvernTail;
                 }
-                else if (i % 12 == 3)
-                {
+                else if (i % 12 == 3) {
                     type = NPCID.WyvernLegs;
                 }
-                else
-                {
+                else {
                     type = (i % 3) switch { 0 => NPCID.WyvernBody, 1 => NPCID.WyvernBody2, _ => NPCID.WyvernBody3 };
                 }
                 Texture2D tex = TextureAssets.Npc[type].Value;

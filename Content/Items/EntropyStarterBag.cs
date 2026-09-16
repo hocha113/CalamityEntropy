@@ -1,6 +1,5 @@
-using CalamityEntropy.Core.CalamityRef;
+﻿using CalamityEntropy.Core.CalamityRef;
 using Terraria;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,8 +16,7 @@ namespace CalamityEntropy.Content.Items
         // 暂用彩票箱贴图占位，正式贴图画好后换回同名资源
         public override string Texture => "CalamityEntropy/Content/Items/LotteryBox";
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 24;
             Item.height = 24;
             Item.maxStack = 1;
@@ -28,10 +26,8 @@ namespace CalamityEntropy.Content.Items
 
         public override bool CanRightClick() => true;
 
-        public override void ModifyItemLoot(ItemLoot itemLoot)
-        {
-            if (CERef.Has)
-            {
+        public override void ModifyItemLoot(ItemLoot itemLoot) {
+            if (CERef.Has) {
                 return;
             }
             StartBagGItem.AddConvenienceMods(itemLoot);

@@ -9,8 +9,7 @@ namespace CalamityEntropy.Content.Items.Pets
 {
     public class DustyWhistle : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.CloneDefaults(ItemID.ZephyrFish);
             Item.shoot = ModContent.ProjectileType<DSPet>();
             Item.buffType = ModContent.BuffType<DustyWhistleBuff>();
@@ -20,14 +19,11 @@ namespace CalamityEntropy.Content.Items.Pets
 
         }
 
-        public override bool? UseItem(Player player)
-        {
-            if (!Main.dedServ)
-            {
+        public override bool? UseItem(Player player) {
+            if (!Main.dedServ) {
                 SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/flute" + Main.rand.Next(1, 3).ToString()));
             }
-            if (player.whoAmI == Main.myPlayer)
-            {
+            if (player.whoAmI == Main.myPlayer) {
                 player.AddBuff(Item.buffType, 3600);
             }
             return true;

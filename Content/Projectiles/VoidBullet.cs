@@ -10,13 +10,11 @@ namespace CalamityEntropy.Content.Projectiles
 
     public class VoidBullet : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 5000;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 32;
             Projectile.height = 32;
             Projectile.friendly = true;
@@ -29,15 +27,13 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.extraUpdates = 1;
         }
         public float ap = 0;
-        public override void AI()
-        {
+        public override void AI() {
             //PRT_Void字段直赋对齐旧VoidParticles,Opacity/ad/multShrink Configure管不了
             var p = PRTLoader.NewParticle<PRT_Void>(Projectile.Center, Vector2.Zero, Color.White, 1f);
             p.Opacity = 0.5f;  //Opacity旧初始化器字段,Configure管不了
             NPC target = Projectile.FindTargetWithinRange(900, false);
             Projectile.rotation = Projectile.velocity.ToRotation();
-            if (target != null)
-            {
+            if (target != null) {
                 Projectile.velocity *= 0.9f;
                 Vector2 v = target.Center - Projectile.Center;
                 v.Normalize();
@@ -46,13 +42,11 @@ namespace CalamityEntropy.Content.Projectiles
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             EGlobalNPC.AddVoidTouch(target, 120, 4, 800, 16);
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             return false;
         }
     }

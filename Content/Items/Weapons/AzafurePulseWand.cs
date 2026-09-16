@@ -5,6 +5,7 @@ using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,18 +14,15 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
     public class AzafurePulseWand : ModItem, IAzafureEnhancable
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.staff[Item.type] = true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 24;
             Item.height = 24;
             Item.damage = 80;
@@ -45,10 +43,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.mana = 12;
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_PlasmaRod, CEID.Item_AerialiteBar))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_PlasmaRod, CEID.Item_AerialiteBar)) {
                 CreateRecipe()
                 .AddIngredient(CEID.Item_PlasmaRod)
                 .AddIngredient<HellIndustrialComponents>(4)
@@ -64,16 +60,14 @@ namespace CalamityEntropy.Content.Items.Weapons
                 .Register();
         }
 
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
     }
     public class AzafurePulseWandHeld : ModProjectile
     {
         public override string Texture => "CalamityEntropy/Content/Items/Weapons/AzafurePulseWand";
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Magic, false, -1);
             Projectile.timeLeft = 4;
         }
@@ -84,42 +78,32 @@ namespace CalamityEntropy.Content.Items.Weapons
         public bool Helding = true;
         public List<NPC> targetNpcs = new List<NPC>();
         public Vector2 topPos => Projectile.Center + Projectile.velocity.normalize() * 84 * Projectile.scale;
-        public override void AI()
-        {
-            if (Projectile.localAI[2]++ == 0)
-            {
+        public override void AI() {
+            if (Projectile.localAI[2]++ == 0) {
                 // 原灾厄 WulfrumTreasurePinger.ScanBeepSound（WulfrumPing 变体），按 sound-map 换自有
                 SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/WulfrumPingReady") { PitchVariance = 0.1f }, Projectile.Center);
             }
             Player player = Projectile.GetOwner();
             player.Entropy().MouseWorldListener = true;
             Projectile.Center = player.GetDrawCenter();
-            if (Helding)
-            {
+            if (Helding) {
                 Projectile.rotation = (player.Entropy().MouseWorld - Projectile.Center).ToRotation();
                 Projectile.velocity = Projectile.rotation.ToRotationVector2() * 16;
                 player.SetHandRot(Projectile.rotation);
                 player.heldProj = Projectile.whoAmI;
             }
-            if (!player.channel)
-            {
-                if (Helding)
-                {
+            if (!player.channel) {
+                if (Helding) {
                     Projectile.timeLeft = 36;
-                    if (Charge > 20)
-                    {
-                        foreach (NPC npc in targetNpcs)
-                        {
-                            if (npc.active)
-                            {
+                    if (Charge > 20) {
+                        foreach (NPC npc in targetNpcs) {
+                            if (npc.active) {
                                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), topPos, Vector2.Zero, ModContent.ProjectileType<TeslaLightningRed>(), Projectile.damage, 0, Projectile.owner, npc.Center.X, npc.Center.Y).ToProj().DamageType = Projectile.DamageType; ;
-                                for (int i = 0; i < 8; i++)
-                                {
+                                for (int i = 0; i < 8; i++) {
                                     PRTLoader.NewParticle<PRT_AltSpark>(npc.Center, CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(16, 24), new Color(240, 240, 255), Main.rand.NextFloat(0.9f, 2)).Configure(false, Main.rand.Next(6, 10));
                                 }
                                 npc.AddBuff<MechanicalTrauma>(360);
-                                if (Main.zenithWorld)
-                                {
+                                if (Main.zenithWorld) {
                                     npc.velocity = (Projectile.Center - npc.Center).normalize() * 18;
                                 }
                             }
@@ -128,33 +112,26 @@ namespace CalamityEntropy.Content.Items.Weapons
                 }
                 Helding = false;
             }
-            if (Helding)
-            {
+            if (Helding) {
                 Projectile.timeLeft = 36;
                 Charge++;
-                if (AttackR < (player.AzafureDurability() * 600 + 1200))
-                {
+                if (AttackR < (player.AzafureDurability() * 600 + 1200)) {
                     RVel += 0.25f;
                     AttackR += RVel;
                 }
-                else
-                {
+                else {
                     RPulseAlpha *= 0.94f;
                 }
                 player.itemAnimation = player.itemTime = 36;
-                if (RPulseAlpha > 0.3f && Helding && targetNpcs.Count < (player.AzafureEnhance() ? 12 : 6))
-                {
-                    foreach (var npc in Main.ActiveNPCs)
-                    {
-                        if (!npc.friendly && CEUtils.getDistance(npc.Center, topPos) < AttackR / 2 && !targetNpcs.Contains(npc))
-                        {
+                if (RPulseAlpha > 0.3f && Helding && targetNpcs.Count < (player.AzafureEnhance() ? 12 : 6)) {
+                    foreach (var npc in Main.ActiveNPCs) {
+                        if (!npc.friendly && CEUtils.getDistance(npc.Center, topPos) < AttackR / 2 && !targetNpcs.Contains(npc)) {
                             targetNpcs.Add(npc);
                         }
                     }
                 }
             }
-            else
-            {
+            else {
                 RVel *= 0.98f;
                 RPulseAlpha *= 0.94f;
             }
@@ -162,12 +139,10 @@ namespace CalamityEntropy.Content.Items.Weapons
 
             AttackR += RVel;
         }
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             return false;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Projectile.GetTexture();
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition - Projectile.rotation.ToRotationVector2() * 20, null, Color.White, Projectile.rotation + MathHelper.PiOver4, new Vector2(0, tex.Height), Projectile.scale, SpriteEffects.None, 0); ;
 
@@ -179,15 +154,11 @@ namespace CalamityEntropy.Content.Items.Weapons
             GraphicsDevice gd = Main.graphics.GraphicsDevice;
             EffectLoader.PreparePixelShader(gd);
             Main.spriteBatch.UseBlendState(BlendState.Additive);
-            if (Helding)
-            {
-                foreach (NPC npc in targetNpcs)
-                {
-                    if (npc.active)
-                    {
+            if (Helding) {
+                foreach (NPC npc in targetNpcs) {
+                    if (npc.active) {
                         List<Vector2> lol = new List<Vector2>();
-                        for (int i = 0; i < 9; i++)
-                        {
+                        for (int i = 0; i < 9; i++) {
                             lol.Add(npc.Center + CEUtils.randomPointInCircle(32));
                         }
                         CEUtils.DrawLines(lol, Color.Red * 0.85f, 4);

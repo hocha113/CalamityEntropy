@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Projectiles.Pets.Abyss;
+﻿using CalamityEntropy.Content.Projectiles.Pets.Abyss;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -15,8 +15,7 @@ namespace CalamityEntropy.Content.Projectiles
     {
         public override string Texture => "CalamityEntropy/Content/Projectiles/Pets/Abyss/Head";
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 26;
             Projectile.height = 26;
             Projectile.friendly = true;
@@ -35,84 +34,69 @@ namespace CalamityEntropy.Content.Projectiles
         public Vector2 tailP = Vector2.Zero;
         private int chargeCd = 0;
 
-        public override void AI()
-        {
+        public override void AI() {
             Player owner = Projectile.GetOwner();
-            if (owner == null || !owner.active || owner.dead)
-            {
+            if (owner == null || !owner.active || owner.dead) {
                 Projectile.Kill();
                 return;
             }
-            if (owner.Entropy().VFHelmSummoner)
-            {
+            if (owner.Entropy().VFHelmSummoner) {
                 Projectile.timeLeft = 2;
             }
-            if (chargeCd > 0)
-            {
+            if (chargeCd > 0) {
                 chargeCd--;
             }
             NPC target = owner.HasMinionAttackTargetNPC && Main.npc[owner.MinionAttackTargetNPC].active
                 ? Main.npc[owner.MinionAttackTargetNPC]
                 : Projectile.FindTargetWithinRange(1100, false);
-            if (target != null && target.active)
-            {
+            if (target != null && target.active) {
                 Vector2 toTarget = target.Center - Projectile.Center;
-                if (chargeCd <= 0 && toTarget.Length() < 900)
-                {
+                if (chargeCd <= 0 && toTarget.Length() < 900) {
                     // 俯冲冲撞,冲过后短暂盘旋再入(沧溟龙契式节奏)
                     Projectile.velocity = toTarget.SafeNormalize(Vector2.UnitX) * 21f;
                     chargeCd = 40;
                 }
-                else
-                {
+                else {
                     Projectile.velocity *= 0.97f;
                     Projectile.velocity += toTarget.SafeNormalize(Vector2.Zero) * 0.5f;
                 }
             }
-            else
-            {
+            else {
                 Vector2 idle = owner.Center + new Vector2(-owner.direction * 60, -60);
                 Projectile.velocity = (Projectile.velocity + (idle - Projectile.Center) * 0.02f) * 0.94f;
-                if (CEUtils.getDistance(Projectile.Center, owner.Center) > 1400)
-                {
+                if (CEUtils.getDistance(Projectile.Center, owner.Center) > 1400) {
                     Projectile.Center = idle;
                     bodyP = tailP = idle;
                 }
             }
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
-            if (bodyP == Vector2.Zero)
-            {
+            if (bodyP == Vector2.Zero) {
                 bodyP = tailP = Projectile.Center;
             }
             ChainFollow(ref bodyP, Projectile.Center, 20);
             ChainFollow(ref tailP, bodyP, 18);
 
-            if (Main.rand.NextBool(5))
-            {
+            if (Main.rand.NextBool(5)) {
                 Dust d = Dust.NewDustPerfect(Projectile.Center, DustID.PurpleTorch, -Projectile.velocity * 0.1f);
                 d.noGravity = true;
                 d.scale = 1.1f;
             }
         }
 
-        private static void ChainFollow(ref Vector2 seg, Vector2 ahead, float dist)
-        {
+        private static void ChainFollow(ref Vector2 seg, Vector2 ahead, float dist) {
             Vector2 diff = seg - ahead;
-            if (diff.Length() > dist)
-            {
+            if (diff.Length() > dist) {
                 seg = ahead + diff.SafeNormalize(Vector2.UnitY) * dist;
             }
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             // 头身尾三段整条判定
             return CEUtils.LineThroughRect(Projectile.Center, tailP, targetHitbox, 24);
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             float scale = Projectile.scale * 0.8f;
             Texture2D head = AbyssPetTextures.Head.Value;
             Texture2D body = AbyssPetTextures.Body.Value;

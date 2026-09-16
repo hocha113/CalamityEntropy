@@ -23,10 +23,8 @@ namespace CalamityEntropy
         /// <summary>
         /// 初始化所有 Call 处理器
         /// </summary>
-        public static void Initialize()
-        {
-            if (_initialized)
-            {
+        public static void Initialize() {
+            if (_initialized) {
                 return;
             }
 
@@ -75,14 +73,12 @@ namespace CalamityEntropy
         /// <summary>
         /// 主调用入口点
         /// </summary>
-        public static object Call(params object[] args)
-        {
+        public static object Call(params object[] args) {
             //确保已初始化
             if (!_initialized)
                 Initialize();
 
-            try
-            {
+            try {
                 //参数验证
                 if (args == null || args.Length == 0)
                     return ErrorResponse("No arguments provided");
@@ -105,9 +101,7 @@ namespace CalamityEntropy
                 LogCall(callName, true);
 
                 return result;
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 string errorMsg = $"ModCall error: {ex.Message}";
                 CalamityEntropy.Instance?.Logger?.Error(errorMsg);
                 CalamityEntropy.Instance?.Logger?.Error(ex.StackTrace);
@@ -117,18 +111,15 @@ namespace CalamityEntropy
 
         #region Call Handlers - 基础功能
 
-        private static object GetVersion(object[] args)
-        {
-            return new
-            {
+        private static object GetVersion(object[] args) {
+            return new {
                 ModName = "CalamityEntropy",
                 Version = CalamityEntropy.Instance?.Version?.ToString() ?? "Unknown",
                 ModCallVersion = "2.0"
             };
         }
 
-        private static object GetModVersion(object[] args)
-        {
+        private static object GetModVersion(object[] args) {
             return CalamityEntropy.Instance?.Version?.ToString() ?? "Unknown";
         }
 
@@ -136,14 +127,12 @@ namespace CalamityEntropy
 
         #region Call Handlers Boss相关
 
-        private static object GetBossDown(object[] args)
-        {
+        private static object GetBossDown(object[] args) {
             if (args.Length < 1 || !(args[0] is string bossName))
                 throw new ArgumentException("GetBossDown requires boss name (string)");
 
             //这里可以扩展为更复杂的 boss 击败检测逻辑
-            switch (bossName.ToLower())
-            {
+            switch (bossName.ToLower()) {
                 case "cruiser":
                     return Common.EDownedBosses.downedCruiser;
                 case "nihilitytwin":
@@ -160,16 +149,14 @@ namespace CalamityEntropy
             }
         }
 
-        private static object SetBossDown(object[] args)
-        {
+        private static object SetBossDown(object[] args) {
             if (args.Length < 2)
                 throw new ArgumentException("SetBossDown requires boss name (string) and value (bool)");
 
             if (!(args[0] is string bossName) || !(args[1] is bool value))
                 throw new ArgumentException("SetBossDown: Invalid argument types");
 
-            switch (bossName.ToLower())
-            {
+            switch (bossName.ToLower()) {
                 case "cruiser":
                     Common.EDownedBosses.downedCruiser = value;
                     break;
@@ -193,8 +180,7 @@ namespace CalamityEntropy
             return SuccessResponse($"Set {bossName} down status to {value}");
         }
 
-        private static object GetBossList(object[] args)
-        {
+        private static object GetBossList(object[] args) {
             return new string[]
             {
                 "Cruiser",
@@ -214,16 +200,14 @@ namespace CalamityEntropy
         /// 参数: Item 或 int(物品类型ID)
         /// 返回bool
         /// </summary>
-        private static object IsBookMark(object[] args)
-        {
+        private static object IsBookMark(object[] args) {
             if (args.Length < 1)
                 throw new ArgumentException("IsBookMark需要1个参数: Item或int");
 
             if (args[0] is Item item)
                 return BookMarkLoader.IsABookMark(item);
 
-            if (args[0] is int typeId)
-            {
+            if (args[0] is int typeId) {
                 //先查自定义注册表，再检查ModContent原生书签
                 if (BookMarkLoader.CustomBMByID.ContainsKey(typeId))
                     return true;
@@ -240,8 +224,7 @@ namespace CalamityEntropy
         /// 可选: int baseDamage, float baseKnockback, int baseProjectileType, float baseShootSpeed, int baseCooldown, string damageClassName
         /// 返回Dictionary包含success, cooldownTicks, projectileIndex, projectileType
         /// </summary>
-        private static object PerformBookmarkAttack(object[] args)
-        {
+        private static object PerformBookmarkAttack(object[] args) {
             if (args.Length < 4)
                 throw new ArgumentException("PerformBookmarkAttack至少需要4个参数: Item, Player, Vector2 position, Vector2 direction");
 
@@ -263,8 +246,7 @@ namespace CalamityEntropy
 
             //伤害类型可以传字符串名
             DamageClass damageClass = DamageClass.Magic;
-            if (args.Length > 9)
-            {
+            if (args.Length > 9) {
                 if (args[9] is DamageClass dc)
                     damageClass = dc;
                 else if (args[9] is string dcName)
@@ -276,8 +258,7 @@ namespace CalamityEntropy
                 baseDamage, baseKnockback, baseProjectileType, baseShootSpeed, baseCooldown, damageClass);
 
             //返回Dictionary方便弱引用调用
-            return new Dictionary<string, object>
-            {
+            return new Dictionary<string, object> {
                 ["success"] = result.Success,
                 ["cooldownTicks"] = result.CooldownTicks,
                 ["projectileIndex"] = result.ProjectileIndex,
@@ -290,8 +271,7 @@ namespace CalamityEntropy
         /// 参数: Item bookmarkItem
         /// 返回Dictionary包含isBookmark, hasEffect, hasStatModifiers等
         /// </summary>
-        private static object GetBookmarkInfo_Call(object[] args)
-        {
+        private static object GetBookmarkInfo_Call(object[] args) {
             if (args.Length < 1)
                 throw new ArgumentException("GetBookmarkInfo需要1个参数: Item");
 
@@ -302,8 +282,7 @@ namespace CalamityEntropy
             if (info == null)
                 return new Dictionary<string, object> { ["isBookmark"] = false };
 
-            var dict = new Dictionary<string, object>
-            {
+            var dict = new Dictionary<string, object> {
                 ["isBookmark"] = info.IsBookmark,
                 ["hasEffect"] = info.HasEffect,
                 ["hasStatModifiers"] = info.HasStatModifiers,
@@ -313,8 +292,7 @@ namespace CalamityEntropy
             };
 
             //属性快照
-            if (info.StatSnapshot != null)
-            {
+            if (info.StatSnapshot != null) {
                 dict["statDamage"] = info.StatSnapshot.Damage;
                 dict["statKnockback"] = info.StatSnapshot.Knockback;
                 dict["statShotSpeed"] = info.StatSnapshot.shotSpeed;
@@ -336,8 +314,7 @@ namespace CalamityEntropy
         /// 参数: Item bookmarkItem, int baseCooldown(可选,默认20)
         /// 返回int冷却Tick数
         /// </summary>
-        private static object GetBookmarkAttackCooldown(object[] args)
-        {
+        private static object GetBookmarkAttackCooldown(object[] args) {
             if (args.Length < 1)
                 throw new ArgumentException("GetBookmarkAttackCooldown需要至少1个参数: Item");
 
@@ -364,8 +341,7 @@ namespace CalamityEntropy
         /// 参数: Player player, Item book(可选，不传则用玩家手持物品)
         /// 返回int
         /// </summary>
-        private static object GetBookMarkSlots(object[] args)
-        {
+        private static object GetBookMarkSlots(object[] args) {
             if (args.Length < 1 || !(args[0] is Player player))
                 throw new ArgumentException("GetBookMarkSlots需要Player参数");
 
@@ -378,8 +354,7 @@ namespace CalamityEntropy
         /// 参数: Player player, int count
         /// 每帧重置，需在UpdateEquips等钩子中持续调用
         /// </summary>
-        private static object AddBookMarkSlot(object[] args)
-        {
+        private static object AddBookMarkSlot(object[] args) {
             if (args.Length < 2)
                 throw new ArgumentException("AddBookMarkSlot需要2个参数: Player, int");
 
@@ -397,8 +372,7 @@ namespace CalamityEntropy
         /// 参数: Player player
         /// 返回Item[]书签数组(可能包含空Item)
         /// </summary>
-        private static object GetPlayerBookmarks(object[] args)
-        {
+        private static object GetPlayerBookmarks(object[] args) {
             if (args.Length < 1 || !(args[0] is Player player))
                 throw new ArgumentException("GetPlayerBookmarks需要Player参数");
 
@@ -408,8 +382,7 @@ namespace CalamityEntropy
 
             int max = player.GetMyMaxActiveBookMarks(player.HeldItem);
             var result = new Item[max];
-            for (int i = 0; i < max; i++)
-            {
+            for (int i = 0; i < max; i++) {
                 result[i] = i < items.Count ? items[i] : new Item();
             }
             return result;
@@ -420,8 +393,7 @@ namespace CalamityEntropy
         /// 参数: Item bookmarkA, Item bookmarkB
         /// 返回bool
         /// </summary>
-        private static object CanEquipBookmarkWith(object[] args)
-        {
+        private static object CanEquipBookmarkWith(object[] args) {
             if (args.Length < 2)
                 throw new ArgumentException("CanEquipBookmarkWith需要2个参数: Item, Item");
 
@@ -439,18 +411,15 @@ namespace CalamityEntropy
         /// 参数: Item bookmarkItem
         /// 返回Texture2D或null
         /// </summary>
-        private static object GetBookmarkUITexture(object[] args)
-        {
+        private static object GetBookmarkUITexture(object[] args) {
             if (args.Length < 1 || !(args[0] is Item item))
                 throw new ArgumentException("GetBookmarkUITexture需要1个参数: Item");
 
             return BookMarkLoader.GetUITexture(item);
         }
 
-        private static DamageClass ResolveDamageClass(string name)
-        {
-            switch (name.ToLower())
-            {
+        private static DamageClass ResolveDamageClass(string name) {
+            switch (name.ToLower()) {
                 case "melee": return DamageClass.Melee;
                 case "ranged": return DamageClass.Ranged;
                 case "magic": return DamageClass.Magic;
@@ -464,8 +433,7 @@ namespace CalamityEntropy
 
         #region Call Handlers UI相关
 
-        private static object SetBarColor(object[] args)
-        {
+        private static object SetBarColor(object[] args) {
             if (args.Length < 2)
                 throw new ArgumentException("SetBarColor requires NPC type (int) and Color");
 
@@ -479,14 +447,12 @@ namespace CalamityEntropy
             return SuccessResponse($"Set bar color for NPC type {npcType}");
         }
 
-        private static object OpenUI(object[] args)
-        {
+        private static object OpenUI(object[] args) {
             if (args.Length < 1 || !(args[0] is string uiName))
                 throw new ArgumentException("OpenUI requires UI name (string)");
 
             //可扩展的 UI 系统
-            switch (uiName.ToLower())
-            {
+            switch (uiName.ToLower()) {
                 case "armorforging":
                 case "armor_forging":
                     Content.UI.ArmorForgingStationUI.Visible = true;
@@ -500,8 +466,7 @@ namespace CalamityEntropy
 
         #region Call Handlers 游戏系统
 
-        private static object SetTTHoldoutCheck(object[] args)
-        {
+        private static object SetTTHoldoutCheck(object[] args) {
             if (args.Length < 1 || !(args[0] is bool value))
                 throw new ArgumentException("SetTTHoldoutCheck requires bool value");
 
@@ -509,13 +474,11 @@ namespace CalamityEntropy
             return SuccessResponse($"Set TT Holdout Check to {value}");
         }
 
-        private static object GetTTHoldoutCheck(object[] args)
-        {
+        private static object GetTTHoldoutCheck(object[] args) {
             return Common.EGlobalProjectile.checkHoldOut;
         }
 
-        private static object CopyProjForTTwin(object[] args)
-        {
+        private static object CopyProjForTTwin(object[] args) {
             if (args.Length < 1 || !(args[0] is int projID))
                 throw new ArgumentException("CopyProjForTTwin requires projectile ID (int)");
 
@@ -526,8 +489,7 @@ namespace CalamityEntropy
 
         #region Call Handlers 数据访问
 
-        private static object GetPlayerData(object[] args)
-        {
+        private static object GetPlayerData(object[] args) {
             if (args.Length < 2)
                 throw new ArgumentException("GetPlayerData requires player (Player) and key (string)");
 
@@ -540,8 +502,7 @@ namespace CalamityEntropy
             var modPlayer = player.GetModPlayer<Common.EModPlayer>();
 
             //根据 key 返回不同的数据
-            switch (key.ToLower())
-            {
+            switch (key.ToLower()) {
                 //基础数值
                 case "brilliancecard":
                     return modPlayer.brillianceCard;
@@ -641,8 +602,7 @@ namespace CalamityEntropy
             }
         }
 
-        private static object SetPlayerData(object[] args)
-        {
+        private static object SetPlayerData(object[] args) {
             if (args.Length < 3)
                 throw new ArgumentException("SetPlayerData requires player (Player), key (string), and value");
 
@@ -655,8 +615,7 @@ namespace CalamityEntropy
             var modPlayer = player.GetModPlayer<Common.EModPlayer>();
 
             //根据 key 设置不同的数据
-            switch (key.ToLower())
-            {
+            switch (key.ToLower()) {
                 case "brilliancecard":
                     if (args[2] is int intVal)
                         modPlayer.brillianceCard = intVal;
@@ -769,8 +728,7 @@ namespace CalamityEntropy
             return SuccessResponse($"Set player data '{key}'");
         }
 
-        private static object GetItemData(object[] args)
-        {
+        private static object GetItemData(object[] args) {
             if (args.Length < 2)
                 throw new ArgumentException("GetItemData requires item (Item) and key (string)");
 
@@ -782,8 +740,7 @@ namespace CalamityEntropy
 
             var globalItem = item.GetGlobalItem<Common.EGlobalItem>();
 
-            switch (key.ToLower())
-            {
+            switch (key.ToLower()) {
                 case "dyetype":
                     return globalItem.DyeType;
                 default:
@@ -791,8 +748,7 @@ namespace CalamityEntropy
             }
         }
 
-        private static object RegisterCustomItem(object[] args)
-        {
+        private static object RegisterCustomItem(object[] args) {
             if (args.Length < 1 || !(args[0] is Dictionary<string, object> data))
                 throw new ArgumentException("RegisterCustomItem requires Dictionary<string, object>");
 
@@ -807,32 +763,28 @@ namespace CalamityEntropy
         /// <summary>
         /// 注册一个调用处理器
         /// </summary>
-        private static void RegisterHandler(string name, Func<object[], object> handler, string description = null, string[] paramDescriptions = null)
-        {
+        private static void RegisterHandler(string name, Func<object[], object> handler, string description = null, string[] paramDescriptions = null) {
             Handlers[name] = new CallHandler(name, handler, description, paramDescriptions);
         }
 
         /// <summary>
         /// 成功响应
         /// </summary>
-        private static object SuccessResponse(string message = "Success")
-        {
+        private static object SuccessResponse(string message = "Success") {
             return new { Success = true, Message = message };
         }
 
         /// <summary>
         /// 错误响应
         /// </summary>
-        private static object ErrorResponse(string error)
-        {
+        private static object ErrorResponse(string error) {
             return new { Success = false, Error = error };
         }
 
         /// <summary>
         /// 记录调用日志（可选）
         /// </summary>
-        private static void LogCall(string callName, bool success)
-        {
+        private static void LogCall(string callName, bool success) {
             //可以在这里添加详细的调用日志
             //CalamityEntropy.Instance?.Logger?.Debug($"[ModCall] {callName}: {(success ? "Success" : "Failed")}");
         }
@@ -851,21 +803,18 @@ namespace CalamityEntropy
             public string Description { get; }
             public string[] ParameterDescriptions { get; }
 
-            public CallHandler(string name, Func<object[], object> handler, string description = null, string[] paramDescriptions = null)
-            {
+            public CallHandler(string name, Func<object[], object> handler, string description = null, string[] paramDescriptions = null) {
                 Name = name;
                 Handler = handler;
                 Description = description ?? "No description available";
                 ParameterDescriptions = paramDescriptions ?? new string[0];
             }
 
-            public object Execute(object[] args)
-            {
+            public object Execute(object[] args) {
                 return Handler(args);
             }
 
-            public override string ToString()
-            {
+            public override string ToString() {
                 return $"{Name}: {Description}";
             }
         }

@@ -1,4 +1,4 @@
-using InnoVault.PRT;
+﻿using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -22,8 +22,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             TexPath = "CalamityEntropy/Assets/Particles/BloomCircle";
             Squish = Vector2.One;
@@ -45,8 +44,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
         public PRT_CustomPulse Configure(string texPath, Vector2 squish, float rotation, float originalScale,
             float finalScale, int lifetime, PRTDrawModeEnum mode = PRTDrawModeEnum.AdditiveBlend,
             float baseOpacity = 1f, bool fadeOut = true, float makeLight = 1f,
-            SpriteEffects effects = SpriteEffects.None, PRTRenderLayer? renderLayer = null)
-        {
+            SpriteEffects effects = SpriteEffects.None, PRTRenderLayer? renderLayer = null) {
             TexPath = texPath;
             Squish = squish;
             Rotation = rotation;
@@ -65,8 +63,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 30;
@@ -74,8 +71,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             opacity = 0f;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             float pulseProgress = 1f - MathF.Pow(1f - LifetimeCompletion, 4f);
             Scale = MathHelper.Lerp(OriginalScale, FinalScale, pulseProgress);
 
@@ -88,16 +84,13 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             Velocity *= 0.95f;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch) {
             Texture2D tex = PRTPathTextures.Get(TexPath);   //动态路径走运行时缓存,别每帧Request
             float scaleMult = 1f;
 
-            if (Main.zenithWorld)
-            {
+            if (Main.zenithWorld) {
                 DateTime day = DateTime.Now;
-                if (day.DayOfWeek == DayOfWeek.Tuesday)
-                {
+                if (day.DayOfWeek == DayOfWeek.Tuesday) {
                     //是的,天顶世界周二画猛犸象,Calamity原版彩蛋,照搬,不是bug别删
                     Texture2D joke = PRTSharedAssets.MammothParticle.Value;
                     scaleMult = MathHelper.Lerp(tex.Size().X / joke.Size().X, tex.Size().Y / joke.Size().Y, 0.5f);

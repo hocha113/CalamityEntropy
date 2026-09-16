@@ -15,8 +15,7 @@ namespace CalamityEntropy.Content.Projectiles.HBProj
         internal static Asset<Texture2D> BodyTex;
         [VaultLoaden("CalamityEntropy/Content/Projectiles/HBProj/iMark")]
         internal static Asset<Texture2D> EyeTex;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Magic;
             Projectile.width = 32;
             Projectile.height = 32;
@@ -28,28 +27,23 @@ namespace CalamityEntropy.Content.Projectiles.HBProj
             Projectile.scale = 1.2f;
         }
         public bool right = true;
-        public override void AI()
-        {
+        public override void AI() {
             Player player = Projectile.owner.ToPlayer();
             Projectile.Center = player.Center;
             right = player.direction == 1;
-            if (!player.HeldItem.IsAir && player.HeldItem.type == ModContent.ItemType<Mercy>())
-            {
+            if (!player.HeldItem.IsAir && player.HeldItem.type == ModContent.ItemType<Mercy>()) {
                 Projectile.timeLeft = 2;
             }
         }
 
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return false;
         }
         float counter = 0;
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             counter++;
             Vector2 drawpos = Projectile.owner.ToPlayer().Center + new Vector2(0, -32);
             Vector2 ep = new Vector2(0, 0) * Projectile.owner.ToPlayer().direction;
@@ -57,8 +51,7 @@ namespace CalamityEntropy.Content.Projectiles.HBProj
             SpriteBatch sb = Main.spriteBatch;
             bool flip = false;
             SpriteEffects ef = SpriteEffects.None;
-            if (!right)
-            {
+            if (!right) {
                 flip = true;
                 ef = SpriteEffects.FlipHorizontally;
             }

@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items.Accessories
@@ -27,13 +27,11 @@ namespace CalamityEntropy.Content.Items.Accessories
         /// <summary>基础每帧上升加速度。</summary>
         public virtual float BaseAscent => 0.1f;
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.accessory = true;
         }
 
-        public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
-        {
+        public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend) {
             if (Item.wingSlot == -1)
                 return;
             ascentWhenFalling = BonusAscentWhileFalling;

@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Cruiser.Core;
+﻿using CalamityEntropy.Content.NPCs.Cruiser.Core;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles.Cruiser;
 using InnoVault.PRT;
@@ -28,39 +28,33 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
     {
         public override CruiserStateIndex StateIndex => CruiserStateIndex.VoidLaser;
 
-        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx)
-        {
+        public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
 
             //自增后的值参与第二个判据,所以这里必须先自增再比较(原 localAI[2]++ 的写法)
             int aimBefore = ctx.LaserAim;
             ctx.LaserAim++;
-            if (aimBefore < CruiserDirector.LaserAimFrames)
-            {
+            if (aimBefore < CruiserDirector.LaserAimFrames) {
                 npc.rotation = CEUtils.RotateTowardsAngle(npc.rotation,
                     (player.Center + player.velocity * CruiserDirector.LaserAimLeadFrames * CruiserDirector.LaserLeadFactor - npc.Center).ToRotation(),
                     CruiserDirector.LaserAimRotateRate, false);
                 npc.velocity *= CruiserDirector.LaserAimDrag;
                 npc.velocity += npc.rotation.ToRotationVector2() * CruiserDirector.LaserAimBackThrust;
             }
-            if (ctx.LaserAim > CruiserDirector.LaserActiveFrom)
-            {
+            if (ctx.LaserAim > CruiserDirector.LaserActiveFrom) {
                 int u = (int)Utils.Remap(
                     CruiserDirector.LaserCycle * (int)(ctx.ChangeCounter / (float)CruiserDirector.LaserCycle),
                     0, CruiserDirector.LaserCycles * CruiserDirector.LaserCycle,
                     CruiserDirector.LaserLeadHigh, CruiserDirector.LaserLeadLow);
 
-                if (ctx.ChangeCounter % CruiserDirector.LaserCycle == 0)
-                {
-                    if (ctx.ChangeCounter > 1)
-                    {
+                if (ctx.ChangeCounter % CruiserDirector.LaserCycle == 0) {
+                    if (ctx.ChangeCounter > 1) {
                         npc.rotation = (player.Center + player.velocity * u * CruiserDirector.LaserLeadFactor - npc.Center).ToRotation();
                     }
                     npc.velocity = npc.rotation.ToRotationVector2();
                     MarkNetUpdate(ctx);
-                    if (!Main.dedServ)
-                    {
+                    if (!Main.dedServ) {
                         //每轮双层预告粒子,lifetime 传 -1 靠手动删,跟 46 tick 的激光帧对齐
                         PRTLoader.NewParticle<PRT_CruiserWarn>(npc.Center, Vector2.Zero, Color.White, CruiserDirector.LaserWarnScaleBig)
                             .Configure(1, true, PRTDrawModeEnum.AdditiveBlend, npc.rotation, -1);
@@ -68,8 +62,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
                             .Configure(1, true, PRTDrawModeEnum.AdditiveBlend, npc.rotation, -1);
                     }
                 }
-                if (ctx.ChangeCounter % CruiserDirector.LaserCycle == u)
-                {
+                if (ctx.ChangeCounter % CruiserDirector.LaserCycle == u) {
                     Shoot(ctx, ModContent.ProjectileType<CruiserLaser2>(), npc.Center,
                         npc.rotation.ToRotationVector2() * CruiserDirector.LaserBeamSpeed, ai0: npc.whoAmI);
                     //冲刺是运动,各端都跑;上面的弹幕生成只在权威端
@@ -77,13 +70,11 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
                         * ((CEUtils.getDistance(npc.Center, player.Center) + CruiserDirector.LaserDashDistanceBonus)
                             / (CruiserDirector.LaserDashDivisorBase - u));
                 }
-                if (ctx.ChangeCounter % CruiserDirector.LaserCycle == CruiserDirector.LaserCycleBrakeFrame)
-                {
+                if (ctx.ChangeCounter % CruiserDirector.LaserCycle == CruiserDirector.LaserCycleBrakeFrame) {
                     npc.velocity = npc.velocity.normalize() * CruiserDirector.LaserCycleBrakeSpeed;
                 }
                 ctx.ChangeCounter++;
-                if (ctx.ChangeCounter >= CruiserDirector.LaserCycles * CruiserDirector.LaserCycle)
-                {
+                if (ctx.ChangeCounter >= CruiserDirector.LaserCycles * CruiserDirector.LaserCycle) {
                     //瞄准窗计时在收招这一处清零(原代码同一位置),所以下一次激光又从瞄准窗起跑
                     ctx.LaserAim = 0;
                     return NextAttack(ctx);
@@ -93,8 +84,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
         }
 
         /// <summary>超时兜底也要把瞄准窗计时清掉,否则下一次激光会跳过瞄准窗直接开火</summary>
-        protected override IVaultState<CruiserStateContext> OnTimeout(CruiserStateContext ctx)
-        {
+        protected override IVaultState<CruiserStateContext> OnTimeout(CruiserStateContext ctx) {
             ctx.LaserAim = 0;
             return base.OnTimeout(ctx);
         }

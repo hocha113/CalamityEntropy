@@ -7,8 +7,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 {
     public class UrnOfSouls : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 44;
             Item.height = 44;
             Item.damage = 72;
@@ -28,8 +27,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.ArmorPenetration = 32;
             Item.DamageType = DamageClass.Magic;
         }
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
     }

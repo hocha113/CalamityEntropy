@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Biomes;
+﻿using CalamityEntropy.Content.Biomes;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.NPCs.Cruiser.Core;
 using CalamityEntropy.Content.NPCs.Cruiser.States;
@@ -122,13 +122,11 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         #endregion
 
         #region 定义
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.npcFrameCount[NPC.type] = 1;
             NPCID.Sets.MustAlwaysDraw[NPC.type] = true;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
-            {
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers() {
                 Scale = 0.48f,
                 PortraitScale = 0.56f,
                 CustomTexturePath = "CalamityEntropy/Assets/Extra/CruiserBes",
@@ -145,8 +143,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             NPCID.Sets.NoMultiplayerSmoothingByType[Type] = true;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             // 原灾厄 DR 体系本地化:一阶段减伤 54%,二阶段 42%(见 DamageReduction/ModifyIncomingHit)
             DamageReduction = CruiserDirector.DRPhase1;
             NPC.boss = true;
@@ -155,24 +152,20 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             NPC.width = CruiserDirector.Width;
             NPC.height = CruiserDirector.Height;
             NPC.damage = CruiserDirector.BaseDamage;
-            if (Main.expertMode)
-            {
+            if (Main.expertMode) {
                 NPC.damage += CruiserDirector.DamageExpert;
             }
-            if (Main.masterMode)
-            {
+            if (Main.masterMode) {
                 NPC.damage += CruiserDirector.DamageMaster;
             }
             NPC.defense = CruiserDirector.Defense;
             NPC.lifeMax = CruiserDirector.LifeMax;
             //装灾厄读死亡/复仇,缺席仍走大师/专家兜底
-            if (CECal.IsDeathMode)
-            {
+            if (CECal.IsDeathMode) {
                 NPC.damage += CruiserDirector.DamageDeath;
                 length += CruiserDirector.ChainSegmentsDeathBonus;
             }
-            else if (CECal.IsRevengeance)
-            {
+            else if (CECal.IsRevengeance) {
                 NPC.damage += CruiserDirector.DamageRevenge;
                 length += CruiserDirector.ChainSegmentsRevengeBonus;
             }
@@ -185,24 +178,20 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             NPC.Entropy().VoidTouchDR = CruiserDirector.VoidTouchDR;
             NPC.dontCountMe = true;
             NPC.scale = 1f;
-            if (Main.masterMode)
-            {
+            if (Main.masterMode) {
                 NPC.scale = CruiserDirector.ScaleMaster;
             }
-            if (Main.getGoodWorld)
-            {
+            if (Main.getGoodWorld) {
                 NPC.scale = CruiserDirector.ScaleGetGood;
                 NPC.lifeMax += CruiserDirector.LifeMaxGetGoodBonus;
             }
-            if (Main.zenithWorld)
-            {
+            if (Main.zenithWorld) {
                 NPC.scale = CruiserDirector.ScaleZenith;
                 length = CruiserDirector.ChainSegmentsZenith;
             }
             NPC.netAlways = true;
             NPC.Entropy().damageMul = CruiserDirector.DamageMulStart;
-            if (!Main.dedServ)
-            {
+            if (!Main.dedServ) {
                 Music = MusicLoader.GetMusicSlot(Mod, "Assets/Sounds/Music/CruiserBoss");
             }
             SpawnModBiomes = new int[] { ModContent.GetInstance<VoidDummyBoime>().Type };
@@ -210,10 +199,8 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         #endregion
 
         #region 状态机装配
-        private void EnsureContext()
-        {
-            Context ??= new CruiserStateContext
-            {
+        private void EnsureContext() {
+            Context ??= new CruiserStateContext {
                 Npc = NPC,
                 Owner = this,
             };
@@ -221,19 +208,16 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             Context.Owner = this;
         }
 
-        private void InitializeStateMachine()
-        {
+        private void InitializeStateMachine() {
             EnsureContext();
-            if (NPC.ai[2] < 1f)
-            {
+            if (NPC.ai[2] < 1f) {
                 NPC.ai[2] = 1f;
             }
             stateMachine = new NpcStateMachine<CruiserStateContext>(Context);
             CEBossHost.HookStateSwapAdoption(netMotion, stateMachine);
 
             IVaultState<CruiserStateContext> initial = null;
-            if (VaultUtils.isClient)
-            {
+            if (VaultUtils.isClient) {
                 initial = VaultStateRegistry<CruiserStateContext>.Create((int)NPC.ai[3]);
             }
             stateMachine.SetInitialState(initial ?? new CruiserTryToClosePlayerState());
@@ -241,17 +225,14 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         #endregion
 
         #region AI
-        public override void AI()
-        {
+        public override void AI() {
             EnsureContext();
-            if (stateMachine == null)
-            {
+            if (stateMachine == null) {
                 InitializeStateMachine();
             }
 
             bool client = VaultUtils.isClient;
-            if (client)
-            {
+            if (client) {
                 netMotion.BeginFrame(NPC);
                 CEBossHost.AdoptTimingAtFrameStart(netMotion, stateMachine);
             }
@@ -261,49 +242,40 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             int lastTarget = NPC.target;
             NPC.TargetClosest();
             NPC.spriteDirection = NPC.direction;
-            if (!client && NPC.target != lastTarget)
-            {
+            if (!client && NPC.target != lastTarget) {
                 //换目标是决策点
                 NPC.netUpdate = true;
             }
 
             UpdateHitRecords();
 
-            if (DeathAnm)
-            {
+            if (DeathAnm) {
                 UpdateDeathAnimation();
-                if (!client)
-                {
+                if (!client) {
                     CEBossHost.Heartbeat(NPC);
                 }
                 vtodraw = NPC.Center;
                 UpdateChain();
-                if (client)
-                {
+                if (client) {
                     netMotion.EndFrame(NPC);
                 }
                 return;
             }
 
             NPC.Entropy().damageMul += CruiserDirector.DamageMulRamp;
-            if (NPC.Entropy().damageMul > 1)
-            {
+            if (NPC.Entropy().damageMul > 1) {
                 NPC.Entropy().damageMul = 1;
             }
             counterc++;
             ReportSky();
 
-            if (noaitime > 0)
-            {
+            if (noaitime > 0) {
                 NPC.dontTakeDamage = true;
-                for (int i = 0; i < bodies.Count; i++)
-                {
+                for (int i = 0; i < bodies.Count; i++) {
                     bodies[i] = NPC.Center;
                 }
-                foreach (Projectile pj in Main.ActiveProjectiles)
-                {
-                    if (pj.ModProjectile is VoidBottleThrow)
-                    {
+                foreach (Projectile pj in Main.ActiveProjectiles) {
+                    if (pj.ModProjectile is VoidBottleThrow) {
                         //骑瓶期是位置直写,不是速度积分,预测器会跟它打架,丢掉预测
                         NPC.Center = pj.Center;
                         netMotion.ForgetPrediction();
@@ -311,33 +283,28 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                     }
                 }
             }
-            else if (CurrentState == CruiserStateIndex.PhaseTransing)
-            {
+            else if (CurrentState == CruiserStateIndex.PhaseTransing) {
                 NPC.dontTakeDamage = true;
             }
             noaitime--;
 
-            if (noaitime == 0)
-            {
+            if (noaitime == 0) {
                 NPC.dontTakeDamage = false;
                 //登场揭幕拍点:天幕闪电齐发
                 CruiserSkyDrive.PushBurst(CruiserDirector.SkyIntroBurstBolts);
-                if (!client)
-                {
+                if (!client) {
                     NPC.netUpdate = true;
                 }
             }
 
-            if (noaitime < 0)
-            {
+            if (noaitime < 0) {
                 EnsureChainParts();
                 Main.LocalPlayer.Entropy().crSky = CruiserDirector.LegacySkyTimer;
                 maxDistance += (maxDistanceTarget - maxDistance) * CruiserDirector.ArenaRadiusLerp;
                 ApplyArenaDebuff();
 
                 UpdateContextFacts();
-                if (Context.TargetValid)
-                {
+                if (Context.TargetValid) {
                     UpdateMouthApproach();
                     EvaluatePhaseTransition();
                     SettleArena();
@@ -347,20 +314,16 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                 Context.BeginFrameDefaults();
                 stateMachine.Update();
 
-                if (Context.TargetValid)
-                {
+                if (Context.TargetValid) {
                     //虚空激光自管朝向,其余状态朝向跟速度走
-                    if (CurrentState != CruiserStateIndex.VoidLaser)
-                    {
+                    if (CurrentState != CruiserStateIndex.VoidLaser) {
                         NPC.rotation = NPC.velocity.ToRotation();
                     }
                 }
-                else
-                {
+                else {
                     notargettime++;
                     NPC.velocity.Y += CruiserDirector.NoTargetRise;
-                    if (notargettime > CruiserDirector.DespawnNoTargetFrames && !client)
-                    {
+                    if (notargettime > CruiserDirector.DespawnNoTargetFrames && !client) {
                         //实体生死收归权威端(原代码各端都写,客户端那一次会被下一个快照打回来)
                         NPC.active = false;
                         NPC.netUpdate = true;
@@ -373,21 +336,18 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                 UpdateFlagellum();
             }
 
-            if (!client)
-            {
+            if (!client) {
                 CEBossHost.Heartbeat(NPC);
             }
             vtodraw = NPC.Center;
             UpdateChain();
-            if (client)
-            {
+            if (client) {
                 netMotion.EndFrame(NPC);
             }
         }
 
         /// <summary>天空强度续租(各端本地):骑瓶蓄力期渐临到 0.6,揭幕后推满;P2 转换抬躁动</summary>
-        private void ReportSky()
-        {
+        private void ReportSky() {
             //死亡演出分支在上方提前 return,续租自然过期,天空威压随死亡消退
             float skyDrive = noaitime > 0
                 ? (1f - noaitime / CruiserDirector.SkyIntroDivisor) * CruiserDirector.SkyIntroCap
@@ -398,36 +358,29 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             CruiserSkyDrive.Report(skyDrive, skyAgitation);
         }
 
-        private void UpdateDeathAnimation()
-        {
+        private void UpdateDeathAnimation() {
             WarningAlpha = 0;
-            if (camLerp < 1)
-            {
+            if (camLerp < 1) {
                 camLerp += CruiserDirector.DeathCamRamp;
             }
-            else
-            {
+            else {
                 camLerp = CruiserDirector.DeathCamHold;
             }
             Main.LocalPlayer.Entropy().screenShift = camLerp;
             Main.LocalPlayer.Entropy().screenPos = NPC.Center;
-            if (NPC.velocity.Length() > CruiserDirector.DeathSpeedFloor)
-            {
+            if (NPC.velocity.Length() > CruiserDirector.DeathSpeedFloor) {
                 NPC.velocity *= CruiserDirector.DeathDrag;
             }
             NPC.rotation = NPC.velocity.ToRotation();
             DeathAnmCount--;
-            if (whiteLerp < 1)
-            {
+            if (whiteLerp < 1) {
                 whiteLerp += CruiserDirector.DeathWhiteRamp;
             }
             //死亡演出每 6 tick 一颗爆闪,dedServ 守卫别漏,服务端孤儿 PRT 对不上
-            if (DeathAnmCount % CruiserDirector.DeathBurstInterval == 0 && !Main.dedServ)
-            {
+            if (DeathAnmCount % CruiserDirector.DeathBurstInterval == 0 && !Main.dedServ) {
                 PRTLoader.NewParticle<PRT_PremultBurst>(NPC.Center, Vector2.Zero, Color.LightBlue, 3.2f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);
             }
-            if (DeathAnmCount <= 0 && !VaultUtils.isClient)
-            {
+            if (DeathAnmCount <= 0 && !VaultUtils.isClient) {
                 NPC.StrikeInstantKill();
                 NPC.netSpam = 9;
                 NPC.netUpdate = true;
@@ -435,24 +388,19 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         }
 
         /// <summary>生成整条链。骨节坐标各端都建(节数由已同步的世界难度决定),实体只在权威端生成</summary>
-        private void EnsureChainParts()
-        {
-            if (b_added)
-            {
+        private void EnsureChainParts() {
+            if (b_added) {
                 return;
             }
             b_added = true;
-            for (int i = 0; i < length + 1; i++)
-            {
+            for (int i = 0; i < length + 1; i++) {
                 bodies.Add(NPC.Center - new Vector2(0, 0));
             }
-            if (VaultUtils.isClient)
-            {
+            if (VaultUtils.isClient) {
                 return;
             }
             int syg = NPC.whoAmI;
-            for (int i = 0; i < length + 1; i++)
-            {
+            for (int i = 0; i < length + 1; i++) {
                 int type = i == length ? ModContent.NPCType<CruiserTail>() : ModContent.NPCType<CruiserBody>();
                 int bodyIndex = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, type);
 
@@ -464,8 +412,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                 Main.npc[bodyIndex].realLife = NPC.whoAmI;
                 syg = bodyIndex;
                 //NewNPC 的首包在 ai 槽赋值之前就发了,所以这里必须补一包
-                if (Main.netMode == NetmodeID.Server)
-                {
+                if (Main.netMode == NetmodeID.Server) {
                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, bodyIndex);
                     Main.npc[bodyIndex].netUpdate = true;
                 }
@@ -475,22 +422,17 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             NPC.netUpdate = true;
         }
 
-        private void ApplyArenaDebuff()
-        {
-            foreach (Player p in Main.ActivePlayers)
-            {
-                if (CEUtils.getDistance(SpaceCenter, p.Center) > maxDistance)
-                {
-                    if (!Main.dedServ)
-                    {
+        private void ApplyArenaDebuff() {
+            foreach (Player p in Main.ActivePlayers) {
+                if (CEUtils.getDistance(SpaceCenter, p.Center) > maxDistance) {
+                    if (!Main.dedServ) {
                         p.AddBuff(ModContent.BuffType<VoidTouch>(), CruiserDirector.ArenaDebuffFrames);
                     }
                 }
             }
         }
 
-        private void UpdateContextFacts()
-        {
+        private void UpdateContextFacts() {
             Context.Npc = NPC;
             Context.Owner = this;
             Context.Target = NPC.HasValidTarget ? Main.player[NPC.target] : null;
@@ -499,8 +441,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         }
 
         /// <summary>张嘴预备(纯绘制)。六个状态被排除在外,它们自己管嘴</summary>
-        private void UpdateMouthApproach()
-        {
+        private void UpdateMouthApproach() {
             Player target = Context.Target;
             float dist = NPC.Distance(target.Center);
             CruiserStateIndex state = CurrentState;
@@ -510,11 +451,9 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                 || state == CruiserStateIndex.EnergyBall
                 || state == CruiserStateIndex.AroundPlayerAndShootVoidStar
                 || state == CruiserStateIndex.AroundSpawnVoidBomb;
-            if (!Context.Biting && dist < CruiserDirector.MouthOpenFar && !excluded)
-            {
+            if (!Context.Biting && dist < CruiserDirector.MouthOpenFar && !excluded) {
                 Context.MouthRot += Utils.Remap(dist, CruiserDirector.MouthOpenFar, CruiserDirector.MouthOpenNear, 0, CruiserDirector.MouthOpenRate);
-                if (dist < float.Max(CruiserDirector.BiteTriggerSpeedFloor, NPC.velocity.Length()) * CruiserDirector.BiteTriggerFactor)
-                {
+                if (dist < float.Max(CruiserDirector.BiteTriggerSpeedFloor, NPC.velocity.Length()) * CruiserDirector.BiteTriggerFactor) {
                     Context.Biting = true;
                 }
             }
@@ -524,46 +463,36 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         /// 阶段与转阶段。原代码把这一段写在状态判定<b>之前</b>,每帧强制 <c>ai = PhaseTransing</c>,
         /// 所以被打断那一手当帧就不再执行——这里的调用顺序保持一致
         /// </summary>
-        private void EvaluatePhaseTransition()
-        {
+        private void EvaluatePhaseTransition() {
             //原代码是整数除法 lifeMax / 2,每帧重算一次
             int phaseNow = NPC.life < NPC.lifeMax / CruiserDirector.Phase2LifeDivisor ? 2 : 1;
-            if (Context.Phase != phaseNow)
-            {
+            if (Context.Phase != phaseNow) {
                 Context.Phase = phaseNow;
-                if (!VaultUtils.isClient)
-                {
+                if (!VaultUtils.isClient) {
                     NPC.netUpdate = true;
                 }
             }
-            if (phaseNow != 2)
-            {
+            if (phaseNow != 2) {
                 return;
             }
 
-            if (phaseTrans < CruiserDirector.PhaseTransFrames)
-            {
-                if (!VaultUtils.isClient && CurrentState != CruiserStateIndex.PhaseTransing)
-                {
+            if (phaseTrans < CruiserDirector.PhaseTransFrames) {
+                if (!VaultUtils.isClient && CurrentState != CruiserStateIndex.PhaseTransing) {
                     stateMachine.ChangeState(new CruiserPhaseTransingState());
                 }
                 phaseTrans++;
                 //二阶段转换拍点:一次性闪电爆发
-                if (phaseTrans == 1)
-                {
+                if (phaseTrans == 1) {
                     CruiserSkyDrive.PushBurst(CruiserDirector.SkyPhaseTransBurstBolts);
                 }
                 alpha *= CruiserDirector.PhaseTransAlphaDecay;
                 Context.AttackIndex = 0;
-                if (phaseTrans <= CruiserDirector.PhaseTransClearWindow)
-                {
+                if (phaseTrans <= CruiserDirector.PhaseTransClearWindow) {
                     flagellumAngle = 0;
                     whipSpeed = 0;
                     whipActive = false;
-                    foreach (Projectile p in Main.ActiveProjectiles)
-                    {
-                        if (p.ModProjectile is CruiserEnergyBall || p.ModProjectile is VoidResidue)
-                        {
+                    foreach (Projectile p in Main.ActiveProjectiles) {
+                        if (p.ModProjectile is CruiserEnergyBall || p.ModProjectile is VoidResidue) {
                             p.active = false;
                         }
                     }
@@ -577,18 +506,15 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             NPC.width = CruiserDirector.WidthPhase2;
             NPC.height = CruiserDirector.HeightPhase2;
             ApplyPhase2Segments();
-            if (!VaultUtils.isClient && CurrentState == CruiserStateIndex.PhaseTransing)
-            {
+            if (!VaultUtils.isClient && CurrentState == CruiserStateIndex.PhaseTransing) {
                 //原代码在这里直写 ai = VoidSpike:不走选招口,所以既不清 ChangeCounter 也不动 AttackIndex。
                 //二阶段第一手尖刺因此带着被打断那一手的残余计数起跑,见 CruiserRotation 注释
                 stateMachine.ChangeState(new CruiserVoidSpikeState());
                 NPC.netUpdate = true;
             }
-            if (alpha < 1)
-            {
+            if (alpha < 1) {
                 alpha += CruiserDirector.PhaseTransAlphaRise;
-                if (alpha > 1)
-                {
+                if (alpha > 1) {
                     alpha = 1;
                 }
             }
@@ -600,103 +526,81 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         /// 原代码按 <c>realLife</c> 认亲,而 <c>realLife</c> 不随快照过线,客户端认不出来;
         /// 改用体节自己的 <c>ai[3]</c>(生成时写的就是同一个头部索引)
         /// </summary>
-        private void ApplyPhase2Segments()
-        {
-            if (phase2SegmentsDone)
-            {
+        private void ApplyPhase2Segments() {
+            if (phase2SegmentsDone) {
                 return;
             }
             bool authority = !VaultUtils.isClient;
             bool found = false;
-            foreach (NPC n in Main.npc)
-            {
-                if (!n.active || (n.ModNPC is not CruiserBody && n.ModNPC is not CruiserTail) || (int)n.ai[3] != NPC.whoAmI)
-                {
+            foreach (NPC n in Main.npc) {
+                if (!n.active || (n.ModNPC is not CruiserBody && n.ModNPC is not CruiserTail) || (int)n.ai[3] != NPC.whoAmI) {
                     continue;
                 }
                 found = true;
-                if (n.ai[2] <= CruiserDirector.SegmentKeepMaxIndex && n.ai[2] > CruiserDirector.SegmentShrinkMinIndex)
-                {
+                if (n.ai[2] <= CruiserDirector.SegmentKeepMaxIndex && n.ai[2] > CruiserDirector.SegmentShrinkMinIndex) {
                     n.width = CruiserDirector.SegmentSizePhase2;
                     n.height = CruiserDirector.SegmentSizePhase2;
                 }
-                if (authority && n.ai[2] > CruiserDirector.SegmentKeepMaxIndex)
-                {
+                if (authority && n.ai[2] > CruiserDirector.SegmentKeepMaxIndex) {
                     n.active = false;
                     n.netUpdate = true;
-                    if (Main.dedServ)
-                    {
+                    if (Main.dedServ) {
                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, n.whoAmI, 0f, 0f, 0f, 0);
                     }
                 }
             }
-            if (found)
-            {
+            if (found) {
                 phase2SegmentsDone = true;
             }
         }
 
-        private void SettleArena()
-        {
+        private void SettleArena() {
             maxDistanceTarget = CruiserDirector.ArenaRadiusEngaged;
-            if (bodies.Count > 0)
-            {
+            if (bodies.Count > 0) {
                 SpaceCenter = (NPC.Center + bodies[bodies.Count - 1]) / 2f;
             }
-            if (CurrentState == CruiserStateIndex.PhaseTransing)
-            {
+            if (CurrentState == CruiserStateIndex.PhaseTransing) {
                 SpaceCenter = Context.Target.Center;
                 maxDistanceTarget = CruiserDirector.ArenaRadiusPhaseTrans;
             }
         }
 
         /// <summary>咬合结算(纯绘制)。写在接战分支之外,无目标时也照跑,原代码如此</summary>
-        private void SettleMouth()
-        {
-            if (Context.Biting)
-            {
+        private void SettleMouth() {
+            if (Context.Biting) {
                 Context.MouthRot += CruiserDirector.BiteCloseRate;
-                if (Context.MouthRot < CruiserDirector.MouthMin)
-                {
+                if (Context.MouthRot < CruiserDirector.MouthMin) {
                     Context.Biting = false;
                 }
             }
-            else
-            {
+            else {
                 Context.MouthRot *= CruiserDirector.MouthDecay;
             }
-            if (Context.MouthRot < CruiserDirector.MouthMin)
-            {
+            if (Context.MouthRot < CruiserDirector.MouthMin) {
                 Context.MouthRot = CruiserDirector.MouthMin;
             }
         }
 
         /// <summary>二阶段尾焰与全场无限飞行。前者纯绘制,后者是原灾厄无限飞行改成每帧回满翅膀时间</summary>
-        private void UpdatePhase2Exhaust()
-        {
-            if (phaseTrans <= CruiserDirector.PhaseTransDrawSwitch)
-            {
+        private void UpdatePhase2Exhaust() {
+            if (phaseTrans <= CruiserDirector.PhaseTransDrawSwitch) {
                 return;
             }
-            foreach (var plr in Main.ActivePlayers)
-            {
+            foreach (var plr in Main.ActivePlayers) {
                 plr.wingTime = plr.wingTimeMax;
             }
-            if (Main.dedServ)
-            {
+            if (Main.dedServ) {
                 return;
             }
             var r = Main.rand;
-            for (int i = 0; i < CruiserDirector.ExhaustCount; i++)
-            {
+            for (int i = 0; i < CruiserDirector.ExhaustCount; i++) {
                 var p = PRTLoader.NewParticle<PRT_Void>(NPC.Center - NPC.rotation.ToRotationVector2() * CruiserDirector.ExhaustNozzleBack,
                     new Vector2((float)((r.NextDouble() - 0.5) * CruiserDirector.ExhaustJitterX), (float)((r.NextDouble() - 0.5) * CruiserDirector.ExhaustJitterY)), Color.White, 1f);
                 p.shape = 4;
                 p.Opacity = CruiserDirector.ExhaustOpacity * NPC.scale;
                 p.ad = CruiserDirector.ExhaustFade;
             }
-            for (int i = 0; i < CruiserDirector.ExhaustCount; i++)
-            {
+            for (int i = 0; i < CruiserDirector.ExhaustCount; i++) {
                 var p = PRTLoader.NewParticle<PRT_Void>(NPC.Center - NPC.rotation.ToRotationVector2() * CruiserDirector.ExhaustNozzleBack - NPC.velocity * 0.5f,
                     new Vector2((float)((r.NextDouble() - 0.5) * CruiserDirector.ExhaustJitterX), (float)((r.NextDouble() - 0.5) * CruiserDirector.ExhaustJitterY)), Color.White, 1f);
                 p.shape = 4;
@@ -716,14 +620,12 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         /// 战场半径、原 <c>localAI[2]</c> 的激光瞄准计时、轮换序号
         /// </para>
         /// </summary>
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             EnsureContext();
             int stateId = (int)NPC.ai[3];
             int timer = 0;
             int counter = 0;
-            if (stateMachine?.CurrentState is CruiserStateBase state)
-            {
+            if (stateMachine?.CurrentState is CruiserStateBase state) {
                 stateId = state.StateId;
                 timer = state.Timer;
                 counter = state.Counter;
@@ -754,13 +656,11 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             writer.Write(tail);
         }
 
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             EnsureContext();
             int localStateId = -1;
             int localTimer = 0;
-            if (stateMachine?.CurrentState is CruiserStateBase state)
-            {
+            if (stateMachine?.CurrentState is CruiserStateBase state) {
                 localStateId = state.StateId;
                 localTimer = state.Timer;
             }

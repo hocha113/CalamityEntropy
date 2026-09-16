@@ -1,6 +1,5 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items;
-using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Armor.AzafureT3;
 using CalamityEntropy.Content.NPCs;
 using CalamityEntropy.Content.UI.Poops;
@@ -45,19 +44,15 @@ namespace CalamityEntropy
 
     internal class CENetWork
     {
-        public static void Handle(BinaryReader reader, int whoAmI)
-        {
+        public static void Handle(BinaryReader reader, int whoAmI) {
             CEMessageType messageType = (CEMessageType)reader.ReadByte();
-            if (messageType == CEMessageType.LotteryMachineRightClicked)
-            {
+            if (messageType == CEMessageType.LotteryMachineRightClicked) {
                 int plr = reader.ReadInt32();
                 int npc = reader.ReadInt32();
                 int wai = reader.ReadInt32();
-                if (npc.ToNPC().ModNPC is LotteryMachine lm)
-                {
+                if (npc.ToNPC().ModNPC is LotteryMachine lm) {
                     lm.RightClicked(Main.player[plr]);
-                    if (Main.dedServ)
-                    {
+                    if (Main.dedServ) {
                         ModPacket packet = Instance.GetPacket();
                         packet.Write((byte)CEMessageType.LotteryMachineRightClicked);
                         packet.Write(plr);
@@ -68,14 +63,12 @@ namespace CalamityEntropy
                     }
                 }
             }
-            else if (messageType == CEMessageType.TurnFriendly)
-            {
+            else if (messageType == CEMessageType.TurnFriendly) {
                 int id = reader.ReadInt32();
                 int owner = reader.ReadInt32();
                 id.ToNPC().Entropy().ToFriendly = true;
                 id.ToNPC().Entropy().f_owner = owner;
-                if (Main.dedServ)
-                {
+                if (Main.dedServ) {
                     ModPacket packet = Instance.GetPacket();
                     packet.Write((byte)CEMessageType.TurnFriendly);
                     packet.Write(id);
@@ -83,24 +76,19 @@ namespace CalamityEntropy
                     packet.Send();
                 }
             }
-            else if (messageType == CEMessageType.Text)
-            {
+            else if (messageType == CEMessageType.Text) {
                 Main.NewText(reader.ReadString());
             }
-            else if (messageType == CEMessageType.BossKilled)
-            {
+            else if (messageType == CEMessageType.BossKilled) {
                 bool flag = reader.ReadBoolean();
             }
-            else if (messageType == CEMessageType.PlayerSetRB)
-            {
+            else if (messageType == CEMessageType.PlayerSetRB) {
                 int playerIndex = reader.ReadInt32();
                 bool active = reader.ReadBoolean();
                 playerIndex.ToPlayer().Entropy().rBadgeActive = active;
 
-                if (Main.dedServ)
-                {
-                    if (!active)
-                    {
+                if (Main.dedServ) {
+                    if (!active) {
                         playerIndex.ToPlayer().velocity *= 0.2f;
                     }
                     ModPacket packet = Instance.GetPacket();
@@ -109,35 +97,27 @@ namespace CalamityEntropy
                     packet.Write(active);
                     packet.Send();
                 }
-                else
-                {
-                    if (playerIndex != Main.myPlayer)
-                    {
-                        if (!active)
-                        {
+                else {
+                    if (playerIndex != Main.myPlayer) {
+                        if (!active) {
                             playerIndex.ToPlayer().velocity *= 0.2f;
                         }
-                        if (active)
-                        {
+                        if (active) {
                             SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/AscendantActivate"), playerIndex.ToPlayer().Center);
                         }
-                        else
-                        {
+                        else {
                             SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/AscendantOff"), playerIndex.ToPlayer().Center);
                         }
                     }
                 }
             }
-            else if (messageType == CEMessageType.PlayerSetPos)
-            {
+            else if (messageType == CEMessageType.PlayerSetPos) {
                 int id = reader.ReadInt32();
                 Vector2 pos = reader.ReadVector2();
-                if (id != Main.myPlayer)
-                {
+                if (id != Main.myPlayer) {
                     id.ToPlayer().Center = pos;
                 }
-                if (Main.dedServ)
-                {
+                if (Main.dedServ) {
                     ModPacket packet = Instance.GetPacket();
                     packet.Write((byte)CEMessageType.PlayerSetPos);
                     packet.Write(id);
@@ -145,22 +125,18 @@ namespace CalamityEntropy
                     packet.Send(-1, whoAmI);//如果接受端是服务器，说明是来自客户端的广播，所以可以忽略来源的客户端
                 }
             }
-            else if (messageType == CEMessageType.VoidTouchDamageShow)
-            {
-                if (!Main.dedServ)
-                {
+            else if (messageType == CEMessageType.VoidTouchDamageShow) {
+                if (!Main.dedServ) {
                     NPC npc = reader.ReadInt32().ToNPC();
                     int damageDone = reader.ReadInt32();
                     CombatText.NewText(npc.getRect(), new Color(148, 148, 255), damageDone);
                 }
             }
-            else if (messageType == CEMessageType.PoopSync)
-            {
+            else if (messageType == CEMessageType.PoopSync) {
                 Player player = reader.ReadInt32().ToPlayer();
                 bool holding = reader.ReadBoolean();
                 player.Entropy().holdingPoop = holding;
-                if (Main.dedServ)
-                {
+                if (Main.dedServ) {
                     ModPacket packet = Instance.GetPacket();
                     packet.Write((byte)CEMessageType.PoopSync);
                     packet.Write(player.whoAmI);
@@ -168,22 +144,18 @@ namespace CalamityEntropy
                     packet.Send(-1, whoAmI);//如果接受端是服务器，说明是来自客户端的广播，所以可以忽略来源的客户端
                 }
             }
-            else if (messageType == CEMessageType.SpawnItem)
-            {
+            else if (messageType == CEMessageType.SpawnItem) {
                 int plr = reader.ReadInt32();
                 int itemtype = reader.ReadInt32();
                 int stack = reader.ReadInt32();
                 Player player = plr.ToPlayer();
 
-                if (!Main.dedServ && itemtype == ModContent.ItemType<PoopPickup>())
-                {
+                if (!Main.dedServ && itemtype == ModContent.ItemType<PoopPickup>()) {
                     CEUtils.PlaySound("fart", 1, player.Center);
                 }
-                if (Main.dedServ)
-                {
+                if (Main.dedServ) {
                     int i = Item.NewItem(player.GetSource_FromThis(), player.getRect(), new Item(itemtype, stack), false, true);
-                    if (i < Main.item.Length)
-                    {
+                    if (i < Main.item.Length) {
                         Main.item[i].noGrabDelay = 100;
                     }
                     ModPacket packet = Instance.GetPacket();
@@ -194,53 +166,43 @@ namespace CalamityEntropy
                     packet.Send(-1, whoAmI);//如果接受端是服务器，说明是来自客户端的广播，所以可以忽略来源的客户端
                 }
             }
-            else if (messageType == CEMessageType.PickUpPoop)
-            {
+            else if (messageType == CEMessageType.PickUpPoop) {
                 int plr = reader.ReadInt32();
                 string name = reader.ReadString();
                 Player player = plr.ToPlayer();
                 Poop poop = new PoopNormal();
-                foreach (Poop p in Poop.instances)
-                {
-                    if (p.FullName == name)
-                    {
+                foreach (Poop p in Poop.instances) {
+                    if (p.FullName == name) {
                         poop = p;
                     }
                 }
                 player.Entropy().poops.Add(poop);
             }
-            else if (messageType == CEMessageType.SyncEntropyMode)
-            {
+            else if (messageType == CEMessageType.SyncEntropyMode) {
                 bool enabled = reader.ReadBoolean();
                 EntropyMode = enabled;
-                if (Main.dedServ)
-                {
+                if (Main.dedServ) {
                     ModPacket packet = Instance.GetPacket();
                     packet.Write((byte)CEMessageType.SyncEntropyMode);
                     packet.Write(enabled);
                     packet.Send();
                 }
-                else
-                {
-                    if (EntropyMode)
-                    {
+                else {
+                    if (EntropyMode) {
                         Main.NewText(Instance.GetLocalization("EntropyModeActive").Value, new Color(170, 18, 225));
                     }
-                    else
-                    {
+                    else {
                         Main.NewText(Instance.GetLocalization("EntropyModeDeactive").Value, new Color(170, 18, 225));
                     }
                 }
             }
-            else if (messageType == CEMessageType.SyncDashStart)
-            {
+            else if (messageType == CEMessageType.SyncDashStart) {
                 // 先读完所有字段再做判断,提前返回会把后续字节留在流里
                 int wai = reader.ReadByte();
                 string effectId = reader.ReadString();
                 Vector2 direction = reader.ReadVector2();
                 string enhancerId = reader.ReadString();
-                if (Main.dedServ)
-                {
+                if (Main.dedServ) {
                     // 服务器不模拟冲刺,只把起手转发给其它客户端
                     ModPacket packet = Instance.GetPacket();
                     packet.Write((byte)CEMessageType.SyncDashStart);
@@ -250,28 +212,23 @@ namespace CalamityEntropy
                     packet.Write(enhancerId);
                     packet.Send(-1, whoAmI);
                 }
-                else if (wai >= 0 && wai < Main.maxPlayers && Main.player[wai].active)
-                {
+                else if (wai >= 0 && wai < Main.maxPlayers && Main.player[wai].active) {
                     Main.player[wai].GetModPlayer<CEDashPlayer>().BeginRemote(effectId, direction, enhancerId);
                 }
             }
-            else if (messageType == CEMessageType.DestroyChest)
-            {
-                if (Main.dedServ)
-                {
+            else if (messageType == CEMessageType.DestroyChest) {
+                if (Main.dedServ) {
                     Player player = reader.ReadInt32().ToPlayer();
                     int x = reader.ReadInt32();
                     int y = reader.ReadInt32();
                     CEUtils.CheckChestDestroy(player, x, y);
                 }
             }
-            else if (messageType == CEMessageType.SyncPlayerLife)
-            {
+            else if (messageType == CEMessageType.SyncPlayerLife) {
                 int plr = reader.ReadInt32();
                 int lifeTo = reader.ReadInt32();
                 plr.ToPlayer().statLife = lifeTo;
-                if (Main.dedServ)
-                {
+                if (Main.dedServ) {
                     ModPacket packet = CalamityEntropy.Instance.GetPacket();
                     packet.Write((byte)CEMessageType.SyncPlayerLife);
                     packet.Write(plr);
@@ -279,28 +236,23 @@ namespace CalamityEntropy
                     packet.Send(-1, whoAmI);
                 }
             }
-            else if (messageType == CEMessageType.NihilityConnet)
-            {
+            else if (messageType == CEMessageType.NihilityConnet) {
                 bool reset = reader.ReadBoolean();
                 int plr1 = reader.ReadInt32();
                 int plr2 = reader.ReadInt32();
-                if (reset)
-                {
+                if (reset) {
                     plr1.ToPlayer().Entropy().NihTwinArmorConnetPlayer = -1;
                     plr2.ToPlayer().Entropy().NihTwinArmorConnetPlayer = -1;
                 }
-                else
-                {
+                else {
                     plr1.ToPlayer().Entropy().NihTwinArmorConnetPlayer = plr2;
                     plr2.ToPlayer().Entropy().NihTwinArmorConnetPlayer = plr1;
-                    if (!Main.dedServ)
-                    {
+                    if (!Main.dedServ) {
                         CEUtils.PlaySound("ksLand", 1, plr1.ToPlayer().Center);
                         CEUtils.PlaySound("ksLand", 1, plr2.ToPlayer().Center);
                     }
                 }
-                if (Main.dedServ)
-                {
+                if (Main.dedServ) {
                     ModPacket packet = CalamityEntropy.Instance.GetPacket();
                     packet.Write((byte)CEMessageType.NihilityConnet);
                     packet.Write(reset);
@@ -309,34 +261,29 @@ namespace CalamityEntropy
                     packet.Send(-1);
                 }
             }
-            else if (messageType == CEMessageType.SyncBookmarks)
-            {
+            else if (messageType == CEMessageType.SyncBookmarks) {
                 int wai = reader.ReadInt32();
                 var plr = wai.ToPlayer();
                 int bookmarkCount = reader.ReadInt32();
                 plr.Entropy().EBookStackItems = new();
-                for (int i = 0; i < bookmarkCount; i++)
-                {
+                for (int i = 0; i < bookmarkCount; i++) {
                     Item itm = new Item(reader.ReadInt32());
                     ItemIO.Receive(itm, reader);
                     plr.Entropy().EBookStackItems.Add(itm);
                 }
-                if (Main.dedServ)
-                {
+                if (Main.dedServ) {
                     ModPacket packet = Instance.GetPacket();
                     packet.Write((byte)CEMessageType.SyncBookmarks);
                     packet.Write(wai);
                     packet.Write(bookmarkCount);
-                    foreach (var item in plr.Entropy().EBookStackItems)
-                    {
+                    foreach (var item in plr.Entropy().EBookStackItems) {
                         packet.Write(item.type);
                         ItemIO.Send(item, packet);
                     }
                     packet.Send(-1, whoAmI);
                 }
             }
-            else if (messageType == CEMessageType.AcropolisTrans)
-            {
+            else if (messageType == CEMessageType.AcropolisTrans) {
                 int plr = reader.ReadInt32();
                 bool active = reader.ReadBoolean();
                 int reload = reader.ReadInt32();
@@ -344,8 +291,7 @@ namespace CalamityEntropy
                 float slash = reader.ReadSingle();
                 int dir = reader.ReadInt32();
                 bool mode = reader.ReadBoolean();
-                if (Main.myPlayer != plr)
-                {
+                if (Main.myPlayer != plr) {
                     var mp = plr.ToPlayer().GetModPlayer<AcropolisArmorPlayer>();
                     mp.MechTrans = active;
                     mp.Reload = reload;
@@ -354,8 +300,7 @@ namespace CalamityEntropy
                     mp.slashDir = dir;
                     mp.CannonMode = mode;
                 }
-                if (Main.dedServ)
-                {
+                if (Main.dedServ) {
                     ModPacket packet = Instance.GetPacket();
                     packet.Write((byte)CEMessageType.AcropolisTrans);
                     packet.Write(plr);
@@ -368,18 +313,15 @@ namespace CalamityEntropy
                     packet.Send(-1, plr);
                 }
             }
-            else if (messageType == CEMessageType.SyncPlayerDead)
-            {
+            else if (messageType == CEMessageType.SyncPlayerDead) {
                 int plr = reader.ReadInt32();
                 bool d = reader.ReadBoolean();
                 Vector2 pos = reader.ReadVector2();
-                if (Main.myPlayer != plr)
-                {
+                if (Main.myPlayer != plr) {
                     plr.ToPlayer().dead = d;
                     plr.ToPlayer().position = pos;
                 }
-                if (Main.dedServ)
-                {
+                if (Main.dedServ) {
                     ModPacket packet = Instance.GetPacket();
                     packet.Write((byte)CEMessageType.SyncPlayerDead);
                     packet.Write(plr);
@@ -388,8 +330,7 @@ namespace CalamityEntropy
                     packet.Send(-1, plr);
                 }
             }
-            else if (messageType == CEMessageType.SyncDRShadowCrystal)
-            {
+            else if (messageType == CEMessageType.SyncDRShadowCrystal) {
                 int plr = reader.ReadInt32();
                 bool ch1 = reader.ReadBoolean();
                 bool ch2 = reader.ReadBoolean();
@@ -397,8 +338,7 @@ namespace CalamityEntropy
                 bool ch4 = reader.ReadBoolean();
                 bool ch5 = reader.ReadBoolean();
                 plr.ToPlayer().Entropy().drCrystals = new List<bool>() { ch1, ch2, ch3, ch4, ch5 };
-                if (Main.dedServ)
-                {
+                if (Main.dedServ) {
                     var mp = Instance.GetPacket();
                     mp.Write((byte)CEMessageType.SyncDRShadowCrystal);
                     mp.Write(plr);
@@ -410,16 +350,14 @@ namespace CalamityEntropy
                     mp.Send(-1, plr);
                 }
             }
-            else if (messageType == CEMessageType.SyncMouseWorld)
-            {
+            else if (messageType == CEMessageType.SyncMouseWorld) {
                 int plr = reader.ReadInt32();
                 float dx = reader.ReadInt16();
                 float dy = reader.ReadInt16();
                 //必须走真实实例写入: .Entropy()查找失败会返回一次性实例,写入被静默丢弃
                 if (plr.ToPlayer().TryGetModPlayer<EModPlayer>(out var emp))
                     emp.mouseWorldDelta = new Vector2(dx, dy);
-                if (Main.dedServ)
-                {
+                if (Main.dedServ) {
                     ModPacket packet = Instance.GetPacket();
                     packet.Write((byte)CEMessageType.SyncMouseWorld);
                     packet.Write(plr);
@@ -428,41 +366,35 @@ namespace CalamityEntropy
                     packet.Send(-1, whoAmI);
                 }
             }
-            else if (messageType == CEMessageType.SyncCooldowns)
-            {
+            else if (messageType == CEMessageType.SyncCooldowns) {
                 //冷却框架加入同步(cooldown-api.md §7),序列化两端由 CECooldownPlayer 实现
                 Core.Cooldowns.CECooldownPlayer.ReceiveAllCooldowns(reader);
-                if (Main.dedServ)
-                {
+                if (Main.dedServ) {
                     ModPacket packet = Instance.GetPacket();
                     packet.Write((byte)CEMessageType.SyncCooldowns);
                     Main.player[whoAmI].GetModPlayer<Core.Cooldowns.CECooldownPlayer>().WriteAllCooldowns(packet);
                     packet.Send(-1, whoAmI);
                 }
             }
-            else if (messageType == CEMessageType.SyncPlayer)
-            {
+            else if (messageType == CEMessageType.SyncPlayer) {
                 int wai = reader.ReadInt32();
                 int loreCount = reader.ReadInt32();
                 Player plr = wai.ToPlayer();
                 bool local = wai == Main.myPlayer;
                 if (!local)
                     plr.Entropy().enabledLoreItems.Clear();
-                for (int i = 0; i < loreCount; i++)
-                {
+                for (int i = 0; i < loreCount; i++) {
                     int t = reader.ReadInt32();
                     if (!local)
                         plr.Entropy().enabledLoreItems.Add(t);
                 }
 
-                if (Main.dedServ)
-                {
+                if (Main.dedServ) {
                     ModPacket packet = Instance.GetPacket();
                     packet.Write((byte)CEMessageType.SyncPlayer);
                     packet.Write(wai);
                     packet.Write(loreCount);
-                    foreach (var i in plr.Entropy().enabledLoreItems)
-                    {
+                    foreach (var i in plr.Entropy().enabledLoreItems) {
                         packet.Write(i);
                     }
                     packet.Send(-1, wai);

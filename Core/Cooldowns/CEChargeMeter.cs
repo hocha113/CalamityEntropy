@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ModLoader;
@@ -27,8 +27,7 @@ namespace CalamityEntropy.Core.Cooldowns
 
         public CEChargeMeter() { }
 
-        public CEChargeMeter(float max)
-        {
+        public CEChargeMeter(float max) {
             Max = max;
         }
 
@@ -36,16 +35,14 @@ namespace CalamityEntropy.Core.Cooldowns
         /// 增加充能,自动截断到 Max。
         /// 返回值为「本次是否恰好从未就绪变为就绪」,供调用方在就绪瞬间做提示。
         /// </summary>
-        public bool Gain(float amount)
-        {
+        public bool Gain(float amount) {
             bool wasReady = Ready;
             Charge = Math.Min(Charge + amount, Max);
             return !wasReady && Ready;
         }
 
         /// <summary>就绪时消耗全部充能并返回 true,否则不动并返回 false。大招释放判定用这个。</summary>
-        public bool Consume()
-        {
+        public bool Consume() {
             if (!Ready)
                 return false;
             Charge = 0f;
@@ -53,8 +50,7 @@ namespace CalamityEntropy.Core.Cooldowns
         }
 
         /// <summary>消耗指定量充能。不足时不动并返回 false。</summary>
-        public bool Consume(float amount)
-        {
+        public bool Consume(float amount) {
             if (Charge < amount)
                 return false;
             Charge -= amount;
@@ -62,21 +58,18 @@ namespace CalamityEntropy.Core.Cooldowns
         }
 
         /// <summary>清空充能。</summary>
-        public void Reset()
-        {
+        public void Reset() {
             Charge = 0f;
         }
 
         /// <summary>简易就绪提示音,配合 Gain 的返回值在就绪瞬间调用。</summary>
-        public static void PlayReadyCue(Player player)
-        {
+        public static void PlayReadyCue(Player player) {
             if (Main.dedServ)
                 return;
             SoundEngine.PlaySound(new SoundStyle("CalamityEntropy/Assets/Sounds/WulfrumPingReady") { Volume = 0.6f }, player.Center);
         }
 
-        internal TagCompound Save()
-        {
+        internal TagCompound Save() {
             return new TagCompound
             {
                 { "charge", Charge },
@@ -84,10 +77,8 @@ namespace CalamityEntropy.Core.Cooldowns
             };
         }
 
-        internal static CEChargeMeter Load(TagCompound tag)
-        {
-            return new CEChargeMeter
-            {
+        internal static CEChargeMeter Load(TagCompound tag) {
+            return new CEChargeMeter {
                 Charge = tag.GetFloat("charge"),
                 Max = tag.GetFloat("max")
             };
@@ -102,40 +93,33 @@ namespace CalamityEntropy.Core.Cooldowns
         /// <summary>该物品的充能计量器,未使用过充能的物品保持 null。</summary>
         public CEChargeMeter meter;
 
-        public override GlobalItem Clone(Item from, Item to)
-        {
+        public override GlobalItem Clone(Item from, Item to) {
             CEChargeGlobalItem clone = (CEChargeGlobalItem)base.Clone(from, to);
             if (meter != null)
                 clone.meter = new CEChargeMeter(meter.Max) { Charge = meter.Charge };
             return clone;
         }
 
-        public override void SaveData(Item item, TagCompound tag)
-        {
+        public override void SaveData(Item item, TagCompound tag) {
             if (meter != null && meter.Charge > 0)
                 tag["ceCharge"] = meter.Save();
         }
 
-        public override void LoadData(Item item, TagCompound tag)
-        {
+        public override void LoadData(Item item, TagCompound tag) {
             if (tag.TryGet("ceCharge", out TagCompound meterTag))
                 meter = CEChargeMeter.Load(meterTag);
         }
 
-        public override void NetSend(Item item, System.IO.BinaryWriter writer)
-        {
+        public override void NetSend(Item item, System.IO.BinaryWriter writer) {
             writer.Write(meter != null);
-            if (meter != null)
-            {
+            if (meter != null) {
                 writer.Write(meter.Charge);
                 writer.Write(meter.Max);
             }
         }
 
-        public override void NetReceive(Item item, System.IO.BinaryReader reader)
-        {
-            if (reader.ReadBoolean())
-            {
+        public override void NetReceive(Item item, System.IO.BinaryReader reader) {
+            if (reader.ReadBoolean()) {
                 meter ??= new CEChargeMeter();
                 meter.Charge = reader.ReadSingle();
                 meter.Max = reader.ReadSingle();

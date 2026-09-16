@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Prophet.Core;
+﻿using CalamityEntropy.Content.NPCs.Prophet.Core;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.Prophet;
@@ -26,16 +26,14 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
     {
         public override ProphetStateIndex StateIndex => ProphetStateIndex.Dash;
 
-        protected override void RunAttack(ProphetStateContext ctx)
-        {
+        protected override void RunAttack(ProphetStateContext ctx) {
             NPC npc = ctx.Npc;
             Player target = ctx.Target;
             float difficult = ctx.Difficult;
             int phase = ctx.Phase;
             int cd = ctx.Countdown;
 
-            if (cd == ProphetDirector.DashBeatA || cd == ProphetDirector.DashBeatB || cd == ProphetDirector.DashBeatC)
-            {
+            if (cd == ProphetDirector.DashBeatA || cd == ProphetDirector.DashBeatB || cd == ProphetDirector.DashBeatC) {
                 bool heavy = cd == ProphetDirector.DashBeatC;
                 //锁向 + 反向弹开 + 写推进窗:运动,各端都跑
                 npc.rotation = (PredictTarget(ctx, ProphetDirector.DashLeadFrames) - npc.Center).ToRotation();
@@ -43,22 +41,18 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
                     * -(heavy ? ProphetDirector.DashBackstepHeavy : ProphetDirector.DashBackstepNormal);
                 npc.ai[1] = heavy ? ProphetDirector.DashThrustFramesHeavy : ProphetDirector.DashThrustFramesNormal;
 
-                if (phase > 1)
-                {
+                if (phase > 1) {
                     CrystalCue(npc);
 
                     int damage = ProjDamage(ctx);
                     Vector2 aim = (target.Center - npc.Center).normalize();
                     int layers = heavy ? ProphetDirector.DashVolleyLayersHeavy : ProphetDirector.DashVolleyLayersNormal;
-                    for (int i = 0; i <= layers; i++)
-                    {
-                        if (i == 0)
-                        {
+                    for (int i = 0; i <= layers; i++) {
+                        if (i == 0) {
                             Shoot<RuneTorrent>(ctx, npc.Center, aim * difficult * ProphetDirector.DashVolleySpeedMult,
                                 damage, 4, ProphetDirector.VolleyTorrentMaxSpeed * difficult, ProphetDirector.VolleyTorrentAi1);
                         }
-                        else
-                        {
+                        else {
                             Shoot<RuneTorrent>(ctx, npc.Center,
                                 aim.RotatedBy(i * ProphetDirector.DashVolleySpread) * difficult * ProphetDirector.DashVolleySpeedMult,
                                 damage, 4, ProphetDirector.VolleyTorrentMaxSpeed * difficult, ProphetDirector.VolleyTorrentAi1);
@@ -71,8 +65,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
 
                 //ProminenceTrail 单例挂 trail,Lifetime<1 才重建,冲刺段 13 帧续命。
                 //PRTLoader 在服务端只是不入列,仍返回实例,所以这里不额外加 dedServ 守卫(照搬原写法)
-                if (ctx.Owner.trail == null || ctx.Owner.trail.Lifetime < 1)
-                {
+                if (ctx.Owner.trail == null || ctx.Owner.trail.Lifetime < 1) {
                     ctx.Owner.trail = PRTLoader.NewParticle<PRT_ProminenceTrail>(npc.Center, Vector2.Zero, Color.White,
                         ProphetDirector.TrailSpawnScale);
                     ctx.Owner.trail.color1 = Color.DeepSkyBlue;
@@ -85,23 +78,19 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
                 MarkNetUpdate(ctx);
             }
 
-            if (npc.ai[1] > 0)
-            {
+            if (npc.ai[1] > 0) {
                 npc.ai[1]--;
                 npc.velocity += npc.rotation.ToRotationVector2() * difficult
                     * (cd <= ProphetDirector.DashBeatC ? ProphetDirector.DashThrustHeavyMult : ProphetDirector.DashThrust)
                     * (phase == 1 ? 1 : ProphetDirector.DashThrustPhase2Mult);
                 npc.velocity *= ProphetDirector.DashDrag;
-                if (ctx.Owner.trail != null)
-                {
+                if (ctx.Owner.trail != null) {
                     ctx.Owner.trail.Lifetime = ProphetDirector.TrailKeepAlive;
                 }
-                if (cd < ProphetDirector.DashBeatC)
-                {
+                if (cd < ProphetDirector.DashBeatC) {
                     //撒弹周期是整数除法 (int)(10 或 8 / 难度系数),难度越高间隔越短
                     int period = (int)((phase == 1 ? ProphetDirector.DashSideBulletPeriodP1 : ProphetDirector.DashSideBulletPeriodP2) / difficult);
-                    if (npc.ai[1] < ProphetDirector.DashSideBulletWindow && cd % period == 0)
-                    {
+                    if (npc.ai[1] < ProphetDirector.DashSideBulletWindow && cd % period == 0) {
                         CEUtils.PlaySound("crystalsound" + Main.rand.Next(1, 3), Main.rand.NextFloat(0.7f, 1.3f), npc.Center);
                         int damage = ProjDamage(ctx);
                         Shoot<RuneBulletHostile>(ctx, npc.Center,
@@ -113,13 +102,11 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
                     }
                 }
             }
-            else
-            {
+            else {
                 npc.velocity *= ProphetDirector.DashBrakeDrag;
             }
 
-            if (cd == ProphetDirector.DashExitBeat && IsServer)
-            {
+            if (cd == ProphetDirector.DashExitBeat && IsServer) {
                 Teleport(ctx, target.Center + CEUtils.randomRot().ToRotationVector2() * ProphetDirector.DashExitRadius);
             }
         }

@@ -1,4 +1,4 @@
-using InnoVault.StateMachines;
+﻿using InnoVault.StateMachines;
 
 namespace CalamityEntropy.Content.NPCs.SpiritFountain.Core
 {
@@ -32,8 +32,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.Core
             => Create(Next(from));
 
         /// <summary>链序映射,逐条对应原代码换态语句里的 <c>ai = AIStyle.X</c></summary>
-        public static SpiritFountainStateIndex Next(SpiritFountainStateIndex from) => from switch
-        {
+        public static SpiritFountainStateIndex Next(SpiritFountainStateIndex from) => from switch {
             SpiritFountainStateIndex.SpawnAnimation => SpiritFountainStateIndex.Moving,
             SpiritFountainStateIndex.Moving => SpiritFountainStateIndex.Boomerang,
             SpiritFountainStateIndex.Boomerang => SpiritFountainStateIndex.Lasers,
@@ -54,8 +53,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.Core
         /// 宿主的续跑链就按这张表决定同帧续跑还是延后。
         /// </para>
         /// </summary>
-        public static int ChainOrder(SpiritFountainStateIndex index) => index switch
-        {
+        public static int ChainOrder(SpiritFountainStateIndex index) => index switch {
             SpiritFountainStateIndex.SpawnAnimation => 0,
             SpiritFountainStateIndex.Moving => 2,
             SpiritFountainStateIndex.Boomerang => 3,

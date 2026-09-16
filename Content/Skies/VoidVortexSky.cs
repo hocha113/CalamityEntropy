@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.Skies
 
         public override bool IsSceneEffectActive(Player player) => Main.LocalPlayer.Entropy().VortexSky > 0;
 
-        public override void SpecialVisuals(Player player, bool isActive)
-        {
+        public override void SpecialVisuals(Player player, bool isActive) {
             player.ManageSpecialBiomeVisuals("CalamityEntropy:VoidVortex", isActive);
         }
     }
@@ -47,10 +46,8 @@ namespace CalamityEntropy.Content.Skies
 
         protected override void OnReset() => particles.Clear();
 
-        protected override void UpdatePayload(GameTime gameTime)
-        {
-            if (opacity <= 0f)
-            {
+        protected override void UpdatePayload(GameTime gameTime) {
+            if (opacity <= 0f) {
                 if (particles.Count > 0)
                     particles.Clear();
                 return;
@@ -58,13 +55,11 @@ namespace CalamityEntropy.Content.Skies
             counter++;
             foreach (MenuParticle p in particles)
                 p.update();
-            for (int i = particles.Count - 1; i >= 0; i--)
-            {
+            for (int i = particles.Count - 1; i >= 0; i--) {
                 if (particles[i].timeleft <= 0)
                     particles.RemoveAt(i);
             }
-            if (counter % 15 == 0)
-            {
+            if (counter % 15 == 0) {
                 //更新阶段的 ScreenSize 是真实值,轨道中心与原始像素空间绘制一致
                 Vector2 center = Main.ScreenSize.ToVector2() / 2f;
                 MenuParticle particle = new MenuParticle(center, center, CEUtils.randomRot().ToRotationVector2() * 1, new Vector2(1.5f, 1), 660);
@@ -73,8 +68,7 @@ namespace CalamityEntropy.Content.Skies
             }
         }
 
-        protected override void DrawFar(SpriteBatch spriteBatch)
-        {
+        protected override void DrawFar(SpriteBatch spriteBatch) {
             Texture2D l1 = vortexTex.Value;
 
             //底色罩:留在调用方批次,矩形恰好铺满
@@ -87,8 +81,7 @@ namespace CalamityEntropy.Content.Skies
             float norm = vp.Height / 1080f;
 
             CESkyDrawing.BeginRawScreen(spriteBatch, BlendState.Additive, SamplerState.LinearWrap, SpriteSortMode.Deferred);
-            for (int i = 0; i < LayerScales.Length; i++)
-            {
+            for (int i = 0; i < LayerScales.Length; i++) {
                 float op = 0.88f + 0.02f * i;
                 spriteBatch.Draw(l1, center, null, Color.White * opacity * op, MathHelper.ToRadians(counter * LayerSpeeds[i]), l1.Size() / 2, LayerScales[i] * norm, SpriteEffects.None, 0);
             }

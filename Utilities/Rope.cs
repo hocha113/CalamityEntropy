@@ -10,11 +10,9 @@ namespace CalamityEntropy.Utilities
 
         public Vector2 End { get; set; }
 
-        public Rope(Vector2 startPos, int segmentCount, float segmentLength, Vector2 gravity, float damping = 0f, int accuracy = 15, bool tileCollide = false)
-        {
+        public Rope(Vector2 startPos, int segmentCount, float segmentLength, Vector2 gravity, float damping = 0f, int accuracy = 15, bool tileCollide = false) {
             this.segments = new List<Rope.RopeSegment>();
-            for (int i = 0; i < segmentCount; i++)
-            {
+            for (int i = 0; i < segmentCount; i++) {
                 this.segments.Add(new Rope.RopeSegment(startPos + Utils.SafeNormalize(gravity, Vector2.Zero) * (float)i));
             }
             this.Start = startPos;
@@ -27,11 +25,9 @@ namespace CalamityEntropy.Utilities
             this.tileCollide = tileCollide;
         }
 
-        public Rope(Vector2 startPoint, Vector2 endPoint, int segmentCount, float segmentLength, Vector2 gravity, float damping = 0f, int accuracy = 15, bool tileCollide = false)
-        {
+        public Rope(Vector2 startPoint, Vector2 endPoint, int segmentCount, float segmentLength, Vector2 gravity, float damping = 0f, int accuracy = 15, bool tileCollide = false) {
             this.segments = new List<Rope.RopeSegment>();
-            for (int i = 0; i < segmentCount; i++)
-            {
+            for (int i = 0; i < segmentCount; i++) {
                 this.segments.Add(new Rope.RopeSegment(Vector2.Lerp(startPoint, endPoint, (float)i / (float)(segmentCount - 1))));
             }
             this.Start = startPoint;
@@ -44,29 +40,23 @@ namespace CalamityEntropy.Utilities
             this.tileCollide = tileCollide;
         }
 
-        public List<Vector2> GetPoints()
-        {
+        public List<Vector2> GetPoints() {
             List<Vector2> points = new List<Vector2>();
-            foreach (Rope.RopeSegment segment in this.segments)
-            {
+            foreach (Rope.RopeSegment segment in this.segments) {
                 points.Add(segment.position);
             }
             return points;
         }
 
-        public void Update()
-        {
+        public void Update() {
             this.segments[0].position = this.Start;
             bool flag = this.twoPoint;
-            if (flag)
-            {
+            if (flag) {
                 this.segments[this.segments.Count - 1].position = this.End;
             }
-            for (int i = 0; i < this.segments.Count; i++)
-            {
+            for (int i = 0; i < this.segments.Count; i++) {
                 bool flag2 = Utils.HasNaNs(this.segments[i].position);
-                if (flag2)
-                {
+                if (flag2) {
                     this.segments[i].position = this.segments[0].position;
                 }
                 Vector2 velocity = (this.segments[i].position - this.segments[i].oldPosition) / (1f + this.damping) + this.gravity + this.segments[i].velocity;
@@ -74,71 +64,57 @@ namespace CalamityEntropy.Utilities
                 this.segments[i].oldPosition = this.segments[i].position;
                 this.segments[i].position += velocity;
             }
-            for (int j = 0; j < this.accuracy; j++)
-            {
+            for (int j = 0; j < this.accuracy; j++) {
                 this.ConstrainPoints();
             }
         }
 
-        private void ConstrainPoints()
-        {
-            for (int i = 0; i < this.segments.Count - 1; i++)
-            {
+        private void ConstrainPoints() {
+            for (int i = 0; i < this.segments.Count - 1; i++) {
                 float dist = (this.segments[i].position - this.segments[i + 1].position).Length();
                 float error = MathF.Abs(dist - this.segmentLength);
                 Vector2 changeDirection = Vector2.Zero;
                 bool flag = dist > this.segmentLength;
-                if (flag)
-                {
+                if (flag) {
                     changeDirection = Utils.SafeNormalize(this.segments[i].position - this.segments[i + 1].position, Vector2.Zero);
                 }
-                else
-                {
+                else {
                     bool flag2 = dist < this.segmentLength;
-                    if (flag2)
-                    {
+                    if (flag2) {
                         changeDirection = Utils.SafeNormalize(this.segments[i + 1].position - this.segments[i].position, Vector2.Zero);
                     }
                 }
                 Vector2 changeAmount = changeDirection * error;
                 bool flag3 = i != 0;
-                if (flag3)
-                {
+                if (flag3) {
                     this.segments[i].position += this.TileCollision(this.segments[i].position, changeAmount * -0.5f);
                     this.segments[i + 1].position += this.TileCollision(this.segments[i + 1].position, changeAmount * 0.5f);
                 }
-                else
-                {
+                else {
                     this.segments[i + 1].position += this.TileCollision(this.segments[i + 1].position, changeAmount);
                 }
             }
             bool flag4 = !this.twoPoint;
-            if (flag4)
-            {
+            if (flag4) {
                 this.End = this.segments[this.segments.Count - 1].position;
             }
         }
 
-        private Vector2 TileCollision(Vector2 position, Vector2 velocity)
-        {
+        private Vector2 TileCollision(Vector2 position, Vector2 velocity) {
             bool flag = !this.tileCollide;
             Vector2 result;
-            if (flag)
-            {
+            if (flag) {
                 result = velocity;
             }
-            else
-            {
+            else {
                 Vector2 newVelocity = Collision.noSlopeCollision(position - new Vector2(3f), velocity, 6, 6, true, true);
                 Vector2 final = velocity;
                 bool flag2 = Math.Abs(newVelocity.X) < Math.Abs(velocity.X);
-                if (flag2)
-                {
+                if (flag2) {
                     final.X = 0f;
                 }
                 bool flag3 = Math.Abs(newVelocity.Y) < Math.Abs(velocity.Y);
-                if (flag3)
-                {
+                if (flag3) {
                     final.Y = 0f;
                 }
                 result = final;
@@ -162,8 +138,7 @@ namespace CalamityEntropy.Utilities
 
         public class RopeSegment
         {
-            public RopeSegment(Vector2 pos)
-            {
+            public RopeSegment(Vector2 pos) {
                 this.position = pos;
                 this.velocity = Vector2.Zero;
                 this.oldPosition = pos;

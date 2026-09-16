@@ -1,15 +1,14 @@
 ﻿using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
 {
     public class EyeOfIlmeris : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 44;
             Item.height = 44;
             Item.damage = 14;
@@ -28,10 +27,8 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
             Item.mana = 10;
             Item.DamageType = DamageClass.Magic;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_PearlShard, CEID.Item_SeaPrism))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_PearlShard, CEID.Item_SeaPrism)) {
                 CreateRecipe()
                 .AddIngredient(CEID.Item_PearlShard, 2)
                 .AddIngredient(CEID.Item_SeaPrism, 5)
@@ -47,8 +44,7 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
                 .AddTile(TileID.WorkBenches)
                 .Register();
         }
-        public override bool MagicPrefix()
-        {
+        public override bool MagicPrefix() {
             return true;
         }
     }

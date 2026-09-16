@@ -1,5 +1,4 @@
-using System;
-using Terraria;
+﻿using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
 {

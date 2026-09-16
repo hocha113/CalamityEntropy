@@ -18,8 +18,7 @@ namespace CalamityEntropy
         public static RecipeGroup evilBar_;
         public static RecipeGroup fairys_;
         public static RecipeGroup IronBar_;
-        public override void AddRecipeGroups()
-        {
+        public override void AddRecipeGroups() {
             gems = $"{Mod.Name}:" + gems;
             AnyOrichalcumBar = $"{Mod.Name}:" + AnyOrichalcumBar;
             butterflies = $"{Mod.Name}:" + butterflies;
@@ -42,8 +41,7 @@ namespace CalamityEntropy
         }
 
 
-        public static void unload()
-        {
+        public static void unload() {
             gems = null;
             butterflies = null;
             AnyOrichalcumBar = null;

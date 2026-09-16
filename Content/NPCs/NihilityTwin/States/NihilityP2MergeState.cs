@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.NihilityTwin.Core;
+﻿using CalamityEntropy.Content.NPCs.NihilityTwin.Core;
 using CalamityEntropy.Content.Projectiles;
 using InnoVault.StateMachines;
 using Terraria;
@@ -19,35 +19,29 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.States
     {
         public override NihilityStateIndex StateIndex => NihilityStateIndex.P2Merge;
 
-        public override IVaultState<NihilityStateContext> OnUpdate(NihilityStateContext ctx)
-        {
+        public override IVaultState<NihilityStateContext> OnUpdate(NihilityStateContext ctx) {
             NPC npc = ctx.Npc;
             NPC cell = ctx.Cell;
 
-            if (ctx.Num1 == 1)
-            {
+            if (ctx.Num1 == 1) {
                 CEUtils.PlaySound("beast_lavaball_rise1", 1);
             }
             npc.rotation = (cell.Center - npc.Center).ToRotation() + MathHelper.Pi;
             ctx.Owner.ropeLerp = 1;
             ctx.Num1++;
 
-            if (ctx.Num1 > NihilityDirector.MergeWindupFrames)
-            {
+            if (ctx.Num1 > NihilityDirector.MergeWindupFrames) {
                 npc.velocity += (cell.Center - npc.Center).SafeNormalize(Vector2.Zero) * NihilityDirector.MergeClosingForce;
                 cell.velocity += (npc.Center - cell.Center).SafeNormalize(Vector2.Zero) * NihilityDirector.MergeClosingForce;
-                if (CEUtils.getDistance(npc.Center, cell.Center) < npc.velocity.Length() + cell.velocity.Length() + NihilityDirector.MergeContactPadding)
-                {
+                if (CEUtils.getDistance(npc.Center, cell.Center) < npc.velocity.Length() + cell.velocity.Length() + NihilityDirector.MergeContactPadding) {
                     Vector2 midPos = (npc.Center + cell.Center) / 2;
                     npc.velocity *= 0;
                     cell.velocity *= 0;
                     ctx.Owner.TeleportBody(midPos + npc.rotation.ToRotationVector2() * NihilityDirector.MergeSplitOffset);
                     ctx.Owner.PlaceCell(midPos - npc.rotation.ToRotationVector2() * NihilityDirector.MergeSplitOffset);
-                    if (IsServer)
-                    {
+                    if (IsServer) {
                         float rot = MathHelper.ToRadians((Main.GameUpdateCount * NihilityDirector.MergeAngleScale) % 360);
-                        for (int i = 0; i < 360; i += NihilityDirector.MergeBurstStepDeg)
-                        {
+                        for (int i = 0; i < 360; i += NihilityDirector.MergeBurstStepDeg) {
                             Shoot<CellBullet>(cell.GetSource_FromThis(), cell.Center,
                                 (rot + MathHelper.ToRadians(i)).ToRotationVector2() * NihilityDirector.MergeBurstSpeed,
                                 BulletDamage(ctx), NihilityDirector.BulletKnockback);
@@ -56,15 +50,13 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.States
                     CEUtils.PlaySound("flashback", 1, npc.Center);
 
                     IVaultState<NihilityStateContext> next = EndAttack(ctx);
-                    if (IsServer && Main.rand.NextBool(NihilityDirector.MergeRepeatChance))
-                    {
+                    if (IsServer && Main.rand.NextBool(NihilityDirector.MergeRepeatChance)) {
                         next = NihilityRotation.Create(NihilityStateIndex.P2Merge);
                     }
                     return next;
                 }
             }
-            else
-            {
+            else {
                 npc.velocity += (npc.Center - cell.Center).SafeNormalize(Vector2.Zero) * NihilityDirector.MergeSpreadForce;
                 cell.velocity -= (npc.Center - cell.Center).SafeNormalize(Vector2.Zero) * NihilityDirector.MergeSpreadForce;
             }

@@ -10,8 +10,7 @@ namespace CalamityEntropy.Content.Tiles
 {
     public abstract class MusicBoxTile : ModTile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.tileFrameImportant[Type] = true;
             Main.tileObsidianKill[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
@@ -25,8 +24,7 @@ namespace CalamityEntropy.Content.Tiles
             AddMapEntry(new Color(191, 142, 111), Language.GetText("ItemName.MusicBox"));
         }
 
-        public override void MouseOver(int i, int j)
-        {
+        public override void MouseOver(int i, int j) {
             Player player = Main.LocalPlayer;
             player.noThrow = 2;
             player.cursorItemIconEnabled = true;
@@ -35,14 +33,12 @@ namespace CalamityEntropy.Content.Tiles
 
         public override bool CreateDust(int i, int j, ref int type) => false;
 
-        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
-        {
+        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData) {
             if (Main.gamePaused || !Main.instance.IsActive || Lighting.UpdateEveryFrame && !Main.rand.NextBool(4))
                 return;
 
             Tile tile = Main.tile[i, j];
-            if (tile.TileFrameX == 36 && tile.TileFrameY % 36 == 0 && (int)Main.timeForVisualEffects % 7 == 0 && Main.rand.NextBool(3))
-            {
+            if (tile.TileFrameX == 36 && tile.TileFrameY % 36 == 0 && (int)Main.timeForVisualEffects % 7 == 0 && Main.rand.NextBool(3)) {
                 int goreType = Main.rand.Next(570, 573);
                 Vector2 position = new Vector2(i * 16 + 8, j * 16 - 8);
                 Vector2 velocity = new Vector2(Main.WindForVisuals * 2f, -0.5f);

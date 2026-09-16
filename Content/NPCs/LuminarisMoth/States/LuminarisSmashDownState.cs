@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.LuminarisMoth.Core;
+﻿using CalamityEntropy.Content.NPCs.LuminarisMoth.Core;
 using CalamityEntropy.Content.Projectiles.LuminarisShoots;
 using InnoVault.StateMachines;
 using Terraria;
@@ -29,14 +29,12 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
         /// </summary>
         private int launchCuedCycle;
 
-        public override void OnEnter(LuminarisStateContext ctx)
-        {
+        public override void OnEnter(LuminarisStateContext ctx) {
             base.OnEnter(ctx);
             launchCuedCycle = int.MinValue;
         }
 
-        public override IVaultState<LuminarisStateContext> OnUpdate(LuminarisStateContext ctx)
-        {
+        public override IVaultState<LuminarisStateContext> OnUpdate(LuminarisStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
             float enrange = ctx.Enrange;
@@ -45,34 +43,27 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
             //轮号只用来给起砸拍的锁存分轮,不参与任何运动数学
             int cycle = c / LuminarisDirector.SmashDownCycleFrames;
 
-            if (ac == LuminarisDirector.SmashDownCycleFrames)
-            {
+            if (ac == LuminarisDirector.SmashDownCycleFrames) {
                 ctx.Vec1 = npc.Center;
-                if (IsServer)
-                {
+                if (IsServer) {
                     //抬升落点的高度抖动吃随机数,它整轮都在驱动位置,所以骰点收在权威端、结果靠 Vec2 过线
                     ctx.Vec2 = player.Center + player.velocity * LuminarisDirector.SmashDownLeadFrames
                         + new Vector2(0, LuminarisDirector.SmashDownRiseHeight + Main.rand.NextFloat(-LuminarisDirector.SmashDownRiseJitter, LuminarisDirector.SmashDownRiseJitter));
                     MarkNetUpdate(ctx);
                 }
             }
-            if (ac >= LuminarisDirector.SmashDownRiseEndFrame)
-            {
+            if (ac >= LuminarisDirector.SmashDownRiseEndFrame) {
                 npc.velocity *= 0;
                 npc.rotation = 0;
                 npc.Center = Vector2.Lerp(ctx.Vec1, ctx.Vec2,
                     CEUtils.GetRepeatedCosFromZeroToOne(Utils.Remap(ac, LuminarisDirector.SmashDownCycleFrames, LuminarisDirector.SmashDownRiseEndFrame, 0, 1), 1));
             }
-            else
-            {
+            else {
                 npc.velocity.Y += LuminarisDirector.SmashDownGravity;
-                if (launchCuedCycle != cycle && ac <= LuminarisDirector.SmashDownLaunchFrame)
-                {
+                if (launchCuedCycle != cycle && ac <= LuminarisDirector.SmashDownLaunchFrame) {
                     launchCuedCycle = cycle;
-                    if (!CountdownCuePassed(ac, LuminarisDirector.SmashDownLaunchFrame))
-                    {
-                        if (!Main.dedServ)
-                        {
+                    if (!CountdownCuePassed(ac, LuminarisDirector.SmashDownLaunchFrame)) {
+                        if (!Main.dedServ) {
                             CalamityEntropy.FlashEffectStrength = LuminarisDirector.SmashDownLaunchFlash;
                         }
                         CEUtils.PlaySound("flamethrower end", 1, npc.Center);
@@ -80,18 +71,15 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.States
                         ctx.Trail.Add(npc.Center);
                     }
                 }
-                if (ac < LuminarisDirector.SmashDownShootStartFrame)
-                {
-                    if (ac % (int)(LuminarisDirector.SmashDownShootIntervalBase / enrange) == 0)
-                    {
+                if (ac < LuminarisDirector.SmashDownShootStartFrame) {
+                    if (ac % (int)(LuminarisDirector.SmashDownShootIntervalBase / enrange) == 0) {
                         Shoot<LuminarisAstralShoot>(ctx, npc.Center, new Vector2(LuminarisDirector.SmashDownShotSpeedX, 0) * enrange,
                             1, (-Vector2.UnitY).ToRotation(), enrange * LuminarisDirector.SmashDownShotGravity, LuminarisDirector.SmashDownShotGravityDelayBase / enrange);
                         Shoot<LuminarisAstralShoot>(ctx, npc.Center, new Vector2(-LuminarisDirector.SmashDownShotSpeedX, 0) * enrange,
                             1, (-Vector2.UnitY).ToRotation(), enrange * LuminarisDirector.SmashDownShotGravity, LuminarisDirector.SmashDownShotGravityDelayBase / enrange);
                     }
                 }
-                if (ac > LuminarisDirector.SmashDownTrailFrame)
-                {
+                if (ac > LuminarisDirector.SmashDownTrailFrame) {
                     ctx.MegaTrail = LuminarisDirector.SmashDownTrailStrength;
                 }
             }

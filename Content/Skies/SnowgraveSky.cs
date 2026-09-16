@@ -12,8 +12,7 @@ namespace CalamityEntropy.Content.Skies
 
         public override bool IsSceneEffectActive(Player player) => Main.LocalPlayer.Entropy().snowgrave > 0;
 
-        public override void SpecialVisuals(Player player, bool isActive)
-        {
+        public override void SpecialVisuals(Player player, bool isActive) {
             player.ManageSpecialBiomeVisuals("CalamityEntropy:Snowgrave", isActive);
         }
     }
@@ -34,8 +33,7 @@ namespace CalamityEntropy.Content.Skies
 
         public override float GetCloudAlpha() => (1f - opacity) * 0.5f + 0.5f;
 
-        protected override void DrawFar(SpriteBatch spriteBatch)
-        {
+        protected override void DrawFar(SpriteBatch spriteBatch) {
             Texture2D tex = whiteFadeTex.Value;
             //旧实现无门控,每帧按切片数(约 4~13)叠加到近饱和;单次绘制按其观感上调透明度
             Color c1 = new Color(180, 200, 255, (int)(255 * opacity));

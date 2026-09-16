@@ -1,4 +1,4 @@
-using InnoVault.StateMachines;
+﻿using InnoVault.StateMachines;
 
 namespace CalamityEntropy.Content.NPCs.LuminarisMoth.Core
 {
@@ -34,8 +34,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.Core
         /// 当前状态。二阶段那一串 <c>if (AIRound == n)</c> 在序号落到表外时<b>不给 ai 赋值</b>,
         /// 效果是沿用上一手;那条路径在现有序号范围里到不了,但形状照搬,所以要把当前值传进来
         /// </param>
-        public static IVaultState<LuminarisStateContext> Pick(LuminarisStateContext ctx, LuminarisStateIndex current)
-        {
+        public static IVaultState<LuminarisStateContext> Pick(LuminarisStateContext ctx, LuminarisStateIndex current) {
             //对齐原代码的清理顺序:两个锚点与三个标量先无条件清零,再裁决
             ctx.Vec1 = Vector2.Zero;
             ctx.Vec2 = Vector2.Zero;
@@ -47,8 +46,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.Core
             //原代码 SetAISyyle() 返回后紧跟的 AIRound++
             ctx.AttackIndex++;
             ctx.Countdown = LuminarisDirector.DurationOf(next);
-            if (ctx.Npc != null)
-            {
+            if (ctx.Npc != null) {
                 //原 pick 块末尾的 netUpdate。决策点:换招
                 ctx.Npc.netUpdate = true;
             }
@@ -63,51 +61,40 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.Core
         /// 「序号 ≥ 6 就置 -1」的越界处理,合并成这里的一句(等价:两条路径都会执行到)
         /// </para>
         /// </summary>
-        private static LuminarisStateIndex SetAISyyle(LuminarisStateContext ctx, LuminarisStateIndex current)
-        {
+        private static LuminarisStateIndex SetAISyyle(LuminarisStateContext ctx, LuminarisStateIndex current) {
             int round = ctx.AttackIndex;
             LuminarisStateIndex next = current;
 
-            if (ctx.Phase == 1)
-            {
+            if (ctx.Phase == 1) {
                 //原 `ai = (AIStyle)AIRound;`——一阶段的出招序列就是枚举的前七项
                 next = (LuminarisStateIndex)round;
             }
-            else
-            {
-                if (round == 0)
-                {
+            else {
+                if (round == 0) {
                     next = LuminarisStateIndex.Shoot360;
                 }
-                if (round == 1)
-                {
+                if (round == 1) {
                     next = LuminarisStateIndex.SmashDown;
                 }
-                if (round == 2)
-                {
+                if (round == 2) {
                     next = LuminarisStateIndex.RoundAndDash;
                 }
-                if (round == 3)
-                {
+                if (round == 3) {
                     next = LuminarisStateIndex.Subduction;
                 }
-                if (round == 4)
-                {
+                if (round == 4) {
                     next = LuminarisStateIndex.ShootTriangle;
                 }
-                if (round == 5)
-                {
+                if (round == 5) {
                     next = LuminarisStateIndex.AstralSpike;
                 }
-                if (round == 6)
-                {
+                if (round == 6) {
                     next = LuminarisStateIndex.Dashing;
                 }
             }
 
             //越界处理:置 -1 而非 0,因为紧接着还有一次自增
-            if (round >= 6)
-            {
+            if (round >= 6) {
                 ctx.AttackIndex = -1;
             }
             return next;

@@ -7,13 +7,11 @@ namespace CalamityEntropy.Content.Items.Ammo
 {
     public class HiveBullet : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.ResearchUnlockCount = 99;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 9;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 8;
@@ -27,8 +25,7 @@ namespace CalamityEntropy.Content.Items.Ammo
             Item.ammo = AmmoID.Bullet;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe(50)
                 .AddIngredient(ItemID.BeeWax)
                 .AddTile(TileID.WorkBenches)

@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using InnoVault.PRT;
@@ -18,16 +18,14 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
         /// <summary>
         /// 同一个目标身上的最大黏附数量
         /// </summary>
-        public virtual int MaxStick
-        {
+        public virtual int MaxStick {
             get { return (int)Projectile.ai[0]; }
             set { Projectile.ai[0] = value; }
         }
         /// <summary>
         /// 爆炸半径
         /// </summary>
-        public virtual float ExplodeRadius
-        {
+        public virtual float ExplodeRadius {
             get { return (int)Projectile.ai[1]; }
             set { Projectile.ai[1] = value; }
         }
@@ -64,24 +62,21 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
         /// 射弹黏附时每次对目标造成伤害的倍率（100%为射弹本身伤害，默认10%）
         /// </summary>
         public virtual float StickDamageMult => 0.1f;
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(MinVel);
             writer.WriteVector2(StickOffset);
             writer.Write(NoGrav);
             writer.Write(Homing);
             writer.Write(HomingRange);
         }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             MinVel = reader.ReadSingle();
             StickOffset = reader.ReadVector2();
             NoGrav = reader.ReadBoolean();
             Homing = reader.ReadSingle();
             HomingRange = reader.ReadSingle();
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 12;
             Projectile.height = 12;
             Projectile.penetrate = -1;
@@ -92,27 +87,22 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
             Projectile.timeLeft = 1200;
         }
         public virtual void OnExplodeHitNPC(NPC npc, NPC.HitInfo info, int damage) { }
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             ExplodeVisual();
-            if (Projectile.owner == Main.myPlayer)
-            {
+            if (Projectile.owner == Main.myPlayer) {
                 Projectile expl = CEUtils.SpawnExplotionFriendly(Projectile.GetSource_FromThis(), Projectile.GetOwner(), Projectile.Center, Projectile.damage, ExplodeRadius, Projectile.DamageType);
-                if (expl.ModProjectile is CommonExplotionFriendly cef)
-                {
+                if (expl.ModProjectile is CommonExplotionFriendly cef) {
                     cef.onHitAction = OnExplodeHitNPC;
                     expl.Entropy().applyBuffs = Projectile.Entropy().applyBuffs;
                 }
             }
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             if (CEUtils.LineThroughRect(Projectile.Center - Projectile.velocity, Projectile.Center, targetHitbox, Projectile.height))
                 return true;
             return base.Colliding(projHitbox, targetHitbox);
         }
-        public virtual void ExplodeVisual()
-        {
+        public virtual void ExplodeVisual() {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             float scale = ExplodeRadius / 40f;
             //PRT_PulseRing scale/lifetime走Configure,旧版粒子系统
@@ -121,16 +111,12 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
             PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center, Vector2.Zero, Color.White, scale * 0.5f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
         }
         public virtual void SetupStats() { }
-        public virtual void StickUpdate(NPC target)
-        {
+        public virtual void StickUpdate(NPC target) {
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (StickOnNPC == null)
-            {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            if (StickOnNPC == null) {
                 int count = 0;
-                while (Projectile.Colliding(Projectile.Hitbox, target.Hitbox))
-                {
+                while (Projectile.Colliding(Projectile.Hitbox, target.Hitbox)) {
                     if (count++ > 256)
                         break;
                     Projectile.position += Projectile.velocity.SafeNormalize(Vector2.UnitX) * -2;
@@ -142,62 +128,50 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
                 CEUtils.SyncProj(Projectile.whoAmI);
             }
         }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
             if (StickOnNPC != null)
                 modifiers.SourceDamage *= StickDamageMult;
         }
         public bool tileCollide = false;
-        public override void AI()
-        {
-            if (Lifetime == 0)
-            {
+        public override void AI() {
+            if (Lifetime == 0) {
                 tileCollide = Projectile.tileCollide;
                 Projectile.ai[2] = -1;
                 SetupStats();
                 Projectile.localAI[1] = Main.rand.NextFloat(MathHelper.TwoPi);
             }
             Lifetime++;
-            if (StickOnNPC != null)
-            {
+            if (StickOnNPC != null) {
                 Projectile.tileCollide = false;
-                if (!StickOnNPC.active)
-                {
+                if (!StickOnNPC.active) {
                     Projectile.tileCollide = tileCollide;
                     Projectile.ai[2] = -1;
                 }
-                else
-                {
+                else {
                     if (Projectile.velocity.Length() > 16)
                         Projectile.velocity = Projectile.velocity.normalize() * 16;
                     Projectile.Center = StickOnNPC.Center + StickOffset;
-                    if (Main.myPlayer == Projectile.owner)
-                    {
+                    if (Main.myPlayer == Projectile.owner) {
                         StickUpdate(StickOnNPC);
                     }
                     StickOnNPC.Entropy().StickByMissile = 10;
                     CheckExplode();
                 }
             }
-            else
-            {
-                if (!NoGrav && Lifetime > FallingTime)
-                {
+            else {
+                if (!NoGrav && Lifetime > FallingTime) {
                     Projectile.velocity += new Vector2(0, Gravity);
                 }
             }
 ;
 
-            if (Lifetime <= 12 || !Projectile.HomingToNPCNearby(Homing, 1 - Homing * 0.015f, HomingRange))
-            {
-                if (Projectile.velocity.Length() < MinVel)
-                {
+            if (Lifetime <= 12 || !Projectile.HomingToNPCNearby(Homing, 1 - Homing * 0.015f, HomingRange)) {
+                if (Projectile.velocity.Length() < MinVel) {
                     Projectile.velocity *= 1.06f;
                 }
             }
             Projectile.localAI[1] += 0.32f;
-            if (StickOnNPC == null)
-            {
+            if (StickOnNPC == null) {
                 Vector2 adv = Projectile.velocity.RotatedBy(Math.Sin(Projectile.localAI[1]) * winding * 0.42f);
                 Projectile.rotation = adv.ToRotation() + adjustRotation;
                 SpawnParticle(adv);
@@ -205,46 +179,37 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
             }
 
         }
-        public virtual void SpawnParticle(Vector2 vel)
-        {
-            for (int i = 0; i < 4; i++)
-            {
+        public virtual void SpawnParticle(Vector2 vel) {
+            for (int i = 0; i < 4; i++) {
                 var p = PRTLoader.NewParticle<PRT_Smoke>(Projectile.Center + vel * 0.25f * i, CEUtils.randomPointInCircle(0.5f), Color.OrangeRed, Main.rand.NextFloat(0.02f, 0.04f));
                 p.timeleftmax = 26;
                 p.Lifetime = 26;
                 p.Configure(0.5f, true, PRTDrawModeEnum.AdditiveBlend, CEUtils.randomRot(), 26);
             }
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
-        public void CheckExplode()
-        {
+        public void CheckExplode() {
             NPC target = StickOnNPC;
             int type = Projectile.type;
             int count = 0;
             Projectile oldest = null;
             int lifetime = 0;
-            foreach (Projectile proj in Main.ActiveProjectiles)
-            {
-                if (proj.type == type && proj.ai[2] == Projectile.ai[2])
-                {
+            foreach (Projectile proj in Main.ActiveProjectiles) {
+                if (proj.type == type && proj.ai[2] == Projectile.ai[2]) {
                     count++;
-                    if (proj.localAI[0] > lifetime)
-                    {
+                    if (proj.localAI[0] > lifetime) {
                         oldest = proj;
                         lifetime = (int)proj.localAI[0];
                     }
                 }
             }
-            if (count > MaxStick)
-            {
+            if (count > MaxStick) {
                 oldest.Kill();
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Projectile.GetTexture();
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None);
             return false;

@@ -9,8 +9,7 @@ namespace CalamityEntropy.Content.Projectiles
 {
     public class UpdraftBullet : EBookBaseProjectile
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Projectile.DamageType = DamageClass.Magic;
             Projectile.width = 12;
@@ -21,16 +20,13 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.timeLeft = 120;
             Projectile.ArmorPenetration = 9;
         }
-        public override void ModifyDamageHitbox(ref Rectangle hitbox)
-        {
+        public override void ModifyDamageHitbox(ref Rectangle hitbox) {
             hitbox = Projectile.Center.getRectCentered(46 * Projectile.scale, 46 * Projectile.scale);
         }
-        public override void AI()
-        {
+        public override void AI() {
             base.AI();
             Projectile.rotation = Projectile.velocity.ToRotation();
-            if (Main.GameUpdateCount % 5 == 0)
-            {
+            if (Main.GameUpdateCount % 5 == 0) {
                 //WindParticle旧EParticle,velocity/scale原值
                 var __prt = PRTLoader.NewParticle<PRT_WindParticle>(Projectile.Center + Projectile.velocity * 4, Vector2.Zero, new Color(240, 245, 255), 1f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, Projectile.rotation + MathHelper.Pi);
                 __prt.v1 = 9;
@@ -45,8 +41,7 @@ namespace CalamityEntropy.Content.Projectiles
             }
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.UseBlendState(BlendState.Additive);
 
             Texture2D tex = Projectile.GetTexture();
@@ -57,24 +52,20 @@ namespace CalamityEntropy.Content.Projectiles
             return false;
         }
         public override Color baseColor => Color.LightBlue;
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
+        public override bool OnTileCollide(Vector2 oldVelocity) {
             Projectile.velocity = oldVelocity;
             return true;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             base.OnHitNPC(target, hit, damageDone);
-            for (int i = 0; i < 10; i++)
-            {
+            for (int i = 0; i < 10; i++) {
                 var __prt = PRTLoader.NewParticle<PRT_ULineParticle>(target.Center + new Vector2(Main.rand.NextFloat(0, target.width) - (target.width / 2f), Main.rand.NextFloat(0, target.height) - (target.height / 2f)), new Vector2(0, -34), Color.Lerp(this.color, Color.LightBlue, 0.5f), 1).Configure(1, true, PRTDrawModeEnum.AlphaBlend, 0);
                 __prt.spd = 0.032f;
                 __prt.w2 = 0.85f;
                 __prt.w1 = 0.8f;
                 __prt.len = 4;
             }
-            if ((target.knockBackResist != 0 || target.velocity.Length() > 0.1f) && !target.boss)
-            {
+            if ((target.knockBackResist != 0 || target.velocity.Length() > 0.1f) && !target.boss) {
                 target.velocity += Projectile.velocity * (0.6f + 0.4f * target.knockBackResist);
             }
             //AdditiveBlend走Configure分桶,旧版粒子系统 Before层那套
@@ -82,11 +73,9 @@ namespace CalamityEntropy.Content.Projectiles
             PRTLoader.NewParticle<PRT_WindParticle>(Projectile.Center, Vector2.Zero, new Color(240, 245, 255), 2).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, CEUtils.randomRot());
         }
 
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             base.OnKill(timeLeft);
-            for (int i = 0; i < 3; i++)
-            {
+            for (int i = 0; i < 3; i++) {
                 PRTLoader.NewParticle<PRT_WindParticle>(Projectile.Center, Vector2.Zero, new Color(240, 245, 255), 2).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, CEUtils.randomRot());
             }
             PRTLoader.NewParticle<PRT_UpdraftParticle>(Projectile.Center, Projectile.velocity, Color.White, Projectile.scale * 0.4f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, Projectile.rotation);

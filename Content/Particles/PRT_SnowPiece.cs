@@ -16,8 +16,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/SnowPiece";
 
         public PRT_SnowPiece Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -27,15 +26,13 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 26;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             if (ProjType == -1)
                 ProjType = ModContent.ProjectileType<Snowgrave>();
             if (owner != null && owner.ownedProjectileCounts[ProjType] < 1)
@@ -46,8 +43,7 @@ namespace CalamityEntropy.Content.Particles
                 Color = Color.Lerp(new Color(110, 110, 255), Color.White, 1 - ((Lifetime - Time - 8) / 18f));
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Color clr = Color;
             if (!Glow)
                 clr = Lighting.GetColor((int)(Position.X / 16), (int)(Position.Y / 16), clr);
@@ -71,8 +67,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => CEUtils.WhiteTexPath;
 
         public PRT_SnowStorm Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -82,23 +77,20 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 26 * 4;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             if (ProjType == -1)
                 ProjType = ModContent.ProjectileType<Snowgrave>();
             if (owner != null && owner.ownedProjectileCounts[ProjType] < 1)
                 Opacity *= 0.9f;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Color clr = Color;
             if (!Glow)
                 clr = Lighting.GetColor((int)(Position.X / 16), (int)(Position.Y / 16), clr);

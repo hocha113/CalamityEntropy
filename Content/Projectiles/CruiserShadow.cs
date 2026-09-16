@@ -23,14 +23,12 @@ namespace CalamityEntropy.Content.Projectiles
         internal static Asset<Texture2D> JawUpTex;
         [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawDown2")]
         internal static Asset<Texture2D> JawDownTex;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
         float mouthRot = 0;
         public bool bite = false;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Magic;
             Projectile.width = 156;
             Projectile.height = 156;
@@ -46,21 +44,17 @@ namespace CalamityEntropy.Content.Projectiles
         public Vector2 spawnPos;
         public float spawnRot = 0;
         public float alphaPor = 1;
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             EGlobalNPC.AddVoidTouch(target, 90, 3.6f, 1000, 16);
             Projectile.netUpdate = true;
             bite = true;
-            if (noChase < -10)
-            {
+            if (noChase < -10) {
                 noChase = 10;
             }
         }
         public List<Vector2> bodies = new List<Vector2>();
-        public override void OnSpawn(IEntitySource source)
-        {
-            for (int i = 0; i < 27; i++)
-            {
+        public override void OnSpawn(IEntitySource source) {
+            for (int i = 0; i < 27; i++) {
                 bodies.Add(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.Zero) * -20);
             }
             Projectile.Center += Projectile.velocity * 16;
@@ -71,8 +65,7 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.timeLeft += Projectile.owner.ToPlayer().Entropy().WeaponBoost * 120;
         }
         float counter = 0;
-        public void DrawPortal(Vector2 pos, Color color, float rot, float size, float xmul = 0.3f, float aj = 0)
-        {
+        public void DrawPortal(Vector2 pos, Color color, float rot, float size, float xmul = 0.3f, float aj = 0) {
 
             Texture2D tx = CEUtils.getExtraTex("SoulVortex");
             float angle = MathHelper.ToDegrees(counter * 0.2f + aj);
@@ -95,37 +88,29 @@ namespace CalamityEntropy.Content.Projectiles
 
             CEUtils.drawTextureToPoint(Main.spriteBatch, tx, color, dp + lu, dp + ru, dp + ld, dp + rd);
         }
-        public override void AI()
-        {
+        public override void AI() {
             alphaPor *= 0.88f;
             counter++;
-            if (counter % 20 == 0 && Main.myPlayer == Projectile.owner)
-            {
-                for (int i = 0; i < 6; i++)
-                {
+            if (counter % 20 == 0 && Main.myPlayer == Projectile.owner) {
+                for (int i = 0; i < 6; i++) {
                     Projectile p = Main.projectile[Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 0.6f + new Vector2(Main.rand.Next(-10, 11), Main.rand.Next(-10, 11)), ModContent.ProjectileType<VoidStarF>(), (int)(Projectile.damage * 0.16f), 5, Projectile.owner)];
                     p.DamageType = Projectile.DamageType;
                 }
             }
             Player player = Projectile.owner.ToPlayer();
             updateBodies();
-            if (bite)
-            {
+            if (bite) {
                 mouthRot -= 12;
-                if (mouthRot < -48)
-                {
+                if (mouthRot < -48) {
                     bite = false;
                 }
             }
-            else
-            {
+            else {
                 mouthRot *= 0.9f;
             }
             spawnParticles();
-            if (Main.myPlayer == Projectile.owner)
-            {
-                if (targetPos != Main.MouseWorld)
-                {
+            if (Main.myPlayer == Projectile.owner) {
+                if (targetPos != Main.MouseWorld) {
                     Projectile.netUpdate = true;
                 }
                 targetPos = Main.MouseWorld;
@@ -137,19 +122,15 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.Center = c;
             noChase--;
 
-            if (Projectile.timeLeft < 40)
-            {
+            if (Projectile.timeLeft < 40) {
                 Projectile.velocity.Y -= 1;
                 Projectile.velocity *= 0.98f;
                 return;
             }
-            if (n != null)
-            {
+            if (n != null) {
                 targetPos = n.Center;
-                if (CEUtils.getDistance(targetPos, Projectile.Center) > 120)
-                {
-                    if (rt < 40)
-                    {
+                if (CEUtils.getDistance(targetPos, Projectile.Center) > 120) {
+                    if (rt < 40) {
                         rt += Main.rand.NextFloat(1, 4);
                     }
                     Projectile.velocity *= 0.9f;
@@ -158,22 +139,18 @@ namespace CalamityEntropy.Content.Projectiles
 
                     Projectile.velocity = new Vector2(Projectile.velocity.Length() + 10, 0).RotatedBy(Projectile.rotation);
                 }
-                else
-                {
+                else {
                     rt = Main.rand.NextFloat(0, 10);
                     Projectile.velocity *= 1.01f;
                 }
             }
-            else
-            {
-                if (CEUtils.getDistance(Projectile.Center, targetPos) > 1000)
-                {
+            else {
+                if (CEUtils.getDistance(Projectile.Center, targetPos) > 1000) {
                     Projectile.velocity += (targetPos - Projectile.Center).SafeNormalize(Vector2.Zero) * 16f;
                     Projectile.velocity *= 0.8f;
                 }
                 else
-                    if (CEUtils.getDistance(Projectile.Center, targetPos) > 100)
-                {
+                    if (CEUtils.getDistance(Projectile.Center, targetPos) > 100) {
                     Projectile.velocity += (targetPos - Projectile.Center).SafeNormalize(Vector2.Zero) * 0.9f;
                     Projectile.velocity *= 0.996f;
                 }
@@ -182,39 +159,31 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public float rt = 0;
         public int noChase = 0;
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.WriteVector2(targetPos);
             writer.Write(bite);
         }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             targetPos = reader.ReadVector2();
             bite = reader.ReadBoolean();
         }
         Vector2 targetPos;
 
-        public void updateBodies()
-        {
-            for (int i = 0; i < bodies.Count; i++)
-            {
+        public void updateBodies() {
+            for (int i = 0; i < bodies.Count; i++) {
                 Vector2 oPos;
                 float oRot;
 
-                if (i == 0)
-                {
+                if (i == 0) {
                     oPos = Projectile.Center;
                     oRot = Projectile.rotation;
                 }
-                else
-                {
+                else {
                     oPos = bodies[i - 1];
-                    if (i == 1)
-                    {
+                    if (i == 1) {
                         oRot = (Projectile.Center - bodies[0]).ToRotation();
                     }
-                    else
-                    {
+                    else {
                         oRot = (bodies[i - 2] - bodies[i - 1]).ToRotation();
                     }
                 }
@@ -225,19 +194,16 @@ namespace CalamityEntropy.Content.Projectiles
             }
         }
 
-        public void spawnParticles()
-        {
+        public void spawnParticles() {
             var r = Main.rand;
-            for (int i = 0; i < 4; i++)
-            {
+            for (int i = 0; i < 4; i++) {
                 //PRT_Void字段直赋对齐旧VoidParticles,Opacity/ad/multShrink Configure管不了
                 var p = PRTLoader.NewParticle<PRT_Void>(Projectile.Center - Projectile.rotation.ToRotationVector2() * 60, new Vector2((float)((r.NextDouble() - 0.5) * .3), (float)((r.NextDouble() - 0.5) * 1.3)), Color.White, 1f);
                 p.shape = 4;
                 p.Opacity = 1.6f;
                 p.ad = 0.013f;
             }
-            for (int i = 0; i < 4; i++)
-            {
+            for (int i = 0; i < 4; i++) {
                 //每帧拖尾Void,旧spawnNew也是AI里无脑刷
                 var p = PRTLoader.NewParticle<PRT_Void>(Projectile.Center - Projectile.rotation.ToRotationVector2() * 60 - Projectile.velocity * 0.5f, new Vector2((float)((r.NextDouble() - 0.5) * .3), (float)((r.NextDouble() - 0.5) * 1.3)), Color.White, 1f);
                 p.shape = 4;
@@ -246,31 +212,24 @@ namespace CalamityEntropy.Content.Projectiles
             }
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             int bd = 0;
             Vector2 vtodraw = Projectile.Center;
             SpriteBatch spriteBatch = Main.spriteBatch;
             float alpha = 1;
-            if (Projectile.timeLeft < 40)
-            {
+            if (Projectile.timeLeft < 40) {
                 alpha = (float)Projectile.timeLeft / 40f;
             }
-            for (int d = 0; d < 9; d++)
-            {
-                if (d < bodies.Count)
-                {
-                    if (d == 0 || d == 2)
-                    {
+            for (int d = 0; d < 9; d++) {
+                if (d < bodies.Count) {
+                    if (d == 0 || d == 2) {
                         continue;
                     }
                     float rot = 0;
-                    if (bd == 0)
-                    {
+                    if (bd == 0) {
                         rot = (vtodraw - bodies[d]).ToRotation();
                     }
-                    else
-                    {
+                    else {
                         rot = (bodies[d - 1] - bodies[d]).ToRotation();
                     }
                     Vector2 pos = bodies[d];

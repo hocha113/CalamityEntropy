@@ -10,8 +10,7 @@ namespace CalamityEntropy.Content.Biomes
         public override SceneEffectPriority Priority => SceneEffectPriority.Environment;
         public override string BestiaryIcon => "CalamityEntropy/Assets/VoidDummyBoimeIcon";
         public override string BackgroundPath => "CalamityEntropy/Assets/VoidBack";
-        public override bool IsBiomeActive(Player player)
-        {
+        public override bool IsBiomeActive(Player player) {
             return NPC.AnyNPCs(ModContent.NPCType<NihilityActeriophage>()) || NPC.AnyNPCs(ModContent.NPCType<CruiserHead>());
         }
     }

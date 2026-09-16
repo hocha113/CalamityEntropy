@@ -1,5 +1,4 @@
-using CalamityEntropy.Common;
-using Microsoft.Xna.Framework;
+﻿using CalamityEntropy.Common;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using Terraria;
@@ -25,8 +24,7 @@ namespace CalamityEntropy.Content.Items.Lores
         /// <summary>本物品是否挂有 LoreEffect（即走 LoreReworkSystem 开关通道）。</summary>
         public bool HasLoreEffect => LoreReworkSystem.loreEffects != null && LoreReworkSystem.loreEffects.ContainsKey(Type);
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ItemID.Sets.ItemNoGravity[Type] = true;
         }
 
@@ -42,8 +40,7 @@ namespace CalamityEntropy.Content.Items.Lores
 
         public override bool ConsumeItem(Player player) => false;
 
-        public override void RightClick(Player player)
-        {
+        public override void RightClick(Player player) {
             // 与 LoreReworkItem.UseItem 保持同一条开关路径
             LoreReworkSystem.ToggleLore(Item);
             if (Main.netMode == NetmodeID.MultiplayerClient)
@@ -54,16 +51,13 @@ namespace CalamityEntropy.Content.Items.Lores
                 SoundEngine.PlaySound(LoreReworkSystem.Enabled(Type) ? effect.useSound.Value : CEUtils.GetSound("AscendantOff"), player.Center);
         }
 
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            if (Main.keyState.IsKeyDown(Keys.LeftShift))
-            {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
+            if (Main.keyState.IsKeyDown(Keys.LeftShift)) {
                 // Shift：隐藏常规提示行，显示传记全文
                 tooltips.RemoveAll(line => line.Mod == "Terraria" && line.Name.StartsWith("Tooltip"));
                 tooltips.Add(new TooltipLine(Mod, "CalamityEntropy:Lore", this.GetLocalizedValue("Lore")));
             }
-            else
-            {
+            else {
                 tooltips.Add(new TooltipLine(Mod, "CalamityEntropy:LoreHint", Language.GetTextValue("Mods.CalamityEntropy.LoreHoldShift")));
             }
         }

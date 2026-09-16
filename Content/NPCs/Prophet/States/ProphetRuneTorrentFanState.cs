@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Prophet.Core;
+﻿using CalamityEntropy.Content.NPCs.Prophet.Core;
 using CalamityEntropy.Content.Projectiles.Prophet;
 using InnoVault.StateMachines;
 using Terraria;
@@ -20,8 +20,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
     {
         public override ProphetStateIndex StateIndex => ProphetStateIndex.RuneTorrentFan;
 
-        protected override void RunAttack(ProphetStateContext ctx)
-        {
+        protected override void RunAttack(ProphetStateContext ctx) {
             NPC npc = ctx.Npc;
             Player target = ctx.Target;
             float difficult = ctx.Difficult;
@@ -29,18 +28,15 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
 
             npc.rotation = (target.Center - npc.Center).ToRotation();
 
-            if (ctx.Countdown == ProphetDirector.TorrentFanBlinkBeat)
-            {
+            if (ctx.Countdown == ProphetDirector.TorrentFanBlinkBeat) {
                 CrystalCue(npc);
-                if (IsServer)
-                {
+                if (IsServer) {
                     Teleport(ctx, target.Center + target.velocity.SafeNormalize(CEUtils.randomRot().ToRotationVector2())
                         * ProphetDirector.TorrentFanBlinkRadius / difficult);
                 }
             }
 
-            if (ctx.Countdown == ProphetDirector.TorrentFanFireBeat)
-            {
+            if (ctx.Countdown == ProphetDirector.TorrentFanFireBeat) {
                 int damage = ProjDamage(ctx);
                 Vector2 aim = (target.Center - npc.Center).normalize();
                 float spread = phase == 1 ? ProphetDirector.TorrentFanSpreadP1 : ProphetDirector.TorrentFanSpreadP2;
@@ -48,15 +44,12 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
                 float halfLayers = phase == 1 ? ProphetDirector.TorrentFanHalfLayersP1 : ProphetDirector.TorrentFanHalfLayersP2;
 
                 //外层:判定是 <=,所以含正中那一发共 layers + 1 层。正中那一发的 ai0 是 6,两侧是 5
-                for (int i = 0; i <= layers; i++)
-                {
-                    if (i == 0)
-                    {
+                for (int i = 0; i <= layers; i++) {
+                    if (i == 0) {
                         Shoot<RuneTorrent>(ctx, npc.Center, aim * difficult * ProphetDirector.TorrentFanSpeedOuter,
                             damage, 4, ProphetDirector.TorrentFanMaxSpeedCenter * difficult, ProphetDirector.TorrentFanAi1);
                     }
-                    else
-                    {
+                    else {
                         Shoot<RuneTorrent>(ctx, npc.Center,
                             aim.RotatedBy(i * spread) * difficult * ProphetDirector.TorrentFanSpeedOuter,
                             damage, 4, ProphetDirector.TorrentFanMaxSpeedSide * difficult, ProphetDirector.TorrentFanAi1);
@@ -67,8 +60,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet.States
                 }
 
                 //内插层:半整数层号,更慢,填在外层的缝里
-                for (float i = 0.5f; i <= halfLayers; i++)
-                {
+                for (float i = 0.5f; i <= halfLayers; i++) {
                     Shoot<RuneTorrent>(ctx, npc.Center,
                         aim.RotatedBy(i * spread) * difficult * ProphetDirector.TorrentFanSpeedInner,
                         damage, 4, ProphetDirector.TorrentFanMaxSpeedSide * difficult, ProphetDirector.TorrentFanAi1);

@@ -9,17 +9,14 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
     public class VoidExplode : ModProjectile
     {
         List<Vector2> odp = new List<Vector2>();
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
 
         }
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) {
             target.AddBuff(ModContent.BuffType<VoidTouch>(), 160);
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 256;
             Projectile.height = 256;
             Projectile.friendly = false;
@@ -32,13 +29,11 @@ namespace CalamityEntropy.Content.Projectiles.Cruiser
 
         }
 
-        public override void AI()
-        {
+        public override void AI() {
 
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
 
             return false;
         }

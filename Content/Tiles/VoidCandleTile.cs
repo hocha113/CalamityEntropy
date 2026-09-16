@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.Tiles
         // 脱离灾厄:原灾厄 LouderPhantomPhoenix2,按 sound-map 替换为自有音效
         public static readonly SoundStyle ActivationSound = new("CalamityEntropy/Assets/Sounds/soulScreem");
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.tileLighted[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileLavaDeath[Type] = true;
@@ -33,8 +32,7 @@ namespace CalamityEntropy.Content.Tiles
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
 
-        public override bool RightClick(int i, int j)
-        {
+        public override bool RightClick(int i, int j) {
             Player p = Main.LocalPlayer;
 
             p.AddBuff(ModContent.BuffType<VoidCandleBuff>(), 108000);
@@ -44,15 +42,13 @@ namespace CalamityEntropy.Content.Tiles
             return true;
         }
 
-        public override void MouseOver(int i, int j)
-        {
+        public override void MouseOver(int i, int j) {
             Player player = Main.LocalPlayer;
             player.noThrow = 2;
             player.cursorItemIconEnabled = true;
             player.cursorItemIconID = ModContent.ItemType<VoidCandle>();
         }
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-        {
+        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b) {
             r = 0.55f;
             g = 0.1f;
             b = 0.8f;

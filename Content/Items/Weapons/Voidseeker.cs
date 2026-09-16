@@ -13,8 +13,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         // 命中计数 8；原潜伏乘数 伤害2/弹速1/击退3 并入释放乘数
         public CEChargeProfile ChargeProfile => CEChargeProfile.HitCount(8, 2f, 1f, 3f);
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 36;
             Item.height = 34;
             Item.damage = 725;
@@ -34,13 +33,10 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.DamageType = DamageClass.Melee;
         }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            if (CEChargeWeapon.TryConsume(player, Item))
-            {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
+            if (CEChargeWeapon.TryConsume(player, Item)) {
                 int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
-                if (p >= 0 && p < Main.maxProjectiles)
-                {
+                if (p >= 0 && p < Main.maxProjectiles) {
                     CEChargeWeapon.Empower(p);
                 }
                 return false;

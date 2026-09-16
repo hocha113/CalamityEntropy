@@ -14,15 +14,13 @@ namespace CalamityEntropy.Content.Projectiles
         //小硫火帧图集,加载期就位,PreDraw 不再逐帧请求
         [VaultLoaden("CalamityEntropy/Content/Projectiles/LilBrimstone")]
         internal static Asset<Texture2D> SheetTex;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
             base.SetStaticDefaults();
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Summon;
             Projectile.width = 42;
             Projectile.height = 42;
@@ -37,32 +35,25 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.minion = true;
             Projectile.minionSlots = 1;
         }
-        public override bool? CanCutTiles()
-        {
+        public override bool? CanCutTiles() {
             return false;
         }
         public int direction = 0;
-        public override void AI()
-        {
+        public override void AI() {
             Player player = Main.player[Projectile.owner];
-            if (CEUtils.getDistance(Projectile.Center, player.Center) > 1800)
-            {
+            if (CEUtils.getDistance(Projectile.Center, player.Center) > 1800) {
                 Projectile.Center = player.Center;
             }
-            if (player.HasBuff(ModContent.BuffType<LilBrimstoneBuff>()))
-            {
+            if (player.HasBuff(ModContent.BuffType<LilBrimstoneBuff>())) {
                 Projectile.timeLeft = 3;
             }
             int index = -1;
             int pos = 1;
-            foreach (Projectile p in Main.projectile)
-            {
-                if (p.whoAmI == Projectile.whoAmI)
-                {
+            foreach (Projectile p in Main.projectile) {
+                if (p.whoAmI == Projectile.whoAmI) {
                     break;
                 }
-                if (p.type == Projectile.type && p.whoAmI != Projectile.whoAmI && p.active && p.owner == Projectile.owner)
-                {
+                if (p.type == Projectile.type && p.whoAmI != Projectile.whoAmI && p.active && p.owner == Projectile.owner) {
                     index = p.whoAmI;
                     pos++;
                 }
@@ -70,75 +61,59 @@ namespace CalamityEntropy.Content.Projectiles
             Vector2 targetPos;
             float rot = (player.Center - Projectile.Center).ToRotation();
             float spacing = 110;
-            if (index == -1)
-            {
+            if (index == -1) {
                 targetPos = player.Center;
             }
-            else
-            {
+            else {
                 targetPos = index.ToProj().Center;
             }
-            if (CEUtils.getDistance(Projectile.Center, targetPos) > spacing)
-            {
+            if (CEUtils.getDistance(Projectile.Center, targetPos) > spacing) {
                 Projectile.velocity += (targetPos - Projectile.Center).SafeNormalize(Vector2.Zero) * 4f;
                 Projectile.velocity *= 0.8f;
             }
-            else
-            {
+            else {
                 Projectile.velocity *= 0.8f;
             }
             NPC target = null;
-            if (player.HasMinionAttackTargetNPC)
-            {
+            if (player.HasMinionAttackTargetNPC) {
                 target = Main.npc[player.MinionAttackTargetNPC];
                 float betw = Vector2.Distance(target.Center, Projectile.Center);
-                if (betw > 2000f)
-                {
+                if (betw > 2000f) {
                     target = null;
                 }
 
             }
-            if (target == null || !target.active)
-            {
+            if (target == null || !target.active) {
                 int t = Projectile.FindTargetWithLineOfSight(2000);
-                if (t > -1)
-                {
+                if (t > -1) {
                     target = Main.npc[t];
                 }
             }
-            if (target == null)
-            {
+            if (target == null) {
                 Projectile.ai[0] = 0;
                 Projectile.ai[1] = 0;
                 direction = 1;
-                if (player.Center.X < Projectile.Center.X)
-                {
+                if (player.Center.X < Projectile.Center.X) {
                     direction = -1;
                 }
             }
-            else
-            {
+            else {
                 direction = 1;
-                if (target.Center.X < Projectile.Center.X)
-                {
+                if (target.Center.X < Projectile.Center.X) {
                     direction = -1;
                 }
-                if (Projectile.ai[2] <= 0)
-                {
+                if (Projectile.ai[2] <= 0) {
                     Projectile.ai[0]++;
 
-                    if (Projectile.ai[0] > 10)
-                    {
+                    if (Projectile.ai[0] > 10) {
                         Projectile.ai[0] = 0;
                         Projectile.ai[1]++;
 
-                        if (Projectile.ai[1] == 7)
-                        {
+                        if (Projectile.ai[1] == 7) {
                             Projectile.ai[2] = 120;
                             direction = 1;
 
-                            if (Projectile.owner == Main.myPlayer)
-                            {
+                            if (Projectile.owner == Main.myPlayer) {
                                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + (target.Center + target.velocity * 20 - Projectile.Center).SafeNormalize(Vector2.UnitX) * 16, (target.Center + target.velocity * 20 - Projectile.Center).SafeNormalize(Vector2.UnitX), ModContent.ProjectileType<Brimstone>(), (int)(Projectile.damage * (1 + player.Entropy().WeaponBoost * 0.35f)), 5, Projectile.owner, 0, Projectile.scale * 0.4f + player.Entropy().WeaponBoost * 0.4f, Projectile.whoAmI);
 
                             }
@@ -149,19 +124,16 @@ namespace CalamityEntropy.Content.Projectiles
                 }
             }
             Projectile.ai[2]--;
-            if (Projectile.ai[2] == 0)
-            {
+            if (Projectile.ai[2] == 0) {
                 Projectile.ai[1] = 0;
 
             }
 
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             SpriteEffects ef = SpriteEffects.None;
-            if (direction < 0)
-            {
+            if (direction < 0) {
                 ef = SpriteEffects.FlipHorizontally;
             }
             Texture2D tx;

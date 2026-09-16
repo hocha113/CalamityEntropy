@@ -1,5 +1,4 @@
-using CalamityEntropy.Core.AI;
-using Terraria;
+﻿using CalamityEntropy.Core.AI;
 
 namespace CalamityEntropy.Content.NPCs.Prophet.Core
 {
@@ -18,8 +17,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet.Core
     /// </summary>
     public class ProphetStateContext : CEBossStateContext
     {
-        public ProphetStateContext()
-        {
+        public ProphetStateContext() {
             //原 AIC 字段初值是 -1,所以第一次选招自增后正好落在 0 号槽(第一手必定是四轮符文弹)。
             //基类的 AttackIndex 默认 0,不在这里扳回来的话开场第一手会变成 3 号招
             AttackIndex = ProphetDirector.AttackIndexStart;
@@ -77,8 +75,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet.Core
         #endregion
 
         /// <summary>先知没有需要回落的声明通道,这里只保持契约形状</summary>
-        public override void BeginFrameDefaults()
-        {
+        public override void BeginFrameDefaults() {
             base.BeginFrameDefaults();
         }
     }

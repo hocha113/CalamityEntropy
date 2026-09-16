@@ -1,9 +1,9 @@
-﻿using System;
+﻿using CalamityEntropy.Core.CalamityRef;
+using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Donator
 {
@@ -11,12 +11,10 @@ namespace CalamityEntropy.Content.Items.Donator
     {
         public string DonatorName => "Votum Stellarum";
 
-        public override bool RangedPrefix()
-        {
+        public override bool RangedPrefix() {
             return true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 68;
             Item.height = 28;
             Item.damage = 2;
@@ -36,17 +34,14 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.crit = 18;
         }
         public int mode = 0;
-        public override Vector2? HoldoutOffset()
-        {
+        public override Vector2? HoldoutOffset() {
             return new Vector2(-4, -6);
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             velocity = (Main.MouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero) * Item.shootSpeed;
             position += velocity.normalize() * 40;
             CEUtils.SetShake(position, 0.5f);
-            for (int i = 0; i < 8; i++)
-            {
+            for (int i = 0; i < 8; i++) {
                 Vector2 vel = velocity.RotateRandom(0.12f) * Main.rand.NextFloat(0.4f, 1.4f);
                 int p = Projectile.NewProjectile(source, position, vel, type, damage, knockback, player.whoAmI);
                 p.ToProj().Entropy().SmartArcEffect = true;
@@ -58,8 +53,7 @@ namespace CalamityEntropy.Content.Items.Donator
         #region Animations
         public override void HoldItem(Player player) => player.Entropy().MouseWorldListener = true;
 
-        public override void UseStyle(Player player, Rectangle heldItemFrame)
-        {
+        public override void UseStyle(Player player, Rectangle heldItemFrame) {
             player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
@@ -71,8 +65,7 @@ namespace CalamityEntropy.Content.Items.Donator
             base.UseStyle(player, heldItemFrame);
         }
 
-        public override void UseItemFrame(Player player)
-        {
+        public override void UseItemFrame(Player player) {
             player.ChangeDir(Math.Sign((player.Entropy().MouseWorld - player.Center).X));
 
             float animProgress = 1 - player.itemTime / (float)player.itemTimeMax;
@@ -81,8 +74,7 @@ namespace CalamityEntropy.Content.Items.Donator
                 rotation += (-0.2f) * (float)Math.Pow((0.5f - animProgress) / 0.5f, 2) * player.direction;
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
 
-            if (animProgress > 0.5f)
-            {
+            if (animProgress > 0.5f) {
                 float backArmRotation = rotation + 0.52f * player.direction;
 
                 Player.CompositeArmStretchAmount stretch = ((float)Math.Sin(MathHelper.Pi * (animProgress - 0.5f) / 0.36f)).ToStretchAmount();
@@ -92,10 +84,8 @@ namespace CalamityEntropy.Content.Items.Donator
         }
         #endregion
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_SeaPrism, CEID.Item_PrismShard))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_SeaPrism, CEID.Item_PrismShard)) {
                 CreateRecipe()
                 .AddIngredient(ItemID.IllegalGunParts, 2)
                 .AddIngredient(CEID.Item_SeaPrism, 6)

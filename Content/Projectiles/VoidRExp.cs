@@ -6,12 +6,10 @@ namespace CalamityEntropy.Content.Projectiles
 
     public class VoidRExp : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 256;
             Projectile.height = 256;
             Projectile.friendly = false;
@@ -24,25 +22,20 @@ namespace CalamityEntropy.Content.Projectiles
 
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.extraUpdates = (int)Projectile.ai[1];
             int n = (int)Projectile.ai[1] - 1;
-            if (n >= 0)
-            {
-                if (n.ToNPC().active)
-                {
+            if (n >= 0) {
+                if (n.ToNPC().active) {
                     Projectile.Center = n.ToNPC().Center;
                 }
-                else
-                {
+                else {
                     Projectile.ai[1] = 0;
                 }
             }
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
 
             return false;
         }

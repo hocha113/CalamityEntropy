@@ -1,4 +1,4 @@
-namespace CalamityEntropy.Core.Construction
+﻿namespace CalamityEntropy.Core.Construction
 {
     public struct AnimationHandler(int slots)
     {
@@ -35,8 +35,7 @@ namespace CalamityEntropy.Core.Construction
     public static class AnimationFunction
     {
         public static bool IsDone(this AnimationHandler animationHandler, int slot) => animationHandler.CurAniProgress[slot] == animationHandler.TotalAniProgress[slot];
-        public static void IsDoneDirect(this ref AnimationHandler animationHandler, int slot)
-        {
+        public static void IsDoneDirect(this ref AnimationHandler animationHandler, int slot) {
             if (animationHandler.IsDone(slot))
                 animationHandler.Finished[slot] = true;
             else

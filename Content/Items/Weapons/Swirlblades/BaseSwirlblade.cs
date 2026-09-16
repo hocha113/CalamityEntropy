@@ -1,5 +1,4 @@
-using CalamityEntropy.Common;
-using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Common;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -10,16 +9,14 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 {
     public abstract class BaseSwirlblade : ModProjectile
     {
-        public static void ApplyShader(Color color)
-        {
+        public static void ApplyShader(Color color) {
             Effect shader = CommonEffects.colorLerp;
             Main.spriteBatch.End();
             shader.Parameters["color"].SetValue(color.ToVector4());
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, shader, Main.GameViewMatrix.TransformationMatrix);
             shader.CurrentTechnique.Passes[0].Apply();
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Ranged, true, -1);
             Projectile.width = Projectile.height = 24;
             Projectile.localNPCHitCooldown = 6;
@@ -37,78 +34,62 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         public virtual bool CollideWithNPC => true;
         public virtual void OnCollideWithNPC(NPC npc) { }
         public virtual int OldPosLength => 9;
-        public virtual void FlyBack()
-        {
+        public virtual void FlyBack() {
             Projectile.velocity *= 1f - float.Min(TimeUtilSpread, 26) * 0.006f;
             Projectile.velocity += (player.MountedCenter - Projectile.Center).normalize() * float.Min(TimeUtilSpread, 26) * 0.47f;
-            if (Projectile.Distance(player.MountedCenter) <= Projectile.velocity.Length() * 1.05f + 16)
-            {
+            if (Projectile.Distance(player.MountedCenter) <= Projectile.velocity.Length() * 1.05f + 16) {
                 BackKill();
                 Projectile.velocity = (player.MountedCenter - Projectile.Center);
             }
         }
-        public virtual void BackKill()
-        {
+        public virtual void BackKill() {
             if (Projectile.timeLeft > 2)
                 Projectile.timeLeft = 2;
         }
         public virtual Rectangle CollisionRect => Projectile.Center.getRectCentered(Radius * 0.7f, Radius * 0.7f);
-        public override void AI()
-        {
-            if (Projectile.Entropy().FirstFrames)
-            {
+        public override void AI() {
+            if (Projectile.Entropy().FirstFrames) {
                 float scale_ = Projectile.GetOwner().HeldItem.scale;
                 Projectile.GetOwner().ApplyMeleeScale(ref scale_);
                 Projectile.scale *= scale_;
             }
             Projectile.rotation += Math.Sign(Projectile.velocity.X) * Projectile.velocity.Length() * 0.1f;
-            if (Counter < FlyTime && CollideWithNPC)
-            {
-                foreach (NPC npc in Main.ActiveNPCs)
-                {
-                    if (!npc.friendly && !npc.dontTakeDamage)
-                    {
-                        if (CollisionRect.Intersects(npc.getRect()))
-                        {
+            if (Counter < FlyTime && CollideWithNPC) {
+                foreach (NPC npc in Main.ActiveNPCs) {
+                    if (!npc.friendly && !npc.dontTakeDamage) {
+                        if (CollisionRect.Intersects(npc.getRect())) {
                             Counter = FlyTime;
                             OnCollideWithNPC(npc);
-                            if(Projectile.owner == Main.myPlayer)
+                            if (Projectile.owner == Main.myPlayer)
                                 CEUtils.SyncProj(Projectile.whoAmI);
                             break;
                         }
                     }
                 }
             }
-            if (Counter >= FlyTime && Counter <= FlyTime + SpreadTime)
-            {
-                if (!Spreaded)
-                {
+            if (Counter >= FlyTime && Counter <= FlyTime + SpreadTime) {
+                if (!Spreaded) {
                     Projectile.velocity *= 0;
                     Spreaded = true;
                     OnSpread();
                 }
             }
-            if(Counter > FlyTime + SpreadTime)
-            {
-                if(Spreaded)
-                {
+            if (Counter > FlyTime + SpreadTime) {
+                if (Spreaded) {
                     Spreaded = false;
                     Projectile.velocity += CEUtils.randomPointInCircle(42);
                     oldPos.Clear();
                     OnRetract();
                 }
-                else
-                {
+                else {
                     FlyBack();
                 }
             }
-            if(Counter >= FlyTime && Counter < FlyTime + SpreadTime)
-            {
+            if (Counter >= FlyTime && Counter < FlyTime + SpreadTime) {
                 float t = ((float)Counter - FlyTime) / (float)BladeOpenTime;
                 BladeScale = float.Min(1f, CEUtils.Parabola(Utils.Clamp(t, 0, 1) * 0.5f, 1));
             }
-            if(Counter > FlyTime + SpreadTime)
-            {
+            if (Counter > FlyTime + SpreadTime) {
                 if (BladeScale > 0)
                     BladeScale -= 1f / BladeOpenTime;
                 if (BladeScale < 0)
@@ -122,36 +103,27 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             if (oldPos.Count > OldPosLength)
                 oldPos.RemoveAt(0);
         }
-        public override bool? CanDamage()
-        {
+        public override bool? CanDamage() {
             return Spreaded ? null : false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return new Circle(projHitbox.Center.ToVector2(), Radius * Projectile.scale * BladeScale).Intersects(targetHitbox);
         }
-        public override void CutTiles()
-        {
+        public override void CutTiles() {
             Utils.PlotTileLine(Projectile.Center + Vector2.UnitX * -Radius * Projectile.scale, Projectile.Center + Vector2.UnitX * Radius * Projectile.scale, Radius * 2 * Projectile.scale, DelegateMethods.CutTiles);
         }
-        public virtual void OnSpread()
-        { }
-        public virtual void OnRetract()
-        { }
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            if (Projectile.velocity.X != oldVelocity.X)
-            {
+        public virtual void OnSpread() { }
+        public virtual void OnRetract() { }
+        public override bool OnTileCollide(Vector2 oldVelocity) {
+            if (Projectile.velocity.X != oldVelocity.X) {
                 Projectile.velocity.X = -oldVelocity.X;
             }
-            if (Projectile.velocity.Y != oldVelocity.Y)
-            {
+            if (Projectile.velocity.Y != oldVelocity.Y) {
                 Projectile.velocity.Y = -oldVelocity.Y;
             }
             if (Counter > FlyTime + SpreadTime + 60)
                 Projectile.tileCollide = false;
-            if(oldPos.Count > 0)
-            {
+            if (oldPos.Count > 0) {
                 oldPos.RemoveAt(oldPos.Count - 1);
                 oldPos.Add(Projectile.Center + Projectile.velocity);
             }

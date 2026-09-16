@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.AI;
+﻿using CalamityEntropy.Core.AI;
 using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.Apsychos.Core
@@ -113,8 +113,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.Core
         /// 每帧默认值。只回落四个衰减开关——<see cref="TailStyle"/> 是持久量,
         /// 三个表现累加量由宿主在状态机之后结算,都不在这里动
         /// </summary>
-        public override void BeginFrameDefaults()
-        {
+        public override void BeginFrameDefaults() {
             base.BeginFrameDefaults();
             DecayOutline = true;
             DecayTailSpeed = true;

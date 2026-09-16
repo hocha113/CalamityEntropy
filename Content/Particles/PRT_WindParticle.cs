@@ -19,8 +19,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/Wind";
 
         public PRT_WindParticle Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -30,16 +29,14 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             //Lifetime 46旧Wind默认,-1漏设就永生一路囤odp
             if (Lifetime <= 0)
                 Lifetime = 46;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             Opacity = 1f - LifetimeCompletion;   //衰减放AI不是PreDraw,跟旧updateAll一致
             Velocity = Rotation.ToRotationVector2() * v1 + r.ToRotationVector2() * v2;
             Rotation += dir * rv;
@@ -49,18 +46,15 @@ namespace CalamityEntropy.Content.Particles
                 odp.RemoveAt(odp.Count - 1);
         }
 
-        public Color TrailColor(float completionRatio, Vector2 vertex)
-        {
+        public Color TrailColor(float completionRatio, Vector2 vertex) {
             return Color * completionRatio * Opacity * new Vector2(1, 0).RotatedBy(completionRatio * MathHelper.Pi).Y;
         }
 
-        public float TrailWidth(float completionRatio, Vector2 vertex)
-        {
+        public float TrailWidth(float completionRatio, Vector2 vertex) {
             return Scale * 26;
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             //原先走灾厄PrimitiveRenderer+ArtAttack shader,脱离灾厄后换成自有Wind贴图的三角带
             //宽度/颜色带保持原TrailWidth/TrailColor曲线,风痕淡入淡出形状不变
             if (odp.Count < 3)
@@ -71,8 +65,7 @@ namespace CalamityEntropy.Content.Particles
             sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             Texture2D tex = PRTSharedAssets.Wind.Value;
             List<ColoredVertex> ve = new List<ColoredVertex>();
-            for (int i = 1; i < odp.Count; i++)
-            {
+            for (int i = 1; i < odp.Count; i++) {
                 float c = i / (odp.Count - 1f);
                 float halfWidth = TrailWidth(c, Vector2.Zero) * 0.5f;
                 Color col = TrailColor(c, Vector2.Zero);
@@ -81,8 +74,7 @@ namespace CalamityEntropy.Content.Particles
                 ve.Add(new ColoredVertex(basePos + normal * halfWidth, new Vector3(c, 1, 1), col));
                 ve.Add(new ColoredVertex(basePos - normal * halfWidth, new Vector3(c, 0, 1), col));
             }
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 gd.Textures[0] = tex;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
             }

@@ -1,10 +1,10 @@
 ﻿using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Weapons;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons
 {
@@ -13,8 +13,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         // 命中计数 6；原潜伏乘数 伤害0.8/弹速1.2/击退3 并入释放乘数
         public CEChargeProfile ChargeProfile => CEChargeProfile.HitCount(6, 0.8f, 1.2f, 3f);
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 36;
             Item.height = 34;
             Item.damage = 17;
@@ -34,13 +33,10 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.DamageType = DamageClass.Melee;
         }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            if (CEChargeWeapon.TryConsume(player, Item))
-            {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
+            if (CEChargeWeapon.TryConsume(player, Item)) {
                 int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
-                if (p >= 0 && p < Main.maxProjectiles)
-                {
+                if (p >= 0 && p < Main.maxProjectiles) {
                     p.ToProj().penetrate = 5;
                     CEChargeWeapon.Empower(p);
                 }
@@ -49,10 +45,8 @@ namespace CalamityEntropy.Content.Items.Weapons
             return true;
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_PearlShard, CEID.Item_SeaPrism))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_PearlShard, CEID.Item_SeaPrism)) {
                 CreateRecipe().AddIngredient(CEID.Item_PearlShard, 4)
                 .AddIngredient(CEID.Item_SeaPrism, 8)
                 .AddTile(TileID.Anvils)

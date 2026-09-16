@@ -17,15 +17,13 @@ namespace CalamityEntropy.Content
             public Vector2 Velocity;
 
             public Vector2 Center;
-            public ShadowParticle(Vector2 center, Vector2 velocity, float size)
-            {
+            public ShadowParticle(Vector2 center, Vector2 velocity, float size) {
                 Center = center;
                 Velocity = velocity;
                 Size = size;
             }
 
-            public void Update()
-            {
+            public void Update() {
                 Size *= 0.94f;
                 Center += Velocity;
                 Velocity *= 0.96f;
@@ -34,8 +32,7 @@ namespace CalamityEntropy.Content
 
         public static readonly Color EdgeColor = new(255, 255, 255);
 
-        public static List<ShadowParticle> Particles
-        {
+        public static List<ShadowParticle> Particles {
             get;
             private set;
         } = new();
@@ -47,15 +44,13 @@ namespace CalamityEntropy.Content
 
         public override void Unload() => Particles = null;
 
-        public override void PostUpdateEverything()
-        {
+        public override void PostUpdateEverything() {
             for (int i = 0; i < Particles.Count; i++)
                 Particles[i].Update();
             Particles.RemoveAll(p => p.Size <= 2.5f);
         }
 
-        public override void PostDrawTiles()
-        {
+        public override void PostDrawTiles() {
             if (Main.dedServ || Particles.Count == 0)
                 return;
 
@@ -64,14 +59,12 @@ namespace CalamityEntropy.Content
 
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             // 先整体画一圈描边色,再覆盖黑色主体,簇内接缝被主体盖掉,近似融球描边
-            foreach (ShadowParticle particle in Particles)
-            {
+            foreach (ShadowParticle particle in Particles) {
                 Vector2 drawPosition = particle.Center - Main.screenPosition;
                 Vector2 scale = Vector2.One * (particle.Size + 4f) / tex.Size();
                 Main.spriteBatch.Draw(tex, drawPosition, null, EdgeColor, 0f, origin, scale, 0, 0f);
             }
-            foreach (ShadowParticle particle in Particles)
-            {
+            foreach (ShadowParticle particle in Particles) {
                 Vector2 drawPosition = particle.Center - Main.screenPosition;
                 Vector2 scale = Vector2.One * particle.Size / tex.Size();
                 Main.spriteBatch.Draw(tex, drawPosition, null, Color.Black, 0f, origin, scale, 0, 0f);

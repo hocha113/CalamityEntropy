@@ -5,8 +5,7 @@ namespace CalamityEntropy.Content.Buffs
 {
     public class FlamingBlood : ModBuff
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.debuff[Type] = true;
         }
     }

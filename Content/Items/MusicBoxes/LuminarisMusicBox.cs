@@ -8,8 +8,7 @@ namespace CalamityEntropy.Content.Items.MusicBoxes
     {
         public override string MusicFile => "Assets/Sounds/Music/LuminarisBoss";
         public override int MusicBoxTile => ModContent.TileType<LuminarisMusicBoxTile>();
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Item.rare = ModContent.RarityType<Lunarblight>();
         }

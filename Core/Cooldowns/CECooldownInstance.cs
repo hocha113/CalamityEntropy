@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using Terraria;
 using Terraria.ModLoader.IO;
 
@@ -31,8 +31,7 @@ namespace CalamityEntropy.Core.Cooldowns
         /// <summary>剩余比例,1 为刚开始,0 为已结束。</summary>
         public float Completion => duration != 0 ? timeLeft / (float)duration : 0;
 
-        public CECooldownInstance(Player p, string id, int dur)
-        {
+        public CECooldownInstance(Player p, string id, int dur) {
             ID = id;
             player = p;
             duration = dur;
@@ -43,13 +42,11 @@ namespace CalamityEntropy.Core.Cooldowns
         }
 
         internal CECooldownInstance(Player p, string id, TagCompound tag)
-            : this(p, id, tag.GetAsInt(DurationSaveKey))
-        {
+            : this(p, id, tag.GetAsInt(DurationSaveKey)) {
             timeLeft = tag.GetAsInt(TimeLeftSaveKey);
         }
 
-        internal TagCompound Save()
-        {
+        internal TagCompound Save() {
             return new TagCompound
             {
                 { DurationSaveKey, duration },
@@ -58,16 +55,14 @@ namespace CalamityEntropy.Core.Cooldowns
         }
 
         /// <summary>网络序列化(供加入同步使用)。</summary>
-        internal void Write(BinaryWriter writer)
-        {
+        internal void Write(BinaryWriter writer) {
             writer.Write(ID);
             writer.Write(duration);
             writer.Write(timeLeft);
         }
 
         /// <summary>网络反序列化。ID 未注册时 handler 为 null,调用方应丢弃。</summary>
-        internal static CECooldownInstance Read(BinaryReader reader, Player player)
-        {
+        internal static CECooldownInstance Read(BinaryReader reader, Player player) {
             string id = reader.ReadString();
             int duration = reader.ReadInt32();
             int timeLeft = reader.ReadInt32();

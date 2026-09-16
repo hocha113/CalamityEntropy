@@ -7,8 +7,7 @@ namespace CalamityEntropy.Common
     {
         public int Time;
         public string ID;
-        public CooldownShort(int time, string id)
-        {
+        public CooldownShort(int time, string id) {
             Time = time;
             ID = id;
         }
@@ -29,17 +28,14 @@ namespace CalamityEntropy.Common
         public static Dictionary<string, int> BMProcCD = new Dictionary<string, int>();
 
         /// <summary>书签触发统一闸门:未在CD中则放行并上CD(默认60帧=1秒)。仅弹幕主人客户端调用。</summary>
-        public static bool CheckBMProc(string effectName, int cd = 60)
-        {
-            if (BMProcCD.TryGetValue(effectName, out int t) && t > 0)
-            {
+        public static bool CheckBMProc(string effectName, int cd = 60) {
+            if (BMProcCD.TryGetValue(effectName, out int t) && t > 0) {
                 return false;
             }
             BMProcCD[effectName] = cd;
             return true;
         }
-        public static void Update()
-        {
+        public static void Update() {
             CountDown(ref BMLightCD);
             CountDown(ref BMProphecy);
             CountDown(ref BMAbyss);
@@ -49,65 +45,50 @@ namespace CalamityEntropy.Common
             CountDown(ref MineBoxCd);
             CountDown(ref BMTaurus);
 
-            if (BMProcCD.Count > 0)
-            {
-                foreach (string key in new List<string>(BMProcCD.Keys))
-                {
+            if (BMProcCD.Count > 0) {
+                foreach (string key in new List<string>(BMProcCD.Keys)) {
                     if (--BMProcCD[key] <= 0)
                         BMProcCD.Remove(key);
                 }
             }
 
-            for (int i = 0; i < cooldowns.Count; i++)
-            {
+            for (int i = 0; i < cooldowns.Count; i++) {
                 cooldowns[i].Time--;
             }
-            for (int i = cooldowns.Count - 1; i >= 0; i--)
-            {
-                if (cooldowns[i].Time <= 0)
-                {
+            for (int i = cooldowns.Count - 1; i >= 0; i--) {
+                if (cooldowns[i].Time <= 0) {
                     cooldowns.RemoveAt(i);
                 }
             }
         }
-        public static void AddCooldown(string id, int time)
-        {
+        public static void AddCooldown(string id, int time) {
             cooldowns.Add(new CooldownShort(time.ApplyCdDec(Main.LocalPlayer), id));
         }
-        public static bool HasCooldown(string id)
-        {
+        public static bool HasCooldown(string id) {
             return cooldowns.Find((cd) => cd.ID == id) != null;
         }
-        public static void CountDown(ref int value)
-        {
-            if (value > 0)
-            {
+        public static void CountDown(ref int value) {
+            if (value > 0) {
                 value--;
             }
         }
-        public static bool CheckCD(string id, int maxValue = 60, bool reset = true)
-        {
+        public static bool CheckCD(string id, int maxValue = 60, bool reset = true) {
             var cd = cooldowns.Find((cd) => cd.ID == id);
-            if (cd != null)
-            {
+            if (cd != null) {
                 return false;
             }
 
-            if (reset)
-            {
+            if (reset) {
                 AddCooldown(id, maxValue);
             }
             return true;
         }
-        public static bool CheckCD(ref int value, int maxValue = 60, bool reset = true)
-        {
-            if (value > 0)
-            {
+        public static bool CheckCD(ref int value, int maxValue = 60, bool reset = true) {
+            if (value > 0) {
                 return false;
             }
 
-            if (reset)
-            {
+            if (reset) {
                 value = maxValue;
             }
             return true;

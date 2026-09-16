@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.AI;
+﻿using CalamityEntropy.Core.AI;
 using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.Acropolis.Core
@@ -112,8 +112,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.Core
         /// 每帧默认值。只回落两个炮口声明通道,其余都是持久事实,
         /// 由宿主在状态机之后统一结算
         /// </summary>
-        public override void BeginFrameDefaults()
-        {
+        public override void BeginFrameDefaults() {
             base.BeginFrameDefaults();
             CannonAim = null;
             CannonAimTimes = 1;
@@ -123,13 +122,10 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.Core
         public Player Player => Target;
 
         /// <summary>本体腾空中。原代码的 <c>Jumping</c>,持久量,住在宿主上给鱼叉与腿组读</summary>
-        public bool Airborne
-        {
+        public bool Airborne {
             get => Owner != null && Owner.Jumping;
-            set
-            {
-                if (Owner != null)
-                {
+            set {
+                if (Owner != null) {
                     Owner.Jumping = value;
                 }
             }

@@ -1,5 +1,6 @@
 ﻿using CalamityEntropy.Content.Items.Armor.Azafure;
 using CalamityEntropy.Content.Rarities;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Dash;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -7,7 +8,6 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -23,8 +23,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         public float maxCharge = 5f;
         public static int RechargeTime = 20 * 60;
         public static int MaxShield = 40;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 60;
             Item.height = 54;
             Item.value = Item.buyPrice(gold: 20);
@@ -33,35 +32,27 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.rare = ModContent.RarityType<AzafureOrange>();
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            if (charge < maxCharge)
-            {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
+            if (charge < maxCharge) {
                 charge += 1f / 300f;
             }
             player.Entropy().DriverShieldVisual = !hideVisual;
             player.Entropy().AzafureDriverShieldItem = Item;
             player.GetModPlayer<CEDashPlayer>().Offer(CEDashRegistry.Get<AzafureDriverDash>());
         }
-        public override void UpdateVanity(Player player)
-        {
+        public override void UpdateVanity(Player player) {
             player.Entropy().DriverShieldVisual = true;
         }
-        public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
-            if (charge < maxCharge)
-            {
+        public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale) {
+            if (charge < maxCharge) {
                 CEUtils.DrawChargeBar(scale * 1.2f, position + new Vector2(0, 18) * scale, ((float)charge / maxCharge), (charge < 1) ? Color.DarkOrange : Color.Orange);
             }
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             tooltips.Replace("[S]", MaxShield.ToString());
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_RoverDrive, CEID.Item_AshesofCalamity))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_RoverDrive, CEID.Item_AshesofCalamity)) {
                 CreateRecipe()
                 .AddIngredient<AzafureChargeShield>()
                 .AddIngredient(CEID.Item_RoverDrive)
@@ -89,8 +80,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         protected override float HitKnockback => AzafureDriverCore.DashKnockback;
         protected override int HitImmuneFrames => AzafureDriverCore.DashImmuneFrames;
 
-        protected override bool TryGetCharge(Player player, out float charge)
-        {
+        protected override bool TryGetCharge(Player player, out float charge) {
             charge = 0f;
             if (player.Entropy().AzafureDriverShieldItem?.ModItem is not AzafureDriverCore core)
                 return false;
@@ -98,8 +88,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             return true;
         }
 
-        protected override void ConsumeCharge(Player player, float cost)
-        {
+        protected override void ConsumeCharge(Player player, float cost) {
             if (player.Entropy().AzafureDriverShieldItem?.ModItem is AzafureDriverCore core)
                 core.charge = Math.Max(0f, core.charge - cost);
         }

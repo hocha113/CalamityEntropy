@@ -1,9 +1,8 @@
-using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
 using InnoVault.PRT;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -13,8 +12,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
 {
     public class AzafureMissile : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 24;
             Item.height = 24;
             Item.maxStack = 9999;
@@ -27,8 +25,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
             Item.DamageType = DamageClass.Ranged;
         }
 
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe(100)
                 .AddIngredient(ModContent.ItemType<HellIndustrialComponents>())
                 .AddIngredient(ModContent.ItemType<OsseousRemains>())
@@ -40,19 +37,16 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
     {
         public override float StickDamageAddition => 0.02f;
         public override float StickDamageMult => 0.16f;
-        public override void SetupStats()
-        {
+        public override void SetupStats() {
             Projectile.ai[1] += 50;
             Projectile.ai[0]--;
         }
         public override string Texture => "CalamityEntropy/Content/Items/Donator/RocketLauncher/Ammo/AzafureMissile";
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             base.OnHitNPC(target, hit, damageDone);
             target.AddBuff<MechanicalTrauma>(5 * 60);
         }
-        public override void ExplodeVisual()
-        {
+        public override void ExplodeVisual() {
             CEUtils.PlaySound("metalhit", 0.4f, Projectile.Center, volume: 0.24f);
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             float scale = ExplodeRadius / 40f;
@@ -63,10 +57,8 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher.Ammo
             PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 18);
             PRTLoader.NewParticle<PRT_CustomPulse>(Projectile.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.02f, 15);
         }
-        public override void SpawnParticle(Vector2 vel)
-        {
-            for (int i = 0; i < 8; i++)
-            {
+        public override void SpawnParticle(Vector2 vel) {
+            for (int i = 0; i < 8; i++) {
                 var smoke = PRTLoader.NewParticle<PRT_Smoke>(Projectile.Center + vel * (i / 8f), CEUtils.randomPointInCircle(0.5f), Color.OrangeRed, Main.rand.NextFloat(0.025f, 0.04f));
                 smoke.timeleftmax = 19;
                 smoke.Lifetime = 19;

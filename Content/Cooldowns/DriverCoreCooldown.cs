@@ -17,18 +17,15 @@ namespace CalamityEntropy.Content.Cooldowns
         public override bool CanTickDown => false;
         public override Color CooldownStartColor => Color.Red;
         public override Color CooldownEndColor => Color.Orange;
-        public override void DrawExpanded(SpriteBatch spriteBatch, Vector2 position, float opacity, float scale)
-        {
+        public override void DrawExpanded(SpriteBatch spriteBatch, Vector2 position, float opacity, float scale) {
             base.DrawExpanded(spriteBatch, position, opacity, scale);
 
             float Xoffset = -5;
             int shield = Main.LocalPlayer.Entropy().DriverShield;
-            if (shield > 9)
-            {
+            if (shield > 9) {
                 Xoffset = -10;
             }
-            if (shield > 99)
-            {
+            if (shield > 99) {
                 Xoffset = -15;
             }
             DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, shield.ToString(), position + new Vector2(Xoffset, 4) * scale, Color.Orange, Color.Black, scale);

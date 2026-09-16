@@ -1,8 +1,8 @@
 ﻿using CalamityEntropy.Content.Items;
 using Terraria;
-using Terraria.ID;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -10,8 +10,7 @@ namespace CalamityEntropy.Content.Tiles
 {
     public class CruiserPlushTile : ModTile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             RegisterItemDrop(ModContent.ItemType<CruiserPlush>());
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.newTile.LavaDeath = false;

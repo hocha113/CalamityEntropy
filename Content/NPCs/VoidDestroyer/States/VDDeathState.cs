@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
+﻿using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using InnoVault.StateMachines;
 using System;
 using Terraria;
@@ -18,8 +18,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         public override bool RunsDuringBlink => true;
         public override int TimeoutFrames => int.MaxValue;
 
-        public override void OnEnter(VDStateContext ctx)
-        {
+        public override void OnEnter(VDStateContext ctx) {
             base.OnEnter(ctx);
             ctx.Dying = true;
             ctx.BlinkTimer = 0;
@@ -28,8 +27,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             VDVfx.Sound("VoidAnticipation", 0.8f, ctx.Npc.Center, 2, 1.2f);
         }
 
-        public override IVDState OnUpdate(VDStateContext ctx)
-        {
+        public override IVDState OnUpdate(VDStateContext ctx) {
             Timer++;
             NPC npc = ctx.Npc;
             int t = Timer;
@@ -40,52 +38,45 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             ctx.WingsVisible = false;
             ctx.ShieldVisible = false;
 
-            if (t <= VDDirector.DeathExplosionEnd)
-            {
+            if (t <= VDDirector.DeathExplosionEnd) {
                 DeclareAlpha(ctx, 1f, 1f);
                 float progress = t / (float)VDDirector.DeathExplosionEnd;
                 ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, progress);
                 int interval = Math.Max(4, 16 - t / 10);
-                if (!Main.dedServ && t % interval == 0)
-                {
+                if (!Main.dedServ && t % interval == 0) {
                     Vector2 pos = npc.Center + CEUtils.randomPointInCircle(70f);
                     VDVfx.Explosion(pos, Main.rand.NextFloat(0.5f, 0.9f), 30);
                     VDVfx.SparkBurst(pos, VDVfx.VoidPurple, 6, 4f, 12f, 30, 1f, 1f);
                     VDVfx.Sound("VoidBomb", Main.rand.NextFloat(0.9f, 1.1f), pos, 4, 0.6f);
                     VDVfx.Shake(npc.Center, 3f + t / 25f);
                 }
-                if (t == VDDirector.DeathExplosionEnd)
-                {
+                if (t == VDDirector.DeathExplosionEnd) {
                     ctx.AnchorPos = npc.Center + new Vector2(0, -110);
                     VDVfx.Sound("portal_emerge", 1f, ctx.AnchorPos, 2);
                     MarkNetUpdate(ctx);
                 }
             }
-            else if (t <= VDDirector.DeathPortalIn)
-            {
+            else if (t <= VDDirector.DeathPortalIn) {
                 float p = (t - VDDirector.DeathExplosionEnd) / (float)(VDDirector.DeathPortalIn - VDDirector.DeathExplosionEnd);
                 float eased = VDVfx.EaseOut(p);
                 DeclareAlpha(ctx, 1f - eased, MathHelper.Lerp(1f, 0.55f, eased));
                 npc.velocity = Vector2.Zero;
                 npc.Center = Vector2.Lerp(ctx.AnchorPos + new Vector2(0, 110), ctx.AnchorPos, eased);
             }
-            else
-            {
+            else {
                 DeclareAlpha(ctx, 0f, 0.55f);
                 npc.velocity = Vector2.Zero;
             }
 
             //传送门:150 开、250 起关、290 关完
-            if (t >= VDDirector.DeathExplosionEnd)
-            {
+            if (t >= VDDirector.DeathExplosionEnd) {
                 if (t <= 180) ctx.PortalOpenness = VDVfx.EaseOut((t - 150) / 30f);
                 else if (t <= 250) ctx.PortalOpenness = 1f;
                 else if (t <= 290) ctx.PortalOpenness = 1f - VDVfx.EaseOut((t - 250) / 40f);
                 else ctx.PortalOpenness = 0f;
             }
 
-            if (t >= VDDirector.DeathDuration - 1 && IsServer && !ctx.DeathPerformanceFinished)
-            {
+            if (t >= VDDirector.DeathDuration - 1 && IsServer && !ctx.DeathPerformanceFinished) {
                 //与巡游者一致:走 StrikeInstantKill,联机下由 DamageNPC 包把击杀带到各客户端
                 ctx.DeathPerformanceFinished = true;
                 npc.StrikeInstantKill();

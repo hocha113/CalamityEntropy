@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.Cooldowns;
+﻿using CalamityEntropy.Core.Cooldowns;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -14,16 +14,14 @@ namespace CalamityEntropy.Core.Weapons
     public static class CEChargeWeapon
     {
         /// <summary>取该武器的充能计量器(每物品存储,随物品存档与同步)。HUD 可读 meter.Ratio。</summary>
-        public static CEChargeMeter GetMeter(Item item)
-        {
+        public static CEChargeMeter GetMeter(Item item) {
             if (item?.ModItem is not ICEChargeWeapon chargeWeapon)
                 return null;
             return item.GetChargeMeter(chargeWeapon.ChargeProfile.Max);
         }
 
         /// <summary>大招是否就绪(只查询不消耗)。CanUseItem 门控与 HUD 用。</summary>
-        public static bool IsReady(Item item)
-        {
+        public static bool IsReady(Item item) {
             CEChargeMeter meter = GetMeter(item);
             return meter != null && meter.Ready;
         }
@@ -34,8 +32,7 @@ namespace CalamityEntropy.Core.Weapons
         /// 调用成功会打开当帧强化窗口:本帧内该玩家由本武器发射的弹幕自动获得蓄势强化标志,
         /// 因此走原版发射路径(Shoot 返回 true)的武器无需手动 Empower。
         /// </summary>
-        public static bool TryConsume(Player player, Item item)
-        {
+        public static bool TryConsume(Player player, Item item) {
             CEChargeMeter meter = GetMeter(item);
             if (meter == null || !meter.Consume())
                 return false;
@@ -44,8 +41,7 @@ namespace CalamityEntropy.Core.Weapons
         }
 
         /// <summary>把指定弹幕标记为蓄势强化弹并同步。对照原 stealthStrike = true 写法。</summary>
-        public static void Empower(int projIndex)
-        {
+        public static void Empower(int projIndex) {
             if (projIndex >= 0 && projIndex < Main.maxProjectiles)
                 Main.projectile[projIndex].SetEmpowered();
         }
@@ -58,8 +54,7 @@ namespace CalamityEntropy.Core.Weapons
         /// 框架经 CEEmpowerGlobalProjectile 自动调用;极端场景(伤害不经弹幕父链,
         /// 如自定义生成源、直接改生命值的判定)可手动调用记功。非命中计数武器调用无效果。
         /// </summary>
-        public static void CreditHit(Player player, Item item)
-        {
+        public static void CreditHit(Player player, Item item) {
             if (item?.ModItem is not ICEChargeWeapon chargeWeapon)
                 return;
             if (chargeWeapon.ChargeProfile.Trigger != CEChargeTrigger.HitCount)
@@ -68,8 +63,7 @@ namespace CalamityEntropy.Core.Weapons
         }
 
         /// <summary>统一充能推进:应用玩家充能速度加成,恰好充满的那一帧播放就绪反馈。</summary>
-        internal static void Gain(Player player, Item item, in CEChargeProfile profile, float amount)
-        {
+        internal static void Gain(Player player, Item item, in CEChargeProfile profile, float amount) {
             CEChargeMeter meter = item.GetChargeMeter(profile.Max);
             float rate = player.GetModPlayer<CEChargePlayer>().ChargeRateMult;
             if (meter.Gain(amount * rate))
@@ -77,8 +71,7 @@ namespace CalamityEntropy.Core.Weapons
         }
 
         /// <summary>简易就绪反馈:提示音 + 头顶文字,仅本地玩家可见。</summary>
-        public static void PlayReadyFeedback(Player player)
-        {
+        public static void PlayReadyFeedback(Player player) {
             if (Main.dedServ || player.whoAmI != Main.myPlayer)
                 return;
             CEChargeMeter.PlayReadyCue(player);
@@ -101,8 +94,7 @@ namespace CalamityEntropy.Core.Weapons
         /// <summary>强化窗口所在帧。TryConsume 打开,同帧由本人物品使用生成的蓄势武器弹幕自动打标。</summary>
         private uint empowerWindowFrame = uint.MaxValue;
 
-        public override void ResetEffects()
-        {
+        public override void ResetEffects() {
             ChargeRateMult = 1f;
         }
 

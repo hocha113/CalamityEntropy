@@ -1,10 +1,10 @@
-﻿using CalamityEntropy.Common;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Cooldowns;
 using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Rarities;
-using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Core.Cooldowns;
 using CalamityEntropy.Core.Graphics;
 using InnoVault;
@@ -23,16 +23,14 @@ namespace CalamityEntropy.Content.Items.Weapons
 {
     public class VoidRelics : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ItemID.Sets.GamepadWholeScreenUseRange[Item.type] = true;
             ItemID.Sets.LockOnIgnoresCollision[Item.type] = true;
             ItemID.Sets.ItemNoGravity[Item.type] = true;
             ItemID.Sets.StaffMinionSlotsRequired[Item.type] = 4;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 550;
             Item.crit = 0;
             Item.DamageType = DamageClass.Summon;
@@ -54,8 +52,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.buffType = ModContent.BuffType<VoidStorm>();
             Item.rare = ModContent.RarityType<VoidPurple>();
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             player.AddBuff(Item.buffType, 3);
             int projectile = Projectile.NewProjectile(source, Main.MouseWorld, velocity, type, Item.damage, knockback, player.whoAmI, 0, 1, 0);
             Main.projectile[projectile].originalDamage = Item.damage;
@@ -67,13 +64,11 @@ namespace CalamityEntropy.Content.Items.Weapons
             return false;
         }
 
-        public override bool CanShoot(Player player)
-        {
+        public override bool CanShoot(Player player) {
             return player.ownedProjectileCounts[Item.shoot] == 0 && player.maxMinions - player.slotsMinions >= ItemID.Sets.StaffMinionSlotsRequired[Item.type];
         }
 
-        public override bool CanUseItem(Player player)
-        {
+        public override bool CanUseItem(Player player) {
             Item.channel = player.ownedProjectileCounts[Item.shoot] > 0;
             return true;
         }
@@ -83,12 +78,10 @@ namespace CalamityEntropy.Content.Items.Weapons
         //符文帧动画贴图(rune0~rune9),按序号批量加载,仅绘制路径读取
         [VaultLoaden("CalamityEntropy/Assets/Extra/VoidRunes/rune", 0, 10, AssetMode = AssetMode.TextureValueArray)]
         internal static Texture2D[] RuneTexs;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Summon;
             Projectile.width = 360;
             Projectile.height = 360;
@@ -105,8 +98,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Projectile.localNPCHitCooldown = 16;
         }
         public float Charge = 0;
-        public override bool? CanDamage()
-        {
+        public override bool? CanDamage() {
             return translateFlex < 0.1f;
         }
         public class VoidMarksRune
@@ -114,86 +106,72 @@ namespace CalamityEntropy.Content.Items.Weapons
             public int ID;
             public float Rotation;
             public float Glow;
-            public VoidMarksRune(int iD, float rotation)
-            {
+            public VoidMarksRune(int iD, float rotation) {
                 ID = iD;
                 Rotation = rotation;
                 Glow = 0;
             }
         }
         public List<VoidMarksRune> runes;
-        public void SetupRunes()
-        {
+        public void SetupRunes() {
             runes = new List<VoidMarksRune>();
-            for (int i = 0; i < 10; i++)
-            {
+            for (int i = 0; i < 10; i++) {
                 runes.Add(new VoidMarksRune(i, (i / 10f) * MathHelper.TwoPi));
             }
         }
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             if (runes == null)
                 SetupRunes();
             for (int i = 0; i < 10; i++)
                 writer.Write(runes[i].Glow);
         }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             if (runes == null) SetupRunes();
             for (int i = 0; i < 10; i++)
                 runes[i].Glow = reader.ReadSingle();
         }
         public int StormTime = 0;
         public bool translating = false;
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.localAI[1] = float.Lerp(Projectile.localAI[1], 1, 0.05f);
             if (runes == null)
                 SetupRunes();
             runes[0].Rotation += 0.02f * (1 + translateFlex * 9);
-            for (int i = 1; i < 10; i++)
-            {
+            for (int i = 1; i < 10; i++) {
                 runes[i].Rotation = runes[0].Rotation + i * (MathHelper.TwoPi) / 10f;
             }
-            for (int i = 0; i < 10; i++)
-            {
+            for (int i = 0; i < 10; i++) {
                 VoidMarksRune r = runes[i];
                 r.Glow *= 0.9f;
             }
             Player player = Main.player[Projectile.owner];
             Projectile.Center = player.MountedCenter + player.gfxOffY * Vector2.UnitY;
 
-            if (Projectile.Entropy().FirstFrames)
-            {
+            if (Projectile.Entropy().FirstFrames) {
                 float scale = 2;
                 //DOracleSlash Configure传NonPremultipliedBlend,同DedicatedOracle
                 PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center + new Vector2(0, -236), player.velocity, new Color(80, 40, 200), scale * 1f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
                 PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center + new Vector2(0, -236), player.velocity, Color.White, scale * 0.5f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
                 PRTLoader.NewParticle<PRT_ShineParticle>(Projectile.Center + new Vector2(0, -236), player.velocity, Color.White, scale * 0.3f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 10);
             }
-            if (player.HasBuff(ModContent.BuffType<VoidStorm>()))
-            {
+            if (player.HasBuff(ModContent.BuffType<VoidStorm>())) {
                 Projectile.timeLeft = 3;
             }
-            else
-            {
+            else {
                 return;
             }
             bool channel = player.channel && player.HeldItem.type == ModContent.ItemType<VoidRelics>();
-            if (channel)
-            {
+            if (channel) {
                 player.itemTime = player.itemAnimation = 3;
             }
             translating = false;
 
-            if (channel && !player.HasCooldown(AbyssalStorm.ID))
-            {
+            if (channel && !player.HasCooldown(AbyssalStorm.ID)) {
                 translating = true;
                 if (translateFlex >= 0.9f)
                     StormTime++;
             }
-            if ((StormTime > 6 * 60 || !channel) && StormTime > 0)
-            {
+            if ((StormTime > 6 * 60 || !channel) && StormTime > 0) {
                 translating = false;
                 player.channel = false;
                 player.AddCooldown(AbyssalStorm.ID, StormTime * 6);
@@ -203,34 +181,26 @@ namespace CalamityEntropy.Content.Items.Weapons
             float targetRot = (player.Entropy().MouseWorld - player.MountedCenter).ToRotation();
             Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, targetRot, 0.1f, false);
             Projectile.rotation = CEUtils.RotateTowardsAngle(Projectile.rotation, targetRot, 0.02f, true);
-            if (Translate)
-            {
+            if (Translate) {
                 if (translateFlex < 1)
                     translateFlex += 0.025f;
             }
-            else
-            {
+            else {
                 translateFlex *= 0.9f;
             }
-            if (Projectile.owner == Main.myPlayer)
-            {
+            if (Projectile.owner == Main.myPlayer) {
                 NPC target = Projectile.FindMinionTarget(3600);
-                if (true)
-                {
-                    if (translateFlex < 0.9f)
-                    {
+                if (true) {
+                    if (translateFlex < 0.9f) {
                         if (target != null)
                             Projectile.ai[0] += player.HasCooldown(AbyssalStorm.ID) ? 1.15f : 1;
                     }
-                    else
-                    {
+                    else {
                         Projectile.ai[0] += 10;
                     }
-                    if (Projectile.ai[0] >= 30)
-                    {
+                    if (Projectile.ai[0] >= 30) {
                         Projectile.ai[0] -= 30;
-                        if (Main.myPlayer == Projectile.owner)
-                        {
+                        if (Main.myPlayer == Projectile.owner) {
                             int id1 = Main.rand.Next(0, 9);
                             int id2 = Main.rand.Next(1, 10);
                             if (id1 == id2)
@@ -254,26 +224,22 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
         public bool Translate { get { return translating; } }
         public float translateFlex { get { return Projectile.ai[2]; } set { Projectile.ai[2] = value; } }
-        public static Vector2 GetCPos(float rot, float radius, Vector2 scaling, Vector2 offset, float FullRot)
-        {
+        public static Vector2 GetCPos(float rot, float radius, Vector2 scaling, Vector2 offset, float FullRot) {
             Vector2 p = (rot - FullRot).ToRotationVector2() * radius;
             p = (p * scaling).RotatedBy(FullRot) + offset.RotatedBy(FullRot);
             return p;
         }
-        public static void DrawRune(Vector2 pos, VoidMarksRune rune, float scale)
-        {
+        public static void DrawRune(Vector2 pos, VoidMarksRune rune, float scale) {
             int texCount = int.Max(0, int.Min(9, rune.ID));
             Texture2D tex = RuneTexs[texCount];
             Main.spriteBatch.UseAdditive();
-            for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver4)
-            {
+            for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver4) {
                 Main.spriteBatch.Draw(tex, pos + i.ToRotationVector2() * (2 + 4 * rune.Glow), null, Color.White * (0.5f + 0.5f * rune.Glow), 0, tex.Size().Half(), scale, SpriteEffects.None, 0);
                 Main.spriteBatch.Draw(tex, pos + i.ToRotationVector2() * (4 + 6 * rune.Glow), null, Color.White * (0.5f + 0.5f * rune.Glow), 0, tex.Size().Half(), scale, SpriteEffects.None, 0);
             }
             Main.spriteBatch.ExitShaderRegion();
             Main.spriteBatch.Draw(tex, pos, null, Color.White, 0, tex.Size().Half(), scale, SpriteEffects.None, 0);
-            if (rune.Glow > 0.05f)
-            {
+            if (rune.Glow > 0.05f) {
                 Main.spriteBatch.UseAdditive();
                 Main.spriteBatch.Draw(tex, pos, null, Color.White * rune.Glow, 0, tex.Size().Half(), scale, SpriteEffects.None, 0);
                 CEUtils.DrawGlow(pos + Main.screenPosition, new Color(240, 240, 255), 1.6f * rune.Glow, true, null, false);
@@ -285,11 +251,9 @@ namespace CalamityEntropy.Content.Items.Weapons
         public Vector2 circleScaling => Vector2.Lerp(Vector2.One, new Vector2(0.4f, 1f), translateFlex);
         public Vector2 circleOffset => Vector2.Lerp(Vector2.Zero, new Vector2(100, 0), translateFlex);
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.UseAdditive();
-            for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver4)
-            {
+            for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver4) {
                 Main.EntitySpriteDraw(Projectile.getDrawData(Color.White * 0.5f, 0, overridePos: Projectile.Center + new Vector2(0, -236) + (i + Main.GlobalTimeWrappedHourly * 6).ToRotationVector2() * 4));
                 Main.EntitySpriteDraw(Projectile.getDrawData(Color.White * 0.5f, 0, overridePos: Projectile.Center + new Vector2(0, -236) + (i + Main.GlobalTimeWrappedHourly * 6).ToRotationVector2() * 8));
                 Main.EntitySpriteDraw(Projectile.getDrawData(Color.White * 0.5f, 0, overridePos: Projectile.Center + new Vector2(0, -236) + (i - Main.GlobalTimeWrappedHourly * 6).ToRotationVector2() * 4));
@@ -298,8 +262,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Main.spriteBatch.ExitShaderRegion();
             Main.EntitySpriteDraw(Projectile.getDrawData(Color.White, 0, overridePos: Projectile.Center + new Vector2(0, -236)));
 
-            if (translateFlex > 0.02f)
-            {
+            if (translateFlex > 0.02f) {
                 Texture2D glow = CEExtraAssets.Glow2;
                 Vector2 glowPos = Projectile.Center + circleOffset.RotatedBy(rotation) - Main.screenPosition;
                 float glowScale = translateFlex;
@@ -318,8 +281,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             gd.Textures[0] = tx;
             {
                 List<Vector3> points = new List<Vector3>();
-                for (float i = 0; i <= 1; i += 0.005f)
-                {
+                for (float i = 0; i <= 1; i += 0.005f) {
                     float rot = i * MathHelper.TwoPi;
                     float m = (1f + 0.065f * (float)(Math.Sin(MathHelper.TwoPi * 6 * i - Main.GlobalTimeWrappedHourly * 4))) * (1 + translateFlex * 0.5f);
                     points.Add(new Vector3(GetCPos(rot, Radius * m, circleScaling, circleOffset, rotation), 1f + 0.28f * (float)(Math.Sin(MathHelper.TwoPi * 4 * i + Main.GlobalTimeWrappedHourly * 8)) * (1 + translateFlex * 0.5f)));
@@ -330,8 +292,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 float alpha = 1f;
                 float trailOffset = Main.GlobalTimeWrappedHourly * -4f;
                 Vector2 center = Projectile.GetOwner().GetDrawCenter();
-                for (int ii = 0; ii < points.Count; ii++)
-                {
+                for (int ii = 0; ii < points.Count; ii++) {
                     int i = ii;
                     Vector2 pos = points[i].xy();
                     float w = points[i].Z * 28 * (Radius / 160f);
@@ -356,8 +317,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             }
             {
                 List<Vector3> points = new List<Vector3>();
-                for (float i = 0; i <= 1; i += 0.005f)
-                {
+                for (float i = 0; i <= 1; i += 0.005f) {
                     float rot = i * MathHelper.TwoPi;
                     float m = (1.2f + 0.05f * (float)(Math.Sin(MathHelper.TwoPi * 8 * i + Main.GlobalTimeWrappedHourly * -3))) * (1 + translateFlex * 0.5f);
                     points.Add(new Vector3(GetCPos(rot, Radius * m, circleScaling, circleOffset, rotation), 0.6f + 0.44f * (float)(Math.Sin(MathHelper.TwoPi * 4 * i + Main.GlobalTimeWrappedHourly * 12)) * (1 + translateFlex * 0.5f)));
@@ -368,8 +328,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 float alpha = 1f;
                 float trailOffset = Main.GlobalTimeWrappedHourly * -2f;
                 Vector2 center = Projectile.GetOwner().GetDrawCenter();
-                for (int ii = 0; ii < points.Count; ii++)
-                {
+                for (int ii = 0; ii < points.Count; ii++) {
                     int i = ii;
                     Vector2 pos = points[i].xy();
                     alpha = points[i].Z;
@@ -395,8 +354,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             }
             {
                 List<Vector3> points = new List<Vector3>();
-                for (float i = 0; i <= 1; i += 0.005f)
-                {
+                for (float i = 0; i <= 1; i += 0.005f) {
                     float rot = i * MathHelper.TwoPi;
                     float m = (0.85f + 0.1f * (float)(Math.Sin(MathHelper.TwoPi * 8 * i - Main.GlobalTimeWrappedHourly * -3))) * (1 + translateFlex * 0.5f);
                     points.Add(new Vector3(GetCPos(rot, Radius * m, circleScaling, circleOffset, rotation), 0.6f + 0.44f * (float)(Math.Sin(MathHelper.TwoPi * 4 * i - Main.GlobalTimeWrappedHourly * 12)) * (1 + translateFlex * 0.5f)));
@@ -407,8 +365,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 float alpha = 1f;
                 float trailOffset = Main.GlobalTimeWrappedHourly * -2f;
                 Vector2 center = Projectile.GetOwner().GetDrawCenter();
-                for (int ii = 0; ii < points.Count; ii++)
-                {
+                for (int ii = 0; ii < points.Count; ii++) {
                     int i = ii;
                     Vector2 pos = points[i].xy();
                     alpha = points[i].Z;
@@ -437,26 +394,22 @@ namespace CalamityEntropy.Content.Items.Weapons
             #endregion
 
 
-            for (int i = 0; i < runes.Count; i++)
-            {
+            for (int i = 0; i < runes.Count; i++) {
                 DrawRune(Projectile.GetOwner().GetDrawCenter() + GetCPos(runes[i].Rotation, Radius, circleScaling, circleOffset, rotation) - Main.screenPosition, runes[i], Projectile.scale);
             }
             return false;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             EGlobalNPC.AddVoidTouch(target, 80, 10);
         }
     }
 
     public class VoisenBullet : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             ProjectileID.Sets.MinionShot[Type] = true;
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Summon;
             Projectile.width = 12;
             Projectile.height = 12;
@@ -469,19 +422,16 @@ namespace CalamityEntropy.Content.Items.Weapons
             Projectile.localNPCHitCooldown = 0;
             Projectile.MaxUpdates = 4;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return Projectile.position.getRectCentered(20 * Projectile.scale, 20 * Projectile.scale).Intersects(targetHitbox);
         }
         public List<Vector2> oldPos = new List<Vector2>();
         public List<float> oldRots = new List<float>();
-        public override void AI()
-        {
+        public override void AI() {
             if (Projectile.Entropy().FirstFrames)
                 Projectile.ai[0] = Main.rand.NextFloat(100);
             NPC target = Projectile.FindMinionTarget(3600);
-            if (Projectile.localAI[0]++ > 40 && target != null)
-            {
+            if (Projectile.localAI[0]++ > 40 && target != null) {
                 Projectile.velocity *= 0.97f;
                 Vector2 v = target.Center - Projectile.position;
                 v.Normalize();
@@ -494,21 +444,17 @@ namespace CalamityEntropy.Content.Items.Weapons
 
             oldPos.Add(Projectile.Center);
             oldRots.Add(Projectile.rotation);
-            if (oldPos.Count > 46)
-            {
+            if (oldPos.Count > 46) {
                 oldPos.RemoveAt(0);
                 oldRots.RemoveAt(0);
             }
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             EGlobalNPC.AddVoidTouch(target, 80, 5);
-            for (int i = 0; i < 6; i++)
-            {
+            for (int i = 0; i < 6; i++) {
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDust>(), -Projectile.velocity);
                 dust.scale = Main.rand.NextFloat(2f, 3f);
                 dust.velocity = new Vector2(24, 0).RotatedBy(CEUtils.randomRot()) * Main.rand.NextFloat(0.3f, 1f);
@@ -525,16 +471,14 @@ namespace CalamityEntropy.Content.Items.Weapons
             CEUtils.PlaySound("slice", Main.rand.NextFloat(1f, 1.3f), target.Center);
         }
         public override string Texture => CEUtils.WhiteTexPath;
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.UseBlendState(BlendState.Additive, SamplerState.LinearWrap);
             float alpha = 1;
             GraphicsDevice gd = Main.graphics.GraphicsDevice;
             List<ColoredVertex> ve = new List<ColoredVertex>();
             List<ColoredVertex> ve2 = new List<ColoredVertex>();
             float trailOffset = Main.GlobalTimeWrappedHourly * 6;
-            for (int i = 0; i < oldPos.Count; i++)
-            {
+            for (int i = 0; i < oldPos.Count; i++) {
                 alpha = i / (oldPos.Count - 1f);
                 Vector2 m = oldPos[i];
                 Vector2 l = oldRots[i].ToRotationVector2().RotatedBy(MathHelper.PiOver2);
@@ -552,8 +496,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                       new Vector3(alpha * 3 + trailOffset * 1.6f, 0, 1),
                       new Color(180, 180, 255) * alpha));
             }
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 Texture2D tx = CEExtraAssets.DeathRay;
                 gd.Textures[0] = tx;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);

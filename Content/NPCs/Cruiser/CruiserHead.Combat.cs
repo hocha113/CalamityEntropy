@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Buffs;
+﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.NPCs.Cruiser.Core;
 using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
@@ -23,21 +23,17 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             public int Timeleft = 200;
             public int ProjID = -1;
             public float dmgMult = 1;
-            public HitRecord(int id)
-            {
+            public HitRecord(int id) {
                 ProjID = id;
             }
         }
         public List<HitRecord> hitRecords = new List<HitRecord>();
 
         /// <summary>每帧把衰减系数往 1 拉回,顺手清掉已消失弹幕的记录</summary>
-        private void UpdateHitRecords()
-        {
-            for (int i = hitRecords.Count - 1; i >= 0; i--)
-            {
+        private void UpdateHitRecords() {
+            for (int i = hitRecords.Count - 1; i >= 0; i--) {
                 hitRecords[i].dmgMult = float.Lerp(hitRecords[i].dmgMult, 1, CruiserDirector.HitRecordDecay);
-                if (hitRecords[i].ProjID < 0 || !hitRecords[i].ProjID.ToProj().active)
-                {
+                if (hitRecords[i].ProjID < 0 || !hitRecords[i].ProjID.ToProj().active) {
                     hitRecords.RemoveAt(i);
                 }
             }
@@ -45,92 +41,73 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         #endregion
 
         #region 承伤
-        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers) {
             // 原灾厄 DR 减伤的本地结算
             modifiers.FinalDamage *= 1f - DamageReduction;
         }
 
-        public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers) {
             bool found = false;
             HitRecord hr = null;
-            foreach (var hrc in hitRecords)
-            {
-                if (hrc.ProjID == projectile.whoAmI)
-                {
+            foreach (var hrc in hitRecords) {
+                if (hrc.ProjID == projectile.whoAmI) {
                     found = true;
                     hr = hrc;
                     break;
                 }
             }
-            if (found)
-            {
+            if (found) {
                 modifiers.FinalDamage *= hr.dmgMult;
                 hr.dmgMult *= ProjDamageReduce;
                 if (!projectile.minion && (projectile.penetrate == -1 || projectile.penetrate > 4))
                     hr.dmgMult *= ProjDamageReduce;
-                if (!projectile.minion)
-                {
+                if (!projectile.minion) {
                     hr.Timeleft += 20;
-                    if (hr.Timeleft > 250)
-                    {
+                    if (hr.Timeleft > 250) {
                         hr.Timeleft = 250;
                     }
                 }
             }
-            else
-            {
+            else {
                 hitRecords.Add(new HitRecord(projectile.whoAmI));
             }
         }
 
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
-        {
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) {
             if (CurrentState == CruiserStateIndex.PhaseTransing)
                 return false;
             return noaitime <= 0 && CurrentState != CruiserStateIndex.BiteAndDash;
         }
-        public override bool CanHitNPC(NPC target)
-        {
+        public override bool CanHitNPC(NPC target) {
             return noaitime <= 0 && base.CanHitNPC(target);
         }
-        public override bool? CanBeHitByItem(Player player, Item item)
-        {
-            if (noaitime > 0)
-            {
+        public override bool? CanBeHitByItem(Player player, Item item) {
+            if (noaitime > 0) {
                 return false;
             }
             return base.CanBeHitByItem(player, item);
         }
-        public override bool? CanBeHitByProjectile(Projectile projectile)
-        {
-            if (noaitime > 0)
-            {
+        public override bool? CanBeHitByProjectile(Projectile projectile) {
+            if (noaitime > 0) {
                 return false;
             }
             return base.CanBeHitByProjectile(projectile);
         }
-        public override bool CanBeHitByNPC(NPC attacker)
-        {
+        public override bool CanBeHitByNPC(NPC attacker) {
             return noaitime <= 0 && base.CanBeHitByNPC(attacker);
         }
 
-        public override bool ModifyCollisionData(Rectangle victimHitbox, ref int immunityCooldownSlot, ref MultipliableFloat damageMultiplier, ref Rectangle npcHitbox)
-        {
+        public override bool ModifyCollisionData(Rectangle victimHitbox, ref int immunityCooldownSlot, ref MultipliableFloat damageMultiplier, ref Rectangle npcHitbox) {
             //aitype 从未被赋值,这一支到不了。照搬
-            if (aitype == 3)
-            {
+            if (aitype == 3) {
                 npcHitbox = new Rectangle(0, 0, 0, 0);
                 return true;
             }
             return false;
         }
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
-        {
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers) {
             //同上,死分支
-            if (aitype == 3)
-            {
+            if (aitype == 3) {
                 modifiers.SetMaxDamage(0);
                 modifiers.FinalDamage *= 0;
                 modifiers.DisableSound();
@@ -138,16 +115,13 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             }
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo) {
             target.AddBuff(Main.zenithWorld ? ModContent.BuffType<MaliciousCode>() : ModContent.BuffType<VoidTouch>(), 150);
         }
 
         /// <summary>血量归零改走 200 帧死亡演出,演出跑完才真死</summary>
-        public override bool CheckDead()
-        {
-            if (DeathAnmCount <= 0)
-            {
+        public override bool CheckDead() {
+            if (DeathAnmCount <= 0) {
                 return true;
             }
             DeathAnm = true;
@@ -161,29 +135,23 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             return false;
         }
 
-        public override bool CheckActive()
-        {
+        public override bool CheckActive() {
             return false;
         }
 
-        public override void HitEffect(NPC.HitInfo hit)
-        {
-            if (NPC.life <= 0 && DeathAnmCount <= 10 && !Main.dedServ)
-            {
-                if (!Main.zenithWorld)
-                {
+        public override void HitEffect(NPC.HitInfo hit) {
+            if (NPC.life <= 0 && DeathAnmCount <= 10 && !Main.dedServ) {
+                if (!Main.zenithWorld) {
                     CEUtils.PlaySound("VoidAttack", 1, NPC.Center);
                     //死亡爆散全走 EffectLoader RT 合成,shape=4 是旧 VoidParticles 几何,zenith 改 RealisticExplosion
-                    for (int i = 0; i < CruiserDirector.DeathVoidParticles; i++)
-                    {
+                    for (int i = 0; i < CruiserDirector.DeathVoidParticles; i++) {
                         var p = PRTLoader.NewParticle<PRT_Void>(NPC.Center, CEUtils.randomPointInCircle(CruiserDirector.DeathVoidScatter), Color.White, 1f);
                         p.Opacity = Main.rand.NextFloat(1f, 2f);
                         p.shape = 4;
                         p.vd = CruiserDirector.DeathVoidDrag;
                     }
                 }
-                else
-                {
+                else {
                     PRTLoader.NewParticle<PRT_RealisticExplosion>(NPC.Center, Vector2.Zero, Color.White, 10).Configure(1, true, PRTDrawModeEnum.AlphaBlend, 0, -1);
                 }
                 // 原灾厄全局屏震改自有 ScreenShaker

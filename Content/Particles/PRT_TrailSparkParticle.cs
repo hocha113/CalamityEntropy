@@ -15,8 +15,7 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             Glow = true;
             odp.Clear();   //轨迹点List,池化忘Clear视觉bug极难查
@@ -28,8 +27,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/Trail";
 
         public PRT_TrailSparkParticle Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -39,15 +37,13 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 30;   //到点Kill交给框架,AI不管自杀
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             //无条件每帧AddPoint,没有addPoint开关那套
             AddPoint(Position);
             Velocity += gravity * Vector2.UnitY * gA;
@@ -56,15 +52,13 @@ namespace CalamityEntropy.Content.Particles
                 gA += 0.025f;
         }
 
-        public void AddPoint(Vector2 pos)
-        {
+        public void AddPoint(Vector2 pos) {
             odp.Insert(0, pos);
             if (odp.Count > maxLength)
                 odp.RemoveAt(odp.Count - 1);
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             //odp<3在这return还没动SpriteBatch,别照搬Antivoid/DashBeam那套早退End
             if (odp.Count < 3)
                 return false;
@@ -79,16 +73,14 @@ namespace CalamityEntropy.Content.Particles
                 new Vector3(0f / odp.Count, 1, 1), b));
             ve.Add(new ColoredVertex(odp[0] - Main.screenPosition + (odp[1] - odp[0]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 4 * Scale,
                 new Vector3(0f / odp.Count, 0, 1), b));
-            for (int i = 1; i < odp.Count; i++)
-            {
+            for (int i = 1; i < odp.Count; i++) {
                 ve.Add(new ColoredVertex(odp[i] - Main.screenPosition + (odp[i] - odp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 4 * Scale,
                     new Vector3((float)i / odp.Count, 1, 1), b * ((odp.Count - i) / (float)odp.Count)));
                 ve.Add(new ColoredVertex(odp[i] - Main.screenPosition + (odp[i] - odp[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 4 * Scale,
                     new Vector3((float)i / odp.Count, 0, 1), b * ((odp.Count - i) / (float)odp.Count)));
             }
             GraphicsDevice gd = Main.graphics.GraphicsDevice;
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 gd.Textures[0] = PRTLoader.PRT_IDToTexture[ID];
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
             }

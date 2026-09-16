@@ -1,8 +1,8 @@
-using CalamityEntropy.Content.Projectiles;
+﻿using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -11,24 +11,20 @@ namespace CalamityEntropy.Content.Items.Accessories
         public static int ArrowDamage = 180;
         // 内置冷却 0.5 秒(rogue-weapons.md §三)
         public const int ArrowCooldown = 30;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 42;
             Item.height = 42;
             Item.value = Item.buyPrice(platinum: 1);
             Item.rare = ItemRarityID.Yellow;
             Item.accessory = true;
         }
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             // 新效果:命中概率天降圣光箭(潜行体系退役,原潜行字段写入移除)
             player.GetModPlayer<WorshipRelicPlayer>().equipped = true;
             player.Entropy().MaxBaitCharge += 1;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_ScoriaBar, CEID.Item_SolarVeil))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_ScoriaBar, CEID.Item_SolarVeil)) {
                 CreateRecipe()
                 .AddIngredient<ShadowPact>(1)
                 .AddIngredient(CEID.Item_ScoriaBar, 6)
@@ -51,28 +47,24 @@ namespace CalamityEntropy.Content.Items.Accessories
         public bool equipped;
         private int arrowCooldown;
 
-        public override void ResetEffects()
-        {
+        public override void ResetEffects() {
             equipped = false;
             if (arrowCooldown > 0)
                 arrowCooldown--;
         }
 
-        public override void OnHitNPCWithItem(Item item, NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPCWithItem(Item item, NPC target, NPC.HitInfo hit, int damageDone) {
             TryCallArrow(target);
         }
 
-        public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone) {
             // 圣光箭自身命中不再触发,避免连锁
             if (proj.ModProjectile is SolarArrow)
                 return;
             TryCallArrow(target);
         }
 
-        private void TryCallArrow(NPC target)
-        {
+        private void TryCallArrow(NPC target) {
             if (!equipped || arrowCooldown > 0 || Player.whoAmI != Main.myPlayer)
                 return;
             if (!Main.rand.NextBool(4))

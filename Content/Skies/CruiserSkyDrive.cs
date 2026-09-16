@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -34,8 +34,7 @@ namespace CalamityEntropy.Content.Skies
         private static bool leaseAlive;
 
         /// <summary>驱动源每帧续租(各端本地,同帧取最大)。</summary>
-        public static void Report(float drive, float agitation = 0f)
-        {
+        public static void Report(float drive, float agitation = 0f) {
             if (Main.dedServ)
                 return;
             driveLease = Math.Max(driveLease, MathHelper.Clamp(drive, 0f, 1f));
@@ -44,34 +43,29 @@ namespace CalamityEntropy.Content.Skies
         }
 
         /// <summary>一次性闪电爆发(登场揭幕、二阶段转换等瞬间拍点)。</summary>
-        public static void PushBurst(int bolts)
-        {
+        public static void PushBurst(int bolts) {
             if (Main.dedServ)
                 return;
             PendingBurst = Math.Max(PendingBurst, bolts);
         }
 
         /// <summary>CrSky 消费爆发条数。</summary>
-        internal static int ConsumeBurst()
-        {
+        internal static int ConsumeBurst() {
             int n = PendingBurst;
             PendingBurst = 0;
             return n;
         }
 
-        internal static void Update()
-        {
+        internal static void Update() {
             float target = 0f;
             if (Main.LocalPlayer.Entropy().crSky > 0)
                 target = LegacyDrive;
 
-            if (leaseAlive)
-            {
+            if (leaseAlive) {
                 target = Math.Max(target, driveLease);
                 Agitation = MathHelper.Lerp(Agitation, agitationLease, 0.2f);
             }
-            else
-            {
+            else {
                 Agitation = MathHelper.Lerp(Agitation, 0f, 0.1f);
             }
             driveLease = 0f;
@@ -82,8 +76,7 @@ namespace CalamityEntropy.Content.Skies
             Intensity = MathHelper.Clamp(Math.Abs(target - Intensity) <= RisePerTick ? target : Intensity + step, 0f, 1f);
         }
 
-        internal static void Reset()
-        {
+        internal static void Reset() {
             Intensity = 0f;
             Agitation = 0f;
             PendingBurst = 0;

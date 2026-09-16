@@ -19,8 +19,7 @@ namespace CalamityEntropy.Content.Particles
         public override bool CanPool => true;
 
         //池化复用,端点/颜色忘Reset=下一条轨迹从脏坐标出发
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             lifePercent = 0f;
             j = 0f;
@@ -36,8 +35,7 @@ namespace CalamityEntropy.Content.Particles
         //位置由贝塞尔插值算,框架自动Position+=Velocity必须关
         public override bool ShouldUpdatePosition() => false;
 
-        public PRT_Pixel Configure(Vector2 start, Vector2 mid, Vector2 end, float lifeTime, Color startColor, Color endColor)
-        {
+        public PRT_Pixel Configure(Vector2 start, Vector2 mid, Vector2 end, float lifeTime, Color startColor, Color endColor) {
             startPos = start;
             midPos = mid;
             endPos = end;
@@ -47,16 +45,14 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             PRTDrawMode = PRTDrawModeEnum.AlphaBlend;
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 200;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             lifePercent += j;
             if (lifePercent > 1)
                 lifePercent = 1;
@@ -64,8 +60,7 @@ namespace CalamityEntropy.Content.Particles
                 Kill();
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             Vector2 a = Vector2.Lerp(startPos, midPos, lifePercent);
             Vector2 b = Vector2.Lerp(midPos, endPos, lifePercent);
             Vector2 drawPos = Vector2.Lerp(a, b, lifePercent);

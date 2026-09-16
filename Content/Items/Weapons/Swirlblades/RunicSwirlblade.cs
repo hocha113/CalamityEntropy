@@ -1,10 +1,11 @@
-using CalamityEntropy.Assets.Register;
+﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Dusts;
 using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using CalamityEntropy.Core.Weapons;
 using InnoVault;
@@ -16,7 +17,6 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 {
@@ -25,8 +25,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         // 充能条 5 秒；原潜伏乘数 伤害0.6/弹速1.2 并入释放乘数
         public CEChargeProfile ChargeProfile => CEChargeProfile.ChargeBar(5f, 0.6f, 1.2f);
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 30;
             Item.width = 50;
@@ -46,20 +45,16 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Item.noMelee = true;
             Item.noUseGraphic = true;
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             bool ult = CEChargeWeapon.TryConsume(player, Item);
             int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            if (ult && p >= 0 && p < Main.maxProjectiles)
-            {
+            if (ult && p >= 0 && p < Main.maxProjectiles) {
                 CEChargeWeapon.Empower(p);
             }
             return false;
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_SamsaraSlicer))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_SamsaraSlicer)) {
                 CreateRecipe()
                 .AddIngredient(ModContent.ItemType<GlacierSwirlblade>())
                 .AddIngredient(CEID.Item_SamsaraSlicer)
@@ -75,8 +70,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
         }
-        public override bool RangedPrefix()
-        {
+        public override bool RangedPrefix() {
             return true;
         }
     }
@@ -86,8 +80,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         [VaultLoaden("CalamityEntropy/Assets/Extra/HighResFoggyCircleHardEdge")]
         internal static Asset<Texture2D> FoggyCircleTex;
         public override string Texture => CEUtils.ItemTexPath<RunicSwirlblade>(); public override int OldPosLength => 10;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             base.SetDefaults();
             Projectile.localNPCHitCooldown = 4;
             Projectile.tileCollide = false;
@@ -96,56 +89,45 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         public override float Radius => 170 * (Projectile.IsEmpowered() ? 1.2f : 1);
         public override int SpreadTime => Projectile.IsEmpowered() ? 50 : 13;
         public float ExtraRadius = 0;
-        public override void AI()
-        {
+        public override void AI() {
             base.AI();
-            if (BladeScale >= 0.2f)
-            {
+            if (BladeScale >= 0.2f) {
                 float particleRot = CEUtils.randomRot();
                 PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center + particleRot.ToRotationVector2() * Radius * BladeScale * Projectile.scale, particleRot.ToRotationVector2().RotatedBy(-1.86f) * Main.rand.NextFloat(12, 18), (Main.rand.NextBool() ? new Color(200, 220, 255) : Color.LightBlue) * BladeScale, Main.rand.NextFloat(0.6f, 1f) * 0.04f * BladeScale * Projectile.scale).Configure(false, Main.rand.Next(12, 16), new Vector2(0.18f, 1f), false, false);
             }
-            if (Projectile.IsEmpowered())
-            {
-                if (Spreaded)
-                {
+            if (Projectile.IsEmpowered()) {
+                if (Spreaded) {
                     ExtraRadius = float.Lerp(ExtraRadius, 1, 0.08f);
                     Projectile.localAI[1] += 1f / (24 * (Counter - FlyTime)) * 80f;
                 }
-                else
-                {
+                else {
                     ExtraRadius *= 0.86f;
                 }
             }
         }
         public static float ExtraRadMul = 1.3f;
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return new Circle(projHitbox.Center.ToVector2(), float.Max(Radius * BladeScale, Radius * ExtraRadMul * ExtraRadius) * Projectile.scale).Intersects(targetHitbox);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D tex = Projectile.GetTexture();
-            if (oldPos.Count > 1)
-            {
+            if (oldPos.Count > 1) {
                 List<CEUtils.VertexPointSets> vp = new();
                 List<Vector2> posC = new List<Vector2>();
-                for(int i = 1; i < oldPos.Count; i++)
-                {
+                for (int i = 1; i < oldPos.Count; i++) {
                     for (float j = 0.2f; j <= 1f; j += 0.2f)
                         posC.Add(Vector2.Lerp(oldPos[i - 1], oldPos[i], j));
                 }
 
                 Main.spriteBatch.UseBlendState(BlendState.Additive);
-                for (int i = 0; i < posC.Count; i++)
-                {
+                for (int i = 0; i < posC.Count; i++) {
                     float p = ((float)(1 + i) / posC.Count);
                     Color clr = Color.Aqua * 0.58f * p;
                     Main.spriteBatch.Draw(tex, posC[i] - Main.screenPosition, null, clr, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale * p, SpriteEffects.None, 0);
                 }
                 Main.spriteBatch.ExitShaderRegion();
 
-                for (int i = 0; i < posC.Count; i++)
-                {
+                for (int i = 0; i < posC.Count; i++) {
                     float p = (i / (posC.Count - 1f));
                     float alpha = p * 0.8f + 0.2f;
                     float width = p;
@@ -155,8 +137,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             }
             Main.EntitySpriteDraw(Projectile.getDrawData(lightColor, overridePos: Projectile.Center + (Spreaded ? CEUtils.randomPointInCircle(4) : Vector2.Zero)));
             Texture2D smear = CEExtraAssets.CircularSmear;
-            if (BladeScale > 0)
-            {
+            if (BladeScale > 0) {
                 float scale = Radius / 78f * Projectile.scale * BladeScale;
                 float time = Main.GlobalTimeWrappedHourly;
                 Vector2 o = smear.Size() * 0.5f;
@@ -167,8 +148,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(40, 125, 155) * Projectile.Opacity * BladeScale, time * 36f, o, scale * 0.96f, SpriteEffects.None, 0);
                 Main.spriteBatch.Draw(smear, Projectile.Center + CEUtils.randomPointInCircle(4 * Projectile.scale) - Main.screenPosition, null, new Color(40, 120, 155) * Projectile.Opacity * BladeScale, time * -36f, o, scale * 0.94f, SpriteEffects.None, 0);
             }
-            if(ExtraRadius > 0.01f)
-            {
+            if (ExtraRadius > 0.01f) {
                 float eRad = Radius * ExtraRadMul;
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, CommonEffects.rotation, Main.GameViewMatrix.TransformationMatrix);
@@ -176,8 +156,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 CommonEffects.rotation.Parameters["center"].SetValue(Vector2.One * 0.5f);
                 CommonEffects.rotation.Parameters["rad"].SetValue(Main.GlobalTimeWrappedHourly * 7);
                 Texture2D cTex = CEExtraAssets.Ray;
-                for(float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver4)
-                {
+                for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver4) {
                     float rt = i + Projectile.localAI[1];
                     Main.spriteBatch.Draw(cTex, Projectile.Center + rt.ToRotationVector2() * ExtraRadius * eRad * Projectile.scale * 0.7f - Main.screenPosition, null, new Color(200, 220, 255) * Projectile.Opacity * ExtraRadius, rt + MathHelper.Pi, cTex.Size() * 0.5f, new Vector2(0.38f, 1) * ExtraRadius * Radius * 0.9f / 78f * Projectile.scale * 0.7f, SpriteEffects.None, 0);
                     Main.spriteBatch.Draw(cTex, Projectile.Center + rt.ToRotationVector2() * ExtraRadius * eRad * Projectile.scale - Main.screenPosition, null, new Color(200, 220, 255) * Projectile.Opacity * ExtraRadius, rt, cTex.Size() * 0.5f, new Vector2(0.38f, 1) * ExtraRadius * Radius * 0.9f / 78f * Projectile.scale, SpriteEffects.None, 0);
@@ -193,35 +172,28 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
 
             return false;
         }
-        public override void OnSpread()
-        {
+        public override void OnSpread() {
             CEUtils.PlaySound("soulshine", Main.rand.NextFloat(0.6f, 0.8f), Projectile.Center);
             CEUtils.PlaySound("SCSlash", Main.rand.NextFloat(0.75f, 1f), Projectile.Center);
             for (int i = 0; i < 12; i++)
                 PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center, (i / 12f * MathHelper.TwoPi).ToRotationVector2() * Main.rand.NextFloat(0.6f, 1) * 8, Main.rand.NextBool() ? new Color(200, 220, 255) : Color.LightBlue, Radius / 2400f * Main.rand.NextFloat(0.65f, 1f)).Configure(false, 11, new Vector2(2.4f, 0.6f), true);
             int type = ModContent.ProjectileType<RunicSwirlbladeBullet>();
-            if (Main.myPlayer == Projectile.owner)
-            {
-                for (int i = 0; i < 8; i++)
-                {
+            if (Main.myPlayer == Projectile.owner) {
+                for (int i = 0; i < 8; i++) {
                     float rt = Main.rand.Next(0, 4) * MathHelper.PiOver2;
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + rt.ToRotationVector2() * Projectile.scale, rt.ToRotationVector2() * 9, type, Projectile.damage / 4, 6, Projectile.owner);
                 }
             }
         }
 
-        public override void OnRetract()
-        {
-            if (Projectile.IsEmpowered())
-            {
+        public override void OnRetract() {
+            if (Projectile.IsEmpowered()) {
                 CEUtils.PlaySound("soulshine", Main.rand.NextFloat(0.3f, 0.36f), Projectile.Center);
                 CEUtils.PlaySound("soulshine", Main.rand.NextFloat(1.85f, 2.2f), Projectile.Center);
                 CEUtils.PlaySound("CruiserDash", 1.2f, Projectile.Center);
                 int type = ModContent.ProjectileType<RunicSwirlbladeBullet>();
-                if (Main.myPlayer == Projectile.owner)
-                {
-                    for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver4)
-                    {
+                if (Main.myPlayer == Projectile.owner) {
+                    for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver4) {
                         float rt = i + Projectile.localAI[1];
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + rt.ToRotationVector2() * Radius * ExtraRadius * ExtraRadMul * 0.52f, rt.ToRotationVector2() * 10, type, Projectile.damage / 3, 6, Projectile.owner, 0, 0, 1);
                     }
@@ -229,11 +201,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff<SoulDisorder>(180);
-            if(!target.boss)
-            {
+            if (!target.boss) {
                 target.velocity *= 0.6f;
             }
             CEUtils.PlaySound("VividClarityBeamAppear", Main.rand.NextFloat(1.6f, 1.9f), target.Center, volume: 1f);
@@ -245,11 +215,9 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
     public class RunicSwirlbladeBullet : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.width = 12;
             Projectile.height = 12;
@@ -262,8 +230,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Projectile.localNPCHitCooldown = 0;
             Projectile.MaxUpdates = 4;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             if (Projectile.ai[2] > 0 && PreCounter < MovingTime * 4)
                 return false;
             if (PreCounter < 20)
@@ -273,21 +240,16 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
         public List<Vector2> oldPos = new List<Vector2>();
         public List<float> oldRots = new List<float>();
         public int PreCounter = 0;
-        public override void AI()
-        {
-            if (Projectile.Entropy().FirstFrames)
-            {
+        public override void AI() {
+            if (Projectile.Entropy().FirstFrames) {
                 Projectile.ai[0] = Main.rand.NextFloat(100);
                 //ai[2] 随生成包同步，各端首帧本地打标即可
-                if (Projectile.ai[2] > 0)
-                {
+                if (Projectile.ai[2] > 0) {
                     Projectile.SetEmpowered(false);
                     Projectile.scale *= 2f;
                 }
-                if (Projectile.IsEmpowered())
-                {
-                    for (int i = 0; i < 16; i++)
-                    {
+                if (Projectile.IsEmpowered()) {
+                    for (int i = 0; i < 16; i++) {
                         Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity, ModContent.DustType<SquashDust>(), Vector2.Zero);
                         dust.scale = Main.rand.NextFloat(0.2f, 1f) * 3f;
                         dust.velocity = Projectile.velocity.normalize().RotatedByRandom(0.22f) * Main.rand.NextFloat(0.5f, 1) * 50;
@@ -298,22 +260,17 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 }
             }
             PreCounter++;
-            if(PreCounter == 1 + MovingTime * 4)
-            {
-                if (!Projectile.IsEmpowered()) 
-                {
+            if (PreCounter == 1 + MovingTime * 4) {
+                if (!Projectile.IsEmpowered()) {
                     NPC target = Projectile.FindMinionTarget(3600);
-                    if (target != null)
-                    {
+                    if (target != null) {
                         Projectile.velocity = (target.Center - Projectile.Center).normalize() * 10;
-                    } 
+                    }
                 }
             }
-            if (Projectile.IsEmpowered() || PreCounter > MovingTime * 4)
-            {
+            if (Projectile.IsEmpowered() || PreCounter > MovingTime * 4) {
                 NPC target = Projectile.FindMinionTarget(1600);
-                if (Projectile.localAI[0]++ > 28 && target != null)
-                {
+                if (Projectile.localAI[0]++ > 28 && target != null) {
                     Projectile.velocity *= 0.97f;
                     Vector2 v = target.Center - Projectile.position;
                     v.Normalize();
@@ -324,38 +281,32 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                 Projectile.rotation = adv.ToRotation();
                 Projectile.position += adv;
             }
-            else
-            {
-                if (Projectile.localAI[1]++ % 6 == 0 && Main.rand.NextBool(3))
-                {
+            else {
+                if (Projectile.localAI[1]++ % 6 == 0 && Main.rand.NextBool(3)) {
                     float r = MathHelper.PiOver4 * Main.rand.Next(-1, 2);
                     Projectile.velocity = Projectile.velocity.RotatedBy(r);
                 }
                 Vector2 adv = Projectile.velocity * 0.6f;
                 Projectile.rotation = adv.ToRotation();
                 Projectile.position += adv;
-                if(Main.rand.NextBool(3))
+                if (Main.rand.NextBool(3))
                     PRTLoader.NewParticle<PRT_RuneParticle>(Projectile.Center, Vector2.Zero, new Color(200, 230, 255), Main.rand.NextFloat(0.4f, 0.6f) * Projectile.scale).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, 46);
             }
 
             oldPos.Add(Projectile.Center);
             oldRots.Add(Projectile.rotation);
-            if (oldPos.Count > 46)
-            {
+            if (oldPos.Count > 46) {
                 oldPos.RemoveAt(0);
                 oldRots.RemoveAt(0);
             }
         }
         public int MovingTime = Main.rand.Next(12, 20);
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             target.AddBuff<SoulDisorder>(180);
-            for (int i = 0; i < 6; i++)
-            {
+            for (int i = 0; i < 6; i++) {
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDust>(), -Projectile.velocity);
                 dust.scale = Main.rand.NextFloat(2f, 2.4f) * Projectile.scale;
                 dust.velocity = new Vector2(20, 0).RotatedBy(CEUtils.randomRot()) * Main.rand.NextFloat(0.3f, 1f) * Projectile.scale;
@@ -366,16 +317,14 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             float r = CEUtils.randomRot();
             CEUtils.PlaySound("VividClarityBeamAppear", Main.rand.NextFloat(1.6f, 1.9f), target.Center, 12, 0.4f);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.spriteBatch.UseBlendState(BlendState.Additive, SamplerState.LinearWrap);
             float alpha = 1;
             GraphicsDevice gd = Main.graphics.GraphicsDevice;
             List<ColoredVertex> ve = new List<ColoredVertex>();
             List<ColoredVertex> ve2 = new List<ColoredVertex>();
             float trailOffset = Main.GlobalTimeWrappedHourly * 6;
-            for (int i = 0; i < oldPos.Count; i++)
-            {
+            for (int i = 0; i < oldPos.Count; i++) {
                 alpha = i / (oldPos.Count - 1f);
                 Vector2 m = oldPos[i];
                 Vector2 l = oldRots[i].ToRotationVector2().RotatedBy(MathHelper.PiOver2);
@@ -393,8 +342,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
                       new Vector3(alpha * 3 + trailOffset * 1.6f, 0, 1),
                       new Color(235, 240, 255) * alpha));
             }
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 Texture2D tx = CEExtraAssets.DeathRay;
                 gd.Textures[0] = tx;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);

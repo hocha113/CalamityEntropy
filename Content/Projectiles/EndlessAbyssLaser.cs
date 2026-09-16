@@ -20,12 +20,10 @@ namespace CalamityEntropy.Content.Projectiles
         internal static Effect AbyssalLaserShader;
         [VaultLoaden("CalamityEntropy/Assets/Extra/clback2")]
         internal static Asset<Texture2D> LaserBack2Tex;
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             EGlobalNPC.AddVoidTouch(target, 20, 1, 600, 20);
         }
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 6000;
         }
@@ -35,8 +33,7 @@ namespace CalamityEntropy.Content.Projectiles
         public int length = 2500;
         public float width = 0;
         public int aicounter = 0;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -51,16 +48,13 @@ namespace CalamityEntropy.Content.Projectiles
 
         }
         public bool st = true;
-        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
-        {
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI) {
             behindNPCs.Add(index);
         }
         public LoopSound sound = null;
         public LoopSound sound2 = null;
-        public override void AI()
-        {
-            if (st)
-            {
+        public override void AI() {
+            if (st) {
                 SoundEffect sf = CalamityEntropy.ealaserSound;
                 SoundEffect sf2 = CalamityEntropy.ealaserSound2;
                 sound = new LoopSound(sf);
@@ -68,39 +62,30 @@ namespace CalamityEntropy.Content.Projectiles
                 sound2 = new LoopSound(sf2);
                 sound2.play();
                 st = false;
-                for (int ii = 0; ii < 100; ii++)
-                {
+                for (int ii = 0; ii < 100; ii++) {
                     counter++;
                     var rand = Main.rand;
                     int tspeed = 46;
-                    if (counter % 1 == 0)
-                    {
+                    if (counter % 1 == 0) {
                         p.Add(new Vector2(0, rand.Next(0, 41) - 20));
                     }
-                    if (counter % 6 == 0)
-                    {
+                    if (counter % 6 == 0) {
                         l.Add(new Vector2(0, rand.Next(0, 17) - 8));
                     }
-                    for (int i = 0; i < p.Count; i++)
-                    {
+                    for (int i = 0; i < p.Count; i++) {
                         p[i] = p[i] + new Vector2(tspeed, 0);
                     }
-                    for (int i = 0; i < l.Count; i++)
-                    {
+                    for (int i = 0; i < l.Count; i++) {
                         l[i] = l[i] + new Vector2(tspeed, 0);
                     }
-                    for (int i = 0; i < p.Count; i++)
-                    {
-                        if (p[i].X > length)
-                        {
+                    for (int i = 0; i < p.Count; i++) {
+                        if (p[i].X > length) {
                             p.RemoveAt(i);
                             break;
                         }
                     }
-                    for (int i = 0; i < l.Count; i++)
-                    {
-                        if (l[i].X > length)
-                        {
+                    for (int i = 0; i < l.Count; i++) {
+                        if (l[i].X > length) {
                             l.RemoveAt(i);
                             break;
                         }
@@ -109,33 +94,27 @@ namespace CalamityEntropy.Content.Projectiles
             }
             sound.timeleft = 2;
             sound2.timeleft = 2;
-            if (CEUtils.getDistance(Projectile.Center, Main.LocalPlayer.Center) > 600)
-            {
-                if (CEUtils.getDistance(Projectile.Center, Main.LocalPlayer.Center) > 2000)
-                {
+            if (CEUtils.getDistance(Projectile.Center, Main.LocalPlayer.Center) > 600) {
+                if (CEUtils.getDistance(Projectile.Center, Main.LocalPlayer.Center) > 2000) {
                     sound.setVolume(0);
                     sound2.setVolume(0);
                 }
-                else
-                {
+                else {
                     sound.setVolume(1 - (float)(CEUtils.getDistance(Projectile.Center, Main.LocalPlayer.Center) - 600) / 1400f);
                     sound2.setVolume(1 - (float)(CEUtils.getDistance(Projectile.Center, Main.LocalPlayer.Center) - 600) / 1400f);
                 }
             }
-            else
-            {
+            else {
                 sound.setVolume(1);
                 sound2.setVolume(1);
 
             }
 
             CEUtils.SetShake(Projectile.Center, 4.5f, 1800);
-            if (Main.myPlayer == Projectile.owner)
-            {
+            if (Main.myPlayer == Projectile.owner) {
                 Player owner = Main.LocalPlayer;
                 Vector2 nv = (Main.MouseWorld - owner.MountedCenter).SafeNormalize(Vector2.One) * 16;
-                if (nv != Projectile.velocity)
-                {
+                if (nv != Projectile.velocity) {
                     Projectile.netUpdate = true;
                 }
                 Projectile.velocity = nv;
@@ -143,43 +122,35 @@ namespace CalamityEntropy.Content.Projectiles
             }
             Projectile.rotation = Projectile.velocity.ToRotation();
             Projectile.Center = Projectile.owner.ToPlayer().MountedCenter + Projectile.owner.ToPlayer().gfxOffY * Vector2.UnitY + Projectile.rotation.ToRotationVector2() * 14;
-            if (Projectile.timeLeft < 6)
-            {
+            if (Projectile.timeLeft < 6) {
                 width -= 1f / 7f;
             }
-            else if (Projectile.timeLeft > 6)
-            {
+            else if (Projectile.timeLeft > 6) {
                 width += 1f / 7f;
 
             }
-            if (Projectile.timeLeft == 6 && Projectile.owner.ToPlayer().channel)
-            {
+            if (Projectile.timeLeft == 6 && Projectile.owner.ToPlayer().channel) {
                 Projectile.timeLeft++;
             }
             aicounter++;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return width >= 0.3f && CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * length, targetHitbox, 50);
         }
         float yx = 0;
-        public List<Vector2> getSamplePoints()
-        {
+        public List<Vector2> getSamplePoints() {
             List<Vector2> p = new List<Vector2>();
-            for (int i = 0; i <= length; i++)
-            {
+            for (int i = 0; i <= length; i++) {
                 p.Add(Projectile.Center + Projectile.velocity.normalize() * i);
             }
             return p;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             float w = width * 0.7f;
             yx += 0.036f;
             List<Vector2> points = this.getSamplePoints();
             points.Insert(0, Projectile.Center - Projectile.velocity);
-            if (points.Count < 2)
-            {
+            if (points.Count < 2) {
                 return false;
             }
             Main.spriteBatch.End();
@@ -194,11 +165,9 @@ namespace CalamityEntropy.Content.Projectiles
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = new Color(255, 255, 255);
                 float p = -Main.GlobalTimeWrappedHourly * 2;
-                for (int i = 1; i < points.Count; i++)
-                {
+                for (int i = 1; i < points.Count; i++) {
                     float wd = 1;
-                    if (i < 360)
-                    {
+                    if (i < 360) {
                         wd = new Vector2(1, 0).RotatedBy((i / 360f) * MathHelper.PiOver2).Y;
                     }
                     wd += i * 0.001f;
@@ -216,8 +185,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                 SpriteBatch sb = Main.spriteBatch;
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
@@ -232,11 +200,9 @@ namespace CalamityEntropy.Content.Projectiles
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = new Color(255, 235, 235);
                 float p = -Main.GlobalTimeWrappedHourly * 2;
-                for (int i = 1; i < points.Count; i++)
-                {
+                for (int i = 1; i < points.Count; i++) {
                     float wd = 1;
-                    if (i < 360)
-                    {
+                    if (i < 360) {
                         wd = new Vector2(1, 0).RotatedBy((i / 360f) * MathHelper.PiOver2).Y;
                     }
                     wd += i * 0.001f;
@@ -254,8 +220,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                 SpriteBatch sb = Main.spriteBatch;
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                 }
@@ -269,11 +234,9 @@ namespace CalamityEntropy.Content.Projectiles
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = new Color(255, 255, 255) * 0.7f;
                 float p = -Main.GlobalTimeWrappedHourly * 4;
-                for (int i = 1; i < points.Count; i++)
-                {
+                for (int i = 1; i < points.Count; i++) {
                     float wd = 1;
-                    if (i < 360)
-                    {
+                    if (i < 360) {
                         wd = new Vector2(1, 0).RotatedBy((i / 360f) * MathHelper.PiOver2).Y;
                     }
                     wd += i * 0.001f;
@@ -291,8 +254,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                 SpriteBatch sb = Main.spriteBatch;
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     gd.Textures[0] = tx;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
 
@@ -303,11 +265,9 @@ namespace CalamityEntropy.Content.Projectiles
                 List<ColoredVertex> ve = new List<ColoredVertex>();
                 Color b = new Color(255, 255, 255) * 0.75f;
                 float p = -Main.GlobalTimeWrappedHourly * 4;
-                for (int i = 1; i < points.Count; i++)
-                {
+                for (int i = 1; i < points.Count; i++) {
                     float wd = 1;
-                    if (i < 360)
-                    {
+                    if (i < 360) {
                         wd = new Vector2(1, 0).RotatedBy((i / 360f) * MathHelper.PiOver2).Y;
                     }
                     wd += i * 0.001f;
@@ -325,8 +285,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                 SpriteBatch sb = Main.spriteBatch;
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     gd.Textures[0] = CEExtraAssets.Streak1;
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
 

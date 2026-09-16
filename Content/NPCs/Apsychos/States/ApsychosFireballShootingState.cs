@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.NPCs.Apsychos.Core;
+﻿using CalamityEntropy.Content.NPCs.Apsychos.Core;
 using CalamityEntropy.Content.Projectiles.ApsychosProjs;
 using InnoVault.StateMachines;
 using Terraria;
@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.States
     {
         public override ApsychosStateIndex StateIndex => ApsychosStateIndex.FireballShooting;
 
-        public override IVaultState<ApsychosStateContext> OnUpdate(ApsychosStateContext ctx)
-        {
+        public override IVaultState<ApsychosStateContext> OnUpdate(ApsychosStateContext ctx) {
             NPC npc = ctx.Npc;
             NPC tail = ctx.Tail;
             Player player = ctx.Target;
@@ -31,26 +30,21 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.States
             tail.Center = Vector2.Lerp(tail.Center, npc.Center + npc.rotation.ToRotationVector2() * ApsychosDirector.FireballTailReach * npc.scale, ApsychosDirector.FireballTailLerp * enrange);
 
             int total = ApsychosDirector.FireballVolleys;
-            if (Timer > ApsychosDirector.FireballWindupBase / enrange)
-            {
-                if (ctx.Num2-- <= 0f)
-                {
-                    if (ctx.Num1 <= total)
-                    {
+            if (Timer > ApsychosDirector.FireballWindupBase / enrange) {
+                if (ctx.Num2-- <= 0f) {
+                    if (ctx.Num1 <= total) {
                         ctx.Num2 = ApsychosDirector.FireballIntervalBase / enrange;
                         ctx.Num1++;
                         CEUtils.PlaySound("YharonFireball1", 0.9f, npc.Center);
                         CEUtils.PlaySound("YharonFireball1", 0.9f, npc.Center);
                         Vector2 muzzle = tail.Center + tail.rotation.ToRotationVector2() * ApsychosDirector.FireballMuzzleOffset * npc.scale;
                         Vector2 dir = tail.rotation.ToRotationVector2();
-                        if (ctx.Phase == 1)
-                        {
+                        if (ctx.Phase == 1) {
                             Shoot<ApsychosFireball>(ctx, muzzle, dir * ApsychosDirector.FireballSpeedCenterP1 * enrange, ApsychosDirector.FireballDamageMult, ctx.Phase);
                             Shoot<ApsychosFireball>(ctx, muzzle, dir.RotatedBy(ApsychosDirector.FireballSpreadP1) * ApsychosDirector.FireballSpeedSideP1 * enrange, ApsychosDirector.FireballDamageMult, ctx.Phase);
                             Shoot<ApsychosFireball>(ctx, muzzle, dir.RotatedBy(-ApsychosDirector.FireballSpreadP1) * ApsychosDirector.FireballSpeedSideP1 * enrange, ApsychosDirector.FireballDamageMult, ctx.Phase);
                         }
-                        else
-                        {
+                        else {
                             Shoot<ApsychosFireball>(ctx, muzzle, dir * ApsychosDirector.FireballSpeedP2 * enrange, ApsychosDirector.FireballDamageMult, ctx.Phase);
                             Shoot<ApsychosFireball>(ctx, muzzle, dir.RotatedBy(ApsychosDirector.FireballSpreadP2) * ApsychosDirector.FireballSpeedP2 * enrange, ApsychosDirector.FireballDamageMult, ctx.Phase);
                             Shoot<ApsychosFireball>(ctx, muzzle, dir.RotatedBy(-ApsychosDirector.FireballSpreadP2) * ApsychosDirector.FireballSpeedP2 * enrange, ApsychosDirector.FireballDamageMult, ctx.Phase);
@@ -61,16 +55,13 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.States
                     }
                 }
             }
-            if (ctx.Num1 > total)
-            {
+            if (ctx.Num1 > total) {
                 ctx.Num3++;
-                if (ctx.Num3 > ApsychosDirector.FireballTailoffBase / enrange)
-                {
+                if (ctx.Num3 > ApsychosDirector.FireballTailoffBase / enrange) {
                     return NextAttack(ctx);
                 }
             }
-            else
-            {
+            else {
                 ctx.TailLight += ApsychosDirector.FireballTailLightRise;
             }
             tail.velocity *= ApsychosDirector.FireballTailDrag;

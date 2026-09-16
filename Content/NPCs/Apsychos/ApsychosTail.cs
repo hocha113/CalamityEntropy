@@ -1,4 +1,4 @@
-using CalamityEntropy.Core.AI;
+﻿using CalamityEntropy.Core.AI;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -12,8 +12,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
     /// </summary>
     public class ApsychosTail : ModNPC
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.npcFrameCount[NPC.type] = 1;
             NPCID.Sets.MustAlwaysDraw[NPC.type] = true;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
@@ -21,8 +20,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             NPCID.Sets.NoMultiplayerSmoothingByType[Type] = true;
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             NPC.width = 50;
             NPC.height = 50;
             NPC.damage = 32;
@@ -42,21 +40,16 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => true;
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo) {
             target.AddBuff(BuffID.OnFire3, 180);
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             CEBossHost.RunAnchoredPartFrame(NPC);
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                if (!owner.active || owner == null || owner.ModNPC == null || owner.ModNPC is not Apsychos)
-                {
+            if (Main.netMode != NetmodeID.MultiplayerClient) {
+                if (!owner.active || owner == null || owner.ModNPC == null || owner.ModNPC is not Apsychos) {
                     NPC.active = false;
-                    if (Main.dedServ)
-                    {
+                    if (Main.dedServ) {
                         NPC.netUpdate = true;
                         NPC.netSpam = 0;
                     }
@@ -66,8 +59,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
 
         public override bool CheckActive() => !owner.active;
 
-        public override bool ModifyCollisionData(Rectangle victimHitbox, ref int immunityCooldownSlot, ref MultipliableFloat damageMultiplier, ref Rectangle npcHitbox)
-        {
+        public override bool ModifyCollisionData(Rectangle victimHitbox, ref int immunityCooldownSlot, ref MultipliableFloat damageMultiplier, ref Rectangle npcHitbox) {
             npcHitbox = npcHitbox.Center.ToVector2().getRectCentered(npcHitbox.Width * NPC.scale, npcHitbox.Height * NPC.scale);
             return true;
         }

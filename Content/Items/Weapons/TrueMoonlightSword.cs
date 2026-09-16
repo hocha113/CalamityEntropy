@@ -17,8 +17,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 {
     public class TrueMoonlightSword : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.damage = 130;
             Item.DamageType = ModContent.GetInstance<MeleeDamageClass>();
             Item.width = 48;
@@ -38,19 +37,16 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.scale *= 0.66f;
         }
         public int atkType = 1;
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, atkType == 0 ? -1 : atkType);
             atkType *= -1;
             return false;
         }
 
-        public override bool MeleePrefix()
-        {
+        public override bool MeleePrefix() {
             return true;
         }
-        public override void AddRecipes()
-        {
+        public override void AddRecipes() {
             CreateRecipe().AddIngredient<MoonlightSword>()
                 .AddIngredient(ItemID.ChlorophyteBar, 20)
                 .AddIngredient(ItemID.SoulofMight, 10)
@@ -65,15 +61,13 @@ namespace CalamityEntropy.Content.Items.Weapons
         [VaultLoaden("CalamityEntropy/Assets/MotionTrail2")]
         internal static Asset<Texture2D> AssetsMotionTrail2Tex;
         List<float> odr = new List<float>();
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 12;
 
         }
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 1;
             Projectile.height = 1;
@@ -92,15 +86,12 @@ namespace CalamityEntropy.Content.Items.Weapons
         public bool init = true;
         public bool shoot = true;
         public int stopTime = -1;
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (stopTime < 0)
-            {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
+            if (stopTime < 0) {
                 stopTime = 6 * Projectile.MaxUpdates;
                 ScreenShaker.AddShake(new ScreenShaker.NoDirQuickShake(8));
             }
-            for (int i = 0; i < 16; i++)
-            {
+            for (int i = 0; i < 16; i++) {
                 //带Cal后缀是CalamityPorts,Configure签名对齐Calamity原构造不是统一五参
                 PRTLoader.NewParticle<PRT_GlowSparkCal>(target.Center, Projectile.velocity.normalize().RotatedByRandom(0.46f) * Main.rand.NextFloat(16, 30), Color.LightSeaGreen * 1.6f, Projectile.scale * 0.06f).Configure(false, 14, new Vector2(0.3f, 1), false, false);
             }
@@ -109,28 +100,23 @@ namespace CalamityEntropy.Content.Items.Weapons
 
             CEUtils.PlaySound("truemoonlighthit", Main.rand.NextFloat(1.3f, 1.5f), target.Center, 4, 0.6f * CEUtils.WeapSound);
         }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
             modifiers.FinalDamage *= Main.rand.NextFloat(1, 1.25f);
         }
-        public override void AI()
-        {
+        public override void AI() {
             Player owner = Projectile.GetOwner();
             float MaxUpdateTimes = owner.itemTimeMax * Projectile.MaxUpdates;
             float progress = (counter / MaxUpdateTimes);
-            if (stopTime <= 0)
-            {
+            if (stopTime <= 0) {
                 counter++;
             }
-            if (init)
-            {
+            if (init) {
                 CEUtils.PlaySound("moonlightswordattack" + Main.rand.Next(2), 1.2f + Projectile.ai[0] * 0.08f, Projectile.Center);
                 float scale_ = owner.HeldItem.scale;
                 owner.ApplyMeleeScale(ref scale_);
                 Projectile.scale *= scale_;
                 init = false;
-                if (Main.myPlayer == Projectile.owner)
-                {
+                if (Main.myPlayer == Projectile.owner) {
                     Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 2, ModContent.ProjectileType<TrueMoonlightShoot>(), Projectile.damage, Projectile.knockBack / 2, Projectile.owner);
                 }
             }
@@ -140,60 +126,49 @@ namespace CalamityEntropy.Content.Items.Weapons
             alpha = 1;
             scale = 1f;
             float cr = MathHelper.ToRadians(60);
-            if (progress <= 0.5f)
-            {
+            if (progress <= 0.5f) {
                 Projectile.rotation = Projectile.velocity.ToRotation() + (RotF * -0.5f + CEUtils.Parabola(progress, RotF + cr)) * Projectile.ai[0];
             }
-            else
-            {
+            else {
                 Projectile.rotation = Projectile.velocity.ToRotation() + (RotF * 0.5f + cr - CEUtils.GetRepeatedCosFromZeroToOne(2 * (progress - 0.5f), 1) * cr) * Projectile.ai[0];
             }
             Projectile.Center = Projectile.GetOwner().MountedCenter;
 
 
-            if (odr.Count > 2600)
-            {
+            if (odr.Count > 2600) {
                 odr.RemoveAt(0);
             }
-            if (Projectile.velocity.X > 0)
-            {
+            if (Projectile.velocity.X > 0) {
                 owner.direction = 1;
                 owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - (float)(Math.PI * 0.5f));
             }
-            else
-            {
+            else {
                 owner.direction = -1;
                 owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - (float)(Math.PI * 0.5f));
             }
             owner.heldProj = Projectile.whoAmI;
             owner.itemTime = 2;
             owner.itemAnimation = 2;
-            if (counter > MaxUpdateTimes)
-            {
+            if (counter > MaxUpdateTimes) {
                 owner.itemTime = 1;
                 owner.itemAnimation = 1;
                 Projectile.Kill();
             }
-            if (stopTime > 0)
-            {
+            if (stopTime > 0) {
                 stopTime--;
             }
-            else
-            {
+            else {
                 odr.Add(Projectile.rotation);
-                if (odr.Count > 16)
-                {
+                if (odr.Count > 16) {
                     odr.RemoveAt(0);
                 }
             }
         }
-        public override bool ShouldUpdatePosition()
-        {
+        public override bool ShouldUpdatePosition() {
             return false;
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             {
                 Texture2D tex = Projectile.GetTexture();
                 Texture2D trail = CEExtraAssets.MotionTrail2;
@@ -201,8 +176,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 float MaxUpdateTimes = Projectile.GetOwner().itemTimeMax * Projectile.MaxUpdates;
                 float progress = (counter / MaxUpdateTimes);
 
-                for (int i = 0; i < odr.Count; i++)
-                {
+                for (int i = 0; i < odr.Count; i++) {
                     Color b = new Color(220, 200, 255);
                     ve.Add(new ColoredVertex(Projectile.Center - Main.screenPosition + (new Vector2(202 * Projectile.scale, 0).RotatedBy(odr[i])),
                           new Vector3((i) / ((float)odr.Count - 1), 1, 1),
@@ -211,8 +185,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                           new Vector3((i) / ((float)odr.Count - 1), 0, 1),
                           b));
                 }
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     var gd = Main.graphics.GraphicsDevice;
                     SpriteBatch sb = Main.spriteBatch;
                     Effect shader = CEEffectAssets.SwordTrail2;
@@ -260,8 +233,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 float progress = (counter / MaxUpdateTimes);
                 float rot = Projectile.rotation - Projectile.ai[0] * (0.8f - progress * 1.6f);
 
-                for (float i = -1; i <= 1; i += 0.01f)
-                {
+                for (float i = -1; i <= 1; i += 0.01f) {
                     p2.Add(((i * 1f).ToRotationVector2() * new Vector2(1.2f, 1)).RotatedBy(rot) * 10);
                     p1.Add(((i * 1.4f).ToRotationVector2() * new Vector2(1.2f, 1)).RotatedBy(rot) * 240);
                 }
@@ -272,8 +244,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                 if (a < 0)
                     a = 0;
                 a *= 0.32f;
-                for (int i = 0; i < p1.Count; i++)
-                {
+                for (int i = 0; i < p1.Count; i++) {
                     Color b = new Color(230, 220, 255) * a;
                     ve.Add(new ColoredVertex(Projectile.Center + rot.ToRotationVector2() * -10 * Projectile.scale - Main.screenPosition + p1[i] * Projectile.scale,
                           new Vector3((i) / ((float)p1.Count - 1), 1, 1),
@@ -282,8 +253,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                           new Vector3((i) / ((float)p1.Count - 1), 0, 1),
                           b));
                 }
-                if (ve.Count >= 3)
-                {
+                if (ve.Count >= 3) {
                     var gd = Main.graphics.GraphicsDevice;
                     SpriteBatch sb = Main.spriteBatch;
                     Effect shader = CEEffectAssets.SwordTrail2;
@@ -304,20 +274,17 @@ namespace CalamityEntropy.Content.Items.Weapons
             }
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * (252 * (Projectile.ai[0] == 2 ? 1.24f : 1)) * Projectile.scale * scale, targetHitbox, 64);
         }
-        public override void CutTiles()
-        {
+        public override void CutTiles() {
             Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * (252 * (Projectile.ai[0] == 2 ? 1.24f : 1)) * Projectile.scale * scale, 54, DelegateMethods.CutTiles);
         }
     }
     public class TrueMoonlightShoot : ModProjectile
     {
         public override string Texture => CEUtils.WhiteTexPath;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = 360;
             Projectile.height = 360;
@@ -330,37 +297,31 @@ namespace CalamityEntropy.Content.Items.Weapons
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
-        public override bool? CanHitNPC(NPC target)
-        {
+        public override bool? CanHitNPC(NPC target) {
             if (Projectile.timeLeft < 16)
                 return false;
             return base.CanHitNPC(target);
         }
-        public override void AI()
-        {
+        public override void AI() {
             Projectile.rotation = Projectile.velocity.ToRotation();
             Projectile.Opacity = Projectile.timeLeft / 30f;
 
             Projectile.velocity *= 0.96f;
         }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
 
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Texture2D trail = CEExtraAssets.MotionTrail5;
             List<ColoredVertex> ve = new List<ColoredVertex>();
             List<Vector2> p1 = new List<Vector2>();
             List<Vector2> p2 = new List<Vector2>();
-            for (float i = -1; i <= 1; i += 0.01f)
-            {
+            for (float i = -1; i <= 1; i += 0.01f) {
                 p2.Add(((i * 1f).ToRotationVector2() * new Vector2(1.2f, 0.7f * Projectile.Opacity)).RotatedBy(Projectile.rotation) * 10);
                 p1.Add(((i * 1.6f).ToRotationVector2() * new Vector2(1.2f, 0.7f * Projectile.Opacity)).RotatedBy(Projectile.rotation) * 256);
             }
-            for (int i = 0; i < p1.Count; i++)
-            {
+            for (int i = 0; i < p1.Count; i++) {
                 Color b = new Color(230, 220, 255);
                 ve.Add(new ColoredVertex(Projectile.Center + Projectile.rotation.ToRotationVector2() * -180 - Main.screenPosition + p1[i],
                       new Vector3((i) / ((float)p1.Count - 1), 1, 1),
@@ -369,8 +330,7 @@ namespace CalamityEntropy.Content.Items.Weapons
                       new Vector3((i) / ((float)p1.Count - 1), 0, 1),
                       b));
             }
-            if (ve.Count >= 3)
-            {
+            if (ve.Count >= 3) {
                 var gd = Main.graphics.GraphicsDevice;
                 SpriteBatch sb = Main.spriteBatch;
                 Effect shader = CEEffectAssets.SwordTrail2;
@@ -389,8 +349,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             }
             return false;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             //AbyssalLine/Abyssal有的走EffectLoader RT合成,Configure只管常规参数
             var line1 = PRTLoader.NewParticle<PRT_AbyssalLine>(target.Center, Vector2.Zero, new Color(220, 220, 255), 1f);
             line1.xadd = 0.8f;
@@ -411,8 +370,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             line3.spawnColor = new Color(212, 255, 212);
             line3.endColor = Color.DarkBlue;
             line3.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, CEUtils.randomRot());
-            for (int i = 0; i < 26; i++)
-            {
+            for (int i = 0; i < 26; i++) {
                 PRTLoader.NewParticle<PRT_HeavySmokeCal>(target.Center, Projectile.velocity * 0.7f + CEUtils.randomVec(12), new Color(140, 150, 255), 0.8f).Configure(1, 40, 0.04f, true, 0, true);
             }
             CEUtils.PlaySound("HammerShoot" + Main.rand.Next(1, 4), Main.rand.NextFloat(1f, 1.4f), Projectile.Center);

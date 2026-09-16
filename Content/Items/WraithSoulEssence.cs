@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Rarities;
+﻿using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.DataStructures;
@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.Items
     /// </summary>
     public class WraithSoulEssence : ModItem
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Item.ResearchUnlockCount = 25;
             ItemID.Sets.SortingPriorityMaterials[Type] = 104;
             ItemID.Sets.AnimatesAsSoul[Type] = true;
@@ -23,8 +22,7 @@ namespace CalamityEntropy.Content.Items
             Main.RegisterItemAnimation(Type, new DrawAnimationVertical(6, 4));
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 40;
             Item.height = 52;
             Item.maxStack = 9999;
@@ -32,16 +30,13 @@ namespace CalamityEntropy.Content.Items
             Item.rare = ModContent.RarityType<AbyssalBlue>();
         }
 
-        public override void Update(ref float gravity, ref float maxFallSpeed)
-        {
+        public override void Update(ref float gravity, ref float maxFallSpeed) {
             float brightness = Main.essScale * Main.rand.NextFloat(0.9f, 1.1f);
             Lighting.AddLight(Item.Center, 0.25f * brightness, 0.6f * brightness, 0.7f * brightness);
         }
 
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_AscendantSpiritEssence))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_AscendantSpiritEssence)) {
                 CreateRecipe()
                     .AddIngredient(CEID.Item_AscendantSpiritEssence)
                     .Register();

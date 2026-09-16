@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.Particles
         public override string Texture => "CalamityEntropy/Content/Particles/AbyssalLine";
 
         public PRT_BlackKnifeSlash Configure(float opacity, bool glow, PRTDrawModeEnum mode,
-            float rotation = 0f, int lifetime = -1)
-        {
+            float rotation = 0f, int lifetime = -1) {
             Opacity = opacity;
             Glow = glow;
             PRTDrawMode = mode;
@@ -25,21 +24,18 @@ namespace CalamityEntropy.Content.Particles
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 200;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             //1f-LifetimeCompletion是已过比例,Parabola(_,7)管斩击宽度鼓包,跟旧EParticle一致
             width = CEUtils.Parabola(1f - LifetimeCompletion, 7);
         }
 
-        public override bool PreDraw(SpriteBatch sb)
-        {
+        public override bool PreDraw(SpriteBatch sb) {
             //就一趟拉伸Draw,无shader无TriangleStrip无PostDraw第二刀
             //Texture挂AbyssalLine真画ACircle,跟ShadeDash白图占位同理,别"修好"成AbyssalLine
             Texture2D tex = PRTExtraTextures.ACircle.Value;

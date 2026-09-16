@@ -1,4 +1,4 @@
-using CalamityEntropy.Content.Particles.CalamityPorts;
+﻿using CalamityEntropy.Content.Particles.CalamityPorts;
 using InnoVault.PRT;
 using System.Collections.Generic;
 using Terraria;
@@ -9,8 +9,7 @@ namespace CalamityEntropy.Content.Items.Accessories
 {
     public class ExquisiteCrown : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 26;
             Item.height = 16;
             Item.defense = 1;
@@ -19,47 +18,38 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.accessory = true;
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.Entropy().exquisiteCrown = true;
         }
     }
 
     public class RubyCrown : ModProjectile
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Summon, false, -1);
             Projectile.width = Projectile.height = 12;
             Projectile.timeLeft = 10;
             Projectile.minion = true;
             Projectile.minionSlots = 0;
         }
-        public override bool? CanDamage()
-        {
+        public override bool? CanDamage() {
             return false;
         }
-        public override void AI()
-        {
-            if (!Projectile.GetOwner().dead && Projectile.OwnerEntropy().exquisiteCrown)
-            {
+        public override void AI() {
+            if (!Projectile.GetOwner().dead && Projectile.OwnerEntropy().exquisiteCrown) {
                 Projectile.timeLeft = 3;
             }
-            else
-            {
+            else {
                 Projectile.Kill();
                 return;
             }
             Player player = Projectile.GetOwner();
 
             Projectile.Center = player.MountedCenter + player.gfxOffY * Vector2.UnitY + Vector2.UnitY * -24;
-            if (Projectile.ai[0]-- <= -60)
-            {
-                if (Main.myPlayer == Projectile.owner)
-                {
+            if (Projectile.ai[0]-- <= -60) {
+                if (Main.myPlayer == Projectile.owner) {
                     NPC target = Projectile.FindMinionTarget(1400, true);
-                    if (target != null)
-                    {
+                    if (target != null) {
                         Projectile.ai[0] = 0;
                         int dmg = ((int)(player.GetTotalDamage(DamageClass.Summon).ApplyTo(30))).ApplyAccArmorDamageBonus(Projectile.GetOwner());
                         Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, (target.Center - Projectile.Center).normalize() * 12, ModContent.ProjectileType<CrownRubyProj>(), dmg, 6, player.whoAmI);
@@ -71,30 +61,25 @@ namespace CalamityEntropy.Content.Items.Accessories
             Projectile.rotation = 0;
 
         }
-        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
-        {
+        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI) {
             overPlayers.Add(index);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.EntitySpriteDraw(Projectile.getDrawData(lightColor));
             return false;
         }
     }
     public class CrownRubyProj : ModProjectile
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.FriendlySetDefaults(DamageClass.Summon, true, 1);
             Projectile.width = Projectile.height = 16;
             Projectile.MaxUpdates = 5;
             Projectile.light = 0.42f;
             Projectile.timeLeft = 300;
         }
-        public override void AI()
-        {
-            if (Projectile.localAI[2]++ == 0)
-            {
+        public override void AI() {
+            if (Projectile.localAI[2]++ == 0) {
                 //皇冠弹丸拖尾,ImpactCal+CritSparkCal都是CalamityPorts
                 PRTLoader.NewParticle<PRT_ImpactCal>(Projectile.Center, Vector2.Zero, new Color(255, 80, 80), 0.6f).Configure(0, 12);
             }
@@ -106,21 +91,17 @@ namespace CalamityEntropy.Content.Items.Accessories
                 dust.noGravity = true;
                 dust.velocity *= 0.3f;
             }*/
-            if (!Main.dedServ)
-            {
-                for (float i = 0; i <= 1; i += 0.25f)
-                {
+            if (!Main.dedServ) {
+                for (float i = 0; i <= 1; i += 0.25f) {
                     Vector2 velocity1 = CEUtils.randomPointInCircle(3);
                     PRTLoader.NewParticle<PRT_CritSparkCal>(Projectile.Center - Projectile.velocity * i + Projectile.velocity * 1, velocity1, Color.White * 0.6f, 0.5f).Configure(Color.Crimson, 12, 0.1f, 3f, Main.rand.NextFloat(0f, 0.01f));
                 }
             }
         }
-        public override void OnKill(int timeLeft)
-        {
+        public override void OnKill(int timeLeft) {
             PRTLoader.NewParticle<PRT_ImpactCal>(Projectile.Center, Vector2.Zero, new Color(255, 80, 80), 0.6f).Configure(0, 12);
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             Main.EntitySpriteDraw(Projectile.getDrawData(Color.White));
             return false;
         }

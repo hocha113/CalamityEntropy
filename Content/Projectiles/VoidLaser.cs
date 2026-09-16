@@ -1,8 +1,6 @@
 ﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
-using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -14,8 +12,7 @@ namespace CalamityEntropy.Content.Projectiles
 
     public class VoidLaser : ModProjectile
     {
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.projFrames[Projectile.type] = 1;
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 8000;
         }
@@ -23,8 +20,7 @@ namespace CalamityEntropy.Content.Projectiles
         List<Vector2> l = new List<Vector2>();
         public int length = 2000;
         public float width = 0;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 1;
             Projectile.height = 1;
             Projectile.friendly = true;
@@ -44,24 +40,19 @@ namespace CalamityEntropy.Content.Projectiles
         public bool nst = true;
         // 持续屏震：存活期间每帧刷新幅度，死亡后自然衰减
         private ScreenShaker.ScreenShake shake = null;
-        public override void AI()
-        {
-            if (nst)
-            {
+        public override void AI() {
+            if (nst) {
                 nst = false;
-                for (int ii = 0; ii < 80; ii++)
-                {
+                for (int ii = 0; ii < 80; ii++) {
                     l.Add(new Vector2(24, Main.rand.Next(0, 21) - 10));
                     l.Add(new Vector2(57, Main.rand.Next(0, 21) - 10));
-                    for (int i = 0; i < l.Count; i++)
-                    {
+                    for (int i = 0; i < l.Count; i++) {
                         l[i] = l[i] + new Vector2(66, 0);
                     }
 
                 }
             }
-            if (!Main.dedServ)
-            {
+            if (!Main.dedServ) {
                 float shakeAmp = Utils.Remap(Main.LocalPlayer.Distance(Projectile.Center), 1800f, 1000f, 0f, 1.5f);
                 if (shake == null || !shake.active)
                     shake = ScreenShaker.AddShake(Vector2.Zero, shakeAmp);
@@ -71,75 +62,59 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.Center = ((int)(Projectile.ai[2])).ToProj_Identity().Center + ((int)(Projectile.ai[2])).ToProj_Identity().rotation.ToRotationVector2() * 60;
             Projectile.rotation = ((int)(Projectile.ai[2])).ToProj_Identity().rotation;
             Projectile.velocity = Vector2.Zero;
-            if (Projectile.timeLeft < 20)
-            {
+            if (Projectile.timeLeft < 20) {
                 width -= 1f / 20f;
             }
-            else
-            {
-                if (width < 1)
-                {
+            else {
+                if (width < 1) {
                     width += 1f / 8f;
                 }
             }
             Vector2 checkPos = Projectile.Center;
             dmgLength = 0;
             nlist.Clear();
-            foreach (NPC n in Main.npc)
-            {
-                if (n.active && !n.friendly && !n.dontTakeDamage)
-                {
-                    if (CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * 2000, n.Hitbox, 46))
-                    {
+            foreach (NPC n in Main.npc) {
+                if (n.active && !n.friendly && !n.dontTakeDamage) {
+                    if (CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * 2000, n.Hitbox, 46)) {
                         nlist.Add(n.whoAmI);
                     }
                 }
             }
-            for (int i = 0; i < 100; i++)
-            {
+            for (int i = 0; i < 100; i++) {
                 Rectangle rect = new Rectangle((int)checkPos.X - 30, (int)checkPos.Y - 30, 60, 60);
                 bool flag = true;
-                foreach (int id in nlist)
-                {
+                foreach (int id in nlist) {
                     NPC npc = id.ToNPC();
-                    if (rect.Intersects(npc.Hitbox))
-                    {
+                    if (rect.Intersects(npc.Hitbox)) {
                         flag = false;
                         break;
                     }
                 }
                 dmgLength += 20;
-                if (!flag)
-                {
+                if (!flag) {
                     dmgLength += 20;
                     break;
                 }
                 checkPos += Projectile.rotation.ToRotationVector2() * 20;
             }
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             EGlobalNPC.AddVoidTouch(target, 12, 1, 600, 8);
             target.Entropy().vtnoparticle = target.Entropy().VoidTouchTime + 2;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return CEUtils.LineThroughRect(Projectile.Center, Projectile.Center + Projectile.rotation.ToRotationVector2() * dmgLength, targetHitbox, (int)(26 * Projectile.scale));
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             counter++;
             l.Add(new Vector2(24, Main.rand.Next(0, 21) - 10));
             l.Add(new Vector2(57, Main.rand.Next(0, 21) - 10));
-            for (int i = 0; i < l.Count; i++)
-            {
+            for (int i = 0; i < l.Count; i++) {
                 l[i] = l[i] + new Vector2(66, 0);
             }
 
-            for (int i = 0; i < l.Count; i++)
-            {
-                if (l[i].X > 2000)
-                {
+            for (int i = 0; i < l.Count; i++) {
+                if (l[i].X > 2000) {
                     l.RemoveAt(i);
                     break;
                 }
@@ -159,10 +134,8 @@ namespace CalamityEntropy.Content.Projectiles
             sb.Draw(ball, Projectile.Center - Main.screenPosition, null, Color.Blue * 0.86f, Projectile.rotation, ball.Size() / 2, dw * 1.3f * width, SpriteEffects.None, 0);
             sb.Draw(ball, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, ball.Size() / 2, dw * 1.2f * width, SpriteEffects.None, 0);
 
-            foreach (Vector2 ps in l)
-            {
-                if (ps.X < dmgLength - 20)
-                {
+            foreach (Vector2 ps in l) {
+                if (ps.X < dmgLength - 20) {
                     Main.spriteBatch.Draw(tl, Projectile.Center + (ps * new Vector2(1, width)).RotatedBy(Projectile.rotation) - Main.screenPosition, null, new Color(0, 0, 255), Projectile.rotation, tl.Size() / 2, new Vector2(1f, 1.5f * dw * width), SpriteEffects.None, 0);
                     Main.spriteBatch.Draw(tl, Projectile.Center + (ps * new Vector2(1, width)).RotatedBy(Projectile.rotation) - Main.screenPosition, null, new Color(0, 0, 255) * 0.1f, Projectile.rotation, tl.Size() / 2, new Vector2(1f, 1.5f * dw * width), SpriteEffects.None, 0);
 

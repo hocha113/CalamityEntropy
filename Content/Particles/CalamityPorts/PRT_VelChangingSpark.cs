@@ -1,4 +1,4 @@
-using InnoVault.PRT;
+﻿using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -18,8 +18,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
         public override bool CanPool => true;
 
-        public override void Reset()
-        {
+        public override void Reset() {
             base.Reset();
             TexPath = "CalamityEntropy/Assets/Particles/BloomCircle";
             InitialColor = default;
@@ -36,8 +35,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
         public PRT_VelChangingSpark Configure(Vector2 endVelocity, string texPath, int lifetime, Vector2 stretch,
             bool useAdditiveBlend = true, bool glowCenter = false, float extraRotation = 0f,
-            float shrinkSpeed = 0f, float lerpRate = 0.1f)
-        {
+            float shrinkSpeed = 0f, float lerpRate = 0.1f) {
             EndVelocity = endVelocity;
             TexPath = texPath;
             Stretch = stretch;
@@ -52,22 +50,19 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             return this;
         }
 
-        public override void SetProperty()
-        {
+        public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
             if (Lifetime <= 0)
                 Lifetime = 30;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             if ((float)Time / Lifetime < 0.5f)
                 Scale *= 0.95f;
 
             Color = Color.Lerp(InitialColor, Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D));
 
-            if ((float)Time / Lifetime < 0.8f)
-            {
+            if ((float)Time / Lifetime < 0.8f) {
                 Velocity *= 0.95f;
                 EndVelocity *= 0.95f;
             }
@@ -78,17 +73,14 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
             Stretch.Y *= 1f + 0.2f * ShrinkSpeed;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch) {
             Texture2D texture = PRTPathTextures.Get(TexPath);   //动态TexPath,PRTPathTextures缓存,别每帧Request
             Vector2 drawScale = Stretch * Scale;
 
             float scaleMult = 1f;
-            if (Main.zenithWorld)
-            {
+            if (Main.zenithWorld) {
                 DateTime day = DateTime.Now;
-                if (day.DayOfWeek == DayOfWeek.Tuesday)
-                {
+                if (day.DayOfWeek == DayOfWeek.Tuesday) {
                     //是的,天顶周二画猛犸象,Calamity原版彩蛋,CustomPulse那边也有,别删
                     Texture2D joke = PRTSharedAssets.MammothParticle.Value;
                     scaleMult = MathHelper.Lerp(texture.Size().X / joke.Size().X, texture.Size().Y / joke.Size().Y, 0.5f);
@@ -99,8 +91,7 @@ namespace CalamityEntropy.Content.Particles.CalamityPorts
 
             spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color, Rotation, texture.Size() * 0.5f,
                 drawScale * scaleMult, SpriteEffects.None, 0f);
-            if (GlowCenter)
-            {
+            if (GlowCenter) {
                 spriteBatch.Draw(texture, Position - Main.screenPosition, null,
                     Color.Lerp(Color.Lerp(Color, Color.White, 0.8f), Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D)),
                     Rotation, texture.Size() * 0.5f, drawScale * 0.8f * scaleMult, SpriteEffects.None, 0f);

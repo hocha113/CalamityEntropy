@@ -1,7 +1,6 @@
 ﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,8 +14,7 @@ namespace CalamityEntropy.Content.Projectiles
     {
         public int timeleft;
         public int index;
-        public ActiveAcc(int id)
-        {
+        public ActiveAcc(int id) {
             index = id;
             timeleft = Main.rand.Next(3, 30) * 60;
         }
@@ -25,8 +23,7 @@ namespace CalamityEntropy.Content.Projectiles
     {
         public int maxAccs = 1;
         public List<ActiveAcc> accs = new List<ActiveAcc>();
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Projectile.width = 4;
             Projectile.height = 4;
             Projectile.friendly = true;
@@ -35,56 +32,44 @@ namespace CalamityEntropy.Content.Projectiles
             Projectile.timeLeft = 2;
         }
         public int accChangeCd = 0;
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(accs.Count);
-            for (int i = 0; i < accs.Count; i++)
-            {
+            for (int i = 0; i < accs.Count; i++) {
                 writer.Write(accs[i].index);
                 writer.Write(accs[i].timeleft);
             }
         }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             accs.Clear();
             maxAccs = reader.ReadInt32();
-            for (int i = 0; i < maxAccs; i++)
-            {
+            for (int i = 0; i < maxAccs; i++) {
                 accs.Add(new ActiveAcc(reader.ReadInt32()) { timeleft = reader.ReadInt32() });
             }
         }
-        public override void AI()
-        {
+        public override void AI() {
 
             Player player = Projectile.owner.ToPlayer();
             Vector2 targetPos = player.Center + new Vector2(100 * player.direction, -100);
-            if (player.dead)
-            {
+            if (player.dead) {
                 Projectile.Kill();
                 return;
             }
             Projectile.velocity = (targetPos - Projectile.Center) * 0.14f;
-            if (player.Entropy().visualWispLantern)
-            {
+            if (player.Entropy().visualWispLantern) {
                 Lighting.AddLight(Projectile.Center, 1.2f, 0.8f, 1.2f);
             }
-            if (Main.myPlayer == Projectile.owner)
-            {
-                if (Main.GameUpdateCount % 60 == 0)
-                {
+            if (Main.myPlayer == Projectile.owner) {
+                if (Main.GameUpdateCount % 60 == 0) {
                     Projectile.netUpdate = true;
                 }
-                for (int i = accs.Count - 1; i >= 0; i--)
-                {
-                    if (accs[i].timeleft-- <= 0)
-                    {
+                for (int i = accs.Count - 1; i >= 0; i--) {
+                    if (accs[i].timeleft-- <= 0) {
                         accs.RemoveAt(i);
                         Projectile.netUpdate = true;
                     }
                 }
                 accChangeCd--;
-                if (accChangeCd <= 0 || maxAccs == 0)
-                {
+                if (accChangeCd <= 0 || maxAccs == 0) {
                     // 2026-08-31 平衡案:随机生效1~2个饰品,75%取1个、25%取2个
                     maxAccs = Main.rand.NextBool(4) ? 2 : 1;
                     accChangeCd = Main.rand.Next(3, 16) * 60;
@@ -93,32 +78,25 @@ namespace CalamityEntropy.Content.Projectiles
                 List<Item> CanApply = new List<Item>();
                 List<int> index = new List<int>();
                 int accCountInv = 0;
-                for (int i = 0; i < player.inventory.Length; i++)
-                {
+                for (int i = 0; i < player.inventory.Length; i++) {
                     Item item = player.inventory[i];
 
-                    if (item.active && item.accessory)
-                    {
+                    if (item.active && item.accessory) {
                         bool skip = false;
-                        foreach (var pp in CanApply)
-                        {
-                            if (pp.type == item.type)
-                            {
+                        foreach (var pp in CanApply) {
+                            if (pp.type == item.type) {
                                 skip = true;
                                 break;
                             }
                         }
                         // 2026-08-31 平衡案:无法同时生效同一类饰品(互斥判定与装备栏一致)
-                        foreach (ActiveAcc acc in accs)
-                        {
-                            if (!ItemLoader.CanAccessoryBeEquippedWith(player.inventory[acc.index], item))
-                            {
+                        foreach (ActiveAcc acc in accs) {
+                            if (!ItemLoader.CanAccessoryBeEquippedWith(player.inventory[acc.index], item)) {
                                 skip = true;
                                 break;
                             }
                         }
-                        if (skip)
-                        {
+                        if (skip) {
                             continue;
                         }
                         accCountInv++;
@@ -126,16 +104,13 @@ namespace CalamityEntropy.Content.Projectiles
                         CanApply.Add(item);
                     }
                 }
-                if (maxAccs > accCountInv)
-                {
+                if (maxAccs > accCountInv) {
                     maxAccs = accCountInv;
                 }
-                while (accs.Count > maxAccs)
-                {
+                while (accs.Count > maxAccs) {
                     accs.RemoveAt(0);
                 }
-                while (accs.Count < maxAccs)
-                {
+                while (accs.Count < maxAccs) {
                     int id = Main.rand.Next(0, CanApply.Count);
                     accs.Add(new ActiveAcc(index[id]));
                     index.RemoveAt(id);
@@ -143,67 +118,52 @@ namespace CalamityEntropy.Content.Projectiles
                     Projectile.netUpdate = true;
                 }
             }
-            if (player.Entropy().accWispLantern || player.Entropy().visualWispLantern)
-            {
+            if (player.Entropy().accWispLantern || player.Entropy().visualWispLantern) {
                 Projectile.timeLeft = 2;
             }
-            for (int i = accs.Count - 1; i >= 0; i--)
-            {
-                if (!player.inventory[accs[i].index].active || !player.inventory[accs[i].index].accessory)
-                {
+            for (int i = accs.Count - 1; i >= 0; i--) {
+                if (!player.inventory[accs[i].index].active || !player.inventory[accs[i].index].accessory) {
                     accs.RemoveAt(i);
-                    if (Main.myPlayer == Projectile.owner)
-                    {
+                    if (Main.myPlayer == Projectile.owner) {
                         Projectile.netUpdate = true;
                     }
                 }
             }
         }
-        public void applyEffects()
-        {
+        public void applyEffects() {
             Player player = Projectile.owner.ToPlayer();
             List<Item> applied = new List<Item>();
-            foreach (ActiveAcc ac in accs)
-            {
-                if (player.Entropy().accWispLantern)
-                {
+            foreach (ActiveAcc ac in accs) {
+                if (player.Entropy().accWispLantern) {
                     bool f = true;
-                    foreach (Item i in applied)
-                    {
+                    foreach (Item i in applied) {
                         if (!ItemLoader.CanAccessoryBeEquippedWith(player.inventory[ac.index], i))
                             f = false;
                     }
-                    if (f)
-                    {
+                    if (f) {
                         player.ApplyEquipFunctional(player.inventory[ac.index], !player.Entropy().visualWispLantern);
                         applied.Add(player.inventory[ac.index]);
                     }
                 }
-                if (player.Entropy().visualWispLantern)
-                {
+                if (player.Entropy().visualWispLantern) {
                     player.ApplyEquipVanity(player.inventory[ac.index]);
                 }
             }
 
         }
-        public override bool? CanCutTiles()
-        {
+        public override bool? CanCutTiles() {
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) {
             return false;
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
+        public override bool PreDraw(ref Color lightColor) {
             float yoffset = (float)Math.Cos(Main.GameUpdateCount * 0.05f) * 9;
-            if (Projectile.owner.ToPlayer().Entropy().visualWispLantern)
-            {
+            if (Projectile.owner.ToPlayer().Entropy().visualWispLantern) {
                 Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
                 Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition + Vector2.UnitY * yoffset, null, Color.White, Projectile.rotation, tex.Size() / 2, Projectile.scale, SpriteEffects.None);
                 List<Item> items = new List<Item>();
-                foreach (var ac in accs)
-                {
+                foreach (var ac in accs) {
                     int i = ac.index;
                     Item item = Projectile.owner.ToPlayer().inventory[i];
                     items.Add(item);
@@ -218,8 +178,7 @@ namespace CalamityEntropy.Content.Projectiles
 
                 shader.CurrentTechnique.Passes["EnchantedPass"].Apply();
 
-                for (int i = 0; i < items.Count; i++)
-                {
+                for (int i = 0; i < items.Count; i++) {
                     Item item = items[i];
                     Vector2 pos = Projectile.Center - Main.screenPosition + rot.ToRotationVector2() * 56;
 

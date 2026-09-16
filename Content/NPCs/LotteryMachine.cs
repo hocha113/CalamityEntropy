@@ -1,12 +1,12 @@
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items;
-using CalamityEntropy.Content.Items.Potions;
-using CalamityEntropy.Core.CalamityRef;
-using CalamityEntropy.Content.NPCs.FriendFinderNPC;
 using CalamityEntropy.Content.Items.Donator;
+using CalamityEntropy.Content.Items.Potions;
 using CalamityEntropy.Content.Items.Weapons.Fractal;
+using CalamityEntropy.Content.NPCs.FriendFinderNPC;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
+using CalamityEntropy.Core.CalamityRef;
 using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -26,8 +26,7 @@ namespace CalamityEntropy.Content.NPCs
     {
         public int item = 0;
         public int stack = 1;
-        public RewardPoolItem(int n, int s)
-        {
+        public RewardPoolItem(int n, int s) {
             this.item = n;
             this.stack = s;
         }
@@ -35,20 +34,16 @@ namespace CalamityEntropy.Content.NPCs
     public class RewardPool
     {
         public List<RewardPoolItem> items = new List<RewardPoolItem>();
-        public void addPool(RewardPool pool)
-        {
-            foreach (RewardPoolItem item in pool.items)
-            {
+        public void addPool(RewardPool pool) {
+            foreach (RewardPoolItem item in pool.items) {
                 this.items.Add(item);
             }
         }
-        public void Add(RewardPoolItem item)
-        {
+        public void Add(RewardPoolItem item) {
             this.items.Add(item);
 
         }
-        public RewardPoolItem RandomItem()
-        {
+        public RewardPoolItem RandomItem() {
             return this.items[Main.rand.Next(0, this.items.Count)];
         }
     }
@@ -109,14 +104,12 @@ namespace CalamityEntropy.Content.NPCs
         public string sayStr = "";
 
         //奖池条目:灾厄在场且该内容存在时用灾厄物,否则用 4.0 的自有/原版替身
-        private static void AddCalOrOwn(RewardPool pool, int calType, int calStack, int ownType, int ownStack)
-        {
+        private static void AddCalOrOwn(RewardPool pool, int calType, int calStack, int ownType, int ownStack) {
             bool useCal = CERef.Has && calType > 0;
             pool.Add(new RewardPoolItem(useCal ? calType : ownType, useCal ? calStack : ownStack));
         }
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(open);
             writer.Write(sameItemCount);
             writer.Write(lastCItem);
@@ -131,8 +124,7 @@ namespace CalamityEntropy.Content.NPCs
 
         }
 
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             open = reader.ReadBoolean();
             sameItemCount = reader.ReadInt32();
             lastCItem = reader.ReadInt32();
@@ -146,14 +138,12 @@ namespace CalamityEntropy.Content.NPCs
             sayStr = reader.ReadString();
         }
 
-        public override void SetStaticDefaults()
-        {
+        public override void SetStaticDefaults() {
             Main.npcFrameCount[NPC.type] = 1;
             this.HideFromBestiary();
         }
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             NPC.width = 176;
             NPC.height = 176;
             NPC.damage = 0;
@@ -169,22 +159,18 @@ namespace CalamityEntropy.Content.NPCs
             NPC.netAlways = true;
 
         }
-        public override void HitEffect(NPC.HitInfo hit)
-        {
+        public override void HitEffect(NPC.HitInfo hit) {
             //友好NPC就一颗RealisticExplosion,密度控最低,别学boss death那套
             if (NPC.life <= 0)
                 //PRT_RealisticExplosion友好NPC单颗,密度控最低
                 PRTLoader.NewParticle<PRT_RealisticExplosion>(NPC.Center, Vector2.Zero, Color.White, 4)
                     .Configure(1, true, PRTDrawModeEnum.AlphaBlend, 0);
         }
-        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
-        {
-            if (projectile.friendly)
-            {
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone) {
+            if (projectile.friendly) {
                 open = true;
                 openFrame = 3;
-                if (specialTime < 1)
-                {
+                if (specialTime < 1) {
                     sameItemCount = 12;
                     Say("LMDialog8", Color.Red);
                     textureSpecial = 7;
@@ -194,121 +180,92 @@ namespace CalamityEntropy.Content.NPCs
                 }
             }
         }
-        public override bool? CanBeHitByProjectile(Projectile projectile)
-        {
+        public override bool? CanBeHitByProjectile(Projectile projectile) {
             if (projectile.hostile)
                 return false;
             return null;
         }
-        public override void OnSpawn(IEntitySource source)
-        {
+        public override void OnSpawn(IEntitySource source) {
 
         }
-        public override bool CanBeHitByNPC(NPC attacker)
-        {
+        public override bool CanBeHitByNPC(NPC attacker) {
             return false;
         }
-        public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers) {
             modifiers.FinalDamage *= 0.6f;
             modifiers.SetMaxDamage(36);
         }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
             modifiers.FinalDamage *= 0;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
-        {
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) {
             Texture2D tx;
             tx = LMTextures.closed.Value;
-            if (open)
-            {
+            if (open) {
                 tx = LMTextures.opened.Value;
-                if (openFrame < 3)
-                {
-                    if (openFrame == 0)
-                    {
+                if (openFrame < 3) {
+                    if (openFrame == 0) {
                         tx = LMTextures.openf1.Value;
                     }
-                    if (openFrame == 1)
-                    {
+                    if (openFrame == 1) {
                         tx = LMTextures.openf2.Value;
                     }
-                    if (openFrame == 2)
-                    {
+                    if (openFrame == 2) {
                         tx = LMTextures.openf3.Value;
                     }
                 }
-                else
-                {
-                    if (textureSpecial == 1)
-                    {
+                else {
+                    if (textureSpecial == 1) {
                         tx = LMTextures.warning.Value;
                     }
-                    if (textureSpecial == 2)
-                    {
+                    if (textureSpecial == 2) {
                         tx = LMTextures.unhappy.Value;
                     }
-                    if (textureSpecial == 3)
-                    {
+                    if (textureSpecial == 3) {
                         tx = LMTextures.serious.Value;
                     }
-                    if (textureSpecial == 4 || textureSpecial == 5 || textureSpecial == 6 || textureSpecial == 7)
-                    {
-                        if (warnCounter < 5)
-                        {
+                    if (textureSpecial == 4 || textureSpecial == 5 || textureSpecial == 6 || textureSpecial == 7) {
+                        if (warnCounter < 5) {
                             tx = LMTextures.toMad1.Value;
                         }
-                        if (warnCounter < 10)
-                        {
+                        if (warnCounter < 10) {
                             tx = LMTextures.toMad2.Value;
                         }
-                        if (warnCounter >= 10)
-                        {
-                            if (textureSpecial == 4)
-                            {
+                        if (warnCounter >= 10) {
+                            if (textureSpecial == 4) {
                                 tx = LMTextures.mad.Value;
                             }
-                            if (textureSpecial == 5)
-                            {
+                            if (textureSpecial == 5) {
                                 tx = LMTextures.madangry.Value;
                             }
-                            if (textureSpecial == 6)
-                            {
+                            if (textureSpecial == 6) {
                                 tx = LMTextures.madtalk.Value;
                             }
-                            if (textureSpecial == 7)
-                            {
+                            if (textureSpecial == 7) {
                                 tx = LMTextures.warning2.Value;
                             }
 
 
                         }
                     }
-                    if (textureSpecial == 8)
-                    {
+                    if (textureSpecial == 8) {
                         tx = LMTextures.smile.Value;
                     }
 
-                    if (textureSpecial == 10)
-                    {
+                    if (textureSpecial == 10) {
                         tx = LMTextures.think.Value;
                     }
-                    if (textureSpecial == 11)
-                    {
+                    if (textureSpecial == 11) {
                         tx = LMTextures.what.Value;
                     }
-                    if (textureSpecial == 12)
-                    {
+                    if (textureSpecial == 12) {
                         tx = LMTextures.prepare.Value;
                     }
-                    if (textureSpecial == 13)
-                    {
+                    if (textureSpecial == 13) {
                         tx = LMTextures.specialReward.Value;
                     }
-                    if (textureSpecial == 9)
-                    {
+                    if (textureSpecial == 9) {
                         tx = LMTextures.flowey.Value;
                     }
 
@@ -318,13 +275,11 @@ namespace CalamityEntropy.Content.NPCs
             return false;
         }
 
-        public override void AI()
-        {
+        public override void AI() {
             if (NPC.velocity.Y == 0)
                 NPC.velocity.X *= 0.8f;
             NPC.velocity.X *= 0.96f;
-            if (sd)
-            {
+            if (sd) {
                 sd = false;
                 #region pools
 
@@ -508,11 +463,9 @@ namespace CalamityEntropy.Content.NPCs
 
                 #endregion
             }
-            if (NPC.ai[0] == 1 && !Main.dedServ)
-            {
+            if (NPC.ai[0] == 1 && !Main.dedServ) {
                 NPC.ai[0] = 0;
-                if (Main.netMode == NetmodeID.MultiplayerClient)
-                {
+                if (Main.netMode == NetmodeID.MultiplayerClient) {
                     ModPacket packet = Mod.GetPacket();
                     packet.Write((byte)CEMessageType.LotteryMachineRightClicked);
                     packet.Write(Main.LocalPlayer.whoAmI);
@@ -524,28 +477,20 @@ namespace CalamityEntropy.Content.NPCs
             }
             var r = Main.rand;
             NPC.onFire = false;
-            if (useCd > 0)
-            {
+            if (useCd > 0) {
                 useCd--;
             }
-            if (Main.netMode != NetmodeID.Server)
-            {
-                if (!mouseRightClicked && Mouse.GetState().RightButton == ButtonState.Pressed)
-                {
-                    if (new Rectangle((int)Main.MouseWorld.X - 1, (int)Main.MouseWorld.Y - 1, 2, 2).Intersects(NPC.getRect()))
-                    {
-                        if (CEUtils.getDistance(NPC.Center, Main.LocalPlayer.Center) < 250)
-                        {
-                            if ((SpawnTimer <= 0 && nucTime == 0) || (Main.LocalPlayer.HeldItem.type == ItemID.CopperCoin || Main.LocalPlayer.HeldItem.type == ItemID.SilverCoin || Main.LocalPlayer.HeldItem.type == ItemID.GoldCoin || Main.LocalPlayer.HeldItem.type == ItemID.PlatinumCoin))
-                            {
-                                if (useCd <= 0)
-                                {
+            if (Main.netMode != NetmodeID.Server) {
+                if (!mouseRightClicked && Mouse.GetState().RightButton == ButtonState.Pressed) {
+                    if (new Rectangle((int)Main.MouseWorld.X - 1, (int)Main.MouseWorld.Y - 1, 2, 2).Intersects(NPC.getRect())) {
+                        if (CEUtils.getDistance(NPC.Center, Main.LocalPlayer.Center) < 250) {
+                            if ((SpawnTimer <= 0 && nucTime == 0) || (Main.LocalPlayer.HeldItem.type == ItemID.CopperCoin || Main.LocalPlayer.HeldItem.type == ItemID.SilverCoin || Main.LocalPlayer.HeldItem.type == ItemID.GoldCoin || Main.LocalPlayer.HeldItem.type == ItemID.PlatinumCoin)) {
+                                if (useCd <= 0) {
                                     useCd = 16;
 
                                     NPC.ai[0] = 1;
                                     NPC.ai[1] = Main.myPlayer;
-                                    if (Main.LocalPlayer.HeldItem.type == ItemID.CopperCoin || Main.LocalPlayer.HeldItem.type == ItemID.SilverCoin || Main.LocalPlayer.HeldItem.type == ItemID.GoldCoin || Main.LocalPlayer.HeldItem.type == ItemID.PlatinumCoin)
-                                    {
+                                    if (Main.LocalPlayer.HeldItem.type == ItemID.CopperCoin || Main.LocalPlayer.HeldItem.type == ItemID.SilverCoin || Main.LocalPlayer.HeldItem.type == ItemID.GoldCoin || Main.LocalPlayer.HeldItem.type == ItemID.PlatinumCoin) {
                                         Main.LocalPlayer.itemAnimation = 14;
                                         Main.LocalPlayer.itemAnimationMax = 14;
                                         Main.LocalPlayer.itemTime = 14;
@@ -561,71 +506,54 @@ namespace CalamityEntropy.Content.NPCs
                 }
                 mouseRightClicked = Mouse.GetState().RightButton == ButtonState.Pressed;
             }
-            if (nucTime > 0)
-            {
+            if (nucTime > 0) {
                 nucTime = 0;
                 Vector2 spawnPos = Main.LocalPlayer.position + new Vector2(0, -600);
                 int p = Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnPos, new Vector2(0, 10), ModContent.ProjectileType<AtlasNuc>(), 0, 0, Main.myPlayer);
-                if (Main.netMode != NetmodeID.SinglePlayer)
-                {
+                if (Main.netMode != NetmodeID.SinglePlayer) {
                     NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, p);
                 }
-                if (sameItemCount > 6)
-                {
-                    for (int i = 0; i < sameItemCount - 6; i++)
-                    {
+                if (sameItemCount > 6) {
+                    for (int i = 0; i < sameItemCount - 6; i++) {
                         Projectile.NewProjectile(Main.LocalPlayer.GetSource_FromAI(), spawnPos + new Vector2(r.Next(-120, 120), r.Next(-100, 100)), new Vector2(0, 10), ModContent.ProjectileType<AtlasNuc>(), 0, 0, Main.myPlayer);
 
                     }
                 }
             }
-            if (open)
-            {
-                if (openFrame < 3)
-                {
+            if (open) {
+                if (openFrame < 3) {
                     openCouter += 1;
-                    if (openCouter == 5)
-                    {
+                    if (openCouter == 5) {
                         openCouter = 0;
                         openFrame++;
-                        if (openFrame == 3)
-                        {
+                        if (openFrame == 3) {
                             Say("LMDialog1", Color.Green);
                         }
                     }
                 }
-                else
-                {
-                    if (textureSpecial == 0 || textureSpecial == -1)
-                    {
+                else {
+                    if (textureSpecial == 0 || textureSpecial == -1) {
                         warnCounter = 0;
                         specialTime = 0;
                     }
-                    else
-                    {
+                    else {
 
                         specialTime--;
-                        if (specialTime <= 0)
-                        {
+                        if (specialTime <= 0) {
                             textureSpecial = 0;
                         }
                     }
-                    if (textureSpecial == 4 || textureSpecial == 5 || textureSpecial == 6 || textureSpecial == 7)
-                    {
+                    if (textureSpecial == 4 || textureSpecial == 5 || textureSpecial == 6 || textureSpecial == 7) {
                         warnCounter++;
                         specialTime = 60;
                     }
-                    else
-                    {
+                    else {
                         warnCounter = 0;
                     }
-                    if (SpawnTimer > 0)
-                    {
+                    if (SpawnTimer > 0) {
                         SpawnTimer--;
-                        if (SpawnTimer == 0)
-                        {
-                            if (textureSpecial == 7)
-                            {
+                        if (SpawnTimer == 0) {
+                            if (textureSpecial == 7) {
                                 nucTime = 120;
                             }
                         }
@@ -633,95 +561,75 @@ namespace CalamityEntropy.Content.NPCs
                 }
             }
         }
-        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)
-        {
+        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) {
             return false;
         }
 
-        public void RightClicked(Player player)
-        {
-            if (Main.dedServ)
-            {
-                if (NPC.netSpam >= 10)
-                {
+        public void RightClicked(Player player) {
+            if (Main.dedServ) {
+                if (NPC.netSpam >= 10) {
                     NPC.netSpam = 9;
                 }
             }
             var r = Main.rand;
-            if (!open)
-            {
+            if (!open) {
                 open = true;
                 SoundEngine.PlaySound(new("CalamityEntropy/Assets/Sounds/system_open"), NPC.Center);
             }
-            else
-            {
-                if (openFrame >= 3)
-                {
+            else {
+                if (openFrame >= 3) {
                     bool hasBoss = false;
                     string bossName = "";
-                    foreach (NPC n in Main.npc)
-                    {
-                        if (n.boss && n.active)
-                        {
+                    foreach (NPC n in Main.npc) {
+                        if (n.boss && n.active) {
                             hasBoss = true;
                             bossName = n.FullName;
-                            if (n.realLife >= 0)
-                            {
+                            if (n.realLife >= 0) {
                                 bossName = Main.npc[n.realLife].FullName;
                             }
                         }
                     }
                     int itemType = -1;
                     itemType = player.HeldItem.type;
-                    if (itemType == lastCItem)
-                    {
+                    if (itemType == lastCItem) {
                         sameItemCount++;
                     }
-                    else
-                    {
+                    else {
                         lastCItem = itemType;
                         sameItemCount = 0;
                     }
-                    if (itemType == 0)
-                    {
-                        if (sameItemCount == 0)
-                        {
+                    if (itemType == 0) {
+                        if (sameItemCount == 0) {
                             Say("LMDialog2", Color.Green);
                             textureSpecial = 8;
                             specialTime = 120;
                         }
-                        else if (sameItemCount == 1)
-                        {
+                        else if (sameItemCount == 1) {
                             Say("LMDialog3", Color.Orange);
                             textureSpecial = 3;
                             specialTime = 160;
                         }
-                        else if (sameItemCount == 2)
-                        {
+                        else if (sameItemCount == 2) {
                             Say("LMDialog4", Color.Orange);
                             textureSpecial = 1;
                             specialTime = 160;
                         }
-                        else if (sameItemCount == 3)
-                        {
+                        else if (sameItemCount == 3) {
                             Say("LMDialog5", Color.Orange);
                             textureSpecial = 2;
                             specialTime = 160;
                         }
-                        else if (sameItemCount == 4)
-                        {
+                        else if (sameItemCount == 4) {
                             Say("LMDialog6", Color.OrangeRed);
                             textureSpecial = 4;
                             specialTime = 160;
                         }
-                        else if (sameItemCount == 5)
-                        {
+                        else if (sameItemCount == 5) {
                             Say("LMDialog7", Color.Red);
                             textureSpecial = 5;
                             specialTime = 160;
                         }
-                        else if (sameItemCount >= 6)
-                        {
+                        else if (sameItemCount >= 6) {
                             Say("LMDialog8", Color.Red);
                             textureSpecial = 7;
                             specialTime = 160;
@@ -729,8 +637,7 @@ namespace CalamityEntropy.Content.NPCs
                             useCd = 10;
                         }
                     }
-                    else if (itemType == ItemID.PoopBlock || itemType == ItemID.PoopWall)
-                    {
+                    else if (itemType == ItemID.PoopBlock || itemType == ItemID.PoopWall) {
                         Say("LMDialog8", Color.Red);
                         textureSpecial = 7;
                         specialTime = 160;
@@ -738,16 +645,13 @@ namespace CalamityEntropy.Content.NPCs
                         useCd = 400;
                         sameItemCount = 60;
                     }
-                    else if (itemType == (CERef.Has && CEID.Item_AuricOre > 0 ? CEID.Item_AuricOre : ModContent.ItemType<VoidOre>()))
-                    {
+                    else if (itemType == (CERef.Has && CEID.Item_AuricOre > 0 ? CEID.Item_AuricOre : ModContent.ItemType<VoidOre>())) {
                         Say("LMDialog9", Color.Red);
                         textureSpecial = 9;
                         specialTime = 90;
                     }
-                    else if (itemType == ItemID.CopperCoin)
-                    {
-                        if (SpawnTimer > 0)
-                        {
+                    else if (itemType == ItemID.CopperCoin) {
+                        if (SpawnTimer > 0) {
                             flag1 = true;
                             textureSpecial = 9;
                             specialTime = 100;
@@ -755,14 +659,12 @@ namespace CalamityEntropy.Content.NPCs
                             Say("LMDialog10", Color.Yellow, 0.7f);
 
                         }
-                        else
-                        {
+                        else {
                             textureSpecial = -1;
                             Say("LMDialog11", Color.Yellow, 0.86f);
                             useCd = 160;
                             CEUtils.PlaySound("coininsert", 1, NPC.Center);
-                            if (Main.myPlayer == player.whoAmI)
-                            {
+                            if (Main.myPlayer == player.whoAmI) {
                                 int pj = Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center - new Vector2(0, 650), new Vector2(0, 16), ModContent.ProjectileType<AtlasItem>(), 0, 0, Main.myPlayer);
                                 Main.projectile[pj].Entropy().AtlasItemStack = 0;
                                 Main.projectile[pj].Entropy().AtlasItemType = 0;
@@ -770,10 +672,8 @@ namespace CalamityEntropy.Content.NPCs
                             }
                         }
                     }
-                    else if (itemType == ItemID.SilverCoin)
-                    {
-                        if (SpawnTimer > 0)
-                        {
+                    else if (itemType == ItemID.SilverCoin) {
+                        if (SpawnTimer > 0) {
                             flag1 = true;
                             textureSpecial = 9;
                             specialTime = 100;
@@ -781,8 +681,7 @@ namespace CalamityEntropy.Content.NPCs
                             Say("LMDialog12", Color.Yellow, 0.7f);
 
                         }
-                        else
-                        {
+                        else {
                             textureSpecial = -1;
                             player.HeldItem.stack--;
                             int rtype = 0;
@@ -798,8 +697,7 @@ namespace CalamityEntropy.Content.NPCs
                             stack = ri.stack;
                             useCd = 16;
                             CEUtils.PlaySound("coininsert", 1, NPC.Center);
-                            if (Main.myPlayer == player.whoAmI)
-                            {
+                            if (Main.myPlayer == player.whoAmI) {
                                 int pj = Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center - new Vector2(0, 650), new Vector2(0, 16), ModContent.ProjectileType<AtlasItem>(), 0, 0, Main.myPlayer);
                                 Main.projectile[pj].Entropy().AtlasItemStack = stack;
                                 Main.projectile[pj].Entropy().AtlasItemType = rtype;
@@ -807,10 +705,8 @@ namespace CalamityEntropy.Content.NPCs
                             }
                         }
                     }
-                    else if (itemType == ItemID.GoldCoin)
-                    {
-                        if (SpawnTimer > 0)
-                        {
+                    else if (itemType == ItemID.GoldCoin) {
+                        if (SpawnTimer > 0) {
                             flag1 = true;
                             textureSpecial = 9;
                             specialTime = 100;
@@ -818,8 +714,7 @@ namespace CalamityEntropy.Content.NPCs
                             Say("LMDialog12", Color.Yellow, 0.7f);
 
                         }
-                        else
-                        {
+                        else {
                             textureSpecial = -1;
                             player.HeldItem.stack--;
                             int rtype = 0;
@@ -828,8 +723,7 @@ namespace CalamityEntropy.Content.NPCs
 
                             pool.addPool(s1);
                             pool.addPool(g1);
-                            if (Main.hardMode)
-                            {
+                            if (Main.hardMode) {
                                 pool.addPool(g2);
                             }
 
@@ -840,8 +734,7 @@ namespace CalamityEntropy.Content.NPCs
                             stack = ri.stack;
                             useCd = 16;
                             CEUtils.PlaySound("coininsert", 1, NPC.Center);
-                            if (Main.myPlayer == player.whoAmI)
-                            {
+                            if (Main.myPlayer == player.whoAmI) {
                                 int pj = Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center - new Vector2(0, 650), new Vector2(0, 16), ModContent.ProjectileType<AtlasItem>(), 0, 0, Main.myPlayer);
                                 Main.projectile[pj].Entropy().AtlasItemStack = stack;
                                 Main.projectile[pj].Entropy().AtlasItemType = rtype;
@@ -849,26 +742,21 @@ namespace CalamityEntropy.Content.NPCs
                             }
                         }
                     }
-                    else if (itemType == ItemID.PlatinumCoin)
-                    {
-                        if (SpawnTimer > 0)
-                        {
+                    else if (itemType == ItemID.PlatinumCoin) {
+                        if (SpawnTimer > 0) {
                             flag1 = true;
                             textureSpecial = 9;
                             specialTime = 100;
                             SpawnTimer = 0;
-                            if (Main.hardMode)
-                            {
+                            if (Main.hardMode) {
                                 Say("LMDialog12", Color.Yellow, 0.7f);
                             }
-                            else
-                            {
+                            else {
                                 Say("LMDialog13", Color.Yellow, 0.7f);
                             }
 
                         }
-                        else
-                        {
+                        else {
                             textureSpecial = -1;
                             player.HeldItem.stack--;
                             int rtype = 0;
@@ -878,31 +766,25 @@ namespace CalamityEntropy.Content.NPCs
                             pool.addPool(s1);
                             pool.addPool(g1);
                             pool.addPool(p1);
-                            if (Main.hardMode)
-                            {
+                            if (Main.hardMode) {
                                 pool.addPool(g2);
                                 pool.addPool(p2);
                             }
-                            if (NPC.downedPlantBoss)
-                            {
+                            if (NPC.downedPlantBoss) {
                                 pool.addPool(g3);
                                 pool.addPool(p3);
                             }
-                            if (NPC.downedGolemBoss)
-                            {
+                            if (NPC.downedGolemBoss) {
                                 pool.addPool(p4);
                             }
-                            if (NPC.downedMoonlord)
-                            {
+                            if (NPC.downedMoonlord) {
                                 pool.addPool(p5);
                             }
                             // 灾厄在场读神明吞噬者/丛林龙,缺席回落虚无双子/巡游者
-                            if (CECal.DownedDoG(EDownedBosses.downedNihilityTwin))
-                            {
+                            if (CECal.DownedDoG(EDownedBosses.downedNihilityTwin)) {
                                 pool.addPool(p6);
                             }
-                            if (CECal.DownedYharon(EDownedBosses.downedCruiser))
-                            {
+                            if (CECal.DownedYharon(EDownedBosses.downedCruiser)) {
                                 pool.addPool(p7);
                             }
 
@@ -913,8 +795,7 @@ namespace CalamityEntropy.Content.NPCs
                             stack = ri.stack;
                             useCd = 16;
                             CEUtils.PlaySound("coininsert", 1, NPC.Center);
-                            if (Main.myPlayer == player.whoAmI)
-                            {
+                            if (Main.myPlayer == player.whoAmI) {
                                 int pj = Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center - new Vector2(0, 650), new Vector2(0, 16), ModContent.ProjectileType<AtlasItem>(), 0, 0, Main.myPlayer);
                                 Main.projectile[pj].Entropy().AtlasItemStack = stack;
                                 Main.projectile[pj].Entropy().AtlasItemType = rtype;
@@ -923,24 +804,20 @@ namespace CalamityEntropy.Content.NPCs
 
                         }
                     }
-                    else if (itemType == ModContent.ItemType<LotteryBox>())
-                    {
+                    else if (itemType == ModContent.ItemType<LotteryBox>()) {
                         Say("LMDialog14", Color.Blue);
                         textureSpecial = 8;
                         specialTime = 90;
                     }
-                    else if (hasBoss)
-                    {
+                    else if (hasBoss) {
                         Say("LMDialog16", Color.Green, 0.7f, bossName);
                     }
-                    else if (itemType == ItemID.DirtBlock || itemType == ItemID.StoneBlock || itemType == ItemID.Wood || itemType == ItemID.Mushroom || itemType == ItemID.Gel || itemType == 52)
-                    {
+                    else if (itemType == ItemID.DirtBlock || itemType == ItemID.StoneBlock || itemType == ItemID.Wood || itemType == ItemID.Mushroom || itemType == ItemID.Gel || itemType == 52) {
                         Say("LMDialog17", Color.Red);
                         textureSpecial = 10;
                         specialTime = 90;
                     }
-                    else
-                    {
+                    else {
                         Say("LMDialog18", Color.Green, 0.4f);
 
                     }
@@ -950,10 +827,8 @@ namespace CalamityEntropy.Content.NPCs
         }
 
 
-        public void Say(string key, Color color, float pitch = 1, string namereplace = "")
-        {
-            if (Main.dedServ)
-            {
+        public void Say(string key, Color color, float pitch = 1, string namereplace = "") {
+            if (Main.dedServ) {
                 return;
             }
 
@@ -971,16 +846,13 @@ namespace CalamityEntropy.Content.NPCs
             s4.Pitch = pitch - 1f + 0.45f;
             SoundStyle toPlay = s1;
             int tpl = Main.rand.Next(0, 4);
-            if (tpl == 1)
-            {
+            if (tpl == 1) {
                 toPlay = s2;
             }
-            else if (tpl == 2)
-            {
+            else if (tpl == 2) {
                 toPlay = s3;
             }
-            else if (tpl == 3)
-            {
+            else if (tpl == 3) {
                 toPlay = s4;
             }
 

@@ -1,9 +1,9 @@
+﻿using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Weapons;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityEntropy.Core.CalamityRef;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
@@ -14,8 +14,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         public static float jumpSpeed = 0.12f;
         // 大招充能速度 +10%
         public static float chargeRate = 0.10f;
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 42;
             Item.defense = 4;
             Item.height = 42;
@@ -23,8 +22,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.rare = ItemRarityID.Blue;
             Item.accessory = true;
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
             tooltips.Replace("[A]", damage.ToPercent());
             tooltips.Replace("[B]", MoveSpeed.ToPercent());
             tooltips.Replace("[D]", jumpSpeed.ToPercent());
@@ -33,8 +31,7 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
         public static string ID = "LurkersCharm";
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             // 新效果:盗贼伤害转全伤害,潜行回复转大招充能速度(潜行体系退役)
             player.GetDamage(DamageClass.Generic) += damage;
             player.Entropy().moveSpeed += MoveSpeed;
@@ -42,10 +39,8 @@ namespace CalamityEntropy.Content.Items.Accessories
             player.GetModPlayer<CEChargePlayer>().ChargeRateMult += chargeRate;
             player.Entropy().addEquip(ID, !hideVisual);
         }
-        public override void AddRecipes()
-        {
-            if (CECal.CalChainReady(CEID.Item_RogueEmblem))
-            {
+        public override void AddRecipes() {
+            if (CECal.CalChainReady(CEID.Item_RogueEmblem)) {
                 CreateRecipe().AddIngredient(ItemID.Magiluminescence)
                 .AddIngredient(CEID.Item_RogueEmblem, 1)
                 .AddIngredient(ItemID.SoulofNight, 4)

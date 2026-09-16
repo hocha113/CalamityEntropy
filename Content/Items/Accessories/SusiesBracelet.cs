@@ -1,4 +1,4 @@
-using CalamityEntropy.Common;
+﻿using CalamityEntropy.Common;
 using CalamityEntropy.Core.CalamityRef;
 using System.Collections.Generic;
 using System.IO;
@@ -11,12 +11,11 @@ using Terraria.ModLoader.IO;
 
 namespace CalamityEntropy.Content.Items.Accessories
 {
-        // 装灾厄走 3.33 的 11 档通用加成,无灾厄保持 4.0 近战成长。
+    // 装灾厄走 3.33 的 11 档通用加成,无灾厄保持 4.0 近战成长。
     // 文案随时代走:无灾厄读 Items.SusiesBracelet.Tooltip([DMG]/[CRIT]),装灾厄换成 SusiesBraceletCal。
     public class SusiesBracelet : ModItem
     {
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             Item.width = 28;
             Item.height = 28;
             Item.accessory = true;
@@ -24,11 +23,9 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.rare = ItemRarityID.Yellow;
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+        public override void UpdateAccessory(Player player, bool hideVisual) {
             player.noKnockback = true;
-            if (!CERef.Has)
-            {
+            if (!CERef.Has) {
                 player.GetDamage(DamageClass.Melee) += AddMeleeDamage;
                 player.GetCritChance(DamageClass.Melee) += AddMeleeCrit;
                 return;
@@ -40,43 +37,33 @@ namespace CalamityEntropy.Content.Items.Accessories
         }
 
         public int Level = 0;
-        public override void NetSend(BinaryWriter writer)
-        {
+        public override void NetSend(BinaryWriter writer) {
             writer.Write(Level);
         }
-        public override void NetReceive(BinaryReader reader)
-        {
+        public override void NetReceive(BinaryReader reader) {
             Level = reader.ReadInt32();
         }
-        public override void SaveData(TagCompound tag)
-        {
+        public override void SaveData(TagCompound tag) {
             if (Level > 0)
                 tag["Level"] = Level;
         }
-        public override void LoadData(TagCompound tag)
-        {
-            if (tag.TryGet<int>("Level", out int lv))
-            {
+        public override void LoadData(TagCompound tag) {
+            if (tag.TryGet<int>("Level", out int lv)) {
                 Level = lv;
             }
         }
-        public int GetLevel()
-        {
+        public int GetLevel() {
             CheckUpdate();
             return Level;
         }
 
-        public void CheckUpdate()
-        {
-            void Check(bool f, int lv)
-            {
-                if (lv > Level && f)
-                {
+        public void CheckUpdate() {
+            void Check(bool f, int lv) {
+                if (lv > Level && f) {
                     Level = lv;
                 }
             }
-            if (!CERef.Has)
-            {
+            if (!CERef.Has) {
                 Check(NPC.downedSlimeKing, 1);
                 Check(NPC.downedBoss1, 2);
                 Check(NPC.downedBoss2, 3);
@@ -101,22 +88,17 @@ namespace CalamityEntropy.Content.Items.Accessories
             Check(CECal.DownedDoG(EDownedBosses.downedCruiser), 10);
             Check(CECal.DownedYharon(EDownedBosses.downedCruiser), 11);
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            if (CERef.Has)
-            {
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
+            if (CERef.Has) {
                 string cal = Mod.GetLocalization("SusiesBraceletCal").Value;
                 int insertAt = -1;
-                for (int i = 0; i < tooltips.Count; i++)
-                {
-                    if (tooltips[i].Name.StartsWith("Tooltip"))
-                    {
+                for (int i = 0; i < tooltips.Count; i++) {
+                    if (tooltips[i].Name.StartsWith("Tooltip")) {
                         insertAt = i;
                         break;
                     }
                 }
-                for (int i = tooltips.Count - 1; i >= 0; i--)
-                {
+                for (int i = tooltips.Count - 1; i >= 0; i--) {
                     if (tooltips[i].Name.StartsWith("Tooltip"))
                         tooltips.RemoveAt(i);
                 }
@@ -124,8 +106,7 @@ namespace CalamityEntropy.Content.Items.Accessories
                     insertAt = tooltips.Count;
                 string[] lines = cal.Replace("\r\n", "\n").Split('\n');
                 int offset = 0;
-                for (int i = 0; i < lines.Length; i++)
-                {
+                for (int i = 0; i < lines.Length; i++) {
                     string line = lines[i].Trim();
                     if (line.Length == 0)
                         continue;
@@ -135,40 +116,33 @@ namespace CalamityEntropy.Content.Items.Accessories
             }
 
             int index = 0;
-            for (int i = 0; i < tooltips.Count; i++)
-            {
-                if (tooltips[i].Name.Contains("Tooltip"))
-                {
+            for (int i = 0; i < tooltips.Count; i++) {
+                if (tooltips[i].Name.Contains("Tooltip")) {
                     index = i;
                 }
             }
             index++;
-            if (GetLevel() < 10)
-            {
+            if (GetLevel() < 10) {
                 tooltips.Add(new TooltipLine(Mod, $"Tooltip{index}", GetLt($"Trial", "Trials").Value + $"{GetLevel() + 1} - " + GetLt($"t{GetLevel()}", "Trials").Value) { OverrideColor = Color.Yellow });
             }
-            else
-            {
+            else {
                 tooltips.Add(new TooltipLine(Mod, $"Tooltip{index}", GetLt("t10", "Trials").Value) { OverrideColor = Color.Yellow });
             }
 
             tooltips.Add(new TooltipLine(Mod, $"Tooltip{index}", GetLt($"l{GetLevel()}").Value) { OverrideColor = Color.Pink });
 
-            if (CERef.Has)
-            {
+            if (CERef.Has) {
                 tooltips.Replace("[DEF]", AddDef);
                 tooltips.Replace("[DMG]", AddDamage.ToPercent().ToString());
                 tooltips.Replace("[LIFE]", AddHP);
                 tooltips.Replace("[MANA]", AddMana);
             }
-            else
-            {
+            else {
                 tooltips.Replace("[DMG]", AddMeleeDamage.ToPercent().ToString());
                 tooltips.Replace("[CRIT]", AddMeleeCrit.ToString());
             }
         }
-        public float AddDamage => GetLevel() switch
-        {
+        public float AddDamage => GetLevel() switch {
             0 => 0.02f,
             1 => 0.04f,
             2 => 0.06f,
@@ -183,8 +157,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             11 => 0.24f,
             _ => 0.24f
         };
-        public int AddHP => GetLevel() switch
-        {
+        public int AddHP => GetLevel() switch {
             0 => 10,
             1 => 15,
             2 => 20,
@@ -199,8 +172,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             11 => 100,
             _ => 100
         };
-        public int AddMana => GetLevel() switch
-        {
+        public int AddMana => GetLevel() switch {
             0 => 30,
             1 => 40,
             2 => 60,
@@ -215,8 +187,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             11 => 160,
             _ => 160
         };
-        public int AddDef => GetLevel() switch
-        {
+        public int AddDef => GetLevel() switch {
             0 => 2,
             1 => 4,
             2 => 6,
@@ -231,8 +202,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             11 => 25,
             _ => 25
         };
-        public float AddMeleeDamage => GetLevel() switch
-        {
+        public float AddMeleeDamage => GetLevel() switch {
             0 => 0.01f,
             1 => 0.02f,
             2 => 0.03f,
@@ -245,8 +215,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             9 => 0.12f,
             _ => 0.18f
         };
-        public int AddMeleeCrit => GetLevel() switch
-        {
+        public int AddMeleeCrit => GetLevel() switch {
             0 => 0,
             1 => 0,
             2 => 0,
@@ -259,8 +228,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             9 => 4,
             _ => 5
         };
-        public static LocalizedText GetLt(string n, string h = "Lores")
-        {
+        public static LocalizedText GetLt(string n, string h = "Lores") {
             return Language.GetText($"Mods.CalamityEntropy.LegendaryAbility.SusiesBracelet.{h}.{n}");
         }
     }
@@ -268,10 +236,8 @@ namespace CalamityEntropy.Content.Items.Accessories
     /// <summary>苏西腕带掉落:海龟 25%。</summary>
     public class SusiesBraceletDropGNPC : GlobalNPC
     {
-        public override void ModifyNPCLoot(NPC npc, NPCLoot npcLoot)
-        {
-            if (npc.type == NPCID.SeaTurtle)
-            {
+        public override void ModifyNPCLoot(NPC npc, NPCLoot npcLoot) {
+            if (npc.type == NPCID.SeaTurtle) {
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SusiesBracelet>(), 4));
             }
         }

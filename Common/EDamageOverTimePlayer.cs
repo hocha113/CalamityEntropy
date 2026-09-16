@@ -24,6 +24,11 @@ namespace CalamityEntropy.Common
                     }
                 }
             }
+            // 虚空之火:禁用生命再生,先把正回复归零再扣
+            if (Player.HasBuff<VoidFire>() && Player.lifeRegen > 0)
+            {
+                Player.lifeRegen = 0;
+            }
             if (damageApply > 0)
             {
                 Player.lifeRegenTime = 0;

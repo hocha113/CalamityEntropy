@@ -26,6 +26,7 @@ using CalamityEntropy.Content.NPCs.LuminarisMoth;
 using CalamityEntropy.Content.NPCs.NihilityTwin;
 using CalamityEntropy.Content.NPCs.Prophet;
 using CalamityEntropy.Content.NPCs.SpiritFountain;
+using CalamityEntropy.Content.NPCs.VoidDestroyer;
 using CalamityEntropy.Content.NPCs.VoidInvasion;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
@@ -1658,6 +1659,26 @@ namespace CalamityEntropy
                                 ["customPortrait"] = portrait
                             });
                         }
+                        {
+                            //虚空驱逐舰:月后 T2 空位,介于虚无双子 19.3 与巡游者 22.1 之间
+                            string entryName = "VoidDestroyer";
+                            List<int> collection = new List<int>() { ModContent.ItemType<VoidDestroyerBag>(), ModContent.ItemType<VoidDestroyerTrophy>(), ModContent.ItemType<VoidDestroyerRelic>(), ModContent.ItemType<DimBearing>() };
+                            Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
+                            {
+                                Texture2D texture = ModContent.Request<Texture2D>("CalamityEntropy/Content/NPCs/VoidDestroyer/VoidDestroyerP2").Value;
+                                sb.Draw(texture, rect.Center.ToVector2(), null, color, 0, texture.Size() / 2, 1f, SpriteEffects.None, 0);
+                            };
+                            Func<bool> voidDestroyer = () => EDownedBosses.downedVoidDestroyer;
+                            AddBoss(bossChecklist, Instance, entryName, 20.8f, voidDestroyer, ModContent.NPCType<VoidDestroyer>(), new Dictionary<string, object>()
+                            {
+                                ["displayName"] = Language.GetText("Mods.CalamityEntropy.NPCs.VoidDestroyer.BossChecklistIntegration.EntryName"),
+                                ["spawnInfo"] = Language.GetText("Mods.CalamityEntropy.NPCs.VoidDestroyer.BossChecklistIntegration.SpawnInfo"),
+                                ["despawnMessage"] = Language.GetText("Mods.CalamityEntropy.NPCs.VoidDestroyer.BossChecklistIntegration.DespawnMessage"),
+                                ["spawnItems"] = ModContent.ItemType<VoidTransmitter>(),
+                                ["collectibles"] = collection,
+                                ["customPortrait"] = portrait
+                            });
+                        }
                     }
 
                 }
@@ -1711,6 +1732,7 @@ namespace CalamityEntropy
             EntropyBossbar.bossbarColor[ModContent.NPCType<Luminaris>()] = new Color(150, 100, 215);
             EntropyBossbar.bossbarColor[ModContent.NPCType<AcropolisMachine>()] = new Color(255, 93, 13);
             EntropyBossbar.bossbarColor[ModContent.NPCType<Apsychos>()] = new Color(255, 160, 20);
+            EntropyBossbar.bossbarColor[ModContent.NPCType<VoidDestroyer>()] = new Color(190, 60, 255);
             RegisterCalamityBossbarColors();
 
             try

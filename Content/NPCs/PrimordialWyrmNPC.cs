@@ -1,5 +1,6 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Items.Potions;
 using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Items.Books.BookMarks;
 using CalamityEntropy.Content.Projectiles.Cruiser;
@@ -156,7 +157,8 @@ namespace CalamityEntropy.Content.NPCs
                 .Add<NihilityFragments>()
                 .Add<WraithSoulEssence>();
             AddCalOrOwn(npcShop, CEID.Item_Lumenyl, ItemID.LunarOre);
-            npcShop.Add(ItemID.SuperHealingPotion);
+            npcShop.Add<VoidHealingPotion>();
+            npcShop.Add<VoidManaPotion>();
             AddCalOrOwn(npcShop, CEID.Item_GrandDad, ItemID.Celeb2);
             AddCalOrOwn(npcShop, CEID.Item_EidolicWail, ItemID.LastPrism);
             AddCalOrOwn(npcShop, CEID.Item_EidolonStaff, ItemID.LunarFlareBook);

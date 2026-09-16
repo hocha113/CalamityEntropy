@@ -72,6 +72,14 @@ Items: {
 		Tooltip: 给你全属性的提升
 	}
 
+	VoidHealingPotion: {
+		DisplayName: 虚空治疗药水
+	}
+
+	VoidManaPotion: {
+		DisplayName: 虚空魔力药水
+	}
+
 	VoidBottle: {
 		DisplayName: 虚空瓶
 		Tooltip: 召唤巡游者
@@ -166,6 +174,35 @@ Items: {
 	CruiserBag: {
 		DisplayName: 宝藏袋（巡游者）
 		Tooltip: ""
+	}
+
+	VoidDestroyerBag: {
+		DisplayName: 宝藏袋（虚空驱逐舰）
+		Tooltip: ""
+	}
+
+	VoidDestroyerRelic: {
+		DisplayName: 虚空驱逐舰圣物
+		Tooltip: ""
+	}
+
+	VoidDestroyerTrophy: {
+		DisplayName: 虚空驱逐舰纪念章
+		Tooltip: ""
+	}
+
+	VoidTransmitter: {
+		DisplayName: 虚空发信器
+		Tooltip:
+			'''
+			向未知之境发出信号，召唤虚空驱逐舰
+			只能在夜晚使用
+			'''
+	}
+
+	DimBearing: {
+		DisplayName: 黯淡轴承
+		Tooltip: 从虚空驱逐舰上拆下的传动部件，表面的光泽早已黯淡
 	}
 
 	CruiserRelic: {
@@ -4970,6 +5007,20 @@ Projectiles: {
 	Vmwave.DisplayName: 震荡波
 	MonumentGround.DisplayName: 虚空符石
 	VoidBottleThrow.DisplayName: 掷出的虚空瓶
+	VDVoidBolt.DisplayName: 虚空弹
+	VDCoreLaserBolt.DisplayName: 虚空激光束
+	VDHomingMissile.DisplayName: 追踪导弹
+	VDVoidNuke.DisplayName: 虚空核弹
+	VDNukeExplosion.DisplayName: 虚空核爆
+	VDPortal.DisplayName: 虚空传送门
+	VDSporeDrone.DisplayName: 孢子无人机
+	VDSporeLaser.DisplayName: 虚空激光
+	VDRedRay.DisplayName: 红色射线
+	VDHoloRedDevil.DisplayName: 全息红恶魔
+	VDHoloTrident.DisplayName: 全息邪恶三叉戟
+	VDHoloTortoise.DisplayName: 全息丛林陆龟
+	VDHoloStinger.DisplayName: 全息毒刺
+	VDHoloWyvern.DisplayName: 全息小白龙
 	BrokenChainsaw0.DisplayName: 破损链锯
 	MechanicalChainsaw0.DisplayName: 机械链锯
 	EnslavedStar0.DisplayName: 奴役之星
@@ -5709,6 +5760,11 @@ Buffs: {
 			'''
 	}
 
+	VoidFire: {
+		DisplayName: 虚空之火
+		Description: 生命再生被禁用，每秒失去20点生命
+	}
+
 	WyrmChanBuff: {
 		DisplayName: 妖龙酱
 		Description: 喵呜~
@@ -6338,6 +6394,18 @@ NPCs: {
 		}
 	}
 
+	VoidDestroyer: {
+		DisplayName: 虚空驱逐舰
+
+		BossChecklistIntegration: {
+			EntryName: 虚空驱逐舰
+			SpawnInfo: 夜晚使用[i:CalamityEntropy/VoidTransmitter]召唤
+			DespawnMessage: ""
+		}
+	}
+
+	VoidVanguardCultist.DisplayName: 虚空前卫教徒
+
 	CruiserBody.DisplayName: 巡游者
 	VoidCultistAssassin.DisplayName: 虚空邪教徒
 	VoidPope.DisplayName: 虚空教主
@@ -6533,6 +6601,17 @@ CruiserBestiary:
 	'''
 	来源于虚空的顶级猎杀者，以巨蟒之姿巡曳于现实的缝隙之间。
 	他捕食秩序，传播混沌，将现世撕碎为他的猎场...而你也绝不是任它吞噬的猎物。
+	'''
+VoidDestroyerBestiary:
+	'''
+	来自未知之境的邪恶斥候，善于将强大生物的特性提取并加以利用。
+	如果不受到任何阻碍，它能在一周之内将一颗星球的生态摧毁殆尽。
+	一艘虚空舰的出现往往代表着一场全面战争的正式开始。
+	'''
+VoidVanguardCultistBestiary:
+	'''
+	教团中的瘦小成员，他们擅长在地面高速移动，并在对手猝不及防时给予其致命一击。
+	这些矮小的疯子是虚空舰掠夺一个星球时的优秀协助者。
 	'''
 NihilityTwinBestiary:
 	'''

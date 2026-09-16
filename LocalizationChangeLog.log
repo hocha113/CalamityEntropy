@@ -1180,3 +1180,40 @@
 [Mods.CalamityEntropy.helmvfd] - changed // 同上
 [Mods.CalamityEntropy.helmvfs] - changed // 同上
 [Mods.CalamityEntropy.Items.SawofMacrocosm.Tooltip] - changed // [ceffect/dog:虚空破裂束] 改 [ceeffect/cruiser:...]。ceffect 是灾厄注册的标签,单开时没人认,本模组自己的标签叫 ceeffect
+[Mods.CalamityEntropy.Items.VoidHealingPotion.DisplayName] - added // 月后治疗药水,回复 350 生命,替换月后 Boss 超级治疗掉落
+[Mods.CalamityEntropy.Items.VoidManaPotion.DisplayName] - added // 月后魔力药水,回复 350 魔力
+
+
+[4.3-Changes]
+[Mods.CalamityEntropy.NPCs.VoidDestroyer.DisplayName] - added // 新 Boss 虚空驱逐舰(月后 T2)
+[Mods.CalamityEntropy.NPCs.VoidDestroyer.BossChecklistIntegration.*] - added // EntryName / SpawnInfo / DespawnMessage
+[Mods.CalamityEntropy.NPCs.VoidVanguardCultist.DisplayName] - added // 驱逐舰支援投送召来的地面小怪
+[Mods.CalamityEntropy.VoidDestroyerBestiary] - added // 图鉴文案
+[Mods.CalamityEntropy.VoidVanguardCultistBestiary] - added // 图鉴文案
+[Mods.CalamityEntropy.Items.VoidTransmitter.DisplayName] - added // 召唤物,夜晚使用
+[Mods.CalamityEntropy.Items.VoidTransmitter.Tooltip] - added
+[Mods.CalamityEntropy.Items.VoidDestroyerBag.DisplayName] - added
+[Mods.CalamityEntropy.Items.VoidDestroyerBag.Tooltip] - added
+[Mods.CalamityEntropy.Items.VoidDestroyerRelic.DisplayName] - added
+[Mods.CalamityEntropy.Items.VoidDestroyerRelic.Tooltip] - added
+[Mods.CalamityEntropy.Items.VoidDestroyerTrophy.DisplayName] - added
+[Mods.CalamityEntropy.Items.VoidDestroyerTrophy.Tooltip] - added
+[Mods.CalamityEntropy.Items.DimBearing.DisplayName] - added // 掉落材料黯淡轴承
+[Mods.CalamityEntropy.Items.DimBearing.Tooltip] - added
+[Mods.CalamityEntropy.Buffs.VoidFire.DisplayName] - added // 虚空之火:玩家 20/s 禁再生,敌怪 200/s
+[Mods.CalamityEntropy.Buffs.VoidFire.Description] - added
+[Mods.CalamityEntropy.Projectiles.VDVoidBolt.DisplayName] - added // 以下 14 键为虚空驱逐舰弹幕名(VD 前缀)
+[Mods.CalamityEntropy.Projectiles.VDCoreLaserBolt.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VDHomingMissile.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VDVoidNuke.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VDNukeExplosion.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VDPortal.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VDSporeDrone.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VDSporeLaser.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VDRedRay.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VDHoloRedDevil.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VDHoloTrident.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VDHoloTortoise.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VDHoloStinger.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VDHoloWyvern.DisplayName] - added
+

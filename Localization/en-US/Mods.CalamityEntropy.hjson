@@ -85,6 +85,14 @@ Items: {
 			'''
 	}
 
+	VoidHealingPotion: {
+		DisplayName: Void Healing Potion
+	}
+
+	VoidManaPotion: {
+		DisplayName: Void Mana Potion
+	}
+
 	VoidBottle: {
 		DisplayName: Void Ampule
 		Tooltip:
@@ -186,6 +194,35 @@ Items: {
 	CruiserBag: {
 		DisplayName: Treasure Bag (Cruiser)
 		Tooltip: ""
+	}
+
+	VoidDestroyerBag: {
+		DisplayName: Treasure Bag (Void Destroyer)
+		Tooltip: ""
+	}
+
+	VoidDestroyerRelic: {
+		DisplayName: Void Destroyer Relic
+		Tooltip: ""
+	}
+
+	VoidDestroyerTrophy: {
+		DisplayName: Void Destroyer Trophy
+		Tooltip: ""
+	}
+
+	VoidTransmitter: {
+		DisplayName: Void Transmitter
+		Tooltip:
+			'''
+			Sends a signal into the unknown, summoning the Void Destroyer
+			Can only be used at night
+			'''
+	}
+
+	DimBearing: {
+		DisplayName: Dim Bearing
+		Tooltip: A drive component salvaged from the Void Destroyer. Its surface lost its luster long ago
 	}
 
 	CruiserRelic: {
@@ -4911,6 +4948,20 @@ Projectiles: {
 	Vmwave.DisplayName: Vmwave
 	MonumentGround.DisplayName: Monument Ground
 	VoidBottleThrow.DisplayName: Void Bottle Throw
+	VDVoidBolt.DisplayName: Void Bolt
+	VDCoreLaserBolt.DisplayName: Void Laser Beam
+	VDHomingMissile.DisplayName: Homing Missile
+	VDVoidNuke.DisplayName: Void Nuke
+	VDNukeExplosion.DisplayName: Void Nuclear Blast
+	VDPortal.DisplayName: Void Portal
+	VDSporeDrone.DisplayName: Spore Drone
+	VDSporeLaser.DisplayName: Void Laser
+	VDRedRay.DisplayName: Red Ray
+	VDHoloRedDevil.DisplayName: Holographic Red Devil
+	VDHoloTrident.DisplayName: Holographic Unholy Trident
+	VDHoloTortoise.DisplayName: Holographic Giant Tortoise
+	VDHoloStinger.DisplayName: Holographic Stinger
+	VDHoloWyvern.DisplayName: Holographic Wyvern
 	BrokenChainsaw0.DisplayName: Broken Chainsaw
 	MechanicalChainsaw0.DisplayName: Mechanical Chainsaw
 	EnslavedStar0.DisplayName: Enslaved Star
@@ -5651,6 +5702,11 @@ Buffs: {
 			'''
 	}
 
+	VoidFire: {
+		DisplayName: Void Fire
+		Description: Life regeneration is disabled, losing 20 life per second
+	}
+
 	WyrmChanBuff: {
 		DisplayName: Wyrm-Chan
 		Description: Wyrm-Chan will follow you
@@ -6285,6 +6341,18 @@ NPCs: {
 		}
 	}
 
+	VoidDestroyer: {
+		DisplayName: Void Destroyer
+
+		BossChecklistIntegration: {
+			EntryName: Void Destroyer
+			SpawnInfo: Use [i:CalamityEntropy/VoidTransmitter] at night to summon
+			DespawnMessage: ""
+		}
+	}
+
+	VoidVanguardCultist.DisplayName: Void Vanguard Cultist
+
 	CruiserBody.DisplayName: Cruiser
 	VoidCultistAssassin.DisplayName: Void Cultist Assassin
 	VoidPope.DisplayName: Void Pope
@@ -6439,6 +6507,17 @@ CruiserBestiary:
 	'''
 	A supreme predator born from the void, cruising through the seams of reality in serpentine form.
 	It feasts on order, spreads chaos, and tears the world apart as its hunting ground... and you are no prey to be devoured.
+	'''
+VoidDestroyerBestiary:
+	'''
+	A malevolent scout from the unknown, adept at extracting the traits of powerful creatures and turning them to its own use.
+	Left unopposed, it can strip a planet of its ecosystem within a week.
+	The arrival of a void ship almost always marks the beginning of a full-scale war.
+	'''
+VoidVanguardCultistBestiary:
+	'''
+	Slight members of the cult who excel at moving across the ground at high speed and striking a fatal blow when their foe is caught off guard.
+	These small lunatics make excellent helpers when a void ship plunders a planet.
 	'''
 NihilityTwinBestiary:
 	'''

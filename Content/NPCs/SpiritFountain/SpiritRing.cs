@@ -1,6 +1,8 @@
 using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.NPCs.SpiritFountain.Core;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles.SpiritFountainShoots;
+using CalamityEntropy.Core.AI;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -12,6 +14,21 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.NPCs.SpiritFountain
 {
+    /// <summary>
+    /// 魂环。本体的伴生部件,血量经 <c>realLife</c> 转发给本体——本体常年免伤,
+    /// 玩家真正能打的就是这一圈环。
+    /// <para>
+    /// 它是<b>锚定部件</b>:大部分时间位置由本体直写(<c>Center = 本体 + 柱偏移 + 柱方向 × 自身偏移</c>),
+    /// 只有回旋段脱柱与落环喷泉段抛飞时才做速度积分,而且两段都会收敛回柱子上。
+    /// 所以只清原版平滑(<see cref="CEBossHost.RunAnchoredPartFrame"/>),
+    /// <b>绝不</b>进 <see cref="CEBossNetMotion"/> 的预测纠偏器:预测器算的是 position + velocity,
+    /// 会和直写位置打架。
+    /// </para>
+    /// <para>
+    /// 联机:骰点(脱柱目标偏移、抛飞初速)一律只在权威端骰,结果随 ExtraAI 或原版速度同步过线;
+    /// 运动数学各端都跑。
+    /// </para>
+    /// </summary>
     public class SpiritRing : ModNPC
     {
         public override void SetStaticDefaults()
@@ -22,6 +39,8 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             NPCID.Sets.MPAllowedEnemies[Type] = true;
             NPCID.Sets.ImmuneToRegularBuffs[Type] = true;
             NPCID.Sets.MustAlwaysDraw[Type] = true;
+            //位置多数帧由本体直写,原版平滑对它纯属噪声,还会让环和柱子错位
+            NPCID.Sets.NoMultiplayerSmoothingByType[Type] = true;
         }
 
         public override void SetDefaults()
@@ -46,6 +65,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
         public FountainColumn column => NPC.ai[2] == 0 ? fountain.column1 : fountain.column2;
         public float TrailLength = 60;
         private bool flag = true;
+        /// <summary>沿柱方向的自身偏移。初值各端各骰一次,随即由生成包里的 ExtraAI 对齐</summary>
         public float columnOffset = Main.rand.NextFloat(-1200, 1200);
         public bool Lerping = false;
         public float LFrom = 0;
@@ -58,18 +78,47 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             LTo = offset;
             LProgress = 0;
         }
+
+        /// <summary>
+        /// 定长块,顺序固定在这一处。
+        /// 除了偏移本身,脱柱插值的四个量与回旋飞行的三个闸也必须过线:
+        /// 它们全是骰出来或一次性锁存的,一旦分叉就靠自身收敛不回来
+        /// </summary>
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(columnOffset);
+            writer.Write(Lerping);
+            writer.Write(LFrom);
+            writer.Write(LTo);
+            writer.Write(LProgress);
+            writer.Write(OnColumn);
+            writer.Write(BMRCd);
+            writer.Write(NPC.localAI[1]);
         }
+
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             columnOffset = reader.ReadSingle();
+            Lerping = reader.ReadBoolean();
+            LFrom = reader.ReadSingle();
+            LTo = reader.ReadSingle();
+            LProgress = reader.ReadSingle();
+            OnColumn = reader.ReadBoolean();
+            BMRCd = reader.ReadBoolean();
+            NPC.localAI[1] = reader.ReadSingle();
         }
+
         public bool OnColumn = true;
         public bool BMRCd = false;
+
+        /// <summary>权威端(服务端或单机)。骰点、生成只在这里做;运动数学各端都要跑</summary>
+        private static bool IsServer => Main.netMode != NetmodeID.MultiplayerClient;
+
         public override void AI()
         {
+            //锚定部件:只清原版平滑,不进预测纠偏器
+            CEBossHost.RunAnchoredPartFrame(NPC);
+
             if (flag)
             {
                 flag = false;
@@ -83,7 +132,16 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
 
             if (!owner.active || owner.ModNPC is not SpiritFountain)
             {
-                NPC.active = false;
+                //部件消失是世界写入:只在权威端做并发包。客户端自己抹掉就再也回不来了
+                if (IsServer)
+                {
+                    NPC.active = false;
+                    if (Main.netMode == NetmodeID.Server)
+                    {
+                        NPC.netUpdate = true;
+                        NPC.netSpam = 0;
+                    }
+                }
                 return;
             }
 
@@ -122,7 +180,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             }
             if (SRHandle-- < 0)
             {
-                if (Main.netMode != NetmodeID.MultiplayerClient)
+                if (IsServer)
                 {
                     Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<SRDamageRect>(), NPC.damage / 6, 2, -1, NPC.whoAmI);
                 }
@@ -130,7 +188,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             drawColorLerp = Color.AliceBlue;
 
             #region Phase1
-            if (fountain.ai == SpiritFountain.AIStyle.Moving)
+            if (fountain.ai == SpiritFountainStateIndex.Moving)
             {
                 float targetofs = Index * 1900 + (float)Math.Sin(fountain.Counter * 0.02f) * 400;
                 columnOffset = float.Lerp(columnOffset, targetofs, 0.05f);
@@ -138,15 +196,18 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             }
             Player target = owner.HasValidTarget ? owner.target.ToPlayer() : Main.player[0];
 
-            if (fountain.ai == SpiritFountain.AIStyle.Boomerang)
+            if (fountain.ai == SpiritFountainStateIndex.Boomerang)
             {
-                if (fountain.aiTimer == 10)
+                if (fountain.aiTimer == 10 && IsServer)
                 {
+                    //脱柱目标偏移只在权威端骰,结果随 ExtraAI 过线;客户端拿到之后照常跑插值
                     LerpTo(Main.rand.NextFloat(-1800, 1800));
                     if (fountain.phase == 3)
                     {
+                        //三阶段改成按 Index 均匀铺开,直接盖掉上一行骰出来的值。照搬
                         LerpTo(Index * 1200);
                     }
+                    NPC.netUpdate = true;
                 }
                 if (fountain.num1 > (fountain.phase == 3 ? Math.Abs(Index) : (Index + 1) / 2f))
                 {
@@ -162,6 +223,11 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
                         if (fountain.phase == 3)
                         {
                             NPC.velocity.Y = 0;
+                        }
+                        //决策点:脱柱锁向。各端都算得出方向,但玩家位置有插值差,让权威端立刻对账
+                        if (IsServer)
+                        {
+                            NPC.netUpdate = true;
                         }
                     }
                     if (!OnColumn)
@@ -224,6 +290,7 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
                 }
                 else
                 {
+                    //原代码这条 else 里又判了一次同样的条件,恒为假,整块是死代码。照搬
                     if (fountain.num1 > (fountain.phase == 3 ? Math.Abs(Index) : (Index + 1) / 2f))
                     {
                         drawColorLerp = new Color(255, 40, 40);
@@ -246,15 +313,17 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
                     NPC.localAI[1] = 0;
                 }
             }
-            if (fountain.ai == SpiritFountain.AIStyle.Lasers)
+            if (fountain.ai == SpiritFountainStateIndex.Lasers)
             {
                 DontSetRot = true;
                 int targetTime = (int)(fountain.phase == 3 ? 82 : (fountain.phase == 2 ? 98 : 120) / fountain.enrage);
                 if (fountain.aiTimer < 416 || Lerping || AlphaLaserWarning > 0)
                 {
-                    if (fountain.aiTimer % (targetTime + 28) == 0)
+                    if (fountain.aiTimer % (targetTime + 28) == 0 && IsServer)
                     {
+                        //同上:换驻点的骰点只在权威端
                         LerpTo(Main.rand.NextFloat(-1200, 1200));
+                        NPC.netUpdate = true;
                     }
                     if (fountain.aiTimer % (targetTime + 28) <= targetTime)
                     {
@@ -286,14 +355,19 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             }
             NPC.noTileCollide = true;
 
-            if (fountain.ai == SpiritFountain.AIStyle.RingFountains)
+            if (fountain.ai == SpiritFountainStateIndex.RingFountains)
             {
                 DontSetPos = true;
                 DontSetRot = true;
                 if (fountain.aiTimer == 1)
                 {
                     NPC.rotation = 0;
-                    NPC.velocity = new Vector2(Main.rand.NextFloat(-45, 45), -6);
+                    if (IsServer)
+                    {
+                        //抛飞初速只在权威端骰,原版 NPC 同步自带 velocity,立刻发包让客户端接上
+                        NPC.velocity = new Vector2(Main.rand.NextFloat(-45, 45), -6);
+                        NPC.netUpdate = true;
+                    }
                 }
                 if (fountain.aiTimer > 1)
                 {
@@ -363,26 +437,28 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             #endregion
 
             #region phase2
-            if (fountain.ai == SpiritFountain.AIStyle.PhaseTranse1)
+            if (fountain.ai == SpiritFountainStateIndex.PhaseTranse1)
             {
                 float targetofs = Index * 1900 + (float)Math.Sin(fountain.Counter * 0.02f) * 400;
                 columnOffset = float.Lerp(columnOffset, targetofs, 0.05f);
                 TrailLength = float.Lerp(TrailLength, 74, 0.05f);
                 NPC.damage = 0;
             }
-            if (fountain.ai == SpiritFountain.AIStyle.SpiritSlicing)
+            if (fountain.ai == SpiritFountainStateIndex.SpiritSlicing)
             {
                 TrailLength = float.Lerp(TrailLength, 100, 0.05f);
                 int counter = fountain.aiTimer;
                 int t = 90;
                 if (counter % (t + 42) < t)
                     NPC.damage = 0;
-                if (counter % (t + 42) == 1)
+                if (counter % (t + 42) == 1 && IsServer)
                 {
+                    //同上:换驻点的骰点只在权威端
                     LerpTo(Main.rand.NextFloat(-1200, 1200));
+                    NPC.netUpdate = true;
                 }
                 //counter%51触发HadLine,跟LerpTo硬切同步,不是每帧都有
-                if (counter % (t + 42) == 51)
+                if (counter % (t + 42) == 51 && !Main.dedServ)
                 {
                     //HadLine成对spawn(hm=0.36)旧SpiritRing双轨残影,column.id决定offset朝向
                     Vector2 offset = column.id == 0 ? new Vector2(column.Num < 0 ? 1 : -1, 0) : new Vector2(0, column.Num < 0 ? 1 : -1);

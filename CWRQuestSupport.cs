@@ -2,6 +2,7 @@ using CalamityEntropy.Common;
 using CalamityEntropy.Content.ArmorPrefixes;
 using CalamityEntropy.Content.AzafureMiners;
 using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Items.Potions;
 using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Accessories.Cards;
 using CalamityEntropy.Content.Items.Accessories.EvilCards;
@@ -226,7 +227,7 @@ namespace CalamityEntropy
                 .Done(_ => EDownedBosses.downedNihilityTwin)
                 .Reward(ModContent.ItemType<NihilityTwinTrophy>())
                 .Reward(ItemID.PlatinumCoin, 1)
-                .Reward(ItemID.SuperHealingPotion, 15)
+                .Reward(ModContent.ItemType<VoidHealingPotion>(), 15)
                 .Push();
 
             new Node("Cruiser")
@@ -238,7 +239,7 @@ namespace CalamityEntropy
                 .Done(_ => EDownedBosses.downedCruiser)
                 .Reward(ModContent.ItemType<CruiserTrophy>())
                 .Reward(ItemID.PlatinumCoin, 2)
-                .Reward(ItemID.SuperHealingPotion, 20)
+                .Reward(ModContent.ItemType<VoidHealingPotion>(), 20)
                 .Push();
         }
 

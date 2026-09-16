@@ -1,20 +1,19 @@
 using CalamityEntropy.Common;
-using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Biomes;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Books.BookMarks;
 using CalamityEntropy.Content.Items.Lores;
+using CalamityEntropy.Content.Items.Potions;
 using CalamityEntropy.Content.Items.Weapons;
-using CalamityEntropy.Content.Projectiles;
-using CalamityEntropy.Content.Projectiles.Cruiser;
+using CalamityEntropy.Content.NPCs.NihilityTwin.Core;
+using CalamityEntropy.Content.NPCs.NihilityTwin.States;
+using CalamityEntropy.Core.AI;
+using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Utilities;
 using InnoVault;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-using System;
-using System.Collections.Generic;
+using InnoVault.StateMachines;
 using System.IO;
 using Terraria;
 using Terraria.DataStructures;
@@ -25,25 +24,53 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.NPCs.NihilityTwin
 {
+    /// <summary>
+    /// 虚无双子(本体:虚无噬菌体),InnoVault 状态机宿主。
+    /// <para>
+    /// 「双子」是本体 + <see cref="ChaoticCell"/> 混沌细胞这一对:细胞是共享血量的部件
+    /// (<c>realLife</c> 指回本体),自己没有攻击逻辑,运动全由本体逐帧写速度。
+    /// 天顶世界里还会额外复制一只同类型本体,同样挂 <c>realLife</c> 并<b>共用同一颗细胞</b>。
+    /// </para>
+    /// <para>
+    /// 状态只写运动与出手,宿主按固定顺序落地:客户端纠偏 → 部件就位 → 目标校验 →
+    /// 全局转移 → 清声明 → 状态机 → 声明结算 → 尾处理 → 客户端记预测。
+    /// 联机:转移只在权威端(状态号 ai[3],阶段 ai[2]);各端跑同一套运动数学;
+    /// 计时与朝向、自旋、环射基准角等累加量随 SendExtraAI 过线。
+    /// 数值在 <see cref="NihilityDirector"/>,选招在 <see cref="NihilityRotation"/>,绘制在 .Draw.cs
+    /// </para>
+    /// </summary>
     [AutoloadBossHead]
-    public class NihilityActeriophage : ModNPC
+    public partial class NihilityActeriophage : ModNPC
     {
-        //绘制用贴图,加载期由 VaultLoaden 赋值,只在客户端绘制路径读取
-        [VaultLoaden("CalamityEntropy/Content/NPCs/NihilityTwin/BodyAlt")]
-        private static Asset<Texture2D> bodyAltTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/NihilityTwin/back")]
-        private static Asset<Texture2D> backTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/NihilityTwin/mid")]
-        private static Asset<Texture2D> midTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/NihilityTwin/front")]
-        private static Asset<Texture2D> frontTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/NihilityTwin/NihRope")]
-        internal static Asset<Texture2D> nihRopeTex;
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            target.AddBuff(ModContent.BuffType<VoidVirus>(), 360);
-        }
+        #region 字段
+        private NpcStateMachine<NihilityStateContext> stateMachine;
+        public NihilityStateContext Context { get; private set; }
+        private readonly CEBossNetMotion netMotion = new();
+        private Player targetPlayer;
 
+        /// <summary>混沌细胞实体。可能为 null(尚未生成 / 刚死 / 客户端还没收到索引)</summary>
+        public NPC cell = null;
+        /// <summary>细胞的 <c>whoAmI</c>。NPC 槽位由服务端裁决,各端一致,可直接当跨端身份用</summary>
+        public int cellIndex = -1;
+        private bool spawnCell = true;
+
+        /// <summary>出场演出倒计时。原代码没同步它,本轮随 ExtraAI 过线</summary>
+        public int spawnAnm = NihilityDirector.SpawnAnimFrames;
+        /// <summary>出场屏震包络(纯本地)</summary>
+        private float shake = 0f;
+        /// <summary>出场动画持续屏震的复用实例(仅客户端)</summary>
+        private ScreenShaker.ScreenShake spawnShake = null;
+
+        /// <summary>脱战倒计时。纯本地:真正的下线只在权威端执行</summary>
+        private int escapeCounter = 0;
+
+        /// <summary>连接两端的绳索。纯绘制</summary>
+        public Rope rope = null;
+        /// <summary>绳索显示插值。二阶段每帧减 1(即立刻收起),只有对撞合体那一手把它顶回 1</summary>
+        public float ropeLerp = 1;
+        #endregion
+
+        #region 定义
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 1;
@@ -63,8 +90,10 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             NPCID.Sets.SpecificDebuffImmunity[Type][ModContent.BuffType<VoidVirus>()] = true;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
-
+            //冲刺与突进稳态远超 10 px/f,原版 netOffset 会让本体与细胞、绳索分家;关掉后纠偏器接管
+            NPCID.Sets.NoMultiplayerSmoothingByType[Type] = true;
         }
+
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
@@ -76,6 +105,8 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         public override void SetDefaults()
         {
             NPC.boss = true;
+            //ai[3] 归状态机占用,必须关掉原版 AI 分支
+            NPC.aiStyle = -1;
             NPC.width = 140;
             NPC.height = 140;
             NPC.damage = 106;
@@ -109,10 +140,456 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             NPC.netAlways = true;
             SpawnModBiomes = new int[] { ModContent.GetInstance<VoidDummyBoime>().Type };
         }
+
+        // 原灾厄全局 DR=0.15 的本地等效;公有字段供血条等外部读取
+        public float DamageReduction = 0.15f;
+        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
+        {
+            modifiers.FinalDamage *= 1f - DamageReduction;
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            target.AddBuff(ModContent.BuffType<VoidVirus>(), 360);
+        }
+
+        public override bool CheckActive()
+        {
+            return false;
+        }
+
+        public override void BossHeadRotation(ref float rotation)
+        {
+            rotation = NPC.rotation + MathHelper.PiOver2;
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+        }
+        #endregion
+
+        #region 状态机装配
+        private void EnsureContext()
+        {
+            Context ??= new NihilityStateContext
+            {
+                Npc = NPC,
+                Owner = this,
+            };
+            Context.Npc = NPC;
+            Context.Owner = this;
+        }
+
+        private void InitializeStateMachine()
+        {
+            EnsureContext();
+            if (NPC.ai[2] < 1f)
+            {
+                NPC.ai[2] = 1f;
+            }
+            stateMachine = new NpcStateMachine<NihilityStateContext>(Context);
+            CEBossHost.HookStateSwapAdoption(netMotion, stateMachine);
+
+            IVaultState<NihilityStateContext> initial = null;
+            if (VaultUtils.isClient)
+            {
+                initial = VaultStateRegistry<NihilityStateContext>.Create((int)NPC.ai[3]);
+            }
+            //原代码的 aitype 初值是 3(一阶段悬停爆发),不是整备;照搬
+            stateMachine.SetInitialState(initial ?? new NihilityP1HoverBurstState());
+        }
+        #endregion
+
+        #region 细胞实体
+        /// <summary>
+        /// 生成 / 找回混沌细胞。生成只在权威端;客户端靠 <see cref="cellIndex"/> 认领。
+        /// 原代码不校验槽位里的东西还是不是细胞,这里补一次类型与存活校验:
+        /// 槽位被回收后继续往里写速度会砸到陌生 NPC 身上
+        /// </summary>
+        private void EnsureCell()
+        {
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                if (spawnCell)
+                {
+                    spawnCell = false;
+                    if (NPC.realLife < 0)
+                    {
+                        SpawnCellAndZenithClone();
+                    }
+                }
+                //原代码用 Main.GameUpdateCount % 5 轮询,这一支只在权威端跑,不构成跨端分叉
+                if (Main.GameUpdateCount % NihilityDirector.CellRespawnPollFrames == 0
+                    && (cell == null || !cell.active) && NPC.realLife < 0)
+                {
+                    SpawnCellAndZenithClone(cloneToo: false);
+                }
+            }
+
+            if (cell == null && cellIndex >= 0)
+            {
+                cell = cellIndex.ToNPC();
+            }
+            if (cell != null && (!cell.active || cell.ModNPC is not ChaoticCell))
+            {
+                cell = null;
+            }
+        }
+
+        private void SpawnCellAndZenithClone(bool cloneToo = true)
+        {
+            int n = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<ChaoticCell>());
+            n.ToNPC().realLife = NPC.whoAmI;
+            n.ToNPC().netUpdate = true;
+            cell = n.ToNPC();
+            cellIndex = cell.whoAmI;
+            NPC.netUpdate = true;
+            NPC.netSpam = NihilityDirector.NetSpamClampTo;
+
+            if (cloneToo && Main.zenithWorld)
+            {
+                int n2 = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<NihilityActeriophage>());
+                n2.ToNPC().realLife = NPC.whoAmI;
+                n2.ToNPC().netUpdate = true;
+                n2.ToNPC().position += CEUtils.randomPointInCircle(NihilityDirector.ZenithCloneScatter);
+                if (n2.ToNPC().ModNPC is NihilityActeriophage na)
+                {
+                    na.cell = cell;
+                    na.cellIndex = cellIndex;
+                }
+            }
+        }
+        #endregion
+
+        public override void AI()
+        {
+            EnsureContext();
+            if (stateMachine == null)
+            {
+                InitializeStateMachine();
+            }
+
+            bool client = VaultUtils.isClient;
+            if (client)
+            {
+                netMotion.BeginFrame(NPC);
+                CEBossHost.AdoptTimingAtFrameStart(netMotion, stateMachine);
+            }
+
+            // 天顶分身与本体同类型,必须每帧清掉 boss 标记,否则每只各顶一根血条
+            // 联机不单独同步该位:realLife 是原版字段,中途加入的客户端进 AI 后也会落到 false
+            if (NPC.realLife >= 0)
+            {
+                NPC.boss = false;
+            }
+
+            EnsureCell();
+
+            if (spawnAnm > 0)
+            {
+                UpdateSpawnAnimation();
+                if (client)
+                {
+                    netMotion.EndFrame(NPC);
+                }
+                return;
+            }
+
+            if (cell == null)
+            {
+                //细胞缺席时整棵状态树都没有第二个支点,原代码会在这里空引用;直接跳过这一帧
+                if (client)
+                {
+                    netMotion.EndFrame(NPC);
+                }
+                return;
+            }
+
+            Context.FrameCounter++;
+            if (rope == null)
+            {
+                rope = new Rope(NPC.Center, cell.Center, NihilityDirector.RopeSegments, 0, new Vector2(0, 0f),
+                    NihilityDirector.RopeStiffness, NihilityDirector.RopeIterations, false);
+            }
+            if (!Main.dedServ)
+            {
+                Main.LocalPlayer.Entropy().NihSky = NihilityDirector.NihSkyRefresh;
+            }
+            NPC.localAI[0]++;
+
+            FindTarget();
+            UpdateContextFacts();
+
+            if (Context.TargetValid)
+            {
+                escapeCounter = 0;
+                EvaluateGlobalTransitions();
+                if (Context.Phase >= 2 && ropeLerp > 0)
+                {
+                    ropeLerp -= 1f;
+                }
+            }
+            Context.BeginFrameDefaults();
+            //脱战也要走 Update:客户端靠这里的 NetSync 收权威端换态。状态体本身见 RequiresTarget,没目标不跑
+            stateMachine.Update();
+            if (Context.TargetValid)
+            {
+                SettleDeclarations();
+            }
+            else
+            {
+                UpdateEscapeMotion();
+            }
+
+            cell.life = NPC.life;
+            cell.target = NPC.target;
+            NPC.velocity *= NihilityDirector.GlobalDrag;
+            UpdateRope();
+
+            if (client)
+            {
+                netMotion.EndFrame(NPC);
+            }
+            else
+            {
+                CEBossHost.Heartbeat(NPC);
+            }
+        }
+
+        /// <summary>出场演出:两端焊在一起不动,屏震包络逐帧涨。状态机不推进</summary>
+        private void UpdateSpawnAnimation()
+        {
+            spawnAnm--;
+            shake += NihilityDirector.SpawnShakeRise;
+            if (cell != null)
+            {
+                cell.Center = NPC.Center;
+                cell.velocity *= 0;
+                NPC.velocity *= 0;
+                // 原灾厄全局屏震(逐帧置强度)改自有 ScreenShaker:复用同一震动实例并逐帧刷新振幅
+                if (!Main.dedServ)
+                {
+                    if (spawnShake == null || !spawnShake.active)
+                    {
+                        spawnShake = new ScreenShaker.ScreenShake(Vector2.Zero, 0);
+                        ScreenShaker.AddShake(spawnShake);
+                    }
+                    spawnShake.amplitude = NihilityDirector.SpawnShakeAmplitude * shake;
+                }
+            }
+        }
+
+        private void FindTarget()
+        {
+            if (!NPC.HasValidTarget)
+            {
+                NPC.TargetClosest(false);
+            }
+            targetPlayer = NPC.HasValidTarget ? NPC.target.ToPlayer() : null;
+        }
+
+        private void UpdateContextFacts()
+        {
+            Context.Npc = NPC;
+            Context.Owner = this;
+            Context.Target = targetPlayer;
+            //原代码的接战判据只有 HasValidTarget,没有距离上限;照搬
+            Context.TargetValid = NPC.HasValidTarget;
+            Context.TargetDistance = Context.TargetValid ? NPC.Distance(targetPlayer.Center) : 0f;
+        }
+
+        /// <summary>
+        /// 转阶段。原代码把它写在一阶段攻击段的最前面,所以转阶段那一帧当前招直接被掐断。
+        /// 阶段本身是同步血量的纯函数,各端自行落位(<c>ai[2]</c> 随后也会被快照覆盖成同值);
+        /// 无敌帧必须各端各写(受击判定跑在各自机器上);只有换态收归权威端
+        /// </summary>
+        private void EvaluateGlobalTransitions()
+        {
+            if (Context.Phase != 1 || NPC.life >= NPC.lifeMax / NihilityDirector.Phase2LifeDivisor)
+            {
+                return;
+            }
+            foreach (Player plr in Main.ActivePlayers)
+            {
+                plr.Entropy().immune = NihilityDirector.Phase2GraceFrames;
+            }
+            Context.Phase = 2;
+            if (!VaultUtils.isClient)
+            {
+                Context.Num1 = 0;
+                stateMachine.ChangeState(new NihilityRegroupState());
+            }
+        }
+
+        /// <summary>
+        /// 原代码挂在「aitype == 1」上的那两句 <c>else { rotSpeed = 0; }</c>。
+        /// 一阶段那句带 <c>aitype != 4</c> 豁免,二阶段那句没有,合起来就是
+        /// 「只有一阶段 1/4 号与二阶段 1 号保留自旋,其余每帧清零」。脱战时这两句都不执行,所以自旋量会冻住
+        /// </summary>
+        private void SettleDeclarations()
+        {
+            if (!Context.KeepRotSpeed)
+            {
+                Context.RotSpeed = 0f;
+            }
+        }
+
+        private void UpdateEscapeMotion()
+        {
+            if (cell != null)
+            {
+                cell.velocity += (NPC.Center - cell.Center) * NihilityDirector.EscapeCellPull;
+            }
+            NPC.velocity.Y -= NihilityDirector.EscapeRiseAccel;
+            escapeCounter++;
+            if (escapeCounter > NihilityDirector.EscapeDespawnFrames && !VaultUtils.isClient)
+            {
+                //原代码在各端都直接置 active = false,客户端会自己把 Boss 抹掉;下线收归权威端
+                NPC.active = false;
+                NPC.netUpdate = true;
+            }
+            NPC.velocity *= NihilityDirector.EscapeDrag;
+            NPC.rotation = NPC.velocity.ToRotation();
+        }
+
+        private void UpdateRope()
+        {
+            if (ropeLerp <= 0 || rope == null || cell == null)
+            {
+                return;
+            }
+            Vector2 rend = Vector2.Lerp(buttom, cell.Center, ropeLerp);
+            rope.segmentLength = CEUtils.getDistance(buttom, rend) / NihilityDirector.RopeSegmentDivisor;
+            rope.Start = buttom;
+            rope.End = rend;
+            rope.Update();
+        }
+
+        #region 状态可用的小件
+        /// <summary>额外推一次绳索求解(自旋狙击每帧多推两次)。纯绘制</summary>
+        public void TickRope()
+        {
+            rope?.Update();
+        }
+
+        /// <summary>
+        /// 直写细胞位置(蓄力焊接、对撞对齐这类瞬移)。顺手丢掉细胞纠偏器的旧预测,
+        /// 免得下一包把「直写造成的位移」当成失步
+        /// </summary>
+        public void PlaceCell(Vector2 center)
+        {
+            if (cell == null)
+            {
+                return;
+            }
+            cell.Center = center;
+            if (cell.ModNPC is ChaoticCell cc)
+            {
+                cc.ForgetPrediction();
+            }
+        }
+
+        /// <summary>直写本体位置(对撞对齐)。同样要丢掉旧预测</summary>
+        public void TeleportBody(Vector2 center)
+        {
+            NPC.Center = center;
+            netMotion.ForgetPrediction();
+        }
+        #endregion
+
+        #region 同步
+        /// <summary>
+        /// 定长块,顺序固定在这一处:计时 → 持久累加量 → 锁存标量 → 部件索引。
+        /// 字节数是编译期常量(3 int + 6 float + 3 int = 48 B):不许加运行时条件决定写不写某个字段
+        /// </summary>
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            EnsureContext();
+            int stateId = (int)NPC.ai[3];
+            int timer = 0;
+            int counter = 0;
+            if (stateMachine?.CurrentState is NihilityStateBase state)
+            {
+                stateId = state.StateId;
+                timer = state.Timer;
+                counter = state.Counter;
+            }
+            CEBossNetMotion.WriteTiming(writer, stateId, timer, counter);
+
+            writer.Write(NPC.rotation);
+            writer.Write(Context.RotSpeed);
+            writer.Write(Context.Num2);
+
+            writer.Write(Context.Num3);
+            writer.Write(Context.Nz.X);
+            writer.Write(Context.Nz.Y);
+            writer.Write(Context.Num1);
+            writer.Write(spawnAnm);
+
+            writer.Write(cellIndex);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            EnsureContext();
+            int localStateId = -1;
+            int localTimer = 0;
+            if (stateMachine?.CurrentState is NihilityStateBase state)
+            {
+                localStateId = state.StateId;
+                localTimer = state.Timer;
+            }
+            netMotion.ReceiveTiming(reader, NPC, localStateId, localTimer);
+
+            NPC.rotation = reader.ReadSingle();
+            Context.RotSpeed = reader.ReadSingle();
+            Context.Num2 = AdoptScalar(Context.Num2, reader.ReadSingle());
+
+            Context.Num3 = reader.ReadSingle();
+            float nzX = reader.ReadSingle();
+            float nzY = reader.ReadSingle();
+            Context.Nz = new Vector2(nzX, nzY);
+            Context.Num1 = AdoptCounter(Context.Num1, reader.ReadInt32());
+            spawnAnm = reader.ReadInt32();
+
+            cellIndex = reader.ReadInt32();
+            if (cellIndex >= 0)
+            {
+                NPC candidate = cellIndex.ToNPC();
+                cell = candidate != null && candidate.active && candidate.ModNPC is ChaoticCell ? candidate : null;
+            }
+        }
+
+        /// <summary>
+        /// 帧计数型标量:容差内不动本地值,对齐 <see cref="CEBossNetMotion.AdoptTimer"/> 的口径。
+        /// 硬对齐会让 <c>Num1 == N</c> 那一类一次性拍被跳过或重放(能量球、激光、对撞都靠等值判定起拍)
+        /// </summary>
+        private static int AdoptCounter(int local, int synced)
+        {
+            return CEBossNetMotion.AdoptTimer(local, synced);
+        }
+
+        private static float AdoptScalar(float local, float synced)
+        {
+            return System.Math.Abs(synced - local) > CEBossNetMotion.TimerTolerance ? synced : local;
+        }
+        #endregion
+
+        #region 掉落
+        public override void OnKill()
+        {
+            NPC.SetEventFlagCleared(ref EDownedBosses.downedNihilityTwin, -1);
+            if (cell != null)
+            {
+                cell.StrikeInstantKill();
+            }
+        }
+
         public override void BossLoot(ref int potionType)
         {
-            potionType = ItemID.SuperHealingPotion;
+            potionType = ModContent.ItemType<VoidHealingPotion>();
         }
+
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<NihilityTwinBag>()));
@@ -125,8 +602,8 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
                 npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<BookMarkAbyss>(), 2));
             }
 
-            // 灾厄至尊回复药水→原版超级治疗药水,数量照搬(misc-map);按人掉落并隐藏图鉴条目
-            npcLoot.Add(new DropPerPlayerOnThePlayer(ItemID.SuperHealingPotion, 1, 5, 15, new HiddenDropCondition()));
+            // 月后虚空治疗药水,数量沿用原至尊档 5-15;按人掉落并隐藏图鉴条目
+            npcLoot.Add(new DropPerPlayerOnThePlayer(ModContent.ItemType<VoidHealingPotion>(), 1, 5, 15, new HiddenDropCondition()));
 
             LeadingConditionRule normalOnly = new LeadingConditionRule(new Conditions.NotExpert());
             {
@@ -148,13 +625,6 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             npcLoot.Add(new DropPerPlayerOnThePlayer(ModContent.ItemType<NihilityTwinLore>(), 1, 1, 1, new LoreFirstKill()));
         }
 
-        // 原灾厄全局 DR=0.15 的本地等效;公有字段供血条等外部读取
-        public float DamageReduction = 0.15f;
-        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
-        {
-            modifiers.FinalDamage *= 1f - DamageReduction;
-        }
-
         // 恒真但隐藏图鉴条目的条件:对应原 hideLootReport 语义
         private class HiddenDropCondition : IItemDropRuleCondition, IProvideItemConditionDescription
         {
@@ -170,994 +640,6 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             public bool CanShowItemDropInUI() => true;
             public string GetConditionDescription() => null;
         }
-        public override void OnKill()
-        {
-            NPC.SetEventFlagCleared(ref EDownedBosses.downedNihilityTwin, -1);
-            if (cell != null)
-            {
-                cell.StrikeInstantKill();
-            }
-        }
-
-        public float rotSpeed = 0f;
-        public int escapeCounter = 0;
-
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(NPC.rotation);
-            writer.Write(rotSpeed);
-            writer.Write(cellIndex);
-            writer.Write(aitype);
-            writer.Write(phase);
-            writer.Write(aicounter);
-        }
-        public int cellIndex = -1;
-
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            NPC.rotation = reader.ReadSingle();
-            rotSpeed = reader.ReadSingle();
-            cellIndex = reader.ReadInt32();
-            aitype = reader.ReadInt32();
-            phase = reader.ReadInt32();
-            aicounter = reader.ReadInt32();
-        }
-        public override void BossHeadRotation(ref float rotation)
-        {
-            rotation = NPC.rotation + MathHelper.PiOver2;
-        }
-        public NPC cell = null;
-        public bool SpawnCell = true;
-        public Rope rope = null;
-        public int aitype = 3;
-        public int phase = 1;
-        public int counter { get { return (int)NPC.ai[1]; } set { NPC.ai[1] = value; } }
-        public int aicounter = 0;
-        public void prepareAiChange()
-        {
-            aicounter = 0;
-            aitype = -1;
-            NPC.netUpdate = true;
-        }
-        public void randomAI()
-        {
-            aicounter = 0;
-            aitype = Main.rand.Next(7);
-            NPC.netUpdate = true;
-            if (phase == 2 && aitype == 4)
-            {
-                int sum = 0;
-                int sstype = ModContent.NPCType<ChaoticCellSmall>();
-                foreach (NPC n in Main.ActiveNPCs)
-                {
-                    if (n.type == sstype)
-                    {
-                        sum++;
-                    }
-                }
-                if (sum > 8)
-                {
-                    randomAI();
-                }
-            }
-        }
-        public float ropeLerp = 1;
-        public int spawnAnm = 150;
-        float shake = 0;
-        // 出场动画持续屏震的复用实例(仅客户端)
-        private ScreenShaker.ScreenShake spawnShake = null;
-        public override void OnSpawn(IEntitySource source)
-        {
-        }
-        public override void AI()
-        {
-            // 天顶分身与本体同类型,必须每帧清掉 boss 标记,否则每只各顶一根血条
-            // 联机不单独同步该位:realLife 是原版字段,中途加入的客户端进 AI 后也会落到 false
-            if (NPC.realLife >= 0)
-            {
-                NPC.boss = false;
-            }
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                if (SpawnCell)
-                {
-                    SpawnCell = false;
-                    if (NPC.realLife < 0)
-                    {
-                        int n = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<ChaoticCell>());
-                        n.ToNPC().realLife = NPC.whoAmI;
-                        n.ToNPC().netUpdate = true;
-                        cell = n.ToNPC();
-                        cellIndex = cell.whoAmI;
-                        NPC.netUpdate = true;
-                        NPC.netSpam = 9;
-
-                        if (Main.zenithWorld)
-                        {
-                            int n2 = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<NihilityActeriophage>());
-                            n2.ToNPC().realLife = NPC.whoAmI;
-                            n2.ToNPC().netUpdate = true;
-                            n2.ToNPC().position += CEUtils.randomPointInCircle(500);
-                            if (n2.ToNPC().ModNPC is NihilityActeriophage na)
-                            {
-                                na.cell = cell;
-                                na.cellIndex = cellIndex;
-                            }
-                        }
-                    }
-                }
-            }
-            if (spawnAnm > 0)
-            {
-                spawnAnm--;
-                shake += 5f / 120f;
-                if (cell != null)
-                {
-                    cell.Center = NPC.Center;
-                    cell.velocity *= 0;
-                    NPC.velocity *= 0;
-                    // 原灾厄全局屏震(逐帧置强度)改自有 ScreenShaker:复用同一震动实例并逐帧刷新振幅
-                    if (!Main.dedServ)
-                    {
-                        if (spawnShake == null || !spawnShake.active)
-                        {
-                            spawnShake = new ScreenShaker.ScreenShake(Vector2.Zero, 0);
-                            ScreenShaker.AddShake(spawnShake);
-                        }
-                        spawnShake.amplitude = 3.2f * shake;
-                    }
-                }
-                return;
-            }
-            if (Main.GameUpdateCount % 5 == 0 && !(Main.netMode == NetmodeID.MultiplayerClient))
-            {
-                if (cell == null || !cell.active)
-                {
-                    if (NPC.realLife < 0)
-                    {
-                        int n = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<ChaoticCell>());
-                        n.ToNPC().realLife = NPC.whoAmI;
-                        n.ToNPC().netUpdate = true;
-                        cell = n.ToNPC();
-                        cellIndex = cell.whoAmI;
-                        NPC.netUpdate = true;
-                        NPC.netSpam = 9;
-                    }
-                }
-            }
-            if (NPC.netSpam > 10)
-            {
-                NPC.netSpam = 9;
-                NPC.netUpdate = true;
-            }
-            counter++;
-            if (cell == null)
-            {
-                if (cellIndex >= 0)
-                {
-                    cell = cellIndex.ToNPC();
-                }
-            }
-            if (cell != null)
-            {
-                if (rope == null)
-                {
-                    rope = new Rope(NPC.Center, cell.Center, 30, 0, new Vector2(0, 0f), 0.006f, 15, false);
-                }
-
-
-            }
-            if (!Main.dedServ)
-            {
-                Main.LocalPlayer.Entropy().NihSky = 20;
-            }
-            NPC.localAI[0]++;
-            if (!NPC.HasValidTarget)
-            {
-                NPC.TargetClosest(false);
-            }
-
-            if (NPC.HasValidTarget)
-            {
-                Player target = NPC.target.ToPlayer();
-                Vector2 targetPos = target.Center;
-
-                escapeCounter = 0;
-
-                if (aitype == -1)
-                {
-                    aicounter++;
-                    NPC.velocity *= 0.98f;
-                    cell.velocity *= 0.98f;
-                    if (phase == 1)
-                    {
-                        if (CEUtils.getDistance(cell.Center, NPC.Center) > 120)
-                        {
-                            cell.velocity += (NPC.Center - cell.Center).SafeNormalize(Vector2.Zero) * 0.6f;
-                        }
-                    }
-                    else
-                    {
-                        cell.velocity += (targetPos - cell.Center).SafeNormalize(Vector2.Zero) * 0.5f;
-                    }
-                    NPC.velocity += (targetPos - NPC.Center).SafeNormalize(Vector2.Zero) * 0.6f;
-                    NPC.rotation = NPC.velocity.ToRotation();
-                    spawnParticle(buttom);
-                    if (aicounter > 80)
-                    {
-                        randomAI();
-                    }
-                }
-                if (phase == 1)
-                {
-                    if (NPC.life < NPC.lifeMax / 2)
-                    {
-                        foreach (Player plr in Main.ActivePlayers)
-                        {
-                            plr.Entropy().immune = 120;
-                        }
-                        phase = 2;
-                        prepareAiChange();
-                    }
-                    if (aitype == 0)
-                    {
-                        if (NPC.ai[0]-- > 0)
-                        {
-                            if (CEUtils.getDistance(targetPos, NPC.Center) > 1400)
-                            {
-                                NPC.ai[0] = 36;
-                            }
-                            NPC.velocity += (targetPos - NPC.Center).SafeNormalize(Vector2.Zero) * 1.2f;
-
-                            NPC.velocity *= 0.98f;
-                        }
-                        else
-                        {
-                            int scd = 24;
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                if (counter % scd == 0)
-                                {
-                                    float rot = cell.rotation;
-                                    for (int i = 0; i < 360; i += 40)
-                                    {
-                                        Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center, (rot + MathHelper.ToRadians(i)).ToRotationVector2() * 16, ModContent.ProjectileType<CellBullet>(), NPC.damage / 6, 4);
-                                    }
-                                }
-                                if (counter % 15 == 0)
-                                {
-                                    Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, (NPC.rotation + MathHelper.PiOver2).ToRotationVector2() * 20, ModContent.ProjectileType<CellSpike>(), NPC.damage / 6, 2);
-                                    Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, (NPC.rotation - MathHelper.PiOver2).ToRotationVector2() * 20, ModContent.ProjectileType<CellSpike>(), NPC.damage / 6, 2);
-                                }
-                            }
-                            NPC.velocity += (targetPos - NPC.Center).SafeNormalize(Vector2.Zero) * 0.1f;
-                            if (NPC.velocity.Length() < 30)
-                            {
-                                NPC.velocity *= 1.076f;
-                            }
-
-                            if (CEUtils.getDistance(targetPos, NPC.Center) > 1400)
-                            {
-                                NPC.ai[0] = 36;
-                                CEUtils.PlaySound("beast_ghostdash" + Main.rand.Next(1, 5), 1);
-                            }
-                        }
-                        NPC.rotation = NPC.velocity.ToRotation();
-                        for (int i = 0; i < 10; i++)
-                        {
-                            spawnParticle(NPC.Center + NPC.velocity * ((float)i / 10f));
-                        }
-                        if (cell != null)
-                        {
-                            cell.velocity += (NPC.Center - cell.Center) * 0.0022f;
-                        }
-                        aicounter++;
-                        if (aicounter > 360 && NPC.ai[0] > 0)
-                        {
-                            NPC.ai[0] = 0;
-                            prepareAiChange();
-                        }
-                    }
-                    if (aitype == 1)
-                    {
-                        cell.rotation = NPC.rotation;
-                        NPC.velocity *= 0.98f;
-                        NPC.velocity = (targetPos - NPC.Center) * 0.007f;
-                        NPC.rotation += rotSpeed;
-                        rotSpeed += 0.134f;
-                        rotSpeed *= 0.62f;
-                        cell.velocity *= 0.98f;
-                        cell.velocity += (NPC.Center + NPC.rotation.ToRotationVector2() * -120 - cell.Center) * 0.14f;
-                        if (aicounter > 60 && counter % 1 == 0 && Main.netMode != NetmodeID.MultiplayerClient && CEUtils.getDistance(cell.Center, NPC.Center) < 720)
-                        {
-                            Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center, NPC.rotation.ToRotationVector2() * -14, ModContent.ProjectileType<CellBullet>(), NPC.damage / 6, 4);
-                        }
-                        aicounter++;
-                        if (aicounter > 200)
-                        {
-                            prepareAiChange();
-                        }
-                        rope.Update();
-                        rope.Update();
-                    }
-                    else
-                    {
-                        if (aitype != 4)
-                        {
-                            rotSpeed = 0;
-                        }
-                    }
-                    if (aitype == 2)
-                    {
-                        if (aicounter > 0 || CEUtils.getDistance(targetPos, NPC.Center) < 1200)
-                        {
-                            aicounter++;
-                        }
-                        else
-                        {
-                            NPC.velocity = (targetPos - NPC.Center) * 0.08f;
-                        }
-                        if (aicounter > 0)
-                        {
-                            if (aicounter < 30)
-                            {
-                                NPC.velocity *= 0.86f;
-                                cell.velocity = ((NPC.Center + (targetPos - NPC.Center).SafeNormalize(Vector2.UnitX) * 260) - cell.Center) * 0.1f;
-                                nz = (targetPos - cell.Center).SafeNormalize(Vector2.Zero) * 10;
-                            }
-                            else if (aicounter < 140)
-                            {
-                                Vector2 j = nz * ((float)aicounter / 140f);
-                                cell.velocity += j * 0.44f;
-                                NPC.velocity -= j * 0.01f;
-                                if (counter % 6 == 0 && Main.netMode != NetmodeID.MultiplayerClient)
-                                {
-                                    Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center, (cell.velocity.ToRotation() + MathHelper.PiOver2).ToRotationVector2() * 12, ModContent.ProjectileType<CellBullet>(), NPC.damage / 6, 4);
-                                    Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center, (cell.velocity.ToRotation() - MathHelper.PiOver2).ToRotationVector2() * 12, ModContent.ProjectileType<CellBullet>(), NPC.damage / 6, 4);
-
-                                }
-                            }
-                            else
-                            {
-                                NPC.velocity *= 0.9f;
-                                NPC.velocity = (targetPos - NPC.Center) * 0.006f;
-                                cell.velocity = (NPC.Center - cell.Center) * 0.05f;
-                            }
-                        }
-                        NPC.rotation = (NPC.Center - cell.Center).ToRotation();
-
-                        if (aicounter > 220)
-                        {
-                            prepareAiChange();
-                        }
-                    }
-                    if (aitype == 3)
-                    {
-                        for (int i = 0; i < 10; i++)
-                        {
-                            spawnParticle(NPC.Center + NPC.velocity * ((float)i / 10f));
-                        }
-
-                        if (aicounter > 0 || CEUtils.getDistance(targetPos, NPC.Center) < 800)
-                        {
-                            aicounter++;
-                        }
-                        else
-                        {
-                            if (NPC.velocity.Length() > 30)
-                            {
-                                NPC.velocity = NPC.velocity.SafeNormalize(Vector2.Zero) * 30;
-                            }
-                            NPC.velocity = (targetPos - new Vector2(0, 200) - NPC.Center) * 0.08f;
-                            if (CEUtils.getDistance(targetPos, NPC.Center + NPC.velocity * 2) < 800)
-                            {
-                                NPC.velocity *= 0.36f;
-                            }
-                        }
-                        if (aicounter > 200)
-                        {
-                            prepareAiChange();
-                        }
-                        if (aicounter > 0)
-                        {
-                            NPC.velocity *= 0.995f;
-
-                            NPC.velocity += (targetPos - NPC.Center).SafeNormalize(Vector2.Zero) * 0.2f;
-
-                            cell.velocity = ((NPC.Center + (targetPos - NPC.Center).SafeNormalize(Vector2.UnitX) * 200) - cell.Center) * 0.1f;
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                if (counter % 30 == 0)
-                                {
-                                    float rot = CEUtils.randomRot();
-                                    for (int i = 0; i < 360; i += 60)
-                                    {
-                                        Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center, (rot + MathHelper.ToRadians(i)).ToRotationVector2() * 12, ModContent.ProjectileType<CellBullet>(), NPC.damage / 6, 4);
-                                    }
-                                }
-                            }
-                        }
-                        NPC.rotation = NPC.velocity.ToRotation();
-                    }
-                    if (aitype == 4)
-                    {
-                        cell.rotation = NPC.rotation;
-                        NPC.velocity *= 0.98f;
-                        NPC.velocity = (targetPos - NPC.Center) * 0.007f;
-                        NPC.rotation += rotSpeed * 0.26f;
-                        rotSpeed += 0.134f;
-                        rotSpeed *= 0.62f;
-                        cell.velocity *= 0.98f;
-                        cell.velocity = (NPC.Center + NPC.rotation.ToRotationVector2() * -520 - cell.Center) * 0.14f;
-                        if (aicounter > 60 && counter % 30 == 0 && Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            float rot = (targetPos - cell.Center).ToRotation();
-                            for (int i = 0; i < 6; i++)
-                            {
-                                if (i > 0)
-                                {
-                                    Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center + new Vector2(-i * 30, (float)i * 14).RotatedBy(rot), rot.ToRotationVector2() * 14, ModContent.ProjectileType<CellBullet>(), NPC.damage / 6, 4);
-                                    Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center + new Vector2(-i * 30, (float)i * -14).RotatedBy(rot), rot.ToRotationVector2() * 14, ModContent.ProjectileType<CellBullet>(), NPC.damage / 6, 4);
-
-                                }
-                                else
-                                {
-                                    Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center, rot.ToRotationVector2() * 14, ModContent.ProjectileType<CellBullet>(), NPC.damage / 7, 4);
-                                }
-                            }
-                            rot = CEUtils.randomRot();
-                            for (int i = 0; i < 360; i += 60)
-                            {
-                                Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center, (rot + MathHelper.ToRadians(i)).ToRotationVector2() * 10, ModContent.ProjectileType<CellBullet>(), NPC.damage / 6, 4);
-                            }
-
-                        }
-                        aicounter++;
-                        if (aicounter > 220)
-                        {
-                            prepareAiChange();
-                        }
-                    }
-                    if (aitype == 5)
-                    {
-                        if (aicounter == 0)
-                        {
-                            CEUtils.PlaySound("charge", 1, NPC.Center);
-                            CEUtils.PlaySound("charge", 1, NPC.Center);
-                            NPC.rotation = (NPC.Center - targetPos).ToRotation();
-                            foreach (Player player in Main.ActivePlayers)
-                            {
-                                player.Entropy().immune = 60;
-                            }
-                        }
-                        aicounter++;
-                        Vector2 t = NPC.rotation.ToRotationVector2() * 840;
-
-
-                        if (aicounter < 460)
-                        {
-                            NPC.velocity = (targetPos + t - NPC.Center) * 0.04f;
-                            cell.velocity = (targetPos - t - cell.Center) * 0.04f;
-                        }
-                        else
-                        {
-                            NPC.velocity.Y -= 1.2f;
-                            cell.velocity.Y -= 1.2f;
-                        }
-                        if (Main.netMode != NetmodeID.MultiplayerClient && aicounter > 80 && aicounter < 460)
-                        {
-                            if (Main.rand.NextBool(3))
-                            {
-                                if (Main.rand.NextBool(2))
-                                {
-                                    Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center, (Main.GameUpdateCount * 0.09f).ToRotationVector2() * 10, ModContent.ProjectileType<CellBullet>(), NPC.damage / 6, 4);
-                                }
-                                else
-                                {
-                                    Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, (Main.GameUpdateCount * -0.09f).ToRotationVector2() * -14, ModContent.ProjectileType<NihilityFire>(), NPC.damage / 6, 4);
-                                }
-                            }
-                        }
-                        if (aicounter > 500)
-                        {
-                            prepareAiChange();
-                        }
-                        NPC.rotation += MathHelper.ToRadians(1.6f);
-
-                    }
-                    if (aitype == 6)
-                    {
-                        cell.velocity *= 0.98f;
-                        cell.velocity += (targetPos - cell.Center).SafeNormalize(Vector2.Zero) * 0.36f;
-                        cell.ai[2] = 4;
-                        NPC.velocity = NPC.rotation.ToRotationVector2() * 18f;
-                        NPC.rotation = CEUtils.RotateTowardsAngle(NPC.rotation, (cell.Center - NPC.Center).ToRotation(), 0.07f, false);
-                        if (aicounter == 1)
-                        {
-                            NPC.ai[2] = CEUtils.randomRot();
-                        }
-                        NPC.ai[2] += MathHelper.ToRadians(0.5f);
-                        aicounter++;
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            if (Main.GameUpdateCount % 40 == 0)
-                            {
-                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, (NPC.rotation + MathHelper.PiOver2).ToRotationVector2() * 16, ModContent.ProjectileType<CellSpike>(), NPC.damage / 6, 2);
-                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, (NPC.rotation - MathHelper.PiOver2).ToRotationVector2() * 16, ModContent.ProjectileType<CellSpike>(), NPC.damage / 6, 2);
-                            }
-                            if (aicounter < 160)
-                            {
-                                if (Main.GameUpdateCount % 10 == 0)
-                                {
-                                    for (int i = 0; i < 360; i += 72)
-                                    {
-                                        Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center, (NPC.ai[2] + MathHelper.ToRadians(i)).ToRotationVector2() * 16, ModContent.ProjectileType<CellBullet>(), NPC.damage / 6, 4);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                for (int i = 0; i < 360; i += 72)
-                                {
-                                    if (Main.rand.NextBool(3))
-                                    {
-                                        Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center + new Vector2(Main.rand.Next(-44, 44), Main.rand.Next(-44, 44)), (NPC.ai[2] + MathHelper.ToRadians(i)).ToRotationVector2() * 26, ModContent.ProjectileType<CellBullet>(), NPC.damage / 6, 4);
-                                    }
-                                }
-
-                            }
-                        }
-                        if (aicounter > 360)
-                        {
-                            prepareAiChange();
-                        }
-                    }
-                }
-                if (phase == 2)
-                {
-                    if (ropeLerp > 0)
-                    {
-                        ropeLerp -= 1f;
-                    }
-
-                    if (aitype == 0)
-                    {
-                        if (aicounter > 5)
-                        {
-                            NPC.ai[2] = 0;
-                            prepareAiChange();
-                        }
-                        else
-                        {
-                            NPC.ai[2]--;
-                            if (NPC.ai[2] < -30)
-                            {
-                                aicounter++;
-                                NPC.ai[2] = 20;
-                                if (aicounter <= 5)
-                                {
-                                    CEUtils.PlaySound("beast_ghostdash" + Main.rand.Next(1, 5), 1, NPC.Center);
-                                }
-                            }
-                            if (NPC.ai[2] > 0)
-                            {
-                                NPC.velocity += NPC.rotation.ToRotationVector2() * 5f;
-                                for (int i = 0; i < 10; i++)
-                                {
-                                    spawnParticle(NPC.Center + NPC.velocity * ((float)i / 10f));
-                                }
-                            }
-                            else
-                            {
-                                NPC.rotation = CEUtils.RotateTowardsAngle(NPC.rotation, (targetPos - NPC.Center).ToRotation(), 0.09f, false);
-                            }
-                            cell.velocity += (targetPos - cell.Center).SafeNormalize(Vector2.Zero) * 0.36f;
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                if (counter % 30 == 0)
-                                {
-                                    float rot = CEUtils.randomRot();
-                                    for (int i = 0; i < 360; i += 90)
-                                    {
-                                        Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center, (rot + MathHelper.ToRadians(i)).ToRotationVector2() * 18, ModContent.ProjectileType<CellBullet>(), NPC.damage / 6, 4);
-                                    }
-                                }
-                                if (counter % 10 == 0)
-                                {
-                                    Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + new Vector2(Main.rand.NextFloat(-16, 16), Main.rand.NextFloat(-16, 16)), (NPC.rotation + MathHelper.PiOver2).ToRotationVector2() * 20, ModContent.ProjectileType<CellSpike>(), NPC.damage / 6, 2);
-                                    Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + new Vector2(Main.rand.NextFloat(-16, 16), Main.rand.NextFloat(-16, 16)), (NPC.rotation - MathHelper.PiOver2).ToRotationVector2() * 20, ModContent.ProjectileType<CellSpike>(), NPC.damage / 6, 2);
-                                }
-                            }
-
-                            NPC.velocity *= 0.96f;
-                        }
-                    }
-                    if (aitype == 1)
-                    {
-
-                        if (aicounter > 0 || CEUtils.getDistance(cell.Center, NPC.Center) < 90)
-                        {
-                            aicounter++;
-                        }
-                        else
-                        {
-                            NPC.velocity *= 0.9f;
-                            cell.velocity += (NPC.Center - cell.Center).SafeNormalize(Vector2.Zero) * 2f;
-                        }
-                        if (aicounter > 0 && aicounter < 100)
-                        {
-                            NPC.velocity *= 0.98f;
-                            NPC.velocity = (targetPos - NPC.Center) * 0.007f;
-                            NPC.rotation += rotSpeed;
-                            rotSpeed += 0.03f;
-                            rotSpeed *= 0.94f;
-                            cell.Center = NPC.Center + new Vector2(-100, 0).RotatedBy(NPC.rotation);
-                            cell.velocity *= 0;
-                            if (counter % 2 == 0)
-                            {
-                                aicounter++;
-                            }
-                        }
-                        if (aicounter == 100)
-                        {
-                            NPC.rotation = (targetPos - NPC.Center).ToRotation();
-                            cell.velocity = NPC.rotation.ToRotationVector2() * 60;
-                            NPC.rotation += MathHelper.Pi;
-                            cell.Center = NPC.Center + new Vector2(-100, 0).RotatedBy(NPC.rotation);
-                            NPC.ai[3] = NPC.rotation;
-                        }
-                        if (aicounter > 100 && aicounter < 130)
-                        {
-                            rotSpeed *= 0.96f;
-                            NPC.rotation += rotSpeed;
-                            cell.velocity = NPC.ai[3].ToRotationVector2() * -60;
-                            if (counter % 4 == 0 && Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center, (cell.velocity.ToRotation() + MathHelper.PiOver2).ToRotationVector2() * 18, ModContent.ProjectileType<CellBullet>(), NPC.damage / 6, 4);
-                                Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center, (cell.velocity.ToRotation() - MathHelper.PiOver2).ToRotationVector2() * 18, ModContent.ProjectileType<CellBullet>(), NPC.damage / 6, 4);
-                            }
-                        }
-                        if (aicounter > 150)
-                        {
-
-                            cell.velocity *= 0.98f;
-                            cell.velocity += (targetPos - cell.Center).SafeNormalize(Vector2.Zero) * 0.6f;
-                        }
-                        if (aicounter > 160)
-                        {
-                            prepareAiChange();
-                        }
-                    }
-                    else
-                    {
-                        rotSpeed = 0;
-                    }
-                    if (aitype == 2)
-                    {
-                        if (aicounter > 2)
-                        {
-                            NPC.ai[2] = 0;
-                            prepareAiChange();
-                        }
-                        else
-                        {
-                            NPC.ai[2]--;
-                            if (NPC.ai[2] < -30)
-                            {
-                                aicounter++;
-                                NPC.ai[2] = 20;
-                                if (aicounter <= 2)
-                                {
-                                    CEUtils.PlaySound("beast_ghostdash" + Main.rand.Next(1, 5), 1, NPC.Center);
-                                }
-                            }
-                            if (NPC.ai[2] > 0)
-                            {
-                                NPC.velocity += NPC.rotation.ToRotationVector2() * 5f;
-                                for (int i = 0; i < 10; i++)
-                                {
-                                    spawnParticle(NPC.Center + NPC.velocity * ((float)i / 10f));
-                                }
-                            }
-                            else
-                            {
-                                NPC.rotation = CEUtils.RotateTowardsAngle(NPC.rotation, (targetPos - NPC.Center).ToRotation(), 0.09f, false);
-                            }
-                            cell.velocity += (targetPos - cell.Center).SafeNormalize(Vector2.Zero) * 0.36f;
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                if (counter % 6 == 0)
-                                {
-                                    float rot = MathHelper.ToRadians((Main.GameUpdateCount * 19) % 360);
-                                    for (int i = 0; i < 360; i += 72)
-                                    {
-                                        Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center, (rot + MathHelper.ToRadians(i)).ToRotationVector2() * 6, ModContent.ProjectileType<CellBullet>(), NPC.damage / 6, 4);
-                                    }
-                                }
-                            }
-                            if (counter % 40 == 0)
-                            {
-                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, (NPC.rotation + MathHelper.PiOver2).ToRotationVector2() * 20, ModContent.ProjectileType<CellSpike>(), NPC.damage / 6, 2);
-                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, (NPC.rotation - MathHelper.PiOver2).ToRotationVector2() * 20, ModContent.ProjectileType<CellSpike>(), NPC.damage / 6, 2);
-                            }
-                            NPC.velocity *= 0.96f;
-                        }
-                    }
-                    if (aitype == 3)
-                    {
-                        if (aicounter == 1)
-                        {
-                            CEUtils.PlaySound("beast_lavaball_rise1", 1);
-                        }
-                        NPC.rotation = (cell.Center - NPC.Center).ToRotation() + MathHelper.Pi;
-                        ropeLerp = 1;
-                        aicounter++;
-                        if (aicounter > 40)
-                        {
-                            NPC.velocity += (cell.Center - NPC.Center).SafeNormalize(Vector2.Zero) * 3.4f;
-                            cell.velocity += (NPC.Center - cell.Center).SafeNormalize(Vector2.Zero) * 3.4f;
-                            if (CEUtils.getDistance(NPC.Center, cell.Center) < NPC.velocity.Length() + cell.velocity.Length() + 6)
-                            {
-                                Vector2 midPos = (NPC.Center + cell.Center) / 2;
-                                NPC.velocity *= 0;
-                                cell.velocity *= 0;
-                                NPC.Center = midPos + NPC.rotation.ToRotationVector2() * 20;
-                                cell.Center = midPos - NPC.rotation.ToRotationVector2() * 20;
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                {
-                                    float rot = MathHelper.ToRadians((Main.GameUpdateCount * 73) % 360);
-                                    for (int i = 0; i < 360; i += 10)
-                                    {
-                                        Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center, (rot + MathHelper.ToRadians(i)).ToRotationVector2() * 16, ModContent.ProjectileType<CellBullet>(), NPC.damage / 6, 4);
-                                    }
-
-                                }
-                                CEUtils.PlaySound("flashback", 1, NPC.Center);
-                                prepareAiChange();
-                                if (Main.rand.NextBool(2))
-                                {
-                                    aitype = 3;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            NPC.velocity += (NPC.Center - cell.Center).SafeNormalize(Vector2.Zero) * 1f;
-                            cell.velocity -= (NPC.Center - cell.Center).SafeNormalize(Vector2.Zero) * 1f;
-                        }
-                    }
-                    if (aitype == 4)
-                    {
-                        if (aicounter == 2)
-                        {
-                            for (int i = 0; i < 3; i++)
-                            {
-                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)cell.Center.X, (int)cell.Center.Y, ModContent.NPCType<ChaoticCellSmall>(), 0, cell.whoAmI);
-                            }
-                        }
-                        NPC.rotation = NPC.velocity.ToRotation();
-                        aicounter++;
-                        cell.velocity += (targetPos - cell.Center).SafeNormalize(Vector2.Zero) * 0.5f;
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            if (counter % 30 == 0)
-                            {
-                                float rot = CEUtils.randomRot();
-                                for (int i = 0; i < 360; i += 40)
-                                {
-                                    Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center, (rot + MathHelper.ToRadians(i)).ToRotationVector2() * 18, ModContent.ProjectileType<CellBullet>(), NPC.damage / 6, 4);
-                                }
-                            }
-                        }
-                        NPC.velocity *= 0.98f;
-                        if (aicounter > 360)
-                        {
-                            prepareAiChange();
-                        }
-                    }
-                    if (aitype == 5)
-                    {
-                        if (aicounter == 2)
-                        {
-                            CEUtils.PlaySound("charge", 1, NPC.Center);
-                            CEUtils.PlaySound("charge", 1, NPC.Center);
-                        }
-                        if (aicounter < 40)
-                        {
-                            NPC.velocity = (targetPos - NPC.Center) * 0.009f;
-                            NPC.rotation = CEUtils.RotateTowardsAngle(NPC.rotation, (NPC.Center - targetPos).ToRotation(), 4f.ToRadians(), true);
-                        }
-                        else
-                        {
-                            if (aicounter > 160)
-                            {
-                                NPC.rotation = CEUtils.RotateTowardsAngle(NPC.rotation, (targetPos - NPC.Center).ToRotation(), 1.4f.ToRadians(), true);
-                            }
-                            NPC.rotation = CEUtils.RotateTowardsAngle(NPC.rotation, (targetPos - NPC.Center).ToRotation(), 0.01f, false);
-                        }
-                        if (aicounter == 40)
-                        {
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<CruiserLaserMouth>(), (int)(NPC.damage / 5f), 0, -1, NPC.whoAmI, 400);
-                            }
-
-                        }
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            if (Main.rand.NextBool(3))
-                            {
-                                Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center + new Vector2(Main.rand.NextFloat(-16, 16), Main.rand.NextFloat(-16, 16)), (cell.Center - targetPos).SafeNormalize(Vector2.UnitX) * 12, ModContent.ProjectileType<CellBullet>(), NPC.damage / 6, 4);
-                            }
-                        }
-                        cell.velocity += (targetPos - cell.Center).SafeNormalize(Vector2.Zero) * 0.62f;
-                        NPC.velocity = (targetPos - NPC.Center) * 0.007f;
-                        aicounter++;
-                        if (aicounter > 460)
-                        {
-                            prepareAiChange();
-                        }
-                    }
-                    if (aitype == 6)
-                    {
-                        if (aicounter == 2 || aicounter == 62 || aicounter == 122)
-                        {
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                float rot = CEUtils.randomRot();
-                                for (int i = 0; i < 360; i += 40)
-                                {
-                                    Projectile.NewProjectile(cell.GetSource_FromThis(), cell.Center, Vector2.Zero, ModContent.ProjectileType<NihilityEnergyBall>(), NPC.damage / 6, 4, -1, cell.whoAmI, rot + MathHelper.ToRadians(i));
-                                }
-
-                            }
-                        }
-                        NPC.velocity *= 0.996f;
-                        aicounter++;
-                        NPC.velocity += (targetPos - NPC.Center).SafeNormalize(Vector2.Zero) * 0.36f;
-                        NPC.rotation = NPC.velocity.ToRotation();
-                        cell.velocity += (targetPos - cell.Center).SafeNormalize(Vector2.UnitX) * 0.4f;
-
-                        if (aicounter > 360)
-                        {
-                            prepareAiChange();
-                        }
-                    }
-                }
-
-            }
-            else
-            {
-                if (cell != null)
-                {
-                    cell.velocity += (NPC.Center - cell.Center) * 0.0022f;
-                }
-                NPC.velocity.Y -= 1.26f;
-                escapeCounter++;
-                if (escapeCounter > 180)
-                {
-                    NPC.active = false;
-                }
-                NPC.velocity *= 0.98f;
-                NPC.rotation = NPC.velocity.ToRotation();
-            }
-            if (cell != null)
-            {
-                cell.life = NPC.life;
-                cell.target = NPC.target;
-            }
-            NPC.velocity *= 0.996f;
-            if (ropeLerp > 0)
-            {
-                Vector2 rend = Vector2.Lerp(buttom, cell.Center, ropeLerp);
-                rope.segmentLength = CEUtils.getDistance(buttom, rend) / 35f;
-                rope.Start = buttom;
-                rope.End = rend;
-                rope.Update();
-            }
-        }
-        Vector2 nz = Vector2.Zero;
-
-
-        public void spawnParticle(Vector2 center)
-        {
-            Vector2 vel = (NPC.rotation + MathHelper.PiOver2).ToRotationVector2() * (float)Math.Cos(NPC.localAI[0] * 0.3f) * 16;
-            Vector2 vel2 = vel * -1;
-            vel -= NPC.velocity * 1f;
-            vel2 -= NPC.velocity * 1f;
-            Dust.NewDust(center, 1, 1, DustID.MagicMirror, vel.X, vel.Y);
-            Dust.NewDust(center, 1, 1, DustID.MagicMirror, vel2.X, vel2.Y);
-
-        }
-
-        public override bool CheckActive()
-        {
-            return false;
-        }
-        public Vector2 buttom { get { return NPC.Center + new Vector2(0, 64).RotatedBy(NPC.rotation + MathHelper.PiOver2); } }
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
-        {
-            if (spawnAnm > 0)
-            {
-                return false;
-            }
-            float rot = NPC.rotation + MathHelper.PiOver2;
-
-            Texture2D tex = NPC.getTexture();
-            if (phase == 2 && aitype == 5)
-            {
-                tex = bodyAltTex.Value;
-            }
-            Color color = Color.White;
-
-
-
-            float erot = 0;
-            erot += (1f - (1f / (1f + NPC.velocity.Length()))) * 0.12f;
-
-            Texture2D l1 = backTex.Value;
-            Texture2D l2 = midTex.Value;
-            Texture2D l3 = frontTex.Value;
-
-            Main.EntitySpriteDraw(l1, buttom - Main.screenPosition, null, color, rot - erot, new Vector2(40, 46), NPC.scale, SpriteEffects.None);
-            Main.EntitySpriteDraw(l1, buttom - Main.screenPosition, null, color, rot + erot, new Vector2(0, 46), NPC.scale, SpriteEffects.FlipHorizontally);
-            Main.EntitySpriteDraw(l2, buttom - Main.screenPosition, null, color, rot - erot * 5, new Vector2(76, 34), NPC.scale, SpriteEffects.None);
-            Main.EntitySpriteDraw(l2, buttom - Main.screenPosition, null, color, rot + erot * 5, new Vector2(84 - 76, 46), NPC.scale, SpriteEffects.FlipHorizontally);
-
-            Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition, null, color, rot, tex.Size() / 2, NPC.scale, SpriteEffects.None);
-
-            Main.EntitySpriteDraw(l3, buttom - Main.screenPosition, null, color, rot - erot, new Vector2(50, 6), NPC.scale, SpriteEffects.None);
-            Main.EntitySpriteDraw(l3, buttom - Main.screenPosition, null, color, rot + erot, new Vector2(4, 6), NPC.scale, SpriteEffects.FlipHorizontally);
-
-            return false;
-        }
-
-        public void drawRope()
-        {
-            if (rope == null)
-            {
-                return;
-            }
-            if (ropeLerp <= 0)
-            {
-                return;
-            }
-            List<ColoredVertex> ve = new List<ColoredVertex>();
-            List<Vector2> points = new List<Vector2>();
-            points = rope.GetPoints();
-
-            points.Insert(0, buttom);
-            points.Add(cell.Center);
-            points.Add(cell.Center);
-            float lc = 1;
-            float jn = 0;
-
-            for (int i = 1; i < points.Count - 1; i++)
-            {
-                jn += CEUtils.getDistance(points[i - 1], points[i]) / (float)28 * lc;
-
-                ve.Add(new ColoredVertex(points[i] - Main.screenPosition + (points[i] - points[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 7 * lc,
-                      new Vector3(jn, 1, 1),
-                      Color.White));
-                ve.Add(new ColoredVertex(points[i] - Main.screenPosition + (points[i] - points[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 7 * lc,
-                      new Vector3(jn, 0, 1),
-                      Color.White));
-
-            }
-
-            SpriteBatch sb = Main.spriteBatch;
-            GraphicsDevice gd = Main.graphics.GraphicsDevice;
-            if (ve.Count >= 3)
-            {
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-
-                gd.Textures[0] = nihRopeTex.Value;
-                gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-
-            }
-        }
+        #endregion
     }
 }

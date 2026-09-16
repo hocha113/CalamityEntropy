@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.NPCs.VoidDestroyer;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.Graphics.Effects;
 
@@ -35,6 +36,15 @@ namespace CalamityEntropy.Content.Skies
                     .UseOpacity(0f)
                     .UseImage(CEExtraAssets.VoidBack, 0, SamplerState.LinearWrap),
                 EffectPriority.VeryHigh);
+
+            //虚空驱逐舰滤镜(引力透镜/空间裂隙/暗角/冲击帧):参数由 VDScreenFx 每帧上报,激活/停用由 VDScreenFxSystem 结算
+            if (CEEffectAssets.VDScreenFx != null)
+            {
+                Terraria.Graphics.Effects.Filters.Scene[VDScreenFx.FilterKey] = new Filter(
+                    new VDScreenShaderData(CEEffectAssets.VDScreenFx, "ScreenFxPass")
+                        .UseOpacity(0f),
+                    EffectPriority.VeryHigh);
+            }
         }
     }
 }

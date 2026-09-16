@@ -1,7 +1,9 @@
 using CalamityEntropy.Content.Biomes;
+using CalamityEntropy.Core.AI;
 using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Core.Graphics;
+using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -36,6 +38,8 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            //细胞炮那一手会把它甩到 60 px/f,原版 netOffset 在这个速度下只会锯齿;关掉后由纠偏器接管
+            NPCID.Sets.NoMultiplayerSmoothingByType[Type] = true;
         }
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
@@ -87,18 +91,53 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             modifiers.FinalDamage *= 1f - DamageReduction;
         }
         public bool init = true;
+
+        /// <summary>
+        /// 客户端位置纠偏。
+        /// <para>
+        /// 归类依据:本体<b>不</b>直接写细胞的 <c>Center</c>(除蓄力焊接与对撞对齐那两处瞬移),
+        /// 而是逐帧写 <c>velocity</c>,下一帧位置就是标准的 <c>position + velocity</c>——
+        /// 正是 <see cref="CEBossNetMotion"/> 预测模型成立的前提,所以它走「本体型」通路
+        /// (<c>BeginFrame</c> / <c>EndFrame</c>),不是只清平滑的锚定部件通路。
+        /// 那两处瞬移由本体调 <see cref="ForgetPrediction"/> 主动作废旧预测
+        /// </para>
+        /// </summary>
+        private readonly CEBossNetMotion netMotion = new();
+
+        /// <summary>本体直写细胞位置时调用:丢掉旧预测,下一包不当失步处理</summary>
+        public void ForgetPrediction()
+        {
+            netMotion.ForgetPrediction();
+        }
+
+        /// <summary>
+        /// 定长块:宿主索引 + 朝向。朝向是逐帧按速度积分出来的累加量(<c>rotation += velocity.X * 0.006</c>),
+        /// 原代码没同步它,靠每帧 netUpdate 的位置包掩盖;现在包率降到决策点 + 心跳,必须自己过线
+        /// </summary>
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(NPC.realLife);
+            writer.Write(NPC.rotation);
         }
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             NPC.realLife = reader.ReadInt32();
+            NPC.rotation = reader.ReadSingle();
+            netMotion.OnSnapshot(NPC, 0);
         }
 
         public List<CCTentacle> tentacles;
+        /// <summary>
+        /// 细胞自己只做两件事:触须骨架(纯绘制)与逐帧阻尼。攻击与航向全由本体每帧写进 <c>velocity</c>,
+        /// 各端跑的是同一份本体状态机,所以这里不需要任何权威端分支
+        /// </summary>
         public override void AI()
         {
+            bool client = VaultUtils.isClient;
+            if (client)
+            {
+                netMotion.BeginFrame(NPC);
+            }
             if (tentacles == null)
             {
                 int c = 0;
@@ -128,10 +167,12 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
                     al -= 0.02f;
                 }
             }
-            NPC.netUpdate = true;
+            //原代码在这里每帧 netUpdate = true。位置是本体驱动的确定性积分,不需要靠包率维持,
+            //改成权威端的 45 帧兜底心跳,决策点由本体那边自己打
             NPC.velocity *= 0.965f;
             if (NPC.realLife < 0)
             {
+                EndNetFrame(client);
                 return;
             }
             NPC.rotation += NPC.velocity.X * 0.006f;
@@ -150,7 +191,24 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             if (owner != null && (!owner.active || owner.life <= 0))
             {
                 NPC.realLife = -1;
-                NPC.StrikeInstantKill();
+                //原代码在各端都直接自杀;血量改动收归权威端,客户端等 active 同步过来
+                if (!VaultUtils.isClient)
+                {
+                    NPC.StrikeInstantKill();
+                }
+            }
+            EndNetFrame(client);
+        }
+
+        private void EndNetFrame(bool client)
+        {
+            if (client)
+            {
+                netMotion.EndFrame(NPC);
+            }
+            else
+            {
+                CEBossHost.Heartbeat(NPC);
             }
         }
         public NPC owner { get { return NPC.realLife.ToNPC(); } }

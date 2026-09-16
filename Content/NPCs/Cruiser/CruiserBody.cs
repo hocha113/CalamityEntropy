@@ -1,3 +1,5 @@
+using CalamityEntropy.Content.NPCs.Cruiser.Core;
+using CalamityEntropy.Core.AI;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using Terraria;
@@ -8,6 +10,12 @@ using static CalamityEntropy.Content.NPCs.Cruiser.CruiserHead;
 namespace CalamityEntropy.Content.NPCs.Cruiser
 {
     //[StaticImmunity(typeof(CruiserHead))]
+    /// <summary>
+    /// 体节。<b>锚定型部件</b>:位置由 <c>CEUtils.wormFollow</c> 每帧直写(下一帧位置不是
+    /// <c>position + velocity</c>,velocity 全程为 0),所以只清原版平滑、<b>不</b>进
+    /// <c>CEBossNetMotion</c> 的预测纠偏器,也绝不调 <c>EndFrame</c>——预测器会和直写打架。
+    /// 它本身是自愈的:任何偏移下一帧就被重新钉回链上
+    /// </summary>
     public class CruiserBody : ModNPC
     {
         public override void BossHeadRotation(ref float rotation)
@@ -21,6 +29,9 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
             NPCID.Sets.MPAllowedEnemies[Type] = true;
             NPCID.Sets.ImmuneToRegularBuffs[Type] = true;
+            //整链是头部集中绘制、读裸坐标。头部已按类型关掉原版 netOffset 平滑,
+            //体节若还留着,接缝会在每个快照上崩一次(头没偏移而体节有)。三个类型必须一致
+            NPCID.Sets.NoMultiplayerSmoothingByType[Type] = true;
         }
         // 原灾厄 DR 的本地等效,每帧从头部镜像
         public float DamageReduction = 0.4f;
@@ -78,9 +89,11 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                 return Main.npc[(int)NPC.ai[3]].ModNPC.CanHitPlayer(target, ref cooldownSlot);
             return true;
         }
-        public bool Phase2 => (Main.npc[(int)NPC.ai[3]].ModNPC is CruiserHead ch && ch.phaseTrans >= 120) ? true : false;
+        public bool Phase2 => (Main.npc[(int)NPC.ai[3]].ModNPC is CruiserHead ch && ch.phaseTrans >= CruiserDirector.PhaseTransDrawSwitch) ? true : false;
         public override void AI()
         {
+            //锚定型部件:清掉原版平滑,不进预测纠偏器
+            CEBossHost.RunAnchoredPartFrame(NPC);
             NPC.scale = Main.npc[(int)NPC.ai[3]].scale;
             NPC.Entropy().VoidTouchDR = Main.npc[(int)NPC.ai[3]].Entropy().VoidTouchDR;
             NPC.defense = Main.npc[(int)NPC.ai[3]].defense;
@@ -90,7 +103,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             NPC.ai[0] += 1;
             NPC.life = Main.npc[(int)NPC.ai[3]].life;
             NPC.lifeMax = Main.npc[(int)NPC.ai[3]].lifeMax;
-            if (NPC.ai[0] < 5)
+            if (NPC.ai[0] < CruiserDirector.SegmentWarmupFrames)
             {
                 return;
             }
@@ -108,14 +121,14 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                 if (Main.npc[(int)NPC.ai[1]].active)
                 {
 
-                    int spacing = 80;
+                    int spacing = CruiserDirector.ChainSpacing;
                     NPC follow = Main.npc[(int)NPC.ai[1]];
                     if (follow.active)
                     {
                         CEUtils.wormFollow(NPC.whoAmI, (int)NPC.ai[1], (int)(spacing * NPC.scale), false);
-                        if (NPC.ai[0] > 120)
+                        if (NPC.ai[0] > CruiserDirector.SegmentTightFollowFrames)
                         {
-                            CEUtils.wormFollow(NPC.whoAmI, (int)NPC.ai[1], (int)(spacing * NPC.scale), true, 0.12f);
+                            CEUtils.wormFollow(NPC.whoAmI, (int)NPC.ai[1], (int)(spacing * NPC.scale), true, CruiserDirector.ChainRotateRate);
                         }
                     }
                 }

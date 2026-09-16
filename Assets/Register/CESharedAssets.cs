@@ -183,5 +183,17 @@ namespace CalamityEntropy.Assets.Register
         //巡游者天幕扭曲滤镜:交给 ScreenShaderData 的 Asset 形态构造器,由 EntropySkies 在 PostSetupContent 注册,取代旧 CrSky 的 RenderTarget 扭曲流程
         [VaultLoaden("CalamityEntropy/Assets/Effects/CruiserSkyFilter", AssetMode.Effects, "CruiserSkyPass")]
         public static Asset<Effect> CruiserSkyFilter;
+        //虚空驱逐舰全息投影(红恶魔/丛林陆龟/小白龙等原版贴图的染色扫描线),与 CruiserSkyFilter 同为 .fxc,取 .Value 后 Passes[0].Apply
+        [VaultLoaden("CalamityEntropy/Assets/Effects/VDHologram", AssetMode.Effects, "HologramPass")]
+        public static Asset<Effect> VDHologram;
+        //虚空驱逐舰能量射线(轨道光柱/湮灭主炮/红射线):双向滚动噪声 + 白热核心 + 边缘辉光,噪声图绑 s1
+        [VaultLoaden("CalamityEntropy/Assets/Effects/VDVoidBeam", AssetMode.Effects, "BeamPass")]
+        public static Asset<Effect> VDVoidBeam;
+        //虚空驱逐舰全屏滤镜(引力透镜/空间裂隙/暗角/冲击帧),由 VDScreenShaderData 每帧喂参,键 CalamityEntropy:VoidDestroyer
+        [VaultLoaden("CalamityEntropy/Assets/Effects/VDScreenFx", AssetMode.Effects, "ScreenFxPass")]
+        public static Asset<Effect> VDScreenFx;
+        //虚空驱逐舰奇点吸积盘(极坐标噪声旋流 + 事件视界黑盘 + 热边),噪声图绑 s1
+        [VaultLoaden("CalamityEntropy/Assets/Effects/VDSingularity", AssetMode.Effects, "SingularityPass")]
+        public static Asset<Effect> VDSingularity;
     }
 }

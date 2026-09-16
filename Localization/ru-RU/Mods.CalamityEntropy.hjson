@@ -75,6 +75,14 @@ Items: {
 		Tooltip: Дает приличные усиления ВСЕМ атакующим и оборонительным характеристикам
 	}
 
+	VoidHealingPotion: {
+		DisplayName: Зелье лечения пустоты
+	}
+
+	VoidManaPotion: {
+		DisplayName: Зелье маны пустоты
+	}
+
 	VoidBottle: {
 		DisplayName: Банка с пустотой
 		Tooltip: Призывает Крейсера
@@ -169,6 +177,35 @@ Items: {
 	CruiserBag: {
 		DisplayName: Мешок с сокровищами (Крейсер)
 		Tooltip: ""
+	}
+
+	VoidDestroyerBag: {
+		DisplayName: Мешок с сокровищами (Эсминец Пустоты)
+		Tooltip: ""
+	}
+
+	VoidDestroyerRelic: {
+		DisplayName: Реликвия Эсминца Пустоты
+		Tooltip: ""
+	}
+
+	VoidDestroyerTrophy: {
+		DisplayName: Трофей Эсминца Пустоты
+		Tooltip: ""
+	}
+
+	VoidTransmitter: {
+		DisplayName: Передатчик Пустоты
+		Tooltip:
+			'''
+			Посылает сигнал в неизведанное, призывая Эсминец Пустоты
+			Можно использовать только ночью
+			'''
+	}
+
+	DimBearing: {
+		DisplayName: Тусклый подшипник
+		Tooltip: Деталь привода, снятая с Эсминца Пустоты. Её поверхность давно потускнела
 	}
 
 	CruiserRelic: {
@@ -4599,6 +4636,20 @@ Projectiles: {
 	Vmwave.DisplayName: Вимвейв
 	MonumentGround.DisplayName: Площадка для памятника
 	VoidBottleThrow.DisplayName: Бросок бутылки пустоты
+	VDVoidBolt.DisplayName: Снаряд Пустоты
+	VDCoreLaserBolt.DisplayName: Лазерный луч Пустоты
+	VDHomingMissile.DisplayName: Самонаводящаяся ракета
+	VDVoidNuke.DisplayName: Ядерная бомба Пустоты
+	VDNukeExplosion.DisplayName: Ядерный взрыв Пустоты
+	VDPortal.DisplayName: Портал Пустоты
+	VDSporeDrone.DisplayName: Споровый дрон
+	VDSporeLaser.DisplayName: Лазер Пустоты
+	VDRedRay.DisplayName: Красный луч
+	VDHoloRedDevil.DisplayName: Голографический красный дьявол
+	VDHoloTrident.DisplayName: Голографический нечестивый трезубец
+	VDHoloTortoise.DisplayName: Голографическая гигантская черепаха
+	VDHoloStinger.DisplayName: Голографическое жало
+	VDHoloWyvern.DisplayName: Голографическая виверна
 	BrokenChainsaw0.DisplayName: Сломанная бензопила
 	MechanicalChainsaw0.DisplayName: Механическая бензопила
 	EnslavedStar0.DisplayName: Порабощенная звезда
@@ -5339,6 +5390,11 @@ Buffs: {
 			''' */
 	}
 
+	VoidFire: {
+		DisplayName: Пламя Пустоты
+		Description: Регенерация здоровья отключена, теряется 20 здоровья в секунду
+	}
+
 	WyrmChanBuff: {
 		DisplayName: Вирм-тян
 		Description: Вирм-тян следует за вами
@@ -5973,6 +6029,18 @@ NPCs: {
 		}
 	}
 
+	VoidDestroyer: {
+		DisplayName: Эсминец Пустоты
+
+		BossChecklistIntegration: {
+			EntryName: Эсминец Пустоты
+			SpawnInfo: Используй [i:CalamityEntropy/VoidTransmitter] ночью для призыва
+			DespawnMessage: ""
+		}
+	}
+
+	VoidVanguardCultist.DisplayName: Культист-авангард Пустоты
+
 	CruiserBody.DisplayName: Крейсер
 	VoidCultistAssassin.DisplayName: Ассассин культистов Пустоты
 	VoidPope.DisplayName: Патриарх Пустоты
@@ -6171,6 +6239,17 @@ CruiserBestiary:
 	'''
 	Верховный хищник, рожденный из пустоты, напоминающий того Пожирателя Богов, с которым ты когда-то сталкивался.
 	Он питается порядком, сеет хаос и превращает мир в свою охотничью территорию... но ты не добыча для поедания.
+	'''
+VoidDestroyerBestiary:
+	'''
+	Зловещий разведчик из неизведанных краёв, умеющий извлекать свойства могучих существ и обращать их себе на пользу.
+	Если ему не мешать, он способен уничтожить экосистему целой планеты за неделю.
+	Появление корабля Пустоты почти всегда означает начало полномасштабной войны.
+	'''
+VoidVanguardCultistBestiary:
+	'''
+	Щуплые члены культа, которые стремительно перемещаются по земле и наносят смертельный удар, застав противника врасплох.
+	Эти низкорослые безумцы - отличные помощники кораблю Пустоты, когда тот разоряет планету.
 	'''
 NihilityTwinBestiary:
 	'''

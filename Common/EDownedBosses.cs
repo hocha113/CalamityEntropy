@@ -17,6 +17,8 @@ namespace CalamityEntropy.Common
         public static bool downedAcropolis = false;
         //脱离灾厄:原存于灾厄DownedBossSystem,改为自有旗标(tag键与网络位序不变,旧档兼容)
         public static bool downedPrimordialWyrm = false;
+        //虚空驱逐舰(月后 T2)
+        public static bool downedVoidDestroyer = false;
         public static Point ForbiddenArchiveCenter = new Point(-1, -1);
         public override void ClearWorld()
         {
@@ -29,6 +31,7 @@ namespace CalamityEntropy.Common
             downedApsychos = false;
             ForbiddenArchiveCenter = new Point(-1, -1);
             downedPrimordialWyrm = false;
+            downedVoidDestroyer = false;
         }
 
         public override void SaveWorldData(TagCompound tag)
@@ -69,6 +72,10 @@ namespace CalamityEntropy.Common
             {
                 tag["downedApsychos"] = true;
             }
+            if (downedVoidDestroyer)
+            {
+                tag["downedVoidDestroyer"] = true;
+            }
             tag["DungeonArchiveCenterX"] = ForbiddenArchiveCenter.X;
             tag["DungeonArchiveCenterY"] = ForbiddenArchiveCenter.Y;
         }
@@ -87,6 +94,7 @@ namespace CalamityEntropy.Common
             downedAcropolis = tag.ContainsKey("downedAcropolis");
             downedApsychos = tag.ContainsKey("downedApsychos");
             downedPrimordialWyrm = tag.ContainsKey("downedPrimordialWyrm");
+            downedVoidDestroyer = tag.ContainsKey("downedVoidDestroyer");
             TDR = tag.ContainsKey("TDR");
             if (tag.ContainsKey("DungeonArchiveCenterX") && tag.ContainsKey("DungeonArchiveCenterY"))
             {
@@ -109,6 +117,7 @@ namespace CalamityEntropy.Common
             flags[4] = downedLuminaris;
             flags[5] = downedAcropolis;
             flags[6] = downedPrimordialWyrm;
+            flags[7] = downedVoidDestroyer;
             flags2[0] = EntropyMode;
             flags2[1] = TDR;
             flags2[2] = downedApsychos;
@@ -130,6 +139,7 @@ namespace CalamityEntropy.Common
             downedLuminaris = flags[4];
             downedAcropolis = flags[5];
             downedPrimordialWyrm = flags[6];
+            downedVoidDestroyer = flags[7];
             EntropyMode = flags2[0];
             TDR = flags2[1];
             downedApsychos = flags2[2];

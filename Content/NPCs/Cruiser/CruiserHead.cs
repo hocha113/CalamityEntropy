@@ -1,141 +1,127 @@
-using CalamityEntropy.Assets.Register;
-using CalamityEntropy.Common;
 using CalamityEntropy.Content.Biomes;
 using CalamityEntropy.Content.Buffs;
-using CalamityEntropy.Content.Items;
-using CalamityEntropy.Content.Items.Accessories;
-using CalamityEntropy.Content.Items.Lores;
-using CalamityEntropy.Content.Items.Pets;
-using CalamityEntropy.Content.Items.Weapons;
-using CalamityEntropy.Content.Items.Weapons.Bait;
-using CalamityEntropy.Content.Items.Weapons.Whips;
+using CalamityEntropy.Content.NPCs.Cruiser.Core;
+using CalamityEntropy.Content.NPCs.Cruiser.States;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Projectiles.Cruiser;
 using CalamityEntropy.Content.Skies;
-using CalamityEntropy.Content.Tiles;
+using CalamityEntropy.Core.AI;
 using CalamityEntropy.Core.CalamityRef;
-using CalamityEntropy.Core.Graphics;
 using InnoVault;
 using InnoVault.PRT;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-using System;
+using InnoVault.StateMachines;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
-using Terraria.Audio;
-using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.NPCs.Cruiser
 {
+    /// <summary>
+    /// 巡游者:本模组的终局 Boss,蠕虫链型多部件,InnoVault 状态机宿主。
+    /// <para>
+    /// 宿主按固定顺序落地:客户端纠偏与计时收养 → 原版层补偿 → 死亡演出 → 登场骑瓶 →
+    /// 战场半径 → 目标校验 → 全局转移(阶段/转阶段) → 清声明 → 状态机 → 朝向结算 →
+    /// 嘴部/尾焰/尾鞭结算 → 心跳 → 整链骨架落地。
+    /// </para>
+    /// <para>
+    /// 联机:状态号 <c>ai[3]</c>、阶段 <c>ai[2]</c>,<c>aiStyle = -1</c>;转移与弹幕只在权威端;
+    /// 各端跑同一套运动数学;计时与持久累加量随 <c>SendExtraAI</c> 过线,客户端带容差收养。
+    /// <b>头、全部体节、尾节都显式关掉原版 netOffset 平滑</b>——整链是头部集中绘制、
+    /// 读的是裸坐标,任何一节留着平滑都会让接缝每包崩一次。
+    /// </para>
+    /// <para>数值在 <see cref="CruiserDirector"/>,轮换在 <see cref="CruiserRotation"/>,
+    /// 链条落地在 CruiserChainRig.cs,绘制在 CruiserHead.Draw.cs</para>
+    /// </summary>
     [AutoloadBossHead]
-    //[StaticImmunity(staticImmunityCooldown: 6)]
-
-    public class CruiserHead : ModNPC
+    public partial class CruiserHead : ModNPC
     {
-        //绘制用贴图,加载期由 VaultLoaden 赋值;白化着色器读共享基座 CEEffectAssets(只在客户端绘制路径读取)
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/P2b", 1, 7, AssetMode = AssetMode.TextureValueArray)]
-        private static Texture2D[] p2BodyFrames;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/Head2")]
-        private static Asset<Texture2D> head2Tex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawUp2")]
-        private static Asset<Texture2D> jawUp2Tex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawDown2")]
-        private static Asset<Texture2D> jawDown2Tex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/Flagellum")]
-        private static Asset<Texture2D> flagellumTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserTail")]
-        private static Asset<Texture2D> cruiserTailTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserBodyAlt")]
-        private static Asset<Texture2D> cruiserBodyAltTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserBody")]
-        private static Asset<Texture2D> cruiserBodyTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserHead")]
-        private static Asset<Texture2D> cruiserHeadTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawUp")]
-        private static Asset<Texture2D> jawUpTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Cruiser/CruiserJawDown")]
-        private static Asset<Texture2D> jawDownTex;
-        [VaultLoaden("CalamityEntropy/Assets/Extra/T3")]
-        private static Asset<Texture2D> t3Tex;
-        public static float ProjDamageReduce = 0.5f;
+        #region 状态机与联机
+        private NpcStateMachine<CruiserStateContext> stateMachine;
+        public CruiserStateContext Context { get; private set; }
+        private readonly CEBossNetMotion netMotion = new();
+
+        /// <summary>当前状态号。读的是已同步的 <c>ai[3]</c>,所以判定在各端一致</summary>
+        public CruiserStateIndex CurrentState => (CruiserStateIndex)(int)NPC.ai[3];
+
+        /// <summary>
+        /// 阶段 1 或 2。映射到已同步的 <c>ai[2]</c>,不再是单独同步的字段。
+        /// <c>EffectLoader</c> 的二阶段像素通道读它,名字与可见性都不能改
+        /// </summary>
+        public int phase => System.Math.Max(1, (int)NPC.ai[2]);
+        #endregion
+
+        #region 战斗状态字段
         // 原灾厄全局 DR 字段的本地等效:承伤按 (1-DR) 结算,随阶段调整并走 SendExtraAI 同步
-        public float DamageReduction = 0.54f;
-        public class HitRecord
-        {
-            public int Timeleft = 200;
-            public int ProjID = -1;
-            public float dmgMult = 1;
-            public HitRecord(int id)
-            {
-                ProjID = id;
-            }
-        }
-        public List<HitRecord> hitRecords = new List<HitRecord>();
+        public float DamageReduction = CruiserDirector.DRPhase1;
+
+        /// <summary>登场倒计时。>0 期间骑在虚空之瓶上蓄力(无敌、不绘制),归零那一帧揭幕</summary>
+        public int noaitime = CruiserDirector.IntroFrames;
+        /// <summary>转阶段进度 0~122。二阶段贴图、图鉴头像、体节 Phase2 判定都读它,所以必须过线</summary>
+        public int phaseTrans = 0;
+        /// <summary>无目标累计帧数。<b>原代码从不清零</b>,是全场累计值</summary>
+        public int notargettime = 0;
+        /// <summary>战场半径与其目标值,越界玩家每帧续虚空侵蚀</summary>
+        public float maxDistance = CruiserDirector.ArenaRadiusStart;
+        public float maxDistanceTarget = CruiserDirector.ArenaRadiusTargetStart;
+        /// <summary>战场中心:本体与尾节的中点,转阶段期间改成玩家所在</summary>
+        public Vector2 SpaceCenter = Vector2.Zero;
+        /// <summary>尾节实体索引(原 <c>tail</c>)。原代码只写不读,过线保留以免留下各端不一致的公开字段</summary>
+        public int tail = -1;
+
+        public bool DeathAnm = false;
+        public int DeathAnmCount = CruiserDirector.DeathAnmFrames;
+
+        private int length = CruiserDirector.ChainSegments;
+        private bool b_added = false;
+        /// <summary>转阶段的体节增删只做一次(纯本地闩锁,判据 <c>phaseTrans &gt;= 122</c> 本身是同步量)</summary>
+        private bool phase2SegmentsDone = false;
+        #endregion
+
+        #region 链条与表现字段
+        /// <summary>虚拟骨节坐标。由已过线的本体坐标与朝向确定性重算(一阶滤波,自收敛),不过线</summary>
+        public List<Vector2> bodies = new List<Vector2>();
+        /// <summary>本帧绘制用的头部坐标。netOffset 已被清零,所以它与 <c>NPC.Center</c> 同一平滑层级</summary>
+        public Vector2 vtodraw = new Vector2();
+
+        /// <summary>鞭毛张角(原 <c>da</c>)。它同时是尾部新星的触发判据,所以要过线</summary>
+        public float flagellumAngle = 50;
+        /// <summary>鞭毛静息角(原 <c>ja</c>),每帧由速度推出,纯中间量</summary>
+        private float flagellumRest = 50;
+        /// <summary>鞭击角速度(原 <c>tail_vj</c>)与鞭击进行中闩锁(原 <c>jv</c>),都要过线</summary>
+        public float whipSpeed = 0;
+        public bool whipActive = false;
+
+        public float alpha = 1;
+        public float whiteLerp = 0;
+        public float camLerp = 0;
+        public float WarningAlpha = 0;
+        /// <summary>二阶段像素通道用:只有 <c>EffectLoader</c> 代调 <see cref="PreDraw"/> 时才为真</summary>
+        public bool candraw = false;
+        #endregion
+
+        #region 遗留字段(仅为保持对外形状,AI 不再读写)
+        // 以下字段是从旧天顶 AI 抄过来的残留,迁移前就已经只在 SendExtraAI 里来回搬、没有任何读点。
+        // 本轮把它们从同步块里摘掉,字段本身保留(全仓 grep 无外部引用,但它们是 public)
         public float ProgressDraw = 0;
-        private int length = 20;
         public float speedMuti = 1;
         public float speed = 18;
         public float targetSpeed = 18;
-        public int noaitime = 280;
-        public int notargettime = 0;
-        public int tjv = 0;
-        public bool bite = false;
-        public float mouthRot = 0;
-        public int tail = -1;
-        private bool b_added = false;
-        public int nrc = 0;
-        float ja = 50;
-        float da = 50;
-        float tail_vj = 0;
-        bool jv = false;
-        public int phaseTrans = 0;
-        public bool flag = false;
         public int slowDownTime = 0;
-        public List<Vector2> bodies = new List<Vector2>();
-        public Vector2 vtodraw = new Vector2();
-        public float jaslowdown = 0;
-        public float aitype = 0;
-        public int changeCounter = 0;
-        public float maxDistance = 6000;
-        public float maxDistanceTarget = 2900;
+        public int nrc = 0;
         public int rotDist = 900;
         public Vector2 rotPos = Vector2.Zero;
-        public int phase = 1;
         public int circleDir = 1;
-        public float alpha = 1;
-        public bool candraw = false;
-        public bool DeathAnm = false;
-        public int DeathAnmCount = 200;
+        public bool flag = false;
+        public int counterc = 0;
+        public float jaslowdown = 0;
+        /// <summary>从未被赋值,所以 <see cref="ModifyCollisionData"/> 与 <see cref="ModifyHitPlayer"/> 的两条分支是死代码。照搬</summary>
+        public float aitype = 0;
+        #endregion
 
-        public static int icon = ModContent.GetModBossHeadSlot("CalamityEntropy/Content/NPCs/Cruiser/CruiserHead_Head_Boss");
-        public static int iconP2;
-        public static void loadHead()
-        {
-            string path = "CalamityEntropy/Content/NPCs/Cruiser/p2head";
-            CalamityEntropy.Instance.AddBossHeadTexture(path, -1);
-            iconP2 = ModContent.GetModBossHeadSlot(path);
-
-        }
-        public override void BossHeadSlot(ref int index)
-        {
-            if (phaseTrans >= 120)
-            {
-                index = iconP2;
-            }
-            else
-            {
-                index = icon;
-            }
-        }
-        public override void BossHeadRotation(ref float rotation)
-        {
-            rotation = NPC.rotation - MathHelper.PiOver2;
-        }
+        #region 定义
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = 1;
@@ -152,504 +138,161 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
             NPCID.Sets.ImmuneToRegularBuffs[Type] = true;
+            //蠕虫平滑陷阱:原版只在 aiStyle >= 0 时查 NoMultiplayerSmoothingByAI,而这条虫从来没设过
+            //aiStyle(默认 0),所以它一直吃着原版 netOffset 平滑;状态机要占 ai[3] 又必须把 aiStyle 改 -1,
+            //于是只剩按类型豁免这一条路。整链是头部集中绘制、读裸坐标,头与体节任一节留着平滑,
+            //接缝就会每包崩一次——所以头/体/尾三个类型都要显式关掉(体节与尾节在各自文件里关)
+            NPCID.Sets.NoMultiplayerSmoothingByType[Type] = true;
         }
-        int tdamage = 0;
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
-        {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
-            {
-                new FlavorTextBestiaryInfoElement("Mods.CalamityEntropy.CruiserBestiary")
-            });
-        }
+
         public override void SetDefaults()
         {
             // 原灾厄 DR 体系本地化:一阶段减伤 54%,二阶段 42%(见 DamageReduction/ModifyIncomingHit)
-            DamageReduction = 0.54f;
+            DamageReduction = CruiserDirector.DRPhase1;
             NPC.boss = true;
-            NPC.width = 96;
-            NPC.height = 96;
-            NPC.damage = 200;
+            //状态机把状态号写在 ai[3],原版 AI 层必须让位
+            NPC.aiStyle = -1;
+            NPC.width = CruiserDirector.Width;
+            NPC.height = CruiserDirector.Height;
+            NPC.damage = CruiserDirector.BaseDamage;
             if (Main.expertMode)
             {
-                NPC.damage += 4;
+                NPC.damage += CruiserDirector.DamageExpert;
             }
             if (Main.masterMode)
             {
-                NPC.damage += 4;
+                NPC.damage += CruiserDirector.DamageMaster;
             }
-            NPC.defense = 80;
-            NPC.lifeMax = 1120000;
+            NPC.defense = CruiserDirector.Defense;
+            NPC.lifeMax = CruiserDirector.LifeMax;
             //装灾厄读死亡/复仇,缺席仍走大师/专家兜底
             if (CECal.IsDeathMode)
             {
-                NPC.damage += 4;
-                length += 4;
+                NPC.damage += CruiserDirector.DamageDeath;
+                length += CruiserDirector.ChainSegmentsDeathBonus;
             }
             else if (CECal.IsRevengeance)
             {
-                NPC.damage += 2;
-                length += 3;
+                NPC.damage += CruiserDirector.DamageRevenge;
+                length += CruiserDirector.ChainSegmentsRevengeBonus;
             }
-            tdamage = NPC.damage;
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = SoundID.NPCHit4;
-            NPC.value = 100000f;
+            NPC.value = CruiserDirector.Value;
             NPC.knockBackResist = 0f;
             NPC.noTileCollide = true;
             NPC.noGravity = true;
-            NPC.Entropy().VoidTouchDR = 0.9f;
+            NPC.Entropy().VoidTouchDR = CruiserDirector.VoidTouchDR;
             NPC.dontCountMe = true;
             NPC.scale = 1f;
             if (Main.masterMode)
             {
-                NPC.scale = 1.05f;
+                NPC.scale = CruiserDirector.ScaleMaster;
             }
             if (Main.getGoodWorld)
             {
-                NPC.scale = 1.3f;
-                NPC.lifeMax += 750000;
+                NPC.scale = CruiserDirector.ScaleGetGood;
+                NPC.lifeMax += CruiserDirector.LifeMaxGetGoodBonus;
             }
             if (Main.zenithWorld)
             {
-                NPC.scale = 1.5f;
-                length = 10;
+                NPC.scale = CruiserDirector.ScaleZenith;
+                length = CruiserDirector.ChainSegmentsZenith;
             }
             NPC.netAlways = true;
-            NPC.Entropy().damageMul = 0.1f;
+            NPC.Entropy().damageMul = CruiserDirector.DamageMulStart;
             if (!Main.dedServ)
             {
                 Music = MusicLoader.GetMusicSlot(Mod, "Assets/Sounds/Music/CruiserBoss");
             }
             SpawnModBiomes = new int[] { ModContent.GetInstance<VoidDummyBoime>().Type };
         }
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            target.AddBuff(Main.zenithWorld ? ModContent.BuffType<MaliciousCode>() : ModContent.BuffType<VoidTouch>(), 150);
-        }
-        public override void BossLoot(ref int potionType)
-        {
-            // 灾厄至尊回复药水→原版超级治疗药水(misc-map)
-            potionType = ItemID.SuperHealingPotion;
-        }
-        public override void ModifyNPCLoot(NPCLoot npcLoot)
-        {
-            npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<CruiserBag>()));
+        #endregion
 
-            // 原灾厄欧米茄回复药水→超级治疗药水,数量 5-15 按 misc-map ×1.5 取整为 8-23;隐藏图鉴条目
-            npcLoot.Add(new DropPerPlayerOnThePlayer(ItemID.SuperHealingPotion, 1, 8, 23, new HiddenDropCondition()));
-
-            LeadingConditionRule normalOnly = new LeadingConditionRule(new Conditions.NotExpert());
+        #region 状态机装配
+        private void EnsureContext()
+        {
+            Context ??= new CruiserStateContext
             {
-                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<BottledFissure>(), 5, 1, 1, 3));
-                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<VoidRelics>(), 5, 1, 1, 3));
-                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<VoidElytra>(), 5, 1, 1, 3));
-                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<VoidEcho>(), 5, 1, 1, 3));
-                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<Silence>(), 5, 1, 1, 3));
-                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<VoidAnnihilate>(), 5, 1, 1, 3));
-                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<WindOfUndertaker>(), 5, 1, 1, 2));
-                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<WingsOfHush>(), 5, 1, 1, 3));
-                normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<VoidCandle>(), 5, 1, 1, 3));
-                normalOnly.OnSuccess(ItemDropRule.Common(ModContent.ItemType<VoidMonolith>(), 3));
-                normalOnly.OnSuccess(ItemDropRule.Common(ModContent.ItemType<VoidToy>(), 3));
-                normalOnly.OnSuccess(ItemDropRule.Common(ModContent.ItemType<VoidScales>(), 1, 88, 128));
-            }
-            npcLoot.Add(normalOnly);
-            // 遗物:原灾厄复仇/大师条件对齐原版大师掉落惯例(difficulty-map)
-            npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsMasterMode(), ModContent.ItemType<CruiserRelic>()));
-
-            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<CruiserTrophy>(), 10));
-
-            // 首杀传记:承接原灾厄按人实例掉落语义
-            // 龙牙 65-80 与 BookmarkMarivium 的原始飞龙职能承接已在 EGlobalNPC 统一登记,此处不重复
-            npcLoot.Add(new DropPerPlayerOnThePlayer(ModContent.ItemType<CruiserLore>(), 1, 1, 1, new LoreFirstKill()));
+                Npc = NPC,
+                Owner = this,
+            };
+            Context.Npc = NPC;
+            Context.Owner = this;
         }
 
-        // 恒真但隐藏图鉴条目的条件:对应原 hideLootReport 语义
-        private class HiddenDropCondition : IItemDropRuleCondition, IProvideItemConditionDescription
+        private void InitializeStateMachine()
         {
-            public bool CanDrop(DropAttemptInfo info) => true;
-            public bool CanShowItemDropInUI() => false;
-            public string GetConditionDescription() => null;
-        }
-
-        // 首杀传记条件:对应 downed 旗标未置位时每名玩家各掉一份
-        private class LoreFirstKill : IItemDropRuleCondition, IProvideItemConditionDescription
-        {
-            public bool CanDrop(DropAttemptInfo info) => !EDownedBosses.downedCruiser;
-            public bool CanShowItemDropInUI() => true;
-            public string GetConditionDescription() => null;
-        }
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(speedMuti);
-            writer.Write(targetSpeed);
-            writer.Write(slowDownTime);
-            writer.Write(nrc);
-            writer.Write((byte)ai);
-            writer.Write(changeCounter);
-            writer.Write(maxDistanceTarget);
-            writer.Write(rotDist);
-            writer.WriteVector2(rotPos);
-            writer.Write(circleDir);
-            writer.Write(flag);
-            writer.Write(noaitime);
-            writer.Write(phaseTrans);
-            writer.Write(phase);
-            writer.WriteVector2(SpaceCenter);
-            writer.Write(DeathAnm);
-            writer.Write(DeathAnmCount);
-            writer.Write(NPC.dontTakeDamage);
-            writer.Write(DamageReduction);
-        }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            speedMuti = reader.ReadSingle();
-            targetSpeed = reader.ReadSingle();
-            slowDownTime = reader.ReadInt32();
-            nrc = reader.ReadInt32();
-            ai = (AIStyle)reader.ReadByte();
-            changeCounter = reader.ReadInt32();
-            maxDistanceTarget = reader.ReadSingle();
-            rotDist = reader.ReadInt32();
-            rotPos = reader.ReadVector2();
-            circleDir = reader.ReadInt32();
-            flag = reader.ReadBoolean();
-            noaitime = reader.ReadInt32();
-            phaseTrans = reader.ReadInt32();
-            phase = reader.ReadInt32();
-            SpaceCenter = reader.ReadVector2();
-            DeathAnm = reader.ReadBoolean();
-            DeathAnmCount = reader.ReadInt32();
-            NPC.dontTakeDamage = reader.ReadBoolean();
-            DamageReduction = reader.ReadSingle();
-        }
-        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
-        {
-            // 原灾厄 DR 减伤的本地结算
-            modifiers.FinalDamage *= 1f - DamageReduction;
-        }
-        public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)
-        {
-            bool flag = false;
-            HitRecord hr = null;
-            foreach (var hrc in hitRecords)
+            EnsureContext();
+            if (NPC.ai[2] < 1f)
             {
-                if (hrc.ProjID == projectile.whoAmI)
-                {
-                    flag = true;
-                    hr = hrc;
-                    break;
-                }
+                NPC.ai[2] = 1f;
             }
-            if (flag)
-            {
-                modifiers.FinalDamage *= hr.dmgMult;
-                hr.dmgMult *= CruiserHead.ProjDamageReduce;
-                if (!projectile.minion && (projectile.penetrate == -1 || projectile.penetrate > 4))
-                    hr.dmgMult *= CruiserHead.ProjDamageReduce;
-                if (!projectile.minion)
-                {
-                    hr.Timeleft += 20;
-                    if (hr.Timeleft > 250)
-                    {
-                        hr.Timeleft = 250;
-                    }
-                }
-            }
-            else
-            {
-                hitRecords.Add(new HitRecord(projectile.whoAmI));
-            }
-        }
-        public override bool CheckDead()
-        {
-            if (DeathAnmCount <= 0)
-            {
-                return true;
-            }
-            DeathAnm = true;
-            NPC.damage = 0;
-            NPC.life = 1;
-            NPC.dontTakeDamage = true;
-            NPC.active = true;
-            NPC.netUpdate = true;
-            if (NPC.netSpam >= 10)
-                NPC.netSpam = 9;
-            return false;
-        }
+            stateMachine = new NpcStateMachine<CruiserStateContext>(Context);
+            CEBossHost.HookStateSwapAdoption(netMotion, stateMachine);
 
-        public void changeAi()
-        {
-            changeCounter = 0;
-            NPC.netUpdate = true;
-            if (phase == 1)
+            IVaultState<CruiserStateContext> initial = null;
+            if (VaultUtils.isClient)
             {
-                aiRound++;
-                if (aiRound > 19)
-                {
-                    aiRound = 0;
-                }
-                if (aiRound == 1 || aiRound == 3 || aiRound == 5)
-                {
-                    ai = AIStyle.StayAwayAndShootVoidStar;
-                }
-                if (aiRound == 0 || aiRound == 2 || aiRound == 4)
-                {
-                    ai = AIStyle.TryToClosePlayer;
-                }
-                if (aiRound == 8 || aiRound == 10 || aiRound == 12)
-                {
-                    ai = AIStyle.StayAwayAndShootVoidStar;
-                }
-                if (aiRound == 7 || aiRound == 9 || aiRound == 11)
-                {
-                    ai = AIStyle.TryToClosePlayer;
-                }
-                if (aiRound == 14 || aiRound == 16 || aiRound == 18)
-                {
-                    ai = AIStyle.StayAwayAndShootVoidStar;
-                }
-                if (aiRound == 15 || aiRound == 17)
-                {
-                    ai = AIStyle.TryToClosePlayer;
-                }
-
-                if (aiRound == 6 || aiRound == 19)
-                {
-                    if (ai == AIStyle.StayAwayAndShootVoidStar)
-                    {
-                        aiRound--;
-                        ai = AIStyle.TryToClosePlayer;
-                    }
-                    else
-                    {
-                        ai = Main.rand.NextBool() ? AIStyle.EnergyBall : AIStyle.VoidResidue;
-                    }
-                }
-                if (aiRound == 13)
-                {
-                    ai = AIStyle.AroundPlayerAndShootVoidStar;
-                }
-
+                initial = VaultStateRegistry<CruiserStateContext>.Create((int)NPC.ai[3]);
             }
-            else
-            {
-                NPC.defense = 50;
-                DamageReduction = 0.42f;
-                aiRound++;
-                if (aiRound >= 10)
-                {
-                    aiRound = 0;
-                }
-                if (aiRound == 0 || aiRound == 2)
-                {
-                    ai = AIStyle.VoidSpike;
-                }
-                if (aiRound == 1)
-                {
-                    ai = AIStyle.AroundSpawnVoidBomb;
-                }
-                if (aiRound == 3)
-                {
-                    ai = AIStyle.SplittingVoidStar;
-                }
-                if (aiRound == 4)
-                {
-                    ai = AIStyle.QuickDash;
-                }
-                if (aiRound == 5)
-                {
-                    ai = AIStyle.VoidSpike;
-                }
-                if (aiRound == 6)
-                {
-                    ai = AIStyle.VoidLaser;
-                }
-                if (aiRound == 7)
-                {
-                    ai = AIStyle.VoidResidue;
-                }
-                if (aiRound == 8)
-                {
-                    ai = AIStyle.Cruise;
-                }
-                if (aiRound == 9)
-                {
-                    ai = AIStyle.BiteAndDash;
-                }
-            }
+            stateMachine.SetInitialState(initial ?? new CruiserTryToClosePlayerState());
         }
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
-        {
-            if (ai == AIStyle.PhaseTransing)
-                return false;
-            return noaitime <= 0 && ai != AIStyle.BiteAndDash;
-        }
-        public override bool CanHitNPC(NPC target)
-        {
-            return noaitime <= 0 && base.CanHitNPC(target);
-        }
-        public override bool? CanBeHitByItem(Player player, Item item)
-        {
-            if (noaitime > 0)
-            {
-                return false;
-            }
-            return base.CanBeHitByItem(player, item);
-        }
-        public override bool? CanBeHitByProjectile(Projectile projectile)
-        {
-            if (noaitime > 0)
-            {
-                return false;
-            }
-            return base.CanBeHitByProjectile(projectile);
-        }
-        public override bool CanBeHitByNPC(NPC attacker)
-        {
-            return noaitime <= 0 && base.CanBeHitByNPC(attacker);
-        }
-        public int counterc = 0;
-        public Vector2 SpaceCenter = Vector2.Zero;
-        public enum AIStyle
-        {
-            TryToClosePlayer,
-            StayAwayAndShootVoidStar,
-            AroundPlayerAndShootVoidStar,
-            EnergyBall,
-            VoidResidue,
+        #endregion
 
-            PhaseTransing,
-
-            VoidSpike,
-            BiteAndDash,
-            Cruise,
-            SplittingVoidStar,
-            QuickDash,
-            AroundSpawnVoidBomb,
-            VoidLaser
-        }
-        public int aiRound = 0;
-        public AIStyle ai = AIStyle.TryToClosePlayer;
-        public void Shoot(int type, Vector2 pos, Vector2 velo, float damageMult = 1, float ai0 = 0, float ai1 = 0, float ai2 = 0)
-        {
-            Projectile.NewProjectile(NPC.GetSource_FromAI(), pos, velo, type, (int)(NPC.damage / 6.9f * damageMult), 3, -1, ai0, ai1, ai2);
-        }
-        public float whiteLerp = 0;
-        public override void HitEffect(NPC.HitInfo hit)
-        {
-            if (NPC.life <= 0 && DeathAnmCount <= 10)
-            {
-                if (!Main.zenithWorld)
-                {
-                    CEUtils.PlaySound("VoidAttack", 1, NPC.Center);
-                    //死亡86颗PRT_Void全走EffectLoader RT合成,shape=4是旧VoidParticles几何,zenith改RealisticExplosion
-                    for (int i = 0; i < 86; i++)
-                    {
-                        var p = PRTLoader.NewParticle<PRT_Void>(NPC.Center, CEUtils.randomPointInCircle(16), Color.White, 1f);
-                        p.Opacity = Main.rand.NextFloat(1f, 2f);
-                        p.shape = 4;
-                        p.vd = 0.97f;
-                    }
-                }
-                else
-                {
-                    PRTLoader.NewParticle<PRT_RealisticExplosion>(NPC.Center, Vector2.Zero, Color.White, 10).Configure(1, true, PRTDrawModeEnum.AlphaBlend, 0, -1);
-                }
-                // 原灾厄全局屏震改自有 ScreenShaker
-                ScreenShaker.AddShake(new ScreenShaker.ScreenShake(Vector2.Zero, 16));
-
-            }
-        }
-        public float camLerp = 0;
+        #region AI
         public override void AI()
         {
-            for (int i = hitRecords.Count - 1; i >= 0; i--)
+            EnsureContext();
+            if (stateMachine == null)
             {
-                hitRecords[i].dmgMult = float.Lerp(hitRecords[i].dmgMult, 1, 0.09f);
-                if (hitRecords[i].ProjID < 0 || !hitRecords[i].ProjID.ToProj().active)
-                {
-                    hitRecords.RemoveAt(i);
-                }
+                InitializeStateMachine();
             }
-            bool canShoot = Main.netMode != NetmodeID.MultiplayerClient;
+
+            bool client = VaultUtils.isClient;
+            if (client)
+            {
+                netMotion.BeginFrame(NPC);
+                CEBossHost.AdoptTimingAtFrameStart(netMotion, stateMachine);
+            }
+
+            //原本 aiStyle = 0 时由原版 AI 层每帧代做的两件事。状态机占用 ai[3] 迫使 aiStyle 改 -1,
+            //原版层随之不再执行,这里自己补上(原代码在接战分支里另有一次等价的 TargetClosest)
+            int lastTarget = NPC.target;
+            NPC.TargetClosest();
+            NPC.spriteDirection = NPC.direction;
+            if (!client && NPC.target != lastTarget)
+            {
+                //换目标是决策点
+                NPC.netUpdate = true;
+            }
+
+            UpdateHitRecords();
+
             if (DeathAnm)
             {
-                WarningAlpha = 0;
-                if (camLerp < 1)
+                UpdateDeathAnimation();
+                if (!client)
                 {
-                    camLerp += 0.025f;
-                }
-                else
-                {
-                    camLerp = 24f;
-                }
-                Main.LocalPlayer.Entropy().screenShift = camLerp;
-                Main.LocalPlayer.Entropy().screenPos = NPC.Center;
-                if (NPC.velocity.Length() > 6)
-                {
-                    NPC.velocity *= 0.96f;
-                }
-                NPC.rotation = NPC.velocity.ToRotation();
-                DeathAnmCount--;
-                if (whiteLerp < 1)
-                    whiteLerp += 1 / 160f;
-                //DeathAnm每6tick一颗PremultBurst,dedServ守卫别漏,服务端孤儿PRT对不上
-                if (DeathAnmCount % 6 == 0 && !Main.dedServ)
-                {
-                    PRTLoader.NewParticle<PRT_PremultBurst>(NPC.Center, Vector2.Zero, Color.LightBlue, 3.2f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);
-                }
-                if (DeathAnmCount <= 0)
-                {
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        NPC.StrikeInstantKill();
-                        NPC.netSpam = 9;
-                        NPC.netUpdate = true;
-                    }
+                    CEBossHost.Heartbeat(NPC);
                 }
                 vtodraw = NPC.Center;
-                for (int i = 0; i < bodies.Count; i++)
+                UpdateChain();
+                if (client)
                 {
-                    Vector2 oPos;
-                    float oRot;
-
-                    if (i == 0)
-                    {
-                        oPos = NPC.Center;
-                        oRot = NPC.rotation;
-                    }
-                    else
-                    {
-                        oPos = bodies[i - 1];
-                        if (i == 1)
-                        {
-                            oRot = (NPC.Center - bodies[0]).ToRotation();
-                        }
-                        else
-                        {
-                            oRot = (bodies[i - 2] - bodies[i - 1]).ToRotation();
-                        }
-                    }
-                    float rot = (oPos - bodies[i]).ToRotation();
-                    rot = CEUtils.RotateTowardsAngle(rot, oRot, 0.12f, false);
-
-                    int spacing = 80;
-                    bodies[i] = oPos - rot.ToRotationVector2() * spacing * NPC.scale;
+                    netMotion.EndFrame(NPC);
                 }
                 return;
             }
-            NPC.Entropy().damageMul += 1f / 10000f;
+
+            NPC.Entropy().damageMul += CruiserDirector.DamageMulRamp;
             if (NPC.Entropy().damageMul > 1)
             {
                 NPC.Entropy().damageMul = 1;
             }
             counterc++;
-            //天空强度续租(各端本地):骑瓶蓄力期渐临到 0.6,揭幕后推满;P2 转换抬躁动
-            //死亡演出分支在上方提前 return,续租自然过期,天空威压随死亡消退
-            float skyDrive = noaitime > 0 ? (1f - noaitime / 280f) * 0.6f : 1f;
-            float skyAgitation = phase == 2 ? MathHelper.Clamp(phaseTrans / 122f, 0f, 1f) : 0f;
-            CruiserSkyDrive.Report(skyDrive, skyAgitation);
+            ReportSky();
+
             if (noaitime > 0)
             {
                 NPC.dontTakeDamage = true;
@@ -661,17 +304,16 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                 {
                     if (pj.ModProjectile is VoidBottleThrow)
                     {
+                        //骑瓶期是位置直写,不是速度积分,预测器会跟它打架,丢掉预测
                         NPC.Center = pj.Center;
+                        netMotion.ForgetPrediction();
                         break;
                     }
                 }
             }
-            else
+            else if (CurrentState == CruiserStateIndex.PhaseTransing)
             {
-                if (ai == AIStyle.PhaseTransing)
-                {
-                    NPC.dontTakeDamage = true;
-                }
+                NPC.dontTakeDamage = true;
             }
             noaitime--;
 
@@ -679,919 +321,476 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             {
                 NPC.dontTakeDamage = false;
                 //登场揭幕拍点:天幕闪电齐发
-                CruiserSkyDrive.PushBurst(4);
+                CruiserSkyDrive.PushBurst(CruiserDirector.SkyIntroBurstBolts);
+                if (!client)
+                {
+                    NPC.netUpdate = true;
+                }
             }
 
             if (noaitime < 0)
             {
-                if (!b_added)
+                EnsureChainParts();
+                Main.LocalPlayer.Entropy().crSky = CruiserDirector.LegacySkyTimer;
+                maxDistance += (maxDistanceTarget - maxDistance) * CruiserDirector.ArenaRadiusLerp;
+                ApplyArenaDebuff();
+
+                UpdateContextFacts();
+                if (Context.TargetValid)
                 {
-                    b_added = true;
-                    for (int i = 0; i < length + 1; i++)
-                    {
-                        bodies.Add(NPC.Center - new Vector2(0, 0));
-                    }
-                    if (!(Main.netMode == NetmodeID.MultiplayerClient))
-                    {
-                        int bodyIndex;
-                        int syg;
-                        syg = NPC.whoAmI;
-                        for (int i = 0; i < length + 1; i++)
-                        {
-                            int type = ModContent.NPCType<CruiserBody>();
-                            if (i == length)
-                            {
-                                type = ModContent.NPCType<CruiserTail>();
-                            }
-
-                            bodyIndex = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, type);
-
-                            Main.npc[bodyIndex].ai[1] = syg;
-                            Main.npc[bodyIndex].ai[2] = i;
-                            Main.npc[bodyIndex].ai[3] = NPC.whoAmI;
-                            Main.npc[bodyIndex].realLife = NPC.whoAmI;
-                            syg = bodyIndex;
-                            if (Main.netMode == NetmodeID.Server)
-                            {
-                                NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, bodyIndex);
-                                Main.npc[bodyIndex].netUpdate = true;
-                            }
-
-                        }
-                        NPC.ai[3] = syg;
-                        tail = syg;
-                    }
+                    UpdateMouthApproach();
+                    EvaluatePhaseTransition();
+                    SettleArena();
                 }
-                Main.LocalPlayer.Entropy().crSky = 30;
-                NPC.TargetClosest();
-                maxDistance += (maxDistanceTarget - maxDistance) * 0.001f;
-                if (noaitime <= 0)
+                //脱战也要走 Update:客户端靠这里的 NetSync 收到权威端的换态。
+                //状态体本身见 RequiresTarget,没目标不跑
+                Context.BeginFrameDefaults();
+                stateMachine.Update();
+
+                if (Context.TargetValid)
                 {
-                    foreach (Player p in Main.ActivePlayers)
+                    //虚空激光自管朝向,其余状态朝向跟速度走
+                    if (CurrentState != CruiserStateIndex.VoidLaser)
                     {
-                        if (CEUtils.getDistance(SpaceCenter, p.Center) > maxDistance)
-                        {
-                            if (!Main.dedServ)
-                            {
-                                p.AddBuff(ModContent.BuffType<VoidTouch>(), 5);
-                            }
-                        }
-                    }
-                    if (NPC.HasValidTarget)
-                    {
-                        Player target = NPC.target.ToPlayer();
-                        if (!bite && NPC.Distance(target.Center) < 900 && ai != AIStyle.SplittingVoidStar && ai != AIStyle.VoidResidue && ai != AIStyle.BiteAndDash && ai != AIStyle.EnergyBall && ai != AIStyle.AroundPlayerAndShootVoidStar && ai != AIStyle.AroundSpawnVoidBomb)
-                        {
-                            mouthRot += Utils.Remap(NPC.Distance(target.Center), 900, 50, 0, 7f);
-                            if (NPC.Distance(target.Center) < float.Max(30, NPC.velocity.Length()) * 4.6f)
-                            {
-                                bite = true;
-                            }
-                        }
-
-                        int phaseNow = 1;
-                        if (NPC.life < NPC.lifeMax / 2)
-                        {
-                            phaseNow = 2;
-                        }
-                        phase = phaseNow;
-                        if (phaseNow == 2)
-                        {
-
-                            if (phaseTrans < 122)
-                            {
-                                ai = AIStyle.PhaseTransing;
-                                phaseTrans++;
-                                //二阶段转换拍点:一次性闪电爆发
-                                if (phaseTrans == 1)
-                                    CruiserSkyDrive.PushBurst(6);
-                                alpha *= 0.967f;
-                                aiRound = 0;
-                                if (phaseTrans <= 60)
-                                {
-                                    da = 0;
-                                    tail_vj = 0;
-                                    jv = false;
-                                    foreach (Projectile p in Main.ActiveProjectiles)
-                                    {
-                                        if (p.ModProjectile is CruiserEnergyBall || p.ModProjectile is VoidResidue)
-                                        {
-                                            p.active = false;
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (ai == AIStyle.PhaseTransing)
-                                {
-                                    NPC.Entropy().VoidTouchDR = 0.4f;
-                                    ai = AIStyle.VoidSpike;
-                                    NPC.dontTakeDamage = false;
-                                    NPC.width = 156;
-                                    NPC.height = 156;
-                                    foreach (NPC n in Main.npc)
-                                    {
-                                        if (n.realLife == NPC.whoAmI)
-                                        {
-                                            if (n.ai[2] <= 8 && n.ai[2] > 4)
-                                            {
-                                                n.width = 26;
-                                                n.height = 26;
-                                            }
-                                            n.netUpdate = true;
-                                            if (n.ai[2] > 8)
-                                            {
-                                                n.active = false;
-                                            }
-                                            if (Main.dedServ)
-                                            {
-                                                NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, n.whoAmI, 0f, 0f, 0f, 0);
-                                            }
-                                        }
-                                    }
-                                }
-                                if (alpha < 1)
-                                {
-                                    alpha += 0.02f;
-                                    if (alpha > 1)
-                                    {
-                                        alpha = 1;
-                                    }
-                                }
-                            }
-                        }
-                        maxDistanceTarget = 12000;
-                        SpaceCenter = (NPC.Center + bodies[bodies.Count - 1]) / 2f;
-                        if (ai == AIStyle.PhaseTransing)
-                        {
-                            SpaceCenter = target.Center;
-                            maxDistanceTarget = 6000;
-                            if (NPC.velocity.Length() < 8)
-                            {
-                                NPC.velocity *= 1.01f;
-                            }
-                            else
-                            {
-                                NPC.velocity *= 0.98f;
-                            }
-                            //PhaseTransing bodies每节点每帧1 Void,节数多能堆几百颗,旧space转场密度
-                            foreach (var p in bodies)
-                            {
-                                var vpt = PRTLoader.NewParticle<PRT_Void>(p, CEUtils.randomPointInCircle(6), Color.White, 1f);
-                                vpt.Opacity = Main.rand.NextFloat(0.2f, 1.4f);
-                                vpt.shape = 4;
-                            }
-                        }
-                        if (ai == AIStyle.TryToClosePlayer)
-                        {
-                            if (NPC.velocity.Length() < 36)
-                            {
-                                NPC.velocity *= 1.02f;
-                            }
-                            NPC.velocity += (target.Center - NPC.Center).normalize() * Utils.Remap(NPC.Distance(target.Center), 0, 700, 1f, 3f);
-                            NPC.velocity *= Utils.Remap(NPC.Distance(target.Center), 0, 700, 0.98f, 0.97f);
-                            NPC.velocity = Vector2.Lerp(NPC.velocity, (target.Center - NPC.Center).normalize() * NPC.velocity.Length(), Utils.Remap(NPC.Distance(target.Center), 0, 1000, 0f, 0.1f));
-                            changeCounter++;
-                            if (changeCounter > 600 || NPC.Distance(target.Center) < 700 + NPC.velocity.Length())
-                            {
-                                changeAi();
-                            }
-                        }
-                        if (ai == AIStyle.StayAwayAndShootVoidStar)
-                        {
-                            if (NPC.velocity.Length() < 30)
-                            {
-                                NPC.velocity *= 1.1f;
-                            }
-                            else
-                            {
-                                NPC.velocity *= 0.97f;
-                            }
-                            changeCounter++;
-                            if (changeCounter == 90)
-                            {
-                                tjv = 1;
-                            }
-                            if (changeCounter > 70)
-                            {
-                                NPC.velocity = Vector2.Lerp(NPC.velocity, (target.Center - NPC.Center).normalize() * NPC.velocity.Length(), 0.02f);
-                                if (NPC.velocity.Length() < 30)
-                                {
-                                    NPC.velocity *= 1.02f;
-                                }
-                            }
-                            if (changeCounter > 120)
-                            {
-                                if (NPC.velocity.Length() < 30)
-                                {
-                                    NPC.velocity *= 1.046f;
-                                }
-                                NPC.velocity += (target.Center - NPC.Center).normalize() * 0.1f;
-                                NPC.velocity = Vector2.Lerp(NPC.velocity, (target.Center - NPC.Center).normalize() * NPC.velocity.Length(), 0.03f);
-                                NPC.velocity *= 0.998f;
-                            }
-                            if (changeCounter > 140)
-                            {
-                                changeAi();
-                            }
-                        }
-                        if (ai == AIStyle.EnergyBall)
-                        {
-                            if (changeCounter == 0)
-                            {
-                                if (canShoot)
-                                {
-                                    Shoot(ModContent.ProjectileType<CruiserEnergyBall>(), NPC.Center, Vector2.Zero, 1.15f, NPC.whoAmI);
-                                }
-                            }
-                            changeCounter++;
-                            if (changeCounter > 240)
-                            {
-                                changeAi();
-                            }
-                            NPC.velocity += (target.Center - NPC.Center).normalize() * (NPC.Distance(target.Center) > 1000 ? 4f : 1);
-                            NPC.velocity *= 0.92f;
-                        }
-                        if (ai == AIStyle.VoidResidue)
-                        {
-                            if (changeCounter < 80)
-                            {
-                                mouthRot -= 4.8f;
-                            }
-                            else
-                            {
-                                if (changeCounter < 100)
-                                {
-                                    mouthRot += 5f;
-                                }
-                            }
-                            changeCounter++;
-                            if (changeCounter < 80 && NPC.Distance(target.Center) > 1000)
-                            {
-                                NPC.velocity *= 0.95f;
-                                NPC.velocity += (target.Center - NPC.Center).normalize() * 4f;
-                            }
-                            else
-                            {
-                                NPC.velocity *= 0.92f;
-                                NPC.velocity += (target.Center - NPC.Center).normalize() * 0.36f;
-                            }
-                            if (changeCounter == 2)
-                                CEUtils.PlaySound("voidSound", 0.8f, NPC.Center);
-                            if (changeCounter == 80)
-                            {
-                                if (canShoot)
-                                {
-                                    for (int i = 0; i < 80; i++)
-                                    {
-                                        Shoot(ModContent.ProjectileType<VoidResidue>(), NPC.Center, NPC.velocity.normalize().RotatedByRandom(2f) * 24 * Main.rand.NextFloat(0.2f, 1f), 0.8f);
-                                    }
-                                }
-                                CEUtils.PlaySound("CruiserSpit2", 1.4f, NPC.Center);
-                                CEUtils.PlaySound("CruiserVoidResidue", 1, NPC.Center);
-                            }
-                            if (changeCounter > 140)
-                            {
-                                NPC.velocity += NPC.rotation.ToRotationVector2() * 6f;
-                                NPC.velocity *= 0.98f;
-                            }
-                            if (changeCounter > 200)
-                            {
-                                changeAi();
-                            }
-                        }
-                        if (ai == AIStyle.AroundPlayerAndShootVoidStar)
-                        {
-                            Vector2 targetPos = target.Center + (NPC.Center - target.Center).normalize().RotatedBy(0.6f) * 600;
-                            NPC.velocity += (targetPos - NPC.Center).normalize() * 3f;
-                            NPC.velocity *= 0.98f;
-                            changeCounter++;
-                            if (changeCounter % 40 == 0)
-                            {
-                                tjv = 1;
-                            }
-                            if (changeCounter > 40 * 8 + 30)
-                            {
-                                changeAi();
-                            }
-                        }
-                        if (ai == AIStyle.VoidSpike)
-                        {
-                            NPC.velocity = NPC.velocity.normalize() * (NPC.velocity.Length() + (46 - NPC.velocity.Length()) * 0.08f);
-                            NPC.velocity = CEUtils.RotateTowardsAngle(NPC.velocity.ToRotation(), (target.Center - NPC.Center).ToRotation(), 0.0376f, false).ToRotationVector2() * NPC.velocity.Length();
-                            changeCounter++;
-                            if (changeCounter == 40 || changeCounter == 60 || changeCounter == 80 || changeCounter == 100)
-                            {
-                                if (canShoot)
-                                {
-                                    for (float i = 0; i < 360; i += 30)
-                                    {
-                                        Shoot(ModContent.ProjectileType<VoidSpike>(), NPC.Center, MathHelper.ToRadians(i).ToRotationVector2() * 5);
-                                    }
-                                }
-                            }
-                            if (changeCounter > 150)
-                            {
-                                changeAi();
-                            }
-                        }
-                        if (ai == AIStyle.BiteAndDash)
-                        {
-                            if (changeCounter == 0)
-                            {
-                                var pLt = new List<int>() { ModContent.ProjectileType<VoidStar>(), ModContent.ProjectileType<VoidResidue>(), ModContent.ProjectileType<VoidSpike>() };
-                                foreach (Projectile p in Main.ActiveProjectiles)
-                                {
-                                    if (pLt.Contains(p.type))
-                                        p.Kill();
-                                }
-                                NPC.velocity *= 0.9f;
-                                NPC.velocity += (target.Center - NPC.Center).normalize() * 6;
-                                if (CEUtils.getDistance(NPC.Center + NPC.rotation.ToRotationVector2() * 160, target.Center) < 160)
-                                {
-                                    changeCounter++;
-                                    target.velocity *= 0;
-                                    target.Center = NPC.Center + NPC.rotation.ToRotationVector2() * 160;
-                                }
-                            }
-                            else
-                            {
-                                changeCounter++;
-                                if (changeCounter < 20)
-                                {
-                                    mouthRot -= 5f;
-                                    NPC.velocity = NPC.velocity.normalize() * (NPC.velocity.Length() + (80 - NPC.velocity.Length()) * 0.2f);
-
-                                    if (CEUtils.getDistance(NPC.Center + NPC.rotation.ToRotationVector2() * 160, target.Center) < 160)
-                                    {
-                                        target.velocity *= 0;
-                                        target.Entropy().immune = 12;
-                                        target.Center = NPC.Center + NPC.rotation.ToRotationVector2() * 160;
-                                    }
-                                    if (!CEUtils.isAir(NPC.Center + NPC.rotation.ToRotationVector2() * 360))
-                                    {
-                                        changeCounter = 60;
-                                    }
-                                }
-                                else
-                                {
-                                    Vector2 targetPos = target.Center + (NPC.Center - target.Center).normalize().RotatedBy(0.6f) * 1600;
-                                    NPC.velocity += (targetPos - NPC.Center).normalize() * 1f;
-                                    NPC.velocity *= 0.98f;
-                                    if (changeCounter > 120)
-                                    {
-                                        changeAi();
-                                    }
-                                }
-                                if (changeCounter == 20)
-                                {
-                                    if (CEUtils.getDistance(NPC.Center + NPC.rotation.ToRotationVector2() * 80, target.Center) < 160)
-                                    {
-                                        target.velocity = NPC.velocity * 1.6f;
-                                        target.Entropy().CruiserAntiGravTime = 100;
-                                    }
-
-                                    if (canShoot)
-                                    {
-                                        for (int i = 1; i < 18; i++)
-                                        {
-                                            for (int j = -6; j < 7; j++)
-                                            {
-                                                if (j == 0)
-                                                {
-                                                    Shoot(ModContent.ProjectileType<CruiserSlash>(), NPC.Center + NPC.velocity.normalize() * 300 * i, NPC.velocity);
-                                                }
-                                                else
-                                                {
-                                                    Shoot(ModContent.ProjectileType<CruiserSlash>(), NPC.Center + NPC.velocity.normalize().RotatedBy(0.125f * j) * 300 * i, NPC.velocity.RotatedBy(0.125f * j));
-                                                }
-                                            }
-                                        }
-                                    }
-                                    NPC.velocity *= 0.3f;
-                                }
-
-                            }
-                        }
-                        if (ai == AIStyle.AroundSpawnVoidBomb)
-                        {
-                            NPC.velocity = NPC.velocity.normalize() * (NPC.velocity.Length() + (32 - NPC.velocity.Length()) * 0.08f);
-                            NPC.velocity = CEUtils.RotateTowardsAngle(NPC.velocity.ToRotation(), (target.Center - NPC.Center).ToRotation(), 0.022f, false).ToRotationVector2() * NPC.velocity.Length();
-
-                            changeCounter++;
-                            if (changeCounter < 180)
-                            {
-                                if (changeCounter % 7 == 0)
-                                {
-                                    if (canShoot)
-                                        Shoot(ModContent.ProjectileType<VoidBomb>(), NPC.Center, CEUtils.randomPointInCircle(8) + (target.Center - NPC.Center).normalize() * 20);
-                                }
-                            }
-                            if (changeCounter > 340)
-                            {
-                                changeAi();
-                            }
-                        }
-                        if (ai == AIStyle.Cruise)
-                        {
-                            NPC.velocity = NPC.velocity.normalize() * (NPC.velocity.Length() + (40 - NPC.velocity.Length()) * 0.2f);
-
-                            NPC.velocity += (target.Center - NPC.Center).normalize() * 0.1f;
-                            NPC.velocity = Vector2.Lerp(NPC.velocity, (target.Center - NPC.Center).normalize() * NPC.velocity.Length(), 0.058f);
-                            NPC.velocity *= 0.998f;
-                            changeCounter++;
-                            if (changeCounter > 100)
-                            {
-                                if (Main.rand.NextBool(150) || changeCounter > 200)
-                                {
-                                    changeAi();
-                                }
-                            }
-                        }
-                        if (ai == AIStyle.SplittingVoidStar)
-                        {
-
-                            if (changeCounter < 100)
-                            {
-                                mouthRot -= 4.8f;
-                            }
-                            else
-                            {
-                                if (changeCounter < 120)
-                                {
-                                    mouthRot += 5f;
-                                }
-                            }
-                            if (changeCounter == 20)
-                                CEUtils.PlaySound("voidSound", 1.05f, NPC.Center);
-                            changeCounter++;
-                            if (changeCounter < 100 && NPC.Distance(target.Center) > 900)
-                            {
-                                NPC.velocity *= 0.95f;
-                                NPC.velocity += (target.Center - NPC.Center).normalize() * 1f;
-                            }
-                            else
-                            {
-                                NPC.velocity *= 0.94f;
-                                NPC.velocity += (target.Center - NPC.Center).normalize() * 0.26f;
-                            }
-                            if (changeCounter == 100)
-                            {
-                                if (canShoot)
-                                {
-                                    for (int i = 0; i < 80; i++)
-                                    {
-                                        Shoot(ModContent.ProjectileType<VoidStar>(), NPC.Center, NPC.velocity.normalize().RotatedByRandom(2f) * 24 * Main.rand.NextFloat(0.2f, 1f), 0.75f);
-                                    }
-                                }
-                                CEUtils.PlaySound("CruiserSpit", 1.2f, NPC.Center);
-                                CEUtils.PlaySound("VoidBomb", 1.1f, NPC.Center);
-                                CEUtils.PlaySound("VoidBomb", 1.1f, NPC.Center);
-                                CEUtils.PlaySound("VoidBomb", 1.1f, NPC.Center);
-                                CEUtils.PlaySound("vbuse", 1, NPC.Center);
-                            }
-                            if (changeCounter > 140)
-                            {
-                                changeAi();
-                            }
-                        }
-                        if (ai == AIStyle.QuickDash)
-                        {
-                            if (changeCounter == 0)
-                            {
-                                NPC.rotation = (target.Center - NPC.Center).ToRotation();
-                            }
-                            changeCounter++;
-
-                            if (changeCounter > 38)
-                            {
-                                NPC.velocity *= 0.97f;
-                                NPC.velocity += (target.Center - NPC.Center).normalize() * 1.4f;
-                            }
-                            else
-                            {
-                                NPC.velocity += NPC.rotation.ToRotationVector2() * 3.5f;
-                            }
-                            if (changeCounter > 100)
-                            {
-                                changeAi();
-                            }
-                        }
-                        if (ai == AIStyle.VoidLaser)
-                        {
-                            if (NPC.localAI[2]++ < 35)
-                            {
-                                NPC.rotation = CEUtils.RotateTowardsAngle(NPC.rotation, (target.Center + target.velocity * 46 * 0.8f - NPC.Center).ToRotation(), 0.16f, false);
-                                NPC.velocity *= 0.96f;
-                                NPC.velocity += NPC.rotation.ToRotationVector2() * -0.4f;
-                            }
-                            if (NPC.localAI[2] > 36)
-                            {
-                                int u = (int)Utils.Remap(46 * (int)(changeCounter / 46f), 0, 6 * 46, 42, 18);
-                                if (changeCounter % 46 == 0)
-                                {
-                                    if (changeCounter > 1)
-                                        NPC.rotation = (target.Center + target.velocity * u * 0.8f - NPC.Center).ToRotation();
-                                    NPC.velocity = NPC.rotation.ToRotationVector2();
-                                    //VoidLaser每层双CruiserWarn,lifetime=-1靠手动删,跟46tick激光帧对齐
-                                    PRTLoader.NewParticle<PRT_CruiserWarn>(NPC.Center, Vector2.Zero, Color.White, 1.8f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, NPC.rotation, -1);
-                                    PRTLoader.NewParticle<PRT_CruiserWarn>(NPC.Center, Vector2.Zero, Color.White, 0.8f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, NPC.rotation, -1);
-                                }
-                                if (changeCounter % 46 == u)
-                                {
-                                    if (canShoot)
-                                    {
-                                        Shoot(ModContent.ProjectileType<CruiserLaser2>(), NPC.Center, NPC.rotation.ToRotationVector2() * 10, ai0: NPC.whoAmI);
-                                    }
-                                    NPC.velocity = NPC.rotation.ToRotationVector2() * ((CEUtils.getDistance(NPC.Center, target.Center) + 1400f) / (45f - u));
-                                }
-                                if (changeCounter % 46 == 45)
-                                {
-                                    NPC.velocity = NPC.velocity.normalize() * 4;
-                                }
-                                changeCounter++;
-                                if (changeCounter >= 6 * 46)
-                                {
-                                    NPC.localAI[2] = 0;
-                                    changeAi();
-                                }
-                            }
-                        }
-                        if (ai != AIStyle.VoidLaser)
-                        {
-                            NPC.rotation = NPC.velocity.ToRotation();
-                        }
-                    }
-                    else
-                    {
-                        notargettime++;
-                        NPC.velocity.Y += -1f;
-                        if (notargettime > 190)
-                        {
-                            NPC.active = false;
-                        }
                         NPC.rotation = NPC.velocity.ToRotation();
                     }
                 }
-
-                if (bite)
-                {
-                    mouthRot -= 12;
-                    if (mouthRot < -48)
-                    {
-                        bite = false;
-                    }
-                }
                 else
                 {
-                    mouthRot *= 0.9f;
-                }
-                if (mouthRot < -48)
-                {
-                    mouthRot = -48;
-                }
-                //P2尾焰phaseTrans>120每帧8 Void(ad=0.013慢褪),跟旧mouth exhaust一致
-                if (phaseTrans > 120)
-                {
-                    foreach(var plr in Main.ActivePlayers)
+                    notargettime++;
+                    NPC.velocity.Y += CruiserDirector.NoTargetRise;
+                    if (notargettime > CruiserDirector.DespawnNoTargetFrames && !client)
                     {
-                        // 原灾厄无限飞行改每帧回满翅膀时间(player-api)
-                        plr.wingTime = plr.wingTimeMax;
+                        //实体生死收归权威端(原代码各端都写,客户端那一次会被下一个快照打回来)
+                        NPC.active = false;
+                        NPC.netUpdate = true;
                     }
-                    var r = Main.rand;
-                    for (int i = 0; i < 4; i++)
-                    {
-                        var p = PRTLoader.NewParticle<PRT_Void>(NPC.Center - NPC.rotation.ToRotationVector2() * 60, new Vector2((float)((r.NextDouble() - 0.5) * .3), (float)((r.NextDouble() - 0.5) * 1.3)), Color.White, 1f);
-                        p.shape = 4;
-                        p.Opacity = 1.6f * NPC.scale;
-                        p.ad = 0.013f;
-                    }
-                    for (int i = 0; i < 4; i++)
-                    {
-                        var p = PRTLoader.NewParticle<PRT_Void>(NPC.Center - NPC.rotation.ToRotationVector2() * 60 - NPC.velocity * 0.5f, new Vector2((float)((r.NextDouble() - 0.5) * .3), (float)((r.NextDouble() - 0.5) * 1.3)), Color.White, 1f);
-                        p.shape = 4;
-                        p.Opacity = 1.6f * NPC.scale;
-                        p.ad = 0.013f;
-                    }
+                    NPC.rotation = NPC.velocity.ToRotation();
                 }
-                if (tjv == 1)
-                {
-                    tjv = 0;
-                    jv = true;
-                    if (da < 0)
-                    {
-                        da = 1;
-                    }
-                    tail_vj = 12;
-                }
-                if (jv)
-                {
-                    da += tail_vj;
-                    tail_vj -= 1.5f;
-                    if (da < 0)
-                    {
-                        da = 0;
-                        tail_vj = 0;
-                        jv = false;
-                        jaslowdown = 1;
 
-                        int num = 8;
-                        int counts = 3;
-                        float speed = 9;
-                        //装灾厄读复仇/死亡,缺席仍走专家/大师兜底。下方原版专家/大师层不动
-                        if (CECal.IsRevengeance)
-                        {
-                            num = 11;
-                            counts = 4;
-                            speed = 12;
-                        }
-                        if (CECal.IsDeathMode)
-                        {
-                            num = 11;
-                            counts = 5;
-                            speed = 18;
-                        }
-                        if (Main.expertMode)
-                        {
-                            num += 2;
-                            speed *= 1.25f;
-                        }
-                        if (Main.masterMode)
-                        {
-                            num += 2;
-                            counts += 1;
-                            speed *= 1.4f;
-                        }
-                        if (ai == AIStyle.AroundPlayerAndShootVoidStar)
-                        {
-                            counts -= 2;
-                            num /= 2;
-                            speed *= 0.45f;
-                        }
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            {
-                                float angle = 0;
-                                for (int i = 0; i < counts; i++)
-                                {
-
-                                    for (int j = 0; j < num; j++)
-                                    {
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), bodies[bodies.Count - 1] - (bodies[bodies.Count - 2] - bodies[bodies.Count - 1]).SafeNormalize(Vector2.Zero) * 172 * NPC.scale, angle.ToRotationVector2() * speed, ModContent.ProjectileType<VoidStar>(), (int)(NPC.damage / 6.5f), 1);
-                                        angle += ((float)Math.PI * 2 / (float)num);
-                                    }
-                                    angle += ((float)Math.PI * 2 / (float)num) / (float)counts;
-                                    speed *= 0.7f;
-                                }
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), bodies[bodies.Count - 1] - (bodies[bodies.Count - 2] - bodies[bodies.Count - 1]).SafeNormalize(Vector2.Zero) * 172 * NPC.scale, Vector2.Zero, ModContent.ProjectileType<VoidExplode>(), (int)(NPC.damage / 6f), 0);
-                            }
-                            {
-                                if (Main.zenithWorld)
-                                {
-                                    for (int i = 1; i < bodies.Count; i++)
-                                    {
-                                        for (int _ = 0; _ < Main.rand.Next(3, 10); _++)
-                                        {
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), bodies[i] - (bodies[i - 1] - bodies[i]).SafeNormalize(Vector2.Zero) * 172 * NPC.scale, CEUtils.randomRot().ToRotationVector2() * speed * 3f, ModContent.ProjectileType<VoidStar>(), (int)(NPC.damage / 6.5f), 1);
-                                        }
-                                    }
-                                }
-                            }
-
-                        }
-                        if (Main.netMode != NetmodeID.Server)
-                        {
-                            SoundStyle sound = new SoundStyle("CalamityEntropy/Assets/Sounds/clap");
-                            sound.Pitch = 1.4f;
-                            SoundEngine.PlaySound(sound);
-                            SoundEngine.PlaySound(SoundID.Item9);
-                        }
-
-                    }
-                }
-                else
-                {
-                    ja = (100f / ((float)NPC.velocity.Length() * 3)) * 5;
-                    if (ja < 0)
-                    {
-                        ja = 0;
-                    }
-
-                    da = da + (ja - da) * 0.1f;
-
-                }
+                SettleMouth();
+                UpdatePhase2Exhaust();
+                UpdateFlagellum();
             }
-            NPC.netSpam = 0;
-            NPC.netUpdate = true;
+
+            if (!client)
+            {
+                CEBossHost.Heartbeat(NPC);
+            }
             vtodraw = NPC.Center;
-            for (int i = 0; i < bodies.Count; i++)
+            UpdateChain();
+            if (client)
             {
-                Vector2 oPos;
-                float oRot;
-
-                if (i == 0)
-                {
-                    oPos = NPC.Center;
-                    oRot = NPC.rotation;
-                }
-                else
-                {
-                    oPos = bodies[i - 1];
-                    if (i == 1)
-                    {
-                        oRot = (NPC.Center - bodies[0]).ToRotation();
-                    }
-                    else
-                    {
-                        oRot = (bodies[i - 2] - bodies[i - 1]).ToRotation();
-                    }
-                }
-                float rot = (oPos - bodies[i]).ToRotation();
-                rot = CEUtils.RotateTowardsAngle(rot, oRot, 0.12f, false);
-
-                int spacing = 80;
-                bodies[i] = oPos - rot.ToRotationVector2() * spacing * NPC.scale;
+                netMotion.EndFrame(NPC);
             }
         }
-        public override bool ModifyCollisionData(Rectangle victimHitbox, ref int immunityCooldownSlot, ref MultipliableFloat damageMultiplier, ref Rectangle npcHitbox)
-        {
-            if (aitype == 3)
-            {
-                npcHitbox = new Rectangle(0, 0, 0, 0);
-                return true;
-            }
-            return false;
-        }
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
-        {
-            if (aitype == 3)
-            {
-                modifiers.SetMaxDamage(0);
-                modifiers.FinalDamage *= 0;
-                modifiers.DisableSound();
-                target.immuneTime = 10;
-            }
-        }
-        public override void OnKill()
-        {
-            if (!EDownedBosses.downedCruiser)
-            {
-                VoidOreSystem.BlessWorldWithOre();
-            }
 
-            NPC.SetEventFlagCleared(ref EDownedBosses.downedCruiser, -1);
-
+        /// <summary>天空强度续租(各端本地):骑瓶蓄力期渐临到 0.6,揭幕后推满;P2 转换抬躁动</summary>
+        private void ReportSky()
+        {
+            //死亡演出分支在上方提前 return,续租自然过期,天空威压随死亡消退
+            float skyDrive = noaitime > 0
+                ? (1f - noaitime / CruiserDirector.SkyIntroDivisor) * CruiserDirector.SkyIntroCap
+                : 1f;
+            float skyAgitation = Context.Phase == 2
+                ? MathHelper.Clamp(phaseTrans / CruiserDirector.SkyAgitationDivisor, 0f, 1f)
+                : 0f;
+            CruiserSkyDrive.Report(skyDrive, skyAgitation);
         }
 
-        public override bool CheckActive()
+        private void UpdateDeathAnimation()
         {
-            return false;
-        }
-
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPosition, Color drawColor)
-        {
-            if (NPC.IsABestiaryIconDummy)
-                return false;
-
-            if (!candraw && !(phase == 1) && ModContent.GetInstance<Config>().EnablePixelEffect)
+            WarningAlpha = 0;
+            if (camLerp < 1)
             {
-                return false;
-            }
-            if (noaitime > 0)
-            {
-                return false;
-            }
-            if (whiteLerp > 0)
-            {
-                Effect shader = CEEffectAssets.WhiteTrans;
-                shader.Parameters["strength"].SetValue(whiteLerp);
-                Main.spriteBatch.EnterShaderRegion(BlendState.AlphaBlend, shader);
-                shader.CurrentTechnique.Passes[0].Apply();
-            }
-            if (phaseTrans > 120)
-            {
-                int bd = 0;
-
-                for (int d = 0; d < 9; d++)
-                {
-                    if (d == 0 || d == 2)
-                    {
-                        continue;
-                    }
-                    float rot = 0;
-                    if (bd == 0)
-                    {
-                        rot = (vtodraw - bodies[d]).ToRotation();
-                    }
-                    else
-                    {
-                        rot = (bodies[d - 1] - bodies[d]).ToRotation();
-                    }
-                    Vector2 pos = bodies[d];
-
-                    Texture2D tx;
-                    tx = p2BodyFrames[bd];
-
-                    spriteBatch.Draw(tx, pos - screenPosition, null, Color.White * alpha, rot, new Vector2(tx.Width, tx.Height) / 2, NPC.scale, SpriteEffects.None, 0f);
-
-                    bd += 1;
-
-
-                }
-                Texture2D txd = head2Tex.Value;
-                Texture2D j2 = jawUp2Tex.Value;
-                Texture2D j1 = jawDown2Tex.Value;
-                Vector2 joffset = new Vector2(54, 54);
-                Vector2 ofs2 = joffset * new Vector2(1, -1);
-                float roth = mouthRot * 0.8f;
-
-                spriteBatch.Draw(j1, vtodraw - screenPosition + joffset.RotatedBy(NPC.rotation) * NPC.scale, null, Color.White * alpha, NPC.rotation + MathHelper.ToRadians(roth), new Vector2(28, 20), NPC.scale, SpriteEffects.None, 0);
-
-                spriteBatch.Draw(j2, vtodraw - screenPosition + ofs2.RotatedBy(NPC.rotation) * NPC.scale, null, Color.White * alpha, NPC.rotation - MathHelper.ToRadians(roth), new Vector2(28, j2.Height - 20), NPC.scale, SpriteEffects.None, 0);
-
-                spriteBatch.Draw(txd, vtodraw - screenPosition, null, Color.White * alpha, NPC.rotation, new Vector2(txd.Width, txd.Height) / 2, NPC.scale, SpriteEffects.None, 0f);
-
+                camLerp += CruiserDirector.DeathCamRamp;
             }
             else
             {
-                for (int d = 0; d <= bodies.Count - 1; d++)
-
-                {
-                    float rot = 0;
-                    if (d == 0)
-                    {
-                        rot = (vtodraw - bodies[d]).ToRotation();
-                    }
-                    else
-                    {
-                        rot = (bodies[d - 1] - bodies[d]).ToRotation();
-                    }
-                    Vector2 pos = bodies[d];
-                    Texture2D f1 = flagellumTex.Value;
-                    if (d == bodies.Count - 1)
-                    {
-                        Texture2D tx = cruiserTailTex.Value;
-                        spriteBatch.Draw(tx, pos - screenPosition, null, Color.White * alpha, rot, new Vector2(tx.Width, tx.Height) / 2, NPC.scale, SpriteEffects.None, 0f);
-
-                    }
-                    else
-                    {
-                        Texture2D tx;
-                        if (d % 2 == 1)
-                        {
-                            tx = cruiserBodyAltTex.Value;
-                        }
-                        else
-                        {
-                            tx = cruiserBodyTex.Value;
-                        }
-                        spriteBatch.Draw(tx, pos - screenPosition, null, Color.White * alpha, rot, new Vector2(tx.Width, tx.Height) / 2, NPC.scale, SpriteEffects.None, 0f);
-
-                    }
-                    if (d == bodies.Count - 1 || Main.zenithWorld)
-                    {
-                        spriteBatch.Draw(f1, pos - screenPosition - new Vector2(36, 0).RotatedBy(rot) * NPC.scale, null, Color.White * alpha, rot + MathHelper.ToRadians(180 - da), new Vector2(0, f1.Height), NPC.scale, SpriteEffects.None, 0);
-                        spriteBatch.Draw(f1, pos - screenPosition - new Vector2(36, 0).RotatedBy(rot) * NPC.scale, null, Color.White * alpha, rot + MathHelper.ToRadians(180 + da), new Vector2(0, 0), NPC.scale, SpriteEffects.FlipVertically, 0);
-
-                    }
-
-                }
-                Texture2D txd = cruiserHeadTex.Value;
-                Texture2D j2 = jawUpTex.Value;
-                Texture2D j1 = jawDownTex.Value;
-                Vector2 joffset = new Vector2(42, 42);
-                Vector2 ofs2 = joffset * new Vector2(1, -1);
-                float roth = mouthRot;
-                spriteBatch.Draw(j1, vtodraw - screenPosition + joffset.RotatedBy(NPC.rotation) * NPC.scale, null, Color.White * alpha, NPC.rotation + MathHelper.ToRadians(roth), new Vector2(58, j2.Height) / 2, NPC.scale, SpriteEffects.None, 0);
-
-                spriteBatch.Draw(j2, vtodraw - screenPosition + ofs2.RotatedBy(NPC.rotation) * NPC.scale, null, Color.White * alpha, NPC.rotation - MathHelper.ToRadians(roth), new Vector2(58, j1.Height) / 2, NPC.scale, SpriteEffects.None, 0);
-
-                spriteBatch.Draw(txd, vtodraw - screenPosition, null, Color.White * alpha, NPC.rotation, new Vector2(txd.Width, txd.Height) / 2, NPC.scale, SpriteEffects.None, 0f);
-
+                camLerp = CruiserDirector.DeathCamHold;
             }
-            float lerp = phase == 2 ? 0.2f : 0.064f;
-            if ((ai == AIStyle.VoidLaser && NPC.localAI[2] < 31) || (ai == AIStyle.TryToClosePlayer && CEUtils.getDistance(NPC.Center, NPC.target.ToPlayer().Center) > 1200))
+            Main.LocalPlayer.Entropy().screenShift = camLerp;
+            Main.LocalPlayer.Entropy().screenPos = NPC.Center;
+            if (NPC.velocity.Length() > CruiserDirector.DeathSpeedFloor)
             {
-                WarningAlpha = float.Lerp(WarningAlpha, 1, lerp);
+                NPC.velocity *= CruiserDirector.DeathDrag;
             }
-            else { WarningAlpha = float.Lerp(WarningAlpha, 0, lerp); }
-            if (WarningAlpha > 0.002f)
+            NPC.rotation = NPC.velocity.ToRotation();
+            DeathAnmCount--;
+            if (whiteLerp < 1)
             {
-                Main.spriteBatch.UseBlendState(BlendState.Additive);
-                Texture2D w = t3Tex.Value;
-                Main.spriteBatch.Draw(w, NPC.Center - Main.screenPosition, null, Color.AliceBlue * 0.7f * WarningAlpha, NPC.rotation, new Vector2(0, w.Height / 2f), new Vector2(20, (phase == 1 ? 0.6f : 0.8f) * WarningAlpha), SpriteEffects.None, 0);
-                Main.spriteBatch.Draw(w, NPC.Center - Main.screenPosition, null, Color.AliceBlue * 0.7f * WarningAlpha, NPC.rotation, new Vector2(0, w.Height / 2f), new Vector2(20, (phase == 1 ? 0.5f : 0.65f) * WarningAlpha * WarningAlpha * WarningAlpha), SpriteEffects.None, 0);
-                Main.spriteBatch.ExitShaderRegion();
+                whiteLerp += CruiserDirector.DeathWhiteRamp;
             }
-
-            return false;
+            //死亡演出每 6 tick 一颗爆闪,dedServ 守卫别漏,服务端孤儿 PRT 对不上
+            if (DeathAnmCount % CruiserDirector.DeathBurstInterval == 0 && !Main.dedServ)
+            {
+                PRTLoader.NewParticle<PRT_PremultBurst>(NPC.Center, Vector2.Zero, Color.LightBlue, 3.2f).Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0);
+            }
+            if (DeathAnmCount <= 0 && !VaultUtils.isClient)
+            {
+                NPC.StrikeInstantKill();
+                NPC.netSpam = 9;
+                NPC.netUpdate = true;
+            }
         }
-        public float WarningAlpha = 0;
 
-        public override void PostDraw(SpriteBatch sbb, Vector2 screenPos, Color drawColor)
+        /// <summary>生成整条链。骨节坐标各端都建(节数由已同步的世界难度决定),实体只在权威端生成</summary>
+        private void EnsureChainParts()
         {
-            Main.spriteBatch.ExitShaderRegion();
+            if (b_added)
+            {
+                return;
+            }
+            b_added = true;
+            for (int i = 0; i < length + 1; i++)
+            {
+                bodies.Add(NPC.Center - new Vector2(0, 0));
+            }
+            if (VaultUtils.isClient)
+            {
+                return;
+            }
+            int syg = NPC.whoAmI;
+            for (int i = 0; i < length + 1; i++)
+            {
+                int type = i == length ? ModContent.NPCType<CruiserTail>() : ModContent.NPCType<CruiserBody>();
+                int bodyIndex = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, type);
+
+                Main.npc[bodyIndex].ai[1] = syg;
+                Main.npc[bodyIndex].ai[2] = i;
+                //体节自己的 ai[3] 存头部索引,这一处保留:体节不跑状态机,槽位不冲突。
+                //被摘掉的是原代码紧接着那句 NPC.ai[3] = syg(头部自己的 ai[3]),它已让位给状态号
+                Main.npc[bodyIndex].ai[3] = NPC.whoAmI;
+                Main.npc[bodyIndex].realLife = NPC.whoAmI;
+                syg = bodyIndex;
+                //NewNPC 的首包在 ai 槽赋值之前就发了,所以这里必须补一包
+                if (Main.netMode == NetmodeID.Server)
+                {
+                    NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, bodyIndex);
+                    Main.npc[bodyIndex].netUpdate = true;
+                }
+            }
+            tail = syg;
+            //生成部件是决策点
+            NPC.netUpdate = true;
         }
+
+        private void ApplyArenaDebuff()
+        {
+            foreach (Player p in Main.ActivePlayers)
+            {
+                if (CEUtils.getDistance(SpaceCenter, p.Center) > maxDistance)
+                {
+                    if (!Main.dedServ)
+                    {
+                        p.AddBuff(ModContent.BuffType<VoidTouch>(), CruiserDirector.ArenaDebuffFrames);
+                    }
+                }
+            }
+        }
+
+        private void UpdateContextFacts()
+        {
+            Context.Npc = NPC;
+            Context.Owner = this;
+            Context.Target = NPC.HasValidTarget ? Main.player[NPC.target] : null;
+            Context.TargetValid = NPC.HasValidTarget;
+            Context.TargetDistance = Context.TargetValid ? NPC.Distance(Context.Target.Center) : 0f;
+        }
+
+        /// <summary>张嘴预备(纯绘制)。六个状态被排除在外,它们自己管嘴</summary>
+        private void UpdateMouthApproach()
+        {
+            Player target = Context.Target;
+            float dist = NPC.Distance(target.Center);
+            CruiserStateIndex state = CurrentState;
+            bool excluded = state == CruiserStateIndex.SplittingVoidStar
+                || state == CruiserStateIndex.VoidResidue
+                || state == CruiserStateIndex.BiteAndDash
+                || state == CruiserStateIndex.EnergyBall
+                || state == CruiserStateIndex.AroundPlayerAndShootVoidStar
+                || state == CruiserStateIndex.AroundSpawnVoidBomb;
+            if (!Context.Biting && dist < CruiserDirector.MouthOpenFar && !excluded)
+            {
+                Context.MouthRot += Utils.Remap(dist, CruiserDirector.MouthOpenFar, CruiserDirector.MouthOpenNear, 0, CruiserDirector.MouthOpenRate);
+                if (dist < float.Max(CruiserDirector.BiteTriggerSpeedFloor, NPC.velocity.Length()) * CruiserDirector.BiteTriggerFactor)
+                {
+                    Context.Biting = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 阶段与转阶段。原代码把这一段写在状态判定<b>之前</b>,每帧强制 <c>ai = PhaseTransing</c>,
+        /// 所以被打断那一手当帧就不再执行——这里的调用顺序保持一致
+        /// </summary>
+        private void EvaluatePhaseTransition()
+        {
+            //原代码是整数除法 lifeMax / 2,每帧重算一次
+            int phaseNow = NPC.life < NPC.lifeMax / CruiserDirector.Phase2LifeDivisor ? 2 : 1;
+            if (Context.Phase != phaseNow)
+            {
+                Context.Phase = phaseNow;
+                if (!VaultUtils.isClient)
+                {
+                    NPC.netUpdate = true;
+                }
+            }
+            if (phaseNow != 2)
+            {
+                return;
+            }
+
+            if (phaseTrans < CruiserDirector.PhaseTransFrames)
+            {
+                if (!VaultUtils.isClient && CurrentState != CruiserStateIndex.PhaseTransing)
+                {
+                    stateMachine.ChangeState(new CruiserPhaseTransingState());
+                }
+                phaseTrans++;
+                //二阶段转换拍点:一次性闪电爆发
+                if (phaseTrans == 1)
+                {
+                    CruiserSkyDrive.PushBurst(CruiserDirector.SkyPhaseTransBurstBolts);
+                }
+                alpha *= CruiserDirector.PhaseTransAlphaDecay;
+                Context.AttackIndex = 0;
+                if (phaseTrans <= CruiserDirector.PhaseTransClearWindow)
+                {
+                    flagellumAngle = 0;
+                    whipSpeed = 0;
+                    whipActive = false;
+                    foreach (Projectile p in Main.ActiveProjectiles)
+                    {
+                        if (p.ModProjectile is CruiserEnergyBall || p.ModProjectile is VoidResidue)
+                        {
+                            p.active = false;
+                        }
+                    }
+                }
+                return;
+            }
+
+            //转阶段收尾。原代码只在越线那一帧做一次,这里每帧幂等重申(判据 phaseTrans 已过线,各端同值)
+            NPC.Entropy().VoidTouchDR = CruiserDirector.VoidTouchDRPhase2;
+            NPC.dontTakeDamage = false;
+            NPC.width = CruiserDirector.WidthPhase2;
+            NPC.height = CruiserDirector.HeightPhase2;
+            ApplyPhase2Segments();
+            if (!VaultUtils.isClient && CurrentState == CruiserStateIndex.PhaseTransing)
+            {
+                //原代码在这里直写 ai = VoidSpike:不走选招口,所以既不清 ChangeCounter 也不动 AttackIndex。
+                //二阶段第一手尖刺因此带着被打断那一手的残余计数起跑,见 CruiserRotation 注释
+                stateMachine.ChangeState(new CruiserVoidSpikeState());
+                NPC.netUpdate = true;
+            }
+            if (alpha < 1)
+            {
+                alpha += CruiserDirector.PhaseTransAlphaRise;
+                if (alpha > 1)
+                {
+                    alpha = 1;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 转阶段的体节增删。缩尺寸是确定性的、各端都做(判据 <c>ai[2]</c> 与 <c>ai[3]</c> 都随原版快照过线);
+        /// 摘掉多余体节属于实体生死,只在权威端做并显式补包。
+        /// 原代码按 <c>realLife</c> 认亲,而 <c>realLife</c> 不随快照过线,客户端认不出来;
+        /// 改用体节自己的 <c>ai[3]</c>(生成时写的就是同一个头部索引)
+        /// </summary>
+        private void ApplyPhase2Segments()
+        {
+            if (phase2SegmentsDone)
+            {
+                return;
+            }
+            bool authority = !VaultUtils.isClient;
+            bool found = false;
+            foreach (NPC n in Main.npc)
+            {
+                if (!n.active || (n.ModNPC is not CruiserBody && n.ModNPC is not CruiserTail) || (int)n.ai[3] != NPC.whoAmI)
+                {
+                    continue;
+                }
+                found = true;
+                if (n.ai[2] <= CruiserDirector.SegmentKeepMaxIndex && n.ai[2] > CruiserDirector.SegmentShrinkMinIndex)
+                {
+                    n.width = CruiserDirector.SegmentSizePhase2;
+                    n.height = CruiserDirector.SegmentSizePhase2;
+                }
+                if (authority && n.ai[2] > CruiserDirector.SegmentKeepMaxIndex)
+                {
+                    n.active = false;
+                    n.netUpdate = true;
+                    if (Main.dedServ)
+                    {
+                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, n.whoAmI, 0f, 0f, 0f, 0);
+                    }
+                }
+            }
+            if (found)
+            {
+                phase2SegmentsDone = true;
+            }
+        }
+
+        private void SettleArena()
+        {
+            maxDistanceTarget = CruiserDirector.ArenaRadiusEngaged;
+            if (bodies.Count > 0)
+            {
+                SpaceCenter = (NPC.Center + bodies[bodies.Count - 1]) / 2f;
+            }
+            if (CurrentState == CruiserStateIndex.PhaseTransing)
+            {
+                SpaceCenter = Context.Target.Center;
+                maxDistanceTarget = CruiserDirector.ArenaRadiusPhaseTrans;
+            }
+        }
+
+        /// <summary>咬合结算(纯绘制)。写在接战分支之外,无目标时也照跑,原代码如此</summary>
+        private void SettleMouth()
+        {
+            if (Context.Biting)
+            {
+                Context.MouthRot += CruiserDirector.BiteCloseRate;
+                if (Context.MouthRot < CruiserDirector.MouthMin)
+                {
+                    Context.Biting = false;
+                }
+            }
+            else
+            {
+                Context.MouthRot *= CruiserDirector.MouthDecay;
+            }
+            if (Context.MouthRot < CruiserDirector.MouthMin)
+            {
+                Context.MouthRot = CruiserDirector.MouthMin;
+            }
+        }
+
+        /// <summary>二阶段尾焰与全场无限飞行。前者纯绘制,后者是原灾厄无限飞行改成每帧回满翅膀时间</summary>
+        private void UpdatePhase2Exhaust()
+        {
+            if (phaseTrans <= CruiserDirector.PhaseTransDrawSwitch)
+            {
+                return;
+            }
+            foreach (var plr in Main.ActivePlayers)
+            {
+                plr.wingTime = plr.wingTimeMax;
+            }
+            if (Main.dedServ)
+            {
+                return;
+            }
+            var r = Main.rand;
+            for (int i = 0; i < CruiserDirector.ExhaustCount; i++)
+            {
+                var p = PRTLoader.NewParticle<PRT_Void>(NPC.Center - NPC.rotation.ToRotationVector2() * CruiserDirector.ExhaustNozzleBack,
+                    new Vector2((float)((r.NextDouble() - 0.5) * CruiserDirector.ExhaustJitterX), (float)((r.NextDouble() - 0.5) * CruiserDirector.ExhaustJitterY)), Color.White, 1f);
+                p.shape = 4;
+                p.Opacity = CruiserDirector.ExhaustOpacity * NPC.scale;
+                p.ad = CruiserDirector.ExhaustFade;
+            }
+            for (int i = 0; i < CruiserDirector.ExhaustCount; i++)
+            {
+                var p = PRTLoader.NewParticle<PRT_Void>(NPC.Center - NPC.rotation.ToRotationVector2() * CruiserDirector.ExhaustNozzleBack - NPC.velocity * 0.5f,
+                    new Vector2((float)((r.NextDouble() - 0.5) * CruiserDirector.ExhaustJitterX), (float)((r.NextDouble() - 0.5) * CruiserDirector.ExhaustJitterY)), Color.White, 1f);
+                p.shape = 4;
+                p.Opacity = CruiserDirector.ExhaustOpacity * NPC.scale;
+                p.ad = CruiserDirector.ExhaustFade;
+            }
+        }
+        #endregion
+
+        #region 同步
+        /// <summary>
+        /// 定长块,顺序固定在这一处。先计时,再持久累加量,再状态标量,最后部件索引。
+        /// 字节数是编译期常量:不许加运行时条件决定写不写某个字段。
+        /// <para>
+        /// 迁移前这里搬的是一堆从旧天顶 AI 抄来、AI 根本不读的残留字段(speedMuti / rotPos / circleDir …),
+        /// 已全部摘掉;新增过线的是原版漏同步的几项:本体朝向、鞭毛角、鞭击角速度与闩锁、
+        /// 战场半径、原 <c>localAI[2]</c> 的激光瞄准计时、轮换序号
+        /// </para>
+        /// </summary>
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            EnsureContext();
+            int stateId = (int)NPC.ai[3];
+            int timer = 0;
+            int counter = 0;
+            if (stateMachine?.CurrentState is CruiserStateBase state)
+            {
+                stateId = state.StateId;
+                timer = state.Timer;
+                counter = state.Counter;
+            }
+            CEBossNetMotion.WriteTiming(writer, stateId, timer, counter);
+
+            //持久累加量:被逐帧积分出来、又反过来决定出手时机的量
+            writer.Write(NPC.rotation);
+            writer.Write(flagellumAngle);
+            writer.Write(whipSpeed);
+            writer.Write(whipActive);
+            writer.Write(maxDistance);
+            writer.WriteVector2(SpaceCenter);
+
+            //状态标量
+            writer.Write(Context.ChangeCounter);
+            writer.Write(Context.LaserAim);
+            writer.Write(Context.AttackIndex);
+            writer.Write(noaitime);
+            writer.Write(phaseTrans);
+            writer.Write(NPC.defense);
+            writer.Write(DamageReduction);
+            writer.Write(NPC.dontTakeDamage);
+            writer.Write(DeathAnm);
+            writer.Write(DeathAnmCount);
+
+            //部件索引
+            writer.Write(tail);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            EnsureContext();
+            int localStateId = -1;
+            int localTimer = 0;
+            if (stateMachine?.CurrentState is CruiserStateBase state)
+            {
+                localStateId = state.StateId;
+                localTimer = state.Timer;
+            }
+            netMotion.ReceiveTiming(reader, NPC, localStateId, localTimer);
+
+            NPC.rotation = reader.ReadSingle();
+            flagellumAngle = reader.ReadSingle();
+            whipSpeed = reader.ReadSingle();
+            whipActive = reader.ReadBoolean();
+            maxDistance = reader.ReadSingle();
+            SpaceCenter = reader.ReadVector2();
+
+            Context.ChangeCounter = AdoptCounter(Context.ChangeCounter, reader.ReadInt32());
+            Context.LaserAim = AdoptCounter(Context.LaserAim, reader.ReadInt32());
+            Context.AttackIndex = reader.ReadInt32();
+            noaitime = reader.ReadInt32();
+            phaseTrans = reader.ReadInt32();
+            NPC.defense = reader.ReadInt32();
+            DamageReduction = reader.ReadSingle();
+            NPC.dontTakeDamage = reader.ReadBoolean();
+            DeathAnm = reader.ReadBoolean();
+            DeathAnmCount = reader.ReadInt32();
+
+            tail = reader.ReadInt32();
+        }
+
+        /// <summary>帧计数按计时口径收养:容差内不动本地值,硬对齐会让 <c>== N</c> 型一次性拍被跳过或重放</summary>
+        private static int AdoptCounter(int local, int synced)
+            => CEBossNetMotion.AdoptTimer(local, synced);
+        #endregion
+
     }
 }

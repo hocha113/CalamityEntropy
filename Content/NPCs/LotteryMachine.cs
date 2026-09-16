@@ -1,5 +1,6 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Items.Potions;
 using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Content.NPCs.FriendFinderNPC;
 using CalamityEntropy.Content.Items.Donator;
@@ -481,7 +482,8 @@ namespace CalamityEntropy.Content.NPCs
                 AddCalOrOwn(p6, CEID.Item_NightmareFuel, 25, ItemID.SpookyWood, 99);
                 AddCalOrOwn(p6, CEID.Item_EndothermicEnergy, 25, ItemID.FrostCore, 5);
                 AddCalOrOwn(p6, CEID.Item_DarksunFragment, 25, ItemID.FragmentSolar, 25);
-                AddCalOrOwn(p6, CEID.Item_OmegaHealingPotion, 10, ItemID.SuperHealingPotion, 15);
+                p6.Add(new RewardPoolItem(ModContent.ItemType<VoidHealingPotion>(), 10));
+                p6.Add(new RewardPoolItem(ModContent.ItemType<VoidManaPotion>(), 10));
                 AddCalOrOwn(p6, CEID.Item_CosmicDischarge, 1, ModContent.ItemType<WraithSoulEssence>(), 20);
                 AddCalOrOwn(p6, CEID.Item_GalaxySmasher, 1, ItemID.Meowmere, 1);
                 AddCalOrOwn(p6, CEID.Item_Murasama, 1, ItemID.Terrarian, 1);

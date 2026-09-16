@@ -1714,6 +1714,22 @@ namespace CalamityEntropy
             return ((float)Math.Sqrt(Math.Pow(v2.X - v1.X, 2) + Math.Pow(v2.Y - v1.Y, 2)));
         }
 
+        /// <summary>
+        /// 施加固定时长的减益:原版对 LongerExpertDebuff 集合内的减益(带电等)在专家/大师会按 DebuffTimeMultiplier 延长,
+        /// 这里 AddBuff 后把 buffTime 钉回 time,只对本地玩家有效(减益归属其自身客户端)
+        /// </summary>
+        public static void AddDebuffFixed(this Player player, int type, int time)
+        {
+            if (player.whoAmI != Main.myPlayer)
+                return;
+            player.AddBuff(type, time, true);
+            int idx = player.FindBuffIndex(type);
+            if (idx >= 0 && player.buffTime[idx] > time)
+            {
+                player.buffTime[idx] = time;
+            }
+        }
+
 
         public static void drawTexture(Texture2D tex, Vector2 pos, float rotation, Color color, Vector2 scale, SpriteEffects eff = SpriteEffects.None)
         {

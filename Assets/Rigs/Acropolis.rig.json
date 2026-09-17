@@ -1,0 +1,98 @@
+{
+  "name": "Acropolis",
+  "snapDistance": 1200,
+  "vars": {
+    "hipX": 20, "hipY": 60,
+    "cannonMountX": -80, "cannonMountY": -32, "cannonSeg1": 76, "cannonMuzzle": 60,
+    "harpoonMountX": 60, "harpoonMountY": -18, "harpoonSeg1": 66, "harpoonReach": 150, "harpoonSide": 10, "chainBack": 72,
+    "tex": "Content/NPCs/Acropolis"
+  },
+
+  "bones": [
+    { "name": "body" },
+    { "name": "facing", "parent": "body" },
+
+    { "repeat": 4, "var": "i",
+      "values": {
+        "hx": [-1, -1, 1, 1],
+        "normalDeg": [143.1301, 153.4349, 36.8699, 26.5651],
+        "coxa": [36.8, 46, 36.8, 46],
+        "femur": [56, 70, 56, 70],
+        "tibia": [57.6, 72, 57.6, 72]
+      },
+      "items": [
+        { "name": "coxa{i}", "parent": "body", "offset": ["{hipX*hx}", "{hipY}"], "rotationDeg": "{normalDeg}", "length": "{coxa}" },
+        { "name": "femur{i}", "parent": "coxa{i}", "atTip": true, "length": "{femur}" },
+        { "name": "tibia{i}", "parent": "femur{i}", "atTip": true, "length": "{tibia}" }
+      ] },
+
+    { "name": "cannonMount", "parent": "body", "offset": ["{cannonMountX}", "{cannonMountY}"] },
+    { "name": "cannon1", "parent": "cannonMount", "rotationDeg": 90, "length": "{cannonSeg1}" },
+    { "name": "cannon2", "parent": "cannon1", "atTip": true, "length": "{cannonMuzzle}" },
+
+    { "name": "harpoonMount", "parent": "body", "offset": ["{harpoonMountX}", "{harpoonMountY}"] },
+    { "name": "harpoon1", "parent": "harpoonMount", "rotationDeg": 90, "length": "{harpoonSeg1}" },
+    { "name": "harpoon2", "parent": "harpoon1", "atTip": true, "length": "{harpoonReach}" },
+    { "name": "harpoonMuzzle", "parent": "harpoon2", "atTip": true, "offset": [0, "{harpoonSide}"] },
+    { "name": "chainTail", "parent": "harpoon2", "offset": ["{harpoonReach-chainBack}", "{harpoonSide}"] },
+
+    { "name": "link1", "parent": "chainTail", "length": 20 },
+    { "repeat": 7, "var": "k", "start": 2, "items": [
+      { "name": "link{k}", "parent": "link{k-1}", "atTip": true, "length": 20 }
+    ] }
+  ],
+
+  "pieces": [
+    { "repeat": 4, "var": "i",
+      "values": { "ls": [0.8, 1, 0.8, 1], "layerBase": [0, 6, 3, 9], "footMirror": [true, true, false, false] },
+      "items": [
+        { "name": "coxa{i}", "bone": "coxa{i}", "texture": "{tex}/Leg1", "proximal": [4, 13], "axis": 0, "scale": "{ls}", "layer": "{layerBase}" },
+        { "name": "femur{i}", "bone": "femur{i}", "texture": "{tex}/Leg2", "proximal": [6, 9], "axis": 0, "scale": "{ls}", "layer": "{layerBase+1}" },
+        { "name": "tibia{i}", "bone": "tibia{i}", "texture": "{tex}/Foot", "proximal": [27, 56], "axis": 0, "scale": "{ls}", "mirror": "{footMirror}", "layer": "{layerBase+2}" }
+      ] },
+
+    { "name": "harpoonArm", "bone": "harpoon1", "texture": "{tex}/HarpoonArm", "proximal": [6, 10], "axis": 0, "layer": 20 },
+    { "name": "harpoonDocked", "bone": "harpoonMuzzle", "texture": "{tex}/Harpoon", "proximal": [70, 20], "axis": 0, "layer": 21 },
+    { "name": "harpoonLauncher", "bone": "harpoon2", "texture": "{tex}/HarpoonLauncher", "proximal": [6, 36], "axis": 0, "layer": 22 },
+
+    { "name": "body", "bone": "facing", "texture": "{tex}/AcropolisMachine", "proximalNormalized": true, "proximal": [0.5, 0.5], "axis": 0, "layer": 30 },
+
+    { "name": "cannonConnect", "bone": "cannon1", "texture": "{tex}/CannonConnect", "proximal": [6, 14.5], "axis": 0, "layer": 40 },
+    { "name": "cannon", "bone": "cannon2", "texture": "{tex}/Cannon", "proximal": [6, 36], "axis": 0, "layer": 41 },
+
+    { "name": "shoulder", "bone": "facing", "texture": "{tex}/Shoulder", "proximalNormalized": true, "proximal": [0.5, 0.5], "axis": 0, "layer": 50 }
+  ],
+
+  "ribbons": [
+    { "name": "chain", "bones": ["link1", { "repeat": 7, "var": "k", "start": 2, "items": ["link{k}"] }],
+      "texture": "{tex}/HarpoonChain", "width": 16, "uv": "tile", "tileLength": 18, "includeTip": true, "layer": 0, "visible": false }
+  ],
+
+  "solvers": [
+    { "repeat": 4, "var": "i",
+      "values": { "reach": [150.4, 188, 150.4, 188], "restReach": [0.665, 0.7136, 0.665, 0.7136], "phase": [0, 3.14159265, 1.57079633, 4.71238898] },
+      "items": [
+        { "name": "gait{i}", "type": "FootPlantGait", "bones": ["coxa{i}"],
+          "reach": "{reach}", "restReach": "{restReach}",
+          "stride": 160, "stepThreshold": 100,
+          "rhythm": "window", "stepWindow": 0.5, "phaseOffsets": ["{phase}"],
+          "emergencyStretch": 0.9, "stepDown": 18,
+          "envelopeMin": 0.25, "envelopeMax": 0.85, "envelopeSwing": 1.0,
+          "swingFraction": 0.42, "swingMin": 5, "swingMax": 12, "stepClearance": 20, "pressFraction": 0.18, "pressPx": 3,
+          "probeLift": 46, "buriedDepth": 10, "skateStart": 15, "skateFull": 26,
+          "airRadius": 0.5, "airRadiusWave": 0.08, "airTilt": 0.4, "airRate": 0.18,
+          "holdRate": 0.2, "holdStepThreshold": 30 },
+        { "name": "leg{i}", "type": "ThreeBoneLeg", "bones": ["coxa{i}", "femur{i}", "tibia{i}"],
+          "coxaSwingMaxDeg": 60, "tibiaWorldDirDeg": 90, "slack": 12, "reachTrim": 6,
+          "targetSolver": "gait{i}", "targetIndex": 0 }
+      ] },
+
+    { "name": "cannonAim1", "type": "PointAt", "bones": ["cannon1"], "rotateOnly": true, "turnRate": 0.06, "maxDeviation": 0, "angularDamping": 0.96 },
+    { "name": "cannonAim2", "type": "PointAt", "bones": ["cannon2"], "rotateOnly": true, "turnRate": 0.06, "maxDeviation": 0, "angularDamping": 0.96 },
+    { "name": "harpoonAim1", "type": "PointAt", "bones": ["harpoon1"], "rotateOnly": true, "turnRate": 0.06, "maxDeviation": 0, "angularDamping": 0.96 },
+    { "name": "harpoonAim2", "type": "PointAt", "bones": ["harpoon2"], "rotateOnly": true, "turnRate": 0.06, "maxDeviation": 0, "angularDamping": 0.96 },
+
+    { "name": "chain", "type": "HangChain", "bones": ["link1", { "repeat": 7, "var": "k", "start": 2, "items": ["link{k}"] }],
+      "restLength": 1, "sagBase": 0, "sagGain": 0, "sagMax": 0, "vibrateAmp": 0 }
+  ]
+}

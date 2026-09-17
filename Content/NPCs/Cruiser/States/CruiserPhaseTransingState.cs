@@ -34,8 +34,10 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
             }
 
             if (!Main.dedServ && ctx.Owner != null) {
-                //每骨节每帧一颗,节数多时能堆几百颗,对齐原转场密度
-                foreach (Vector2 p in ctx.Owner.bodies) {
+                //每骨节每帧一颗,节数多时能堆几百颗,对齐原转场密度(骨节坐标读 Rigs2D 链骨)
+                int count = ctx.Owner.ChainPointCount;
+                for (int i = 0; i < count; i++) {
+                    Vector2 p = ctx.Owner.ChainPoint(i);
                     PRT_Void vpt = PRTLoader.NewParticle<PRT_Void>(p,
                         CEUtils.randomPointInCircle(CruiserDirector.PhaseTransParticleScatter), Color.White, 1f);
                     vpt.Opacity = Main.rand.NextFloat(CruiserDirector.PhaseTransParticleOpacityMin, CruiserDirector.PhaseTransParticleOpacityMax);

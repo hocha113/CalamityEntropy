@@ -1,35 +1,42 @@
-﻿using CalamityEntropy.Content.NPCs.NihilityTwin.Core;
-using InnoVault;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.NPCs.NihilityTwin.Core;
+using InnoVault.Rigs2D.Runtime;
+using InnoVault.Rigs2D.Solvers;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 
 namespace CalamityEntropy.Content.NPCs.NihilityTwin
 {
     /// <summary>
-    /// 虚无双子的表现层:贴图声明、本体三层触须绘制、连接绳索、尾迹尘。
-    /// 全部纯本地,不回写任何 gameplay 状态
+    /// 虚无双子的表现层:InnoVault Rigs2D 骨架(定义在 <c>Assets/Rigs/Nihility.rig.json</c>)。
+    /// <para>
+    /// 本体为根,<c>anchor</c> 骨在本体后方 64(原 <c>buttom</c>),三层触须对挂在它上面按速度张开;
+    /// 通往细胞的绳是一条 29 节 <c>VerletStrand</c>(30 质点、15 次约束迭代、阻尼 0.994、节长贴合两端距离 × 29/35,
+    /// 与原 <c>Utilities.Rope</c> 的参数逐项对应)加一条平铺绳索贴图的带状件。
+    /// 全部纯本地,不回写任何 gameplay 状态;绳的末端每帧写已同步的细胞坐标
+    /// </para>
     /// </summary>
     public partial class NihilityActeriophage
     {
-        //绘制用贴图,加载期由 VaultLoaden 赋值,只在客户端绘制路径读取
-        [VaultLoaden("CalamityEntropy/Content/NPCs/NihilityTwin/BodyAlt")]
-        private static Asset<Texture2D> bodyAltTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/NihilityTwin/back")]
-        private static Asset<Texture2D> backTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/NihilityTwin/mid")]
-        private static Asset<Texture2D> midTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/NihilityTwin/front")]
-        private static Asset<Texture2D> frontTex;
-        /// <summary>绳索贴图。<see cref="ChaoticCellSmall"/> 也复用这个字段,不要挪走</summary>
-        [VaultLoaden("CalamityEntropy/Content/NPCs/NihilityTwin/NihRope")]
-        internal static Asset<Texture2D> nihRopeTex;
+        private Rig2DInstance rig;
+        [Rig2DBone("backL", "backR", "midL", "midR", "frontL", "frontR")]
+        private readonly int[] layerBones = new int[6];
+        [Rig2DPiece("body")]
+        private int bodyPiece;
+        [Rig2DPiece("bodyAlt")]
+        private int bodyAltPiece;
+        [Rig2DRibbon("rope")]
+        private int ropeRibbon;
+        [Rig2DSolver("rope")]
+        private VerletStrandSolver ropeSolver;
 
-        /// <summary>绳索在本体那一端的挂点:中心沿朝向 +90° 偏移 64</summary>
+        /// <summary>绳索在本体那一端的挂点:中心沿朝向后退 64(即骨架里 <c>anchor</c> 骨的位置)</summary>
         public Vector2 buttom => NPC.Center + new Vector2(0, NihilityDirector.RopeAnchorOffset).RotatedBy(NPC.rotation + MathHelper.PiOver2);
+
+        /// <summary>骨架是否可用</summary>
+        public bool BodyRigReady => rig != null && rig.Bound && rig.Built;
 
         /// <summary>
         /// 尾迹尘。频率由 <c>localAI[0]</c> 的余弦给,所以两侧尘线会交替张合。
@@ -48,80 +55,75 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         private bool InLaserPose => Context != null && Context.Phase == 2
             && (int)NPC.ai[3] == (int)NihilityStateIndex.P2Laser;
 
+        private void EnsureBodyRig() {
+            if (rig != null) {
+                return;
+            }
+            Vault2DRig asset = CERigAssets.Nihility;
+            if (asset == null || !asset.IsValid) {
+                return;
+            }
+            rig = asset.CreateInstance(NPC.whoAmI);
+            rig.Bind(this, OnBodyRigBound);
+        }
+
+        private void OnBodyRigBound(Rig2DInstance r) {
+            //逐帧写目标,无一次性配置
+        }
+
+        /// <summary>
+        /// 骨架落地(各端都跑)。触须张开量 <c>erot</c> 随速度渐进饱和(纯本地推导量);
+        /// 绳的末端 = <c>Lerp(buttom, cell.Center, ropeLerp)</c>,<c>ropeLerp</c> 归零(二阶段)时绳整体停机隐藏
+        /// </summary>
+        private void UpdateBodyRig() {
+            EnsureBodyRig();
+            if (rig == null || !rig.Bound) {
+                return;
+            }
+            rig.Scale = NPC.scale;
+            rig.SetRoot(NPC.Center, NPC.rotation);
+
+            float erot = (1f - 1f / (1f + NPC.velocity.Length())) * NihilityDirector.TentacleSpreadFactor;
+            rig.SetBoneLocalRotation(layerBones[0], -erot);
+            rig.SetBoneLocalRotation(layerBones[1], erot);
+            rig.SetBoneLocalRotation(layerBones[2], -erot * NihilityDirector.TentacleMidSpreadMul);
+            rig.SetBoneLocalRotation(layerBones[3], erot * NihilityDirector.TentacleMidSpreadMul);
+            rig.SetBoneLocalRotation(layerBones[4], -erot);
+            rig.SetBoneLocalRotation(layerBones[5], erot);
+
+            bool ropeOn = ropeLerp > 0 && cell != null;
+            ropeSolver.Enabled = ropeOn;
+            rig.Ribbons[ropeRibbon].Visible = ropeOn;
+            if (ropeOn) {
+                ropeSolver.EndTarget = Vector2.Lerp(buttom, cell.Center, ropeLerp);
+            }
+            rig.Step();
+        }
+
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) {
-            if (spawnAnm > 0) {
+            if (spawnAnm > 0 || !BodyRigReady) {
                 return false;
             }
-            float rot = NPC.rotation + MathHelper.PiOver2;
-
-            Texture2D tex = NPC.getTexture();
-            if (InLaserPose) {
-                tex = bodyAltTex.Value;
-            }
-            Color color = Color.White;
-
-            //触须的张开量随速度渐进饱和
-            float erot = 0;
-            erot += (1f - (1f / (1f + NPC.velocity.Length()))) * 0.12f;
-
-            Texture2D l1 = backTex.Value;
-            Texture2D l2 = midTex.Value;
-            Texture2D l3 = frontTex.Value;
-
-            Main.EntitySpriteDraw(l1, buttom - Main.screenPosition, null, color, rot - erot, new Vector2(40, 46), NPC.scale, SpriteEffects.None);
-            Main.EntitySpriteDraw(l1, buttom - Main.screenPosition, null, color, rot + erot, new Vector2(0, 46), NPC.scale, SpriteEffects.FlipHorizontally);
-            Main.EntitySpriteDraw(l2, buttom - Main.screenPosition, null, color, rot - erot * 5, new Vector2(76, 34), NPC.scale, SpriteEffects.None);
-            Main.EntitySpriteDraw(l2, buttom - Main.screenPosition, null, color, rot + erot * 5, new Vector2(84 - 76, 46), NPC.scale, SpriteEffects.FlipHorizontally);
-
-            Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition, null, color, rot, tex.Size() / 2, NPC.scale, SpriteEffects.None);
-
-            Main.EntitySpriteDraw(l3, buttom - Main.screenPosition, null, color, rot - erot, new Vector2(50, 6), NPC.scale, SpriteEffects.None);
-            Main.EntitySpriteDraw(l3, buttom - Main.screenPosition, null, color, rot + erot, new Vector2(4, 6), NPC.scale, SpriteEffects.FlipHorizontally);
-
+            bool alt = InLaserPose;
+            rig.Pieces[bodyPiece].Visible = !alt;
+            rig.Pieces[bodyAltPiece].Visible = alt;
+            //只画件:绳的带状件由细胞的绘制路径经 drawRope 画出,保持迁移前的压盖层次
+            Rig2DDrawContext ctx = Rig2DDrawContext.World().Flat(Color.White);
+            Rig2DRenderer.Draw(spriteBatch, rig, in ctx);
             return false;
         }
 
         /// <summary>
         /// 本体与细胞之间的绳索。由 <see cref="ChaoticCell"/> 的绘制路径回调,
-        /// 两端读的都是未加平滑偏移的原始 <c>Center</c>(本体与细胞都已关掉 netOffset),不会出现根部跳动
+        /// 两端读的都是未加平滑偏移的原始 <c>Center</c>(本体与细胞都已关掉 netOffset),不会出现根部跳动。
+        /// 带状件会自己切一轮批次(Immediate → 回到 Deferred / AlphaBlend),调用方处在任意已 Begin 的批次内即可
         /// </summary>
         public void drawRope() {
-            if (rope == null || cell == null) {
+            if (!BodyRigReady || cell == null || ropeLerp <= 0) {
                 return;
             }
-            if (ropeLerp <= 0) {
-                return;
-            }
-            List<ColoredVertex> ve = new List<ColoredVertex>();
-            List<Vector2> points = rope.GetPoints();
-
-            points.Insert(0, buttom);
-            points.Add(cell.Center);
-            points.Add(cell.Center);
-            float lc = 1;
-            float jn = 0;
-
-            for (int i = 1; i < points.Count - 1; i++) {
-                jn += CEUtils.getDistance(points[i - 1], points[i]) / (float)28 * lc;
-
-                ve.Add(new ColoredVertex(points[i] - Main.screenPosition + (points[i] - points[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 7 * lc,
-                      new Vector3(jn, 1, 1),
-                      Color.White));
-                ve.Add(new ColoredVertex(points[i] - Main.screenPosition + (points[i] - points[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 7 * lc,
-                      new Vector3(jn, 0, 1),
-                      Color.White));
-            }
-
-            GraphicsDevice gd = Main.graphics.GraphicsDevice;
-            if (ve.Count >= 3) {
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-
-                gd.Textures[0] = nihRopeTex.Value;
-                gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-            }
+            Rig2DDrawContext ctx = Rig2DDrawContext.World().Flat(Color.White);
+            Rig2DRibbonRenderer.DrawIndices(Main.spriteBatch, rig, rig.Bones, in ctx, [ropeRibbon]);
         }
     }
 }

@@ -11,10 +11,10 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
 {
     //[StaticImmunity(typeof(CruiserHead))]
     /// <summary>
-    /// 体节。<b>锚定型部件</b>:位置由 <c>CEUtils.wormFollow</c> 每帧直写(下一帧位置不是
-    /// <c>position + velocity</c>,velocity 全程为 0),所以只清原版平滑、<b>不</b>进
+    /// 体节。<b>锚定型部件</b>:位置每帧从头部的 Rigs2D 链骨直读(<c>CruiserHead.TryGetChainBone</c>,
+    /// 下一帧位置不是 <c>position + velocity</c>,velocity 全程为 0),所以只清原版平滑、<b>不</b>进
     /// <c>CEBossNetMotion</c> 的预测纠偏器,也绝不调 <c>EndFrame</c>——预测器会和直写打架。
-    /// 它本身是自愈的:任何偏移下一帧就被重新钉回链上
+    /// 碰撞链与视觉链自此是同一条骨架;头部骨架还没建好的那几帧退回 <c>wormFollow</c> 硬跟随
     /// </summary>
     public class CruiserBody : ModNPC
     {
@@ -106,15 +106,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             }
             if (NPC.ai[1] < Main.maxNPCs) {
                 if (Main.npc[(int)NPC.ai[1]].active) {
-
-                    int spacing = CruiserDirector.ChainSpacing;
-                    NPC follow = Main.npc[(int)NPC.ai[1]];
-                    if (follow.active) {
-                        CEUtils.wormFollow(NPC.whoAmI, (int)NPC.ai[1], (int)(spacing * NPC.scale), false);
-                        if (NPC.ai[0] > CruiserDirector.SegmentTightFollowFrames) {
-                            CEUtils.wormFollow(NPC.whoAmI, (int)NPC.ai[1], (int)(spacing * NPC.scale), true, CruiserDirector.ChainRotateRate);
-                        }
-                    }
+                    PlaceOnChain();
                 }
                 else {
                     NPC.active = false;
@@ -124,6 +116,19 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             else {
                 NPC.active = false;
             }
+        }
+
+        /// <summary>
+        /// 落到头部链骨上:<c>ai[2]</c> 就是自己在链里的序号,骨骼 <c>Dir</c> 指向领队,与原 wormFollow 的 rotation 约定一致。
+        /// 头部骨架尚未建好(首帧)时退回硬跟随,保证不会有一帧悬在原地
+        /// </summary>
+        private void PlaceOnChain() {
+            if (Main.npc[(int)NPC.ai[3]].ModNPC is CruiserHead head && head.TryGetChainBone((int)NPC.ai[2], out Vector2 pos, out float dir)) {
+                NPC.Center = pos;
+                NPC.rotation = dir;
+                return;
+            }
+            CEUtils.wormFollow(NPC.whoAmI, (int)NPC.ai[1], (int)(CruiserDirector.ChainSpacing * NPC.scale), false);
         }
         public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers) {
             if (Main.npc[(int)NPC.ai[3]].ModNPC is CruiserHead ch) {

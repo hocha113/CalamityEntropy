@@ -50,9 +50,8 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.States
             if (ctx.Num1 > NihilityDirector.SpinDuration) {
                 next = EndAttack(ctx);
             }
-            //原代码在收招判定之后还额外推了两次绳索求解:自旋时绳子才跟得上,纯绘制
-            ctx.Owner.TickRope();
-            ctx.Owner.TickRope();
+            //原代码在收招判定之后还额外推了两次绳索求解让绳子跟上自旋;绳已迁到 Rigs2D 的 VerletStrand
+            //(15 次约束迭代、两端钉死),自旋期不再需要补推
             return next;
         }
     }

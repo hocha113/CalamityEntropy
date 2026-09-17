@@ -1,0 +1,41 @@
+{
+  "name": "ChaoticCell",
+  "snapDistance": 1200,
+  "vars": { "rootOut": 30 },
+
+  "bones": [
+    { "name": "body" },
+    { "repeat": 8, "var": "k", "start": 0,
+      "values": { "gap": [9.75, 11.75, 9.75, 11.75, 9.75, 11.75, 9.75, 11.75] },
+      "items": [
+        { "name": "tPivot{k}", "parent": "body", "rotationDeg": "{k*45}", "length": "{rootOut}" },
+        { "name": "tRoot{k}", "parent": "tPivot{k}", "atTip": true, "rotationDeg": 180 },
+        { "name": "t{k}_1", "parent": "tRoot{k}", "length": "{gap}" },
+        { "repeat": 10, "var": "i", "start": 2, "items": [
+          { "name": "t{k}_{i}", "parent": "t{k}_{i-1}", "atTip": true, "length": "{gap}" }
+        ] }
+      ] }
+  ],
+
+  "pieces": [
+    { "name": "body", "bone": "body", "texture": "Content/NPCs/NihilityTwin/ChaoticCell", "proximalNormalized": true, "proximal": [0.5, 0.5], "axis": 0, "layer": 10, "unlit": true }
+  ],
+
+  "ribbons": [
+    { "repeat": 8, "var": "k", "start": 0,
+      "values": { "tex": ["H2", "H1", "H2", "H1", "H2", "H1", "H2", "H1"] },
+      "items": [
+        { "name": "tent{k}", "bones": ["t{k}_1", { "repeat": 10, "var": "i", "start": 2, "items": ["t{k}_{i}"] }],
+          "texture": "Content/NPCs/NihilityTwin/{tex}", "width": 24, "uv": "stretch", "includeTip": false, "layer": 0, "unlit": true },
+        { "name": "glow{k}", "bones": ["t{k}_1", { "repeat": 10, "var": "i", "start": 2, "items": ["t{k}_{i}"] }],
+          "texture": "Content/NPCs/NihilityTwin/{tex}", "width": 24, "uv": "stretch", "includeTip": false, "layer": 0, "unlit": true, "additive": true, "visible": false }
+      ] }
+  ],
+
+  "solvers": [
+    { "repeat": 8, "var": "k", "start": 0, "items": [
+      { "name": "chain{k}", "type": "ChainFollow", "bones": ["t{k}_1", { "repeat": 10, "var": "i", "start": 2, "items": ["t{k}_{i}"] }],
+        "poseWeightBase": 0.4, "poseWeightCurl": 0, "curlGain": 0, "waveAmp": 0, "maxBend": 0.2, "turnRate": 1 }
+    ] }
+  ]
+}

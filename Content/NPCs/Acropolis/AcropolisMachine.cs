@@ -40,8 +40,9 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
     /// </para>
     /// <para>
     /// 联机:转移只在权威端(状态号 ai[3],形态 ai[2]);各端跑同一套运动数学;
-    /// 计时、朝向、朝向锁存、四条腿的落点与步数种子、两条手臂的两节朝向、全部倒计时随
-    /// <see cref="SendExtraAI"/> 过线。弹幕与骰点只在权威端,骰点结果必过线。
+    /// 计时、朝向、朝向锁存、全部倒计时随 <see cref="SendExtraAI"/> 过线。弹幕与骰点只在权威端,骰点结果必过线。
+    /// 四条腿与两条臂是 Rigs2D 骨架(AcropolisMachine.Rig.cs),纯本地量、不过线:输入只有已同步的本体位姿、速度、腾空标记、
+    /// 瞄准目标与物块,各端同算同解;着地腿数与枪口位置都从骨骼读。
     /// 数值在 <see cref="AcropolisDirector"/>,选招在 <see cref="AcropolisRotation"/>,绘制在 AcropolisMachine.Draw.cs
     /// </para>
     /// </summary>
@@ -54,12 +55,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         private readonly CEBossNetMotion netMotion = new();
         private Player targetPlayer;
 
-        /// <summary>四条腿。锚定型部件,不是 NPC</summary>
-        public List<AcropolisLeg> legs = null;
-        /// <summary>炮臂</summary>
-        public AcropolisHand cannon;
-        /// <summary>鱼叉臂</summary>
-        public AcropolisHand harpoon;
+        //四条腿与两条臂:Rigs2D 骨架实例、句柄与门面见 AcropolisMachine.Rig.cs(Cannon / HarpoonArm / LegOnTile / HarpoonPos)
         /// <summary>鱼叉实体索引,-1 表示还没生成</summary>
         public int _harpoon = -1;
 
@@ -209,21 +205,6 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             }
             stateMachine.SetInitialState(initial ?? new AcropolisWalkState());
         }
-
-        /// <summary>懒创建腿组与两条手臂。名字保留,原代码在 AI 与 ReceiveExtraAI 两处都调它</summary>
-        public void SegCheck() {
-            if (legs == null) {
-                legs = new List<AcropolisLeg>(AcropolisDirector.LegMounts.Length);
-                for (int i = 0; i < AcropolisDirector.LegMounts.Length; i++) {
-                    (float x, float y, float scale) = AcropolisDirector.LegMounts[i];
-                    legs.Add(new AcropolisLeg(NPC, new Vector2(x, y), scale, i));
-                }
-                cannon = new AcropolisHand(NPC, new Vector2(AcropolisDirector.CannonMountX, AcropolisDirector.CannonMountY),
-                    AcropolisDirector.CannonSeg1Length, MathHelper.PiOver2, MathHelper.PiOver2);
-                harpoon = new AcropolisHand(NPC, new Vector2(AcropolisDirector.HarpoonMountX, AcropolisDirector.HarpoonMountY),
-                    AcropolisDirector.HarpoonSeg1Length, MathHelper.PiOver2, MathHelper.PiOver2);
-            }
-        }
         #endregion
 
         #region 鱼叉实体
@@ -237,11 +218,6 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                 return hp != null && hp.ModNPC is Harpoon h && h.OnLauncher;
             }
         }
-
-        /// <summary>鱼叉在发射架上时的枪口位置。鱼叉实体与锁链绘制都读它</summary>
-        public Vector2 HarpoonPos => harpoon.seg1end
-            + harpoon.Seg2Rot.ToRotationVector2() * AcropolisDirector.HarpoonMuzzleReach * NPC.scale
-            + new Vector2(0, AcropolisDirector.HarpoonMuzzleSide * dir).RotatedBy(harpoon.Seg2Rot) * NPC.scale;
 
         private void EnsureHarpoonEntity() {
             if (_harpoon != -1 || VaultUtils.isClient) {
@@ -287,20 +263,18 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                 CEBossHost.AdoptTimingAtFrameStart(netMotion, stateMachine);
             }
 
-            //原 AI() 开头的固定顺序:腿组读的是上一帧的 Jumping 与速度,不能挪到状态机之后
             NPC.chaseable = NPC.boss;
             JumpCD--;
-            SegCheck();
-            cannon.Update();
-            harpoon.Update();
+            //骨架首帧惰性建好,鱼叉实体的停靠点要从它读
+            EnsureRig();
             EnsureHarpoonEntity();
-            UpdateLegs();
 
             if (NPC.life < 2) {
                 Defeated = true;
             }
             if (Defeated) {
                 RunDeathSequence();
+                UpdateRig();
                 if (client) {
                     netMotion.EndFrame(NPC);
                 }
@@ -339,6 +313,10 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             UpdateDummyFlag();
             ApplyRotation();
 
+            //骨架在位移与朝向都结算完之后落地;开火要读转过去之后的枪口,所以排在它后面
+            UpdateRig();
+            FireQueuedShots();
+
             if (client) {
                 netMotion.EndFrame(NPC);
             }
@@ -360,9 +338,10 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             Context.TargetDistance = targetPlayer == null ? 0f : CEUtils.getDistance(targetPlayer.Center, NPC.Center);
             Context.HarpoonOnLauncher = HarpoonOnLauncher;
 
+            //着地腿数读上一帧的步态解(骨架在 AI 末尾才 Step),与原代码「腿组在 AI 开头按上一帧数据更新」同一时序
             int onTile = 0;
-            for (int i = 0; i < legs.Count; i++) {
-                if (legs[i].OnTile) {
+            for (int i = 0; i < LegCount; i++) {
+                if (LegOnTile(i)) {
                     onTile++;
                 }
             }
@@ -401,23 +380,8 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         }
         #endregion
 
-        #region 背景行为:腿 / 炮口 / 鱼叉 / 走位 / 朝向 / 拽拉
-        private void UpdateLegs() {
-            for (int i = 0; i < legs.Count; i++) {
-                if (!legs[i].Update()) {
-                    continue;
-                }
-                //一条腿迈步就压住同侧其它腿,避免同侧一起抬脚
-                for (int j = 0; j < legs.Count; j++) {
-                    if (Math.Sign(legs[j].offset.X) == Math.Sign(legs[i].offset.X)
-                        && legs[j].NoMoveTime < AcropolisDirector.LegStepCooldown) {
-                        legs[j].NoMoveTime = AcropolisDirector.LegStepCooldown;
-                    }
-                }
-            }
-        }
-
-        /// <summary>原 <c>AttackPlayer</c> 里不属于任何一招的那些行为,顺序照搬</summary>
+        #region 背景行为:炮口 / 鱼叉 / 走位 / 朝向 / 拽拉
+        /// <summary>原 <c>AttackPlayer</c> 里不属于任何一招的那些行为,顺序照搬。臂的瞄点只做声明,骨架 Step 时落地</summary>
         private void SettleCombatFrame() {
             Player player = Context.Target;
             float enrange = Context.Enrange;
@@ -429,7 +393,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                     ? -(((d - AcropolisDirector.IdleAimDropDistance) * AcropolisDirector.IdleAimDropFactor)
                         * ((d - AcropolisDirector.IdleAimDropDistance) * AcropolisDirector.IdleAimDropFactor))
                     : 0f;
-                cannon.PointAPos(player.Center + new Vector2(0, AcropolisDirector.IdleAimRise) + new Vector2(0, drop));
+                Context.CannonAim = player.Center + new Vector2(0, AcropolisDirector.IdleAimRise) + new Vector2(0, drop);
             }
 
             //落地即清跳射计数
@@ -440,10 +404,10 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             //鱼叉臂:蓄力到 0.8 之前追瞄玩家,发射出去之后改为跟着鱼叉实体
             NPC harpoonEntity = HarpoonEntity;
             if (Context.HarpoonCharge <= AcropolisDirector.HarpoonAimChargeCap && Context.HarpoonOnLauncher) {
-                harpoon.PointAPos(player.Center);
+                harpoonAimTarget = player.Center;
             }
             else if (!Context.HarpoonOnLauncher && harpoonEntity != null) {
-                harpoon.PointAPos(harpoonEntity.Center);
+                harpoonAimTarget = harpoonEntity.Center;
             }
 
             ConsumeShotCue();
@@ -472,8 +436,8 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         /// 也只是少放一声,永远不会被跨过去而彻底静音。
         /// </para>
         /// <para>
-        /// 弹幕本身也在这里生成,不在骰点处:原代码的开火点位于常态瞄准<b>之后</b>,
-        /// 而常态瞄准在本函数上方刚刚落地,这样出膛方向才与原代码同帧
+        /// 弹幕不在这里立刻生成,而是排进本帧的开火队列,等骨架 Step 把炮口按常态瞄点转过去之后再出膛——
+        /// 与原代码「先 PointAPos 再从 TopPos 开火」同帧同序
         /// </para>
         /// </summary>
         private void ConsumeShotCue() {
@@ -481,13 +445,29 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                 return;
             }
             Context.LocalShotCue = Context.ShotCue;
-            if (!VaultUtils.isClient) {
-                Shoot<AcropolisTeslaBall>(cannon.TopPos,
-                    cannon.Seg2Rot.ToRotationVector2().RotatedByRandom(AcropolisDirector.SingleShotSpread) * AcropolisDirector.SingleShotSpeed,
-                    1f, 0f, NPC.whoAmI);
+            Context.QueueCannonShot(AcropolisDirector.SingleShotSpread, AcropolisDirector.SingleShotSpeed, 0f, AcropolisDirector.SingleShotRecoil);
+        }
+
+        /// <summary>
+        /// 结算本帧排队的炮击(单发 / 炮击 / 跳射都走这里):骨架已经 Step,枪口与枪管朝向是本帧转过去之后的值。
+        /// 弹幕只在权威端生成(散布的随机数也只在那里摇);后坐与音效各端都补,开火帧由已过线的节拍量决定,所以各端同帧
+        /// </summary>
+        private void FireQueuedShots() {
+            List<AcropolisCannonShot> shots = Context.PendingShots;
+            if (shots.Count == 0) {
+                return;
             }
-            cannon.Seg1RotV = AcropolisDirector.SingleShotRecoil * dir;
-            CEUtils.PlaySound("ofshoot", 1, cannon.TopPos);
+            Vector2 muzzle = Cannon.Muzzle;
+            float barrel = Cannon.BarrelDir;
+            for (int i = 0; i < shots.Count; i++) {
+                AcropolisCannonShot shot = shots[i];
+                if (!VaultUtils.isClient) {
+                    Shoot<AcropolisTeslaBall>(muzzle, barrel.ToRotationVector2().RotatedByRandom(shot.Spread) * shot.Speed, 1f, shot.Ai0, NPC.whoAmI);
+                }
+                Cannon.Kick(shot.Recoil * dir);
+                CEUtils.PlaySound("ofshoot", 1, muzzle);
+            }
+            shots.Clear();
         }
 
         /// <summary>鱼叉装填与发射。与任何招式并行,原代码就是这样</summary>
@@ -515,8 +495,8 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             //发射是确定性的(蓄力与冷却都过线),各端同帧执行;权威端再补一个决策点同步
             hp.Back = AcropolisDirector.HarpoonBackFrames;
             hp.OnLauncher = false;
-            harpoonEntity.velocity = harpoon.Seg2Rot.ToRotationVector2() * AcropolisDirector.HarpoonLaunchSpeed * NPC.scale;
-            harpoon.Seg1RotV = AcropolisDirector.HarpoonRecoil * dir;
+            harpoonEntity.velocity = HarpoonArm.BarrelDir.ToRotationVector2() * AcropolisDirector.HarpoonLaunchSpeed * NPC.scale;
+            HarpoonArm.Kick(AcropolisDirector.HarpoonRecoil * dir);
             CEUtils.PlaySound("chainsawHit", 1, NPC.Center);
             if (!VaultUtils.isClient) {
                 NPC.netUpdate = true;
@@ -573,12 +553,15 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                 else {
                     bool f = true;
                     bool f2 = false;
-                    for (int i = 0; i < legs.Count; i++) {
-                        AcropolisLeg l = legs[i];
-                        if (l.OnTile && l.StandPoint.Y > NPC.Center.Y + AcropolisDirector.LegLowThreshold * NPC.scale) {
+                    for (int i = 0; i < LegCount; i++) {
+                        if (!LegOnTile(i)) {
+                            continue;
+                        }
+                        float footY = LegFoot(i).Y;
+                        if (footY > NPC.Center.Y + AcropolisDirector.LegLowThreshold * NPC.scale) {
                             f = false;
                         }
-                        if (l.OnTile && l.StandPoint.Y > NPC.Center.Y + AcropolisDirector.LegVeryLowThreshold * NPC.scale) {
+                        if (footY > NPC.Center.Y + AcropolisDirector.LegVeryLowThreshold * NPC.scale) {
                             f2 = true;
                         }
                     }
@@ -701,18 +684,18 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             int lc = 0;
             int rc = 0;
             int ontile = 0;
-            for (int i = 0; i < legs.Count; i++) {
-                AcropolisLeg leg = legs[i];
-                if (!leg.OnTile) {
+            for (int i = 0; i < LegCount; i++) {
+                if (!LegOnTile(i)) {
                     continue;
                 }
                 ontile++;
-                if (leg.offset.X < 0) {
-                    lr += leg.StandPoint;
+                Vector2 foot = LegFoot(i);
+                if (LegSide(i) < 0) {
+                    lr += foot;
                     lc++;
                 }
-                if (leg.offset.X > 0) {
-                    rr += leg.StandPoint;
+                else {
+                    rr += foot;
                     rc++;
                 }
             }
@@ -868,13 +851,12 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
 
         #region 同步
         /// <summary>
-        /// 定长块,顺序固定在这一处。先计时,再持久累加量(朝向、朝向锁存、腿的落点与步数种子、
-        /// 手臂两节朝向),再状态标量,最后部件索引。
+        /// 定长块,顺序固定在这一处。先计时,再持久累加量(朝向、朝向锁存),再状态标量,最后部件索引。
+        /// 腿与臂已迁入 Rigs2D 骨架,不再过线(各端从已同步输入本地重建)。
         /// 字节数是编译期常量:不许加运行时条件决定写不写某个字段
         /// </summary>
         public override void SendExtraAI(BinaryWriter writer) {
             EnsureContext();
-            SegCheck();
 
             int stateId = (int)NPC.ai[3];
             int timer = 0;
@@ -889,12 +871,6 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             //持久累加量:原版 SyncNPC case 23 不带 rotation,原 ExtraAI 也漏了它与 dir
             writer.Write(NPC.rotation);
             writer.Write((sbyte)dir);
-
-            cannon.NetSend(writer);
-            harpoon.NetSend(writer);
-            for (int i = 0; i < AcropolisDirector.LegMounts.Length; i++) {
-                legs[i].NetSend(writer);
-            }
 
             writer.Write(Context.TeslaCD);
             writer.Write(Context.TeslaUpCD);
@@ -918,7 +894,6 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
 
         public override void ReceiveExtraAI(BinaryReader reader) {
             EnsureContext();
-            SegCheck();
 
             int localStateId = -1;
             int localTimer = 0;
@@ -930,12 +905,6 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
 
             NPC.rotation = reader.ReadSingle();
             dir = reader.ReadSByte();
-
-            cannon.NetReceive(reader);
-            harpoon.NetReceive(reader);
-            for (int i = 0; i < AcropolisDirector.LegMounts.Length; i++) {
-                legs[i].NetReceive(reader);
-            }
 
             Context.TeslaCD = reader.ReadSingle();
             Context.TeslaUpCD = reader.ReadSingle();

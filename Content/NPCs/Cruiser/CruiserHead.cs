@@ -88,10 +88,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         #endregion
 
         #region 链条与表现字段
-        /// <summary>虚拟骨节坐标。由已过线的本体坐标与朝向确定性重算(一阶滤波,自收敛),不过线</summary>
-        public List<Vector2> bodies = new List<Vector2>();
-        /// <summary>本帧绘制用的头部坐标。netOffset 已被清零,所以它与 <c>NPC.Center</c> 同一平滑层级</summary>
-        public Vector2 vtodraw = new Vector2();
+        //整链骨架(Rigs2D 实例、链骨句柄、绘制)在 CruiserChainRig.cs:由已过线的本体坐标与朝向确定性重算,不过线
 
         /// <summary>鞭毛张角(原 <c>da</c>)。它同时是尾部新星的触发判据,所以要过线</summary>
         public float flagellumAngle = 50;
@@ -255,8 +252,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                 if (!client) {
                     CEBossHost.Heartbeat(NPC);
                 }
-                vtodraw = NPC.Center;
-                UpdateChain();
+                UpdateChainRig();
                 if (client) {
                     netMotion.EndFrame(NPC);
                 }
@@ -272,9 +268,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
 
             if (noaitime > 0) {
                 NPC.dontTakeDamage = true;
-                for (int i = 0; i < bodies.Count; i++) {
-                    bodies[i] = NPC.Center;
-                }
+                //骑瓶期链骨全部钉在头部,由 UpdateChainRig 处理
                 foreach (Projectile pj in Main.ActiveProjectiles) {
                     if (pj.ModProjectile is VoidBottleThrow) {
                         //骑瓶期是位置直写,不是速度积分,预测器会跟它打架,丢掉预测
@@ -359,8 +353,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             if (!client) {
                 CEBossHost.Heartbeat(NPC);
             }
-            vtodraw = NPC.Center;
-            UpdateChain();
+            UpdateChainRig();
             if (client) {
                 netMotion.EndFrame(NPC);
             }
@@ -407,15 +400,12 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             }
         }
 
-        /// <summary>生成整条链。骨节坐标各端都建(节数由已同步的世界难度决定),实体只在权威端生成</summary>
+        /// <summary>生成整条链的实体。骨架各端都建(节数由已同步的世界难度决定,见 EnsureRig),实体只在权威端生成</summary>
         private void EnsureChainParts() {
             if (b_added) {
                 return;
             }
             b_added = true;
-            for (int i = 0; i < length + 1; i++) {
-                bodies.Add(NPC.Center - new Vector2(0, 0));
-            }
             if (VaultUtils.isClient) {
                 return;
             }
@@ -580,8 +570,8 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
 
         private void SettleArena() {
             maxDistanceTarget = CruiserDirector.ArenaRadiusEngaged;
-            if (bodies.Count > 0) {
-                SpaceCenter = (NPC.Center + bodies[bodies.Count - 1]) / 2f;
+            if (ChainPointCount > 0) {
+                SpaceCenter = (NPC.Center + ChainPoint(ChainPointCount - 1)) / 2f;
             }
             if (CurrentState == CruiserStateIndex.PhaseTransing) {
                 SpaceCenter = Context.Target.Center;

@@ -109,24 +109,36 @@ namespace CalamityEntropy.Content.NPCs.Prophet.Core
         public static float DamageReductionFor(ProphetStateIndex state, float drRamp)
             => (state == ProphetStateIndex.GrandLaser ? DamageReductionLaser : DamageReductionNormal) + drRamp;
 
-        //==================== 表现:鳍与尾迹 ====================
+        //==================== 表现:鳍与骨架 ====================
 
-        /// <summary>绘制朝向 <c>rl</c> 向真实朝向收敛的速率</summary>
+        /// <summary>绘制朝向 <c>rl</c> 向真实朝向收敛的速率;骨架根的朝向就是它</summary>
         public const float DrawRotateRate = 0.1f;
 
         /// <summary>鳍摆动相位:每帧加 <c>速度长度 × 0.001 + 0.008</c>,超过 1 就减 1 回绕</summary>
         public const float FinPhaseSpeedFactor = 0.001f;
         public const float FinPhaseBase = 0.008f;
 
-        /// <summary>尾迹质点:存活帧数、每帧阻尼</summary>
-        public const int TailPointLife = 20;
-        public const float TailPointDrag = 0.96f;
+        /// <summary>鳍摆角 <c>rotj</c> 的相位分界:前 40% 余弦缓动 0 → 1,后 60% 落回 0(原 DrawFins 里的 0.4 / 0.6)</summary>
+        public const float FinSwingRise = 0.4f;
 
-        /// <summary>尾迹新点:挂在本体后方 26,初速沿后方 16,再叠一个 <c>sin</c> 侧摆(频率 0.1,幅度 6)</summary>
-        public const float TailSpawnBack = 26f;
-        public const float TailSpawnSpeed = -16f;
-        public const float TailSwayFreq = 0.1f;
-        public const float TailSwayAmp = 6f;
+        /// <summary>
+        /// 外翅 Wing1 的静息张角 1 rad(原 DrawFins 里的 <c>rl ∓ 1</c>),内翅 Wing2 静息贴合本体轴向;
+        /// 每帧实际写进翅骨的是 <c>∓rotj</c>(内翅)与 <c>∓Wing1RestAngle ± rotj</c>(外翅)。
+        /// 翅骨偏移(内翅 (−20, ∓20)、外翅 (0, ∓20))以 Assets/Rigs/Prophet.rig.json 为准
+        /// </summary>
+        public const float Wing1RestAngle = 1f;
+
+        //==================== 尾巴(Rigs2D VerletStrand,数值以 Assets/Rigs/Prophet.rig.json 为准) ====================
+        //原 TailPoint 发射器拖尾:每帧在本体后方 26 处放一个质点,初速沿后方 16、每帧 ×0.96 衰减、存活 20 帧,
+        //再叠一个 sin(Main.GameUpdateCount × 0.1) × 6 的侧向初速;静止时质点跑出约 223 px,拖尾总长约 250 px,
+        //本体移动时质点留在原地,拖尾会被拉长成运动轨迹。
+        //对应骨架里 tailAnchor 骨偏移 (−26, 0) + 一条 10 节 × 24 的 VerletStrand(定长 240,不再随速度拉长):
+        //damping 0.9(VerletStrand 的 damping 是速度保留率,与原 0.96 同一语义;但 0.96 用在有距离约束的链上,
+        //每次硬刹都会让尾巴借惯性甩到本体前方、侧摆也被放大约 25 倍,离线复算后压到 0.9 才能在急停后仍留在本体后方)、
+        //gravity 0、restForce 4(沿 −骨轴向后撑直,转向后约 40 帧尾尖回到新朝向 10° 内)、
+        //sway 0.12 双频(主频 6 rad/s = 原 0.1 rad/帧 × 60,次频 2.2;swayStep 取负让波沿尾向尖端传播,同原拖尾;
+        //相位取 rig.Time / rig.Seed,不再读未同步的 GameUpdateCount)、substeps 4(锚点插值,重击冲刺 90 px/帧也不抽长)。
+        //ring 件居中钉在 tail8 骨近端(本体后约 194 px;原来画在第 9 个尾迹点、朝向取第 9 → 10 点连线)
 
         /// <summary>冲刺尾焰取点:本体前方 <c>速度长度 + 60</c></summary>
         public const float TrailPointForward = 60f;

@@ -15,8 +15,6 @@ using CalamityEntropy.Core.CalamityRef;
 using InnoVault;
 using InnoVault.PRT;
 using InnoVault.StateMachines;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using Terraria;
 using Terraria.GameContent.Bestiary;
@@ -30,7 +28,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
     /// 先知:地牢 Boss,InnoVault 状态机宿主。
     /// <para>
     /// 招式一文件一个放在 States/,数值全在 <see cref="ProphetDirector"/>,选招在 <see cref="ProphetRotation"/>,
-    /// 绘制在 TheProphet.Draw.cs。原代码的十二个 <c>AIStyle</c> 与状态号逐个对齐,
+    /// 绘制在 TheProphet.Draw.cs,本体 / 翅 / 尾的 Rigs2D 骨架在 TheProphet.Rig.cs。原代码的十二个 <c>AIStyle</c> 与状态号逐个对齐,
     /// 倒计时 <c>AIChangeDelay</c> 原样保留成 <see cref="ProphetStateContext.Countdown"/>,节拍照原样对它判定。
     /// </para>
     /// <para>
@@ -56,9 +54,9 @@ namespace CalamityEntropy.Content.NPCs.Prophet
         /// <summary>本端上一帧显示的位置。收到瞬移流水号推进时拿它当「出发点」补放火花</summary>
         private Vector2 lastSeenCenter;
 
-        /// <summary>绘制朝向:向真实朝向平滑收敛。纯表现,由已过线的 <c>NPC.rotation</c> 推导</summary>
+        /// <summary>绘制朝向:向真实朝向平滑收敛。纯表现,由已过线的 <c>NPC.rotation</c> 推导;骨架根的朝向就取它</summary>
         public float rl = 0;
-        /// <summary>鳍摆动相位。纯表现</summary>
+        /// <summary>鳍摆动相位。纯表现,骨架每帧据它算翅骨张角</summary>
         public float finRotCounter = 0;
         /// <summary>二阶段换曲的单发闸(仅本端)</summary>
         public bool music2 = false;
@@ -72,24 +70,6 @@ namespace CalamityEntropy.Content.NPCs.Prophet
 
         /// <summary>天顶世界的第二套 AI(旧巡洋舰彩蛋)。属于并行任务,只调用不改动</summary>
         public OlderCruiserAIGNPC zenithAI = new OlderCruiserAIGNPC();
-
-        /// <summary>尾迹质点</summary>
-        public class TailPoint
-        {
-            public int timeLeft = ProphetDirector.TailPointLife;
-            public Vector2 position;
-            public Vector2 velocity;
-            public TailPoint(Vector2 pos, Vector2 vel) {
-                position = pos;
-                velocity = vel;
-            }
-            public void update() {
-                position += velocity;
-                velocity *= ProphetDirector.TailPointDrag;
-                timeLeft--;
-            }
-        }
-        public List<TailPoint> tail = new();
 
         /// <summary>当前招式。原 <c>AIStyle</c> 字段的等价读法,序号一一对应</summary>
         public ProphetStateIndex CurrentStateIndex => (ProphetStateIndex)(int)NPC.ai[3];
@@ -230,10 +210,10 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                 }
             }
 
-            //天顶世界:整条 AI 交给旧巡洋舰彩蛋,状态机不启动也不推进(与原代码逐字一致)
+            //天顶世界:整条 AI 交给旧巡洋舰彩蛋,状态机不启动也不推进(与原代码逐字一致);骨架照常落地,只是本体件不画
             if (Main.zenithWorld) {
                 zenithAI.PreAI(NPC);
-                UpdateTails();
+                UpdateRig();
                 return;
             }
 
@@ -289,9 +269,10 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                     targetPlayer = NPC.target.ToPlayer();
                     RunAttackFrame(targetPlayer);
                 }
-                UpdateTails();
             }
 
+            //位移与朝向都已定,骨架落地。出生演出期间也跑:原尾迹那时不更新,但本体件从 spawnAnm < 60 起就要画
+            UpdateRig();
             lastSeenCenter = NPC.Center;
             if (client) {
                 netMotion.EndFrame(NPC);
@@ -344,7 +325,8 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             }
         }
 
-        #region 表现:鳍与尾迹
+        #region 表现:鳍相位
+        /// <summary>鳍摆动相位推进;张角本身在骨架落地时算(TheProphet.Rig.cs)。尾巴不再有逐帧质点,由骨架的 VerletStrand 接管</summary>
         public void UpdateFins() {
             finRotCounter += NPC.velocity.Length() * ProphetDirector.FinPhaseSpeedFactor + ProphetDirector.FinPhaseBase;
             if (finRotCounter > 1) {
@@ -353,27 +335,11 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             //原代码自增但全仓库无人读,残留量,照搬
             NPC.localAI[1]++;
         }
-
-        public void UpdateTails() {
-            foreach (TailPoint p in tail) {
-                p.update();
-            }
-            if (tail.Count > 0) {
-                if (tail[0].timeLeft <= 0) {
-                    tail.RemoveAt(0);
-                }
-            }
-            //侧摆相位吃 Main.GameUpdateCount,两端不同步。这条尾迹只进绘制,不参与任何判定
-            tail.Add(new TailPoint(NPC.Center - rl.ToRotationVector2() * ProphetDirector.TailSpawnBack,
-                (rl.ToRotationVector2() * ProphetDirector.TailSpawnSpeed)
-                + rl.ToRotationVector2().RotatedBy(MathHelper.PiOver2)
-                * (float)(Math.Sin(Main.GameUpdateCount * ProphetDirector.TailSwayFreq) * ProphetDirector.TailSwayAmp)));
-        }
         #endregion
 
         #region 瞬移
         /// <summary>
-        /// 原 <c>TeleportTo</c>:清速度、进出各两枚火花、落位、清尾迹。
+        /// 原 <c>TeleportTo</c>:清速度、进出各两枚火花、落位、尾巴重建(原来是清空尾迹质点,现在是骨架硬重建)。
         /// <b>只由权威端调用</b>(入口在 <c>ProphetStateBase.Teleport</c>),落点随包过线
         /// </summary>
         public void TeleportTo(Vector2 pos) {
@@ -384,23 +350,23 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             NPC.Center = pos;
             TeleportSparkles(NPC.Center, impactColor);
 
-            tail.Clear();
+            SnapRig();
             //位置被直接改写,丢掉旧预测,免得下一包被纠偏器当成失步
             netMotion.ForgetPrediction();
             lastSeenCenter = NPC.Center;
         }
 
-        /// <summary>客户端补演:包里的位置已经是落点,这里只补两端火花、清尾迹、复位预测</summary>
+        /// <summary>客户端补演:包里的位置已经是落点,这里只补两端火花、重建尾巴、复位预测</summary>
         private void ReplayTeleport(Vector2 pos) {
             Color impactColor = Main.rand.NextBool(3) ? Color.SkyBlue : Color.White;
             TeleportSparkles(lastSeenCenter, impactColor);
             TeleportSparkles(pos, impactColor);
-            tail.Clear();
+            SnapRig();
             netMotion.ForgetPrediction();
             lastSeenCenter = pos;
         }
 
-        //TeleportTo 进出各 2 枚 SparkleCal,落点清空 tail 的 GP 点
+        //TeleportTo 进出各 2 枚 SparkleCal
         private static void TeleportSparkles(Vector2 at, Color impactColor) {
             float impactParticleScale = ProphetDirector.TeleportSparkleScale;
             PRTLoader.NewParticle<PRT_SparkleCal>(at, Vector2.Zero, Color.White, impactParticleScale * 1.2f)

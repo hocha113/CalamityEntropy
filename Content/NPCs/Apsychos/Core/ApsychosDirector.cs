@@ -103,22 +103,16 @@ namespace CalamityEntropy.Content.NPCs.Apsychos.Core
         /// <summary>弹幕击退</summary>
         public const float ProjKnockback = 4f;
 
-        //==================== 尾巴骨架 ====================
+        //==================== 尾巴骨架(Rigs2D,数值以 Assets/Rigs/Apsychos.rig.json 为准) ====================
 
-        /// <summary>虚拟骨节数</summary>
+        /// <summary>尾骨节数(不含尾尖)。骨架定义里的 seg0..seg11 与代码里的句柄数组按它对齐,改一处要改两处</summary>
         public const int TailSegCount = 12;
-        /// <summary>Follow 档:骨节间距、尾尖间距、转向速率</summary>
-        public const float SegSpacing = 46f;
-        public const float TailSpacing = 36f;
-        public const float SegRotateRate = 0.12f;
-        /// <summary>骨链起点相对本体的后方偏移</summary>
-        public const float NeckOffset = 70f;
-        /// <summary>贝塞尔档:第一控制点的后方偏移、骨节朝向参考点的前方偏移、位置跟随率</summary>
-        public const float BezierCtrl1Offset = 300f;
-        public const float SegFacingOffset = 16f;
-        public const float BezierFollowLerp = 0.6f;
-        /// <summary>TwoPoint 档:第二控制点相对尾尖的后方偏移</summary>
-        public const float BezierCtrl2Offset = 160f;
+        //以下四组数只作对照,真正生效的是 rig.json 里的同名参数:
+        //Follow 档:骨节间距 46(gaps)、尾尖间距 36、转向速率 0.12(ChainFollow poseWeightBase);
+        //骨链起点相对本体后退 70(neck 骨偏移);
+        //贝塞尔档:第一控制点在本体后方 300 = 颈长 70 + handleA 230,位置跟随率 0.6(followRate,锚点系);
+        //TwoPoint 档:第二控制点相对尾尖后退 160(handleB)。
+        //原「骨节朝向参考点前移 16」(SegFacingOffset)只影响第一节的朝向算法,迁移后由骨轴方向取代,不再需要
 
         //==================== MoveToTarget:接近 ====================
 

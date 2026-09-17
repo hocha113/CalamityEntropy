@@ -90,14 +90,17 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.Core
         public const int ChainSegmentsRevengeBonus = 3;
         public const int ChainSegmentsZenith = 10;
 
-        /// <summary>骨节间距(乘 NPC.scale)。头部集中绘制与体节实体的 wormFollow 共用这个数</summary>
+        /// <summary>骨节间距(乘 NPC.scale)。Rigs2D 链骨的静息骨长,体节实体每帧从同一条链读位置</summary>
         public const int ChainSpacing = 80;
-        /// <summary>骨节朝向向前一节收敛的速率(比例式,非固定角速度)</summary>
+        /// <summary>骨节朝向向前一节收敛的速率(比例式,非固定角速度)。即 ChainFollow 的 <c>poseWeightBase</c></summary>
         public const float ChainRotateRate = 0.12f;
         /// <summary>体节实体的暖机帧数:自身年龄不到这个数就整帧不动(等头部把链条铺开)</summary>
         public const int SegmentWarmupFrames = 5;
-        /// <summary>体节实体的年龄超过这个数之后,除了硬跟随还额外叠一次带转向收敛的跟随</summary>
-        public const int SegmentTightFollowFrames = 120;
+        /// <summary>
+        /// 骨架根位姿单帧位移超过此值(乘 scale)即整链硬重建成直线。
+        /// 巡游者的冲刺不过几十像素一帧,只有真正的瞬移才会触发;默认 340 太小,快冲会把链拉直
+        /// </summary>
+        public const float RigSnapDistance = 1200f;
 
         //==================== 战场半径(越界上虚空侵蚀) ====================
 
@@ -499,9 +502,14 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.Core
         /// <summary>一阶段上下颚的锚点偏移与原点宽度(原点是 <c>new Vector2(58, 贴图高) / 2</c>)</summary>
         public const float P1JawOffset = 42f;
         public const float P1JawOriginX = 58f;
+        /// <summary>颌骨贴图高度:一阶段两张都是 86×74,二阶段两张都是 114×66。骨架件的像素锚点用它换算,改贴图尺寸要同步</summary>
+        public const float P1JawTexHeight = 74f;
+        public const float P2JawTexHeight = 66f;
         /// <summary>鞭毛贴图相对骨节的前移与左右两片的基准角(180 ± da)</summary>
         public const float FlagellumDrawOffset = 36f;
         public const float FlagellumBaseAngle = 180f;
+        /// <summary>鞭毛贴图 180×12:A 片以底边左端为锚</summary>
+        public const float FlagellumTexHeight = 12f;
         /// <summary>预警光束:一阶段/二阶段的插值速率,可见阈值,以及触发距离</summary>
         public const float WarningLerpPhase1 = 0.064f;
         public const float WarningLerpPhase2 = 0.2f;

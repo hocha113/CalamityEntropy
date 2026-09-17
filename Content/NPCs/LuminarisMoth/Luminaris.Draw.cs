@@ -1,6 +1,6 @@
 ﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Core.Graphics;
-using InnoVault;
+using InnoVault.Rigs2D.Runtime;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
@@ -13,26 +13,17 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
     /// 月华之蛾的绘制层。全部是本地推导:
     /// 残影窗口、尾迹采样、大尾迹强度都由上下文提供,而它们只由已过线的状态号与出招倒计时决定。
     /// <para>
-    /// 本体与尾巴读的是<b>同一层</b>位置:AI 开头 <c>CEBossNetMotion.BeginFrame</c> 已把
-    /// <c>netOffset</c> 清零,绳根又是在 AI 里按 <c>NPC.Center</c> 推进的,所以两者都画在裸中心上,不会出现接缝
+    /// 本体与尾巴是同一副 Rigs2D 骨架(Luminaris.Rig.cs),读的是<b>同一层</b>位置:AI 开头 <c>CEBossNetMotion.BeginFrame</c> 已把
+    /// <c>netOffset</c> 清零,骨架根又是在 AI 里按 <c>NPC.Center</c> 推进的,所以两者都画在裸中心上,不会出现接缝
     /// </para>
     /// </summary>
     public partial class Luminaris
     {
-        //尾巴与星光贴图改由 VaultLoaden 在加载期赋值,卸载自动置空;texture 是 NPC 本体贴图(tML 自管),保留原懒取
-        public static Texture2D texture = null;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/LuminarisMoth/t1")]
-        public static Texture2D texTail1;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/LuminarisMoth/t2")]
-        public static Texture2D texTail2;
-
-        public override void Unload() {
-            texture = null;
-        }
+        //本体图集与两条尾带的贴图都由 Rigs2D 骨架件持有(Assets/Rigs/Luminaris.rig.json),这里不再声明贴图字段
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) {
-            if (texture == null) {
-                texture = NPC.getTexture();
+            if (!BodyRigReady) {
+                return false;
             }
 
             List<Vector2> trail = Context?.Trail;
@@ -55,8 +46,16 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
             return false;
         }
 
+        /// <summary>
+        /// 整副骨架画一遍:先两条尾带(带状件自己切一轮批次),再本体件;非残影时本体套 EnchantedPass。
+        /// <paramref name="pos"/> 与本体中心的差值作为整副骨架的平移(残影沿尾迹回放),颜色乘 <c>NPC.Opacity</c>
+        /// </summary>
         public void DrawMyself(Vector2 pos, Color color, bool afterImage = false) {
-            DrawTails(pos - NPC.Center, color);
+            Rig2DDrawContext ctx = Rig2DDrawContext.World().Flat(color, NPC.Opacity);
+            ctx.ViewOffset = Main.screenPosition - (pos - NPC.Center);
+            //尾带层带(0~1):带状件重开批次后回到 Deferred / AlphaBlend
+            Rig2DRibbonRenderer.Draw(Main.spriteBatch, rig, in ctx);
+
             int phase = Context?.Phase ?? 1;
             if (!afterImage) {
                 Asset<Texture2D> textured = CEExtraAssets.EnchantedAsset;
@@ -70,8 +69,9 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(0, Main.spriteBatch.GraphicsDevice.BlendState, Main.spriteBatch.GraphicsDevice.SamplerStates[0], Main.spriteBatch.GraphicsDevice.DepthStencilState, Main.spriteBatch.GraphicsDevice.RasterizerState, shader, Main.Transform);
             }
-            Rectangle frame = new Rectangle(0, (texture.Height / Main.npcFrameCount[Type]) * ((frameCounter / 4) % Main.npcFrameCount[Type]), texture.Width, (texture.Height / Main.npcFrameCount[Type]) - 2);
-            Main.EntitySpriteDraw(texture, pos - Main.screenPosition, frame, color * NPC.Opacity, NPC.rotation, new Vector2(texture.Width / 2, 104), NPC.scale, SpriteEffects.None);
+            //本体件层带(10):8 帧图集的当前帧在 AI 里写进 Piece2DState.Frame
+            Rig2DDrawContext bodyCtx = ctx.Layers(10, 10);
+            Rig2DRenderer.Draw(Main.spriteBatch, rig, in bodyCtx);
 
             if (!afterImage) {
                 Main.spriteBatch.UseBlendState(BlendState.Additive);
@@ -199,51 +199,5 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
         }
 
-        #region drawTail
-        public void DrawTails(Vector2 pos, Color color) {
-            GraphicsDevice gd = Main.spriteBatch.GraphicsDevice;
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-
-            if (tail1 != null) {
-                List<ColoredVertex> ve = new List<ColoredVertex>();
-                Color b = color * NPC.Opacity;
-                List<Vector2> tailPoints = tail1.GetPoints();
-                for (int i = 1; i < tailPoints.Count; i++) {
-                    ve.Add(new ColoredVertex(tailPoints[i] + pos - Main.screenPosition + (tailPoints[i] - tailPoints[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 18,
-                          new Vector3((float)(i + 1) / tailPoints.Count, 1, 1),
-                          b));
-                    ve.Add(new ColoredVertex(tailPoints[i] + pos - Main.screenPosition + (tailPoints[i] - tailPoints[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 18,
-                          new Vector3((float)(i + 1) / tailPoints.Count, 0, 1),
-                          b));
-                }
-                if (ve.Count >= 3) {
-                    Texture2D tx = texTail1;
-                    gd.Textures[0] = tx;
-                    gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                }
-            }
-            if (tail2 != null) {
-                List<ColoredVertex> ve = new List<ColoredVertex>();
-                Color b = color * NPC.Opacity;
-                List<Vector2> tailPoints = tail2.GetPoints();
-                for (int i = 1; i < tailPoints.Count; i++) {
-                    ve.Add(new ColoredVertex(tailPoints[i] + pos - Main.screenPosition + (tailPoints[i] - tailPoints[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 18,
-                          new Vector3((float)(i + 1) / tailPoints.Count, 1, 1),
-                          b));
-                    ve.Add(new ColoredVertex(tailPoints[i] + pos - Main.screenPosition + (tailPoints[i] - tailPoints[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 18,
-                          new Vector3((float)(i + 1) / tailPoints.Count, 0, 1),
-                          b));
-                }
-                if (ve.Count >= 3) {
-                    Texture2D tx = texTail2;
-                    gd.Textures[0] = tx;
-                    gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                }
-            }
-            Main.spriteBatch.ExitShaderRegion();
-        }
-        #endregion
     }
 }

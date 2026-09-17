@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.NPCs.Acropolis.Core;
-using CalamityEntropy.Content.Projectiles;
 using InnoVault.StateMachines;
 using Terraria;
 
@@ -11,7 +10,8 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.States
     /// 散布 ±0.6 弧度、初速 5、弹幕 ai0 = -1(高抛弹标记)。每发都给炮臂一点反冲。
     /// <para>
     /// 公平阀:抬炮的 60 帧就是全部预告;本体的走位不停,所以玩家可以边躲边拉扯。
-    /// 炮口节拍 <c>TeslaUpCD</c> 各端都跑,弹幕只在权威端生成,散布的随机数也只在权威端摇
+    /// 炮口节拍 <c>TeslaUpCD</c> 各端都跑;瞄点与开火都是<b>声明</b>,宿主在骨架 Step 之后从转过去的枪口出膛,
+    /// 弹幕只在权威端生成,散布的随机数也只在权威端摇
     /// </para>
     /// </summary>
     [VaultState((int)AcropolisStateIndex.CannonBarrage, typeof(AcropolisStateContext))]
@@ -31,23 +31,16 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.States
                 return BackToWalk(ctx);
             }
 
-            NPC npc = ctx.Npc;
-            AcropolisHand cannon = ctx.Cannon;
-            //瞄准立刻落地,下面才能从转过去的枪口开火(原代码同一帧内先转后打)
+            //瞄点声明,宿主 Step 时落地;开火排队,Step 之后从转过去的枪口出膛(原代码同一帧内先转后打)
             ctx.AimCannon(ctx.Player.Center + new Vector2(0f, AcropolisDirector.BarrageAimRise));
 
             if (Timer >= AcropolisDirector.BarrageFireStartFrame) {
                 ctx.TeslaUpCD -= ctx.Enrange;
                 if (ctx.TeslaUpCD <= 0f) {
                     ctx.TeslaUpCD = AcropolisDirector.BarrageInterval;
-                    //反冲与音效各端都跑:节拍量已过线,所以各端的开火帧一致
-                    cannon.Seg1RotV = AcropolisDirector.BarrageRecoil * ctx.Dir;
-                    CEUtils.PlaySound("ofshoot", 1, cannon.TopPos);
-                    if (IsServer) {
-                        Shoot<AcropolisTeslaBall>(ctx, cannon.TopPos,
-                            cannon.Seg2Rot.ToRotationVector2().RotatedByRandom(AcropolisDirector.BarrageSpread) * AcropolisDirector.BarrageSpeed,
-                            1f, AcropolisDirector.BarrageProjAi0, npc.whoAmI);
-                    }
+                    //反冲与音效各端都补:节拍量已过线,所以各端的开火帧一致
+                    ctx.QueueCannonShot(AcropolisDirector.BarrageSpread, AcropolisDirector.BarrageSpeed,
+                        AcropolisDirector.BarrageProjAi0, AcropolisDirector.BarrageRecoil);
                 }
             }
             return null;

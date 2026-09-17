@@ -1,0 +1,39 @@
+{
+  "name": "Apsychos",
+  "snapDistance": 1200,
+  "vars": { "segGap": 46, "tipGap": 36, "neckBack": 70, "ctrl1": 230, "ctrl2": 160 },
+
+  "bones": [
+    { "name": "body" },
+    { "name": "neck", "parent": "body", "offset": ["{-neckBack}", 0] },
+    { "name": "seg0", "parent": "neck", "rotationDeg": 180, "length": "{segGap}" },
+    { "repeat": 11, "var": "i", "start": 1, "items": [
+      { "name": "seg{i}", "parent": "seg{i-1}", "atTip": true, "length": "{segGap}" }
+    ] },
+    { "name": "tip", "parent": "seg11", "atTip": true, "length": "{tipGap}" }
+  ],
+
+  "pieces": [
+    { "name": "bodyA", "bone": "body", "texture": "Content/NPCs/Apsychos/Apsychos", "proximalNormalized": true, "proximal": [0.5, 0.5], "axis": 0, "layer": 0, "unlit": true },
+    { "name": "bodyB", "bone": "body", "texture": "Content/NPCs/Apsychos/Apsychos2", "proximalNormalized": true, "proximal": [0.5, 0.5], "axis": 0, "layer": 0, "unlit": true, "visible": false },
+
+    { "name": "tailA", "bone": "tip", "texture": "Content/NPCs/Apsychos/ApsychosTail", "proximal": [20, 48], "axisDeg": 180, "layer": 1, "unlit": true },
+    { "name": "tailB", "bone": "tip", "texture": "Content/NPCs/Apsychos/ApsychosTail2", "proximal": [20, 48], "axisDeg": 180, "layer": 1, "unlit": true, "visible": false },
+
+    { "repeat": 12, "var": "i", "start": 0, "items": [
+      { "name": "segA{i}", "bone": "seg{i}", "texture": "Content/NPCs/Apsychos/ApsychosSeg", "proximalNormalized": true, "proximal": [0.5, 0.5], "axisDeg": 180, "layer": "{2+i}", "unlit": true },
+      { "name": "segB{i}", "bone": "seg{i}", "texture": "Content/NPCs/Apsychos/ApsychosSeg2", "proximalNormalized": true, "proximal": [0.5, 0.5], "axisDeg": 180, "layer": "{2+i}", "unlit": true, "visible": false }
+    ] }
+  ],
+
+  "solvers": [
+    { "name": "follow", "type": "ChainFollow",
+      "bones": ["seg0", { "repeat": 11, "var": "i", "start": 1, "items": ["seg{i}"] }, "tip"],
+      "poseWeightBase": 0.12, "poseWeightCurl": 0, "curlGain": 0, "waveAmp": 0, "maxBend": 3.14159265, "turnRate": 1,
+      "gaps": [46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 36] },
+
+    { "name": "bezier", "type": "BezierChain",
+      "bones": ["seg0", { "repeat": 10, "var": "i", "start": 1, "items": ["seg{i}"] }],
+      "handleA": "{ctrl1}", "handleB": "{ctrl2}", "spacing": "param", "followRate": 0.6, "followSpace": "anchor" }
+  ]
+}

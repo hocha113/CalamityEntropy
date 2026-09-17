@@ -45,13 +45,14 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin.Core
         /// <summary>每帧最后一道统一阻尼,所有状态都吃</summary>
         public const float GlobalDrag = 0.996f;
 
-        /// <summary>绳索:段数 30、刚度 0.006、迭代 15;段长按两端距离 / 35 动态给</summary>
-        public const int RopeSegments = 30;
-        public const float RopeStiffness = 0.006f;
-        public const int RopeIterations = 15;
-        public const float RopeSegmentDivisor = 35f;
-        /// <summary>绳索尾端的挂点:本体中心沿朝向 +90° 偏移 64</summary>
+        //绳索(Rigs2D VerletStrand,数值以 Assets/Rigs/Nihility.rig.json 与 ChaoticCellSmall.rig.json 为准):
+        //原 Utilities.Rope 是 30 质点、阻尼 0.006(速度乘 1/1.006 ≈ 0.994)、15 次约束迭代、节长 = 两端距离 / 35;
+        //对应骨架里 29 节 VerletStrand 的 damping 0.994、iterations 15、fitLength + fitFactor 29/35
+        /// <summary>绳索尾端的挂点:本体中心沿朝向 +90° 偏移 64(骨架里 anchor 骨的后退量)</summary>
         public const float RopeAnchorOffset = 64f;
+        /// <summary>触须张开量:<c>(1 − 1/(1+|v|)) × 0.12</c>,中层再乘 5</summary>
+        public const float TentacleSpreadFactor = 0.12f;
+        public const float TentacleMidSpreadMul = 5f;
 
         /// <summary>脱战:上浮加速度、逐帧阻尼、细胞回收力,以及消失倒计时</summary>
         public const float EscapeRiseAccel = 1.26f;

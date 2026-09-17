@@ -11,7 +11,6 @@ using CalamityEntropy.Content.NPCs.NihilityTwin.Core;
 using CalamityEntropy.Content.NPCs.NihilityTwin.States;
 using CalamityEntropy.Core.AI;
 using CalamityEntropy.Core.CalamityRef;
-using CalamityEntropy.Utilities;
 using InnoVault;
 using InnoVault.StateMachines;
 using System.IO;
@@ -64,8 +63,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         /// <summary>脱战倒计时。纯本地:真正的下线只在权威端执行</summary>
         private int escapeCounter = 0;
 
-        /// <summary>连接两端的绳索。纯绘制</summary>
-        public Rope rope = null;
+        //连接两端的绳索与三层触须都在 Rigs2D 骨架里(NihilityActeriophage.Draw.cs),纯绘制
         /// <summary>绳索显示插值。二阶段每帧减 1(即立刻收起),只有对撞合体那一手把它顶回 1</summary>
         public float ropeLerp = 1;
         #endregion
@@ -255,6 +253,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
 
             if (spawnAnm > 0) {
                 UpdateSpawnAnimation();
+                UpdateBodyRig();
                 if (client) {
                     netMotion.EndFrame(NPC);
                 }
@@ -263,6 +262,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
 
             if (cell == null) {
                 //细胞缺席时整棵状态树都没有第二个支点,原代码会在这里空引用;直接跳过这一帧
+                UpdateBodyRig();
                 if (client) {
                     netMotion.EndFrame(NPC);
                 }
@@ -270,10 +270,6 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             }
 
             Context.FrameCounter++;
-            if (rope == null) {
-                rope = new Rope(NPC.Center, cell.Center, NihilityDirector.RopeSegments, 0, new Vector2(0, 0f),
-                    NihilityDirector.RopeStiffness, NihilityDirector.RopeIterations, false);
-            }
             if (!Main.dedServ) {
                 Main.LocalPlayer.Entropy().NihSky = NihilityDirector.NihSkyRefresh;
             }
@@ -302,7 +298,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             cell.life = NPC.life;
             cell.target = NPC.target;
             NPC.velocity *= NihilityDirector.GlobalDrag;
-            UpdateRope();
+            UpdateBodyRig();
 
             if (client) {
                 netMotion.EndFrame(NPC);
@@ -392,23 +388,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             NPC.rotation = NPC.velocity.ToRotation();
         }
 
-        private void UpdateRope() {
-            if (ropeLerp <= 0 || rope == null || cell == null) {
-                return;
-            }
-            Vector2 rend = Vector2.Lerp(buttom, cell.Center, ropeLerp);
-            rope.segmentLength = CEUtils.getDistance(buttom, rend) / NihilityDirector.RopeSegmentDivisor;
-            rope.Start = buttom;
-            rope.End = rend;
-            rope.Update();
-        }
-
         #region 状态可用的小件
-        /// <summary>额外推一次绳索求解(自旋狙击每帧多推两次)。纯绘制</summary>
-        public void TickRope() {
-            rope?.Update();
-        }
-
         /// <summary>
         /// 直写细胞位置(蓄力焊接、对撞对齐这类瞬移)。顺手丢掉细胞纠偏器的旧预测,
         /// 免得下一包把「直写造成的位移」当成失步

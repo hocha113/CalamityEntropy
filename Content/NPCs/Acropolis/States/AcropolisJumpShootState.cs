@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.NPCs.Acropolis.Core;
-using CalamityEntropy.Content.Projectiles;
 using InnoVault.StateMachines;
 using System;
 using Terraria;
@@ -41,24 +40,22 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.States
 
         public override IVaultState<AcropolisStateContext> OnUpdate(AcropolisStateContext ctx) {
             NPC npc = ctx.Npc;
-            AcropolisHand cannon = ctx.Cannon;
+            AcropolisArm cannon = ctx.Cannon;
 
             //对齐原代码 `JumpAndShoot-- > 0`:自减无条件发生,取自减前的值判分支
             int before = ctx.JumpAndShoot;
             ctx.JumpAndShoot = before - 1;
             if (before > 0) {
-                //原代码对这一发连调两次 PointAPos(转向速率翻倍),且转完立刻开火
-                ctx.AimCannon(npc.Center + cannon.offset * npc.scale + new Vector2(0f, AcropolisDirector.JumpShootAimDrop),
+                //原代码对这一发连调两次 PointAPos(转向速率翻倍),且转完立刻开火;瞄点沿用挂点设计偏移(原式不乘 dir)
+                Vector2 mount = cannon?.MountOffset ?? new Vector2(AcropolisDirector.CannonMountX, AcropolisDirector.CannonMountY);
+                ctx.AimCannon(npc.Center + mount * npc.scale + new Vector2(0f, AcropolisDirector.JumpShootAimDrop),
                     AcropolisDirector.JumpShootAimTimes);
                 ctx.TeslaUpCD -= ctx.Enrange;
                 if (ctx.TeslaUpCD <= 0f) {
                     ctx.TeslaUpCD = AcropolisDirector.JumpShootInterval;
-                    CEUtils.PlaySound("ofshoot", 1, cannon.TopPos);
-                    if (IsServer) {
-                        Shoot<AcropolisTeslaBall>(ctx, cannon.TopPos,
-                            cannon.Seg2Rot.ToRotationVector2().RotatedByRandom(AcropolisDirector.JumpShootSpread) * AcropolisDirector.JumpShootSpeed,
-                            1f, AcropolisDirector.JumpShootProjAi0, npc.whoAmI);
-                    }
+                    //跳射没有后坐,照搬
+                    ctx.QueueCannonShot(AcropolisDirector.JumpShootSpread, AcropolisDirector.JumpShootSpeed,
+                        AcropolisDirector.JumpShootProjAi0, 0f);
                 }
             }
 

@@ -242,7 +242,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.Core
         public const int HarpoonBackFrames = 40;
         /// <summary>发射时的鱼叉臂反冲(乘 dir)</summary>
         public const float HarpoonRecoil = 0.3f;
-        /// <summary>鱼叉绘制与碰撞的枪口前伸</summary>
+        /// <summary>鱼叉绘制与碰撞的枪口前伸与侧向偏移(侧向乘 dir)。骨架里 <c>harpoonMuzzle</c> 骨的偏移,rig.json 与这里要一致</summary>
         public const float HarpoonMuzzleReach = 150f;
         public const float HarpoonMuzzleSide = 10f;
 
@@ -268,66 +268,51 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.Core
         public const float HarpoonReturnAccel = 8f;
         public const float HarpoonReturnDrag = 0.9f;
         public const float HarpoonReturnCatchPad = 6f;
-        /// <summary>锁链尾端相对发射口的回退量</summary>
+        /// <summary>锁链尾端相对发射口的回退量(骨架里 <c>chainTail</c> 骨的偏移 = 前伸 − 回退)</summary>
         public const float HarpoonChainTail = 72f;
 
-        //==================== 肢体常数 ====================
+        //==================== 肢体常数(骨架:Rigs2D,骨长 / 挂点 / 步态 / 瞄准参数以 Assets/Rigs/Acropolis.rig.json 为准)====================
 
-        /// <summary>四条腿的挂点与缩放,顺序即绘制顺序</summary>
-        public static readonly (float X, float Y, float Scale)[] LegMounts =
+        /// <summary>
+        /// 四条腿的落点挂点,<b>按骨架腿序</b>:0 内左、1 外左、2 内右、3 外右(原顺序是内左、内右、外左、外右)。
+        /// 迁移后只用于腾空收腿与未晋升贴体两种 Hold 目标;步态的休息位由 rig.json 里髋骨的朝向与 <c>restReach</c> 指向这四个点
+        /// </summary>
+        public static readonly Vector2[] LegMounts =
         {
-            (-100f, 120f, 0.8f),
-            (100f, 120f, 0.8f),
-            (-140f, 120f, 1f),
-            (140f, 120f, 1f),
+            new Vector2(-100f, 120f),
+            new Vector2(-140f, 120f),
+            new Vector2(100f, 120f),
+            new Vector2(140f, 120f),
         };
 
-        /// <summary>炮臂:挂点 (-80,-32),第一节长 76</summary>
+        /// <summary>焦痕着色器逐件摇随机数的腿序(原绘制顺序:内左、内右、外左、外右),映射到骨架腿序</summary>
+        public static readonly int[] LegCharredOrder = { 0, 2, 1, 3 };
+
+        /// <summary>脚掌贴图相对胫节的附加倾角:右腿顺时针、左腿逆时针(原 Draw 里的 ±24°)</summary>
+        public const float FootTiltDegrees = 24f;
+
+        /// <summary>炮臂挂点 (-80,-32),x 乘 dir。第一节长 76、第二节(枪口)60 在 rig.json</summary>
         public const float CannonMountX = -80f;
         public const float CannonMountY = -32f;
-        public const float CannonSeg1Length = 76f;
-        /// <summary>鱼叉臂:挂点 (60,-18),第一节长 66</summary>
+        /// <summary>鱼叉臂挂点 (60,-18),x 乘 dir。第一节长 66 在 rig.json</summary>
         public const float HarpoonMountX = 60f;
         public const float HarpoonMountY = -18f;
-        public const float HarpoonSeg1Length = 66f;
 
-        /// <summary>手臂:第一节的最大偏摆、追瞄速率、反冲衰减、第二节末端长度</summary>
-        public const float HandSeg1MaxDegrees = 50f;
-        public const float HandAimRate = 0.06f;
-        public const float HandRecoilDecay = 0.96f;
-        public const float HandTopReach = 60f;
+        //手臂追瞄速率 0.06、后坐衰减 0.96 是 rig.json 里四个 PointAt 的 turnRate / angularDamping;
+        //原代码第一节相对正下方还有一道 ±50° 的两段式钳制(只在偏离正上方超过 100° 时触发),PointAt 的 maxDeviation 表达不了这种
+        //两区间规则,迁移后默认关闭(maxDeviation 0),需要时在 rig.json 里开
         /// <summary>未晋升形态时手臂垂向的虚拟目标与跟随率</summary>
         public const float HandDummyLerp = 0.3f;
 
-        /// <summary>腿:落点收敛速率系数、腾空时的强制收腿</summary>
-        public const float LegConvergeFactor = 0.2f;
+        /// <summary>腾空时的强制收腿:足端收到本体正下方 200、横向只留 0.2 倍挂点偏移(步态 Hold 目标,跟随率 = rig.json holdRate 0.2)</summary>
         public const float LegTuckSideFactor = 0.2f;
         public const float LegTuckDrop = 200f;
-        /// <summary>未晋升形态腿贴着本体的偏移与跟随率</summary>
+        /// <summary>未晋升且腾空时腿贴着本体的偏移倍率(随本体倾角旋转;跟随率同上)</summary>
         public const float LegDummySpreadX = 0.36f;
         public const float LegDummySpreadY = 2.2f;
-        public const float LegDummyLerp = 0.2f;
-        /// <summary>迈步阈值:超过它换落点,非 Boss 态放宽到 1.4 倍</summary>
-        public const float LegStepDistance = 100f;
-        public const float LegStepRelaxMultiplier = 1.4f;
-        /// <summary>迈步冷却:同侧腿互相压 8 帧,本腿至少 4 帧</summary>
-        public const int LegStepCooldown = 8;
-        public const int LegStepCooldownMin = 4;
-        /// <summary>落点预判:按速度前瞻 16 帧,同向再外扩 12</summary>
-        public const float LegLookAheadFrames = 16f;
-        public const float LegLookAheadSpread = 12f;
-        /// <summary>落点搜索半径与尝试次数(原代码把 MaxTry 同时当撒点半径用,照搬)</summary>
-        public const float LegSearchRadius = 60f;
-        public const float LegSearchTries = 128f;
-        /// <summary>找到落点后逐步上抬找地面的步长与最大步数</summary>
-        public const float LegRaiseStep = 2f;
-        public const int LegRaiseMaxSteps = 128;
-        /// <summary>非 Boss 形态搜索前把中心上抬 10</summary>
-        public const float LegSearchDummyRise = 10f;
-        /// <summary>腾空或高速下坠时落点收敛速度的倍数</summary>
-        public const float LegFastConvergeMultiplier = 3f;
-        public const float LegFastConvergeFallSpeed = 1f;
-        public const float LegFastConvergeFallSpeedAlt = 0.5f;
+
+        //以下原逐腿落点搜索的参数已由步态求解器接管,只作对照:迈步阈值 100(stepThreshold)、同侧互锁(节律窗相邻两腿为一对)、
+        //落点收敛 0.2(holdRate / 摆越 swingMin~swingMax 5~12 帧)、探地含平台(自定义 Probe)、腾空收腿(Hold)
 
         //==================== 弹幕折算 ====================
 

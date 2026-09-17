@@ -1,8 +1,15 @@
 ﻿using CalamityEntropy.Core.AI;
+using System.Collections.Generic;
 using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.Acropolis.Core
 {
+    /// <summary>
+    /// 一发排队的炮击声明:散布(弧度)、初速、弹幕 ai0 标记、炮臂后坐(乘 dir 前的量)。
+    /// 宿主在骨架 Step 之后统一从枪口出膛
+    /// </summary>
+    public readonly record struct AcropolisCannonShot(float Spread, float Speed, float Ai0, float Recoil);
+
     /// <summary>
     /// 卫城机器的状态上下文。
     /// <para>
@@ -21,11 +28,11 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.Core
         #region 核心引用
         public AcropolisMachine Owner { get; set; }
 
-        /// <summary>炮臂。出招时由状态声明瞄点,常态由宿主瞄玩家</summary>
-        public AcropolisHand Cannon => Owner?.cannon;
+        /// <summary>炮臂(Rigs2D 两节 PointAt 的门面)。出招时由状态声明瞄点,常态由宿主瞄玩家</summary>
+        public AcropolisArm Cannon => Owner?.Cannon;
 
         /// <summary>鱼叉臂。完全由宿主背景驱动,状态不碰</summary>
-        public AcropolisHand HarpoonArm => Owner?.harpoon;
+        public AcropolisArm HarpoonArm => Owner?.HarpoonArm;
         #endregion
 
         #region 事实:过线
@@ -96,8 +103,14 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.Core
         /// </summary>
         public Vector2? CannonAim { get; set; }
 
-        /// <summary>本帧对炮口调用几次追瞄。跳射原代码连调两次,等于转向速率翻倍</summary>
+        /// <summary>本帧对炮口调用几次追瞄。跳射原代码连调两次,等于转向速率翻倍;骨架侧换算成等效瞄点一次落地</summary>
         public int CannonAimTimes { get; set; } = 1;
+
+        /// <summary>
+        /// 本帧排队的炮击。状态与宿主只声明,骨架 Step 把炮口转过去之后由宿主统一出膛(<c>FireQueuedShots</c>),
+        /// 保住原代码「同帧先转再打」的出膛位置与方向。每帧开头清空
+        /// </summary>
+        public List<AcropolisCannonShot> PendingShots { get; } = new(2);
 
         /// <summary>
         /// 本帧仍按「站在地上」结算走位。只有追高跳的起跳帧会置位:
@@ -124,26 +137,21 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.Core
             CannonAim = null;
             CannonAimTimes = 1;
             KeepGroundedThisFrame = false;
+            PendingShots.Clear();
         }
 
         /// <summary>
-        /// 状态声明炮口瞄点,<b>并立刻落地</b>。
-        /// <para>
-        /// 必须立刻落地而不是攒到宿主结算:原代码是「先 <c>PointAPos</c> 再从 <c>TopPos</c> 开火」,
-        /// 同一帧内枪口已经转过去了。若只记声明、等宿主之后再转,出膛位置与方向就整整慢一帧
-        /// </para>
+        /// 状态声明炮口瞄点。骨架在 AI 末尾 Step 时把两节按 0.06 转向它,开火队列在 Step 之后出膛,
+        /// 所以「同帧先转再打」仍然成立,只是转与打都挪到了宿主的结算点
         /// </summary>
         public void AimCannon(Vector2 pos, int times = 1) {
             CannonAim = pos;
             CannonAimTimes = times;
-            AcropolisHand hand = Cannon;
-            if (hand == null) {
-                return;
-            }
-            for (int i = 0; i < times; i++) {
-                hand.PointAPos(pos);
-            }
         }
+
+        /// <summary>声明一发炮击(散布、初速、弹幕 ai0、后坐)。弹幕 ai1 固定写宿主 whoAmI,由宿主填</summary>
+        public void QueueCannonShot(float spread, float speed, float ai0, float recoil)
+            => PendingShots.Add(new AcropolisCannonShot(spread, speed, ai0, recoil));
 
         /// <summary>目标玩家,读之前看 <see cref="CEBossStateContext.TargetValid"/></summary>
         public Player Player => Target;

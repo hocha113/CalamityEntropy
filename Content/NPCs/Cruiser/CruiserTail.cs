@@ -10,7 +10,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
 {
     //[StaticImmunity(typeof(CruiserHead))]
     /// <summary>
-    /// 尾节。与体节同型的<b>锚定型部件</b>:位置由 <c>CEUtils.wormFollow</c> 每帧直写,
+    /// 尾节。与体节同型的<b>锚定型部件</b>:位置每帧从头部 Rigs2D 链骨的最后一节直读,
     /// 只清原版平滑、不进预测纠偏器。
     /// 它的 <c>ai[3]</c> 是头部索引(生成时写入),这一处槽位在迁移后<b>不变</b>——
     /// 让位给状态号的是头部自己的 <c>ai[3]</c>
@@ -126,16 +126,13 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                             NPC.netUpdate = true;
                         }*/
             if (NPC.ai[1] < Main.maxNPCs && Main.npc[(int)NPC.ai[1]].active) {
-                int spacing = CruiserDirector.ChainSpacing;
-                NPC follow = Main.npc[(int)NPC.ai[1]];
-                if (follow.active) {
-                    CEUtils.wormFollow(NPC.whoAmI, (int)NPC.ai[1], (int)(spacing * NPC.scale), false);
-                    if (NPC.ai[0] > CruiserDirector.SegmentTightFollowFrames) {
-                        CEUtils.wormFollow(NPC.whoAmI, (int)NPC.ai[1], (int)(spacing * NPC.scale), true, CruiserDirector.ChainRotateRate);
-                    }
+                //落到头部链骨的最后一节(ai[2] == length);骨架未建好的首帧退回硬跟随
+                if (Main.npc[(int)NPC.ai[3]].ModNPC is CruiserHead head && head.TryGetChainBone((int)NPC.ai[2], out Vector2 pos, out float dir)) {
+                    NPC.Center = pos;
+                    NPC.rotation = dir;
                 }
                 else {
-                    NPC.active = false;
+                    CEUtils.wormFollow(NPC.whoAmI, (int)NPC.ai[1], (int)(CruiserDirector.ChainSpacing * NPC.scale), false);
                 }
             }
             else {

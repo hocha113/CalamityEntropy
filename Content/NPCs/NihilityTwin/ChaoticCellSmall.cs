@@ -1,10 +1,11 @@
-﻿using CalamityEntropy.Content.Biomes;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Biomes;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Core.CalamityRef;
-using CalamityEntropy.Utilities;
+using InnoVault.Rigs2D.Runtime;
+using InnoVault.Rigs2D.Solvers;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -13,8 +14,16 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.NPCs.NihilityTwin
 {
+    /// <summary>
+    /// 小混沌细胞。通往母体的绳是一副 Rigs2D 骨架(<c>Assets/Rigs/ChaoticCellSmall.rig.json</c>):
+    /// 29 节 <c>VerletStrand</c>,末端每帧钉到母体中心,节长贴合两端距离 × 29/35,与迁移前的 <c>Utilities.Rope</c> 参数逐项对应。纯绘制
+    /// </summary>
     public class ChaoticCellSmall : ModNPC
     {
+        private Rig2DInstance rig;
+        [Rig2DSolver("rope")]
+        private VerletStrandSolver ropeSolver;
+
         public override void OnHitPlayer(Player target, Player.HurtInfo info) {
             target.AddBuff(ModContent.BuffType<VoidVirus>(), 160);
         }
@@ -58,7 +67,31 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             SpawnModBiomes = new int[] { ModContent.GetInstance<VoidDummyBoime>().Type };
         }
         public bool init = true;
-        Rope rope = null;
+
+        private void EnsureRopeRig() {
+            if (rig != null) {
+                return;
+            }
+            Vault2DRig asset = CERigAssets.ChaoticCellSmall;
+            if (asset == null || !asset.IsValid) {
+                return;
+            }
+            rig = asset.CreateInstance(NPC.whoAmI);
+            rig.Bind(this, null);
+        }
+
+        /// <summary>绳骨架落地:锚在自身中心,末端钉到母体中心(两端都是已同步坐标)</summary>
+        private void UpdateRopeRig() {
+            EnsureRopeRig();
+            if (rig == null || !rig.Bound) {
+                return;
+            }
+            rig.Scale = NPC.scale;
+            rig.SetRoot(NPC.Center, NPC.rotation);
+            ropeSolver.EndTarget = owner.Center;
+            rig.Step();
+        }
+
         public override void AI() {
             NPC.velocity *= 0.98f;
             if (!owner.active) {
@@ -77,14 +110,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
 
                 }
             }
-            if (rope == null) {
-                rope = new Rope(NPC.Center, owner.Center, 30, 0, new Vector2(0, 0f), 0.006f, 15, false);
-            }
-            Vector2 rend = owner.Center;
-            rope.segmentLength = CEUtils.getDistance(NPC.Center, rend) / 35f;
-            rope.Start = NPC.Center;
-            rope.End = rend;
-            rope.Update();
+            UpdateRopeRig();
             foreach (NPC n in Main.ActiveNPCs) {
                 if (n.type == NPC.type && n.whoAmI != NPC.whoAmI) {
                     if (n.getRect().Intersects(NPC.getRect())) {
@@ -98,55 +124,18 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         public override bool CheckActive() {
             return !owner.active;
         }
-        public void drawRope() {
-            List<ColoredVertex> ve = new List<ColoredVertex>();
-            List<Vector2> points = new List<Vector2>();
 
-            // Addresses a crash when viewing the NPC in a browser.
-            if (rope == null)
-                return;
-
-            points = rope.GetPoints();
-
-            points.Insert(0, NPC.Center);
-            points.Add(owner.Center);
-            points.Add(owner.Center);
-            float lc = 1;
-            float jn = 0;
-
-            for (int i = 1; i < points.Count - 1; i++) {
-                jn += CEUtils.getDistance(points[i - 1], points[i]) / (float)28 * lc;
-
-                ve.Add(new ColoredVertex(points[i] - Main.screenPosition + (points[i] - points[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 7 * lc,
-                      new Vector3(jn, 1, 1),
-                      Color.White));
-                ve.Add(new ColoredVertex(points[i] - Main.screenPosition + (points[i] - points[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 7 * lc,
-                      new Vector3(jn, 0, 1),
-                      Color.White));
-
-            }
-
-            SpriteBatch sb = Main.spriteBatch;
-            GraphicsDevice gd = Main.graphics.GraphicsDevice;
-            if (ve.Count >= 3) {
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-
-                //复用同命名空间下 NihilityActeriophage 声明的绳索贴图字段
-                gd.Textures[0] = NihilityActeriophage.nihRopeTex.Value;
-                gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-
-            }
-        }
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) {
             if (NPC.IsABestiaryIconDummy)
                 return true;
-            drawRope();
-            Texture2D tex = TextureAssets.Npc[NPC.type].Value;
-            Color color = Color.White;
-            Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition, null, color, NPC.rotation, tex.Size() / 2, NPC.scale, SpriteEffects.None);
+            if (rig == null || !rig.Bound || !rig.Built) {
+                Texture2D fallback = TextureAssets.Npc[NPC.type].Value;
+                Main.EntitySpriteDraw(fallback, NPC.Center - Main.screenPosition, null, Color.White, NPC.rotation, fallback.Size() / 2, NPC.scale, SpriteEffects.None);
+                return false;
+            }
+            //绳带在下、本体件在上;带状件会自己切一轮批次再回到 Deferred / AlphaBlend
+            Rig2DDrawContext ctx = Rig2DDrawContext.World().Flat(Color.White);
+            Rig2DRenderer.DrawAll(spriteBatch, rig, in ctx);
             return false;
         }
 

@@ -5,10 +5,9 @@ using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Core.Graphics;
 using InnoVault;
 using InnoVault.PRT;
+using InnoVault.Rigs2D.Runtime;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.Utilities;
@@ -16,190 +15,138 @@ using Terraria.Utilities;
 namespace CalamityEntropy.Content.NPCs.Acropolis
 {
     /// <summary>
-    /// 卫城机器的表现层:整机集中绘制(腿的三段 IK、两条手臂、本体、肩甲)、焦痕着色器、受击与死亡粒子。
+    /// 卫城机器的表现层:整机由 Rigs2D 骨架件集中绘制(腿、两条臂、本体、肩甲、停靠的鱼叉),焦痕着色器逐件套参,受击与死亡粒子。
     /// 纯本地,只读 gameplay 状态,绝不回写
     /// </summary>
     public partial class AcropolisMachine
     {
-        //harpoonOutlineTex 设为 internal 供同目录 Harpoon 复用
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/Leg1")]
-        private static Asset<Texture2D> leg1Tex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/Leg2")]
-        private static Asset<Texture2D> leg2Tex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/Foot")]
-        private static Asset<Texture2D> footTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/CannonConnect")]
-        private static Asset<Texture2D> cannonConnectTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/Cannon")]
-        private static Asset<Texture2D> cannonTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/HarpoonArm")]
-        private static Asset<Texture2D> harpoonArmTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/HarpoonLauncher")]
-        private static Asset<Texture2D> harpoonLauncherTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/Harpoon")]
-        private static Asset<Texture2D> harpoonTex;
+        //harpoonOutlineTex 设为 internal 供同目录 Harpoon 复用;其余贴图全由骨架件持有(Assets/Rigs/Acropolis.rig.json)
         [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/HarpoonOutline")]
         internal static Asset<Texture2D> harpoonOutlineTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/Shoulder")]
-        private static Asset<Texture2D> shoulderTex;
+        [VaultLoaden("CalamityEntropy/Content/NPCs/Acropolis/Harpoon")]
+        private static Asset<Texture2D> harpoonTex;
         [VaultLoaden("CalamityEntropy/Assets/Extra/cloudNoise")]
         private static Asset<Texture2D> cloudNoiseTex;
 
-        public static void PrepareCharredShader(Texture2D tex, Texture2D noise, float minAlpha, Vector2 noiseOffset, Color color) {
-            Effect shader = CommonEffects.charred;
-            if (minAlpha >= 1) {
-                Main.spriteBatch.ExitShaderRegion();
-            }
-            else {
-                Main.spriteBatch.End();
-                shader.Parameters["minAlpha"].SetValue(minAlpha);
-                shader.Parameters["cColor"].SetValue(color.ToVector4());
-                shader.Parameters["noiseOffset"].SetValue(noiseOffset);
-                shader.Parameters["texSize"].SetValue(tex.Size());
-                shader.Parameters["noiseSize"].SetValue(noise.Size() * 2f);
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, shader, Main.GameViewMatrix.TransformationMatrix);
-                var gd = Main.graphics.GraphicsDevice;
-                gd.Textures[0] = tex;
-                gd.Textures[1] = noise;
-            }
+        /// <summary>逐件焦痕参数(件索引 → 阈值 / 噪声偏移),每帧按 whoAmI 播种重摇,顺序与迁移前逐张贴图的调用顺序一致</summary>
+        private float[] charredAlpha = [];
+        private Vector2[] charredOfs = [];
+
+        /// <summary>
+        /// 焦痕着色器:开一个 Immediate 批次,噪声贴图挂在 s1;逐件参数由 <see cref="Rig2DDrawContext.BeforePiece"/> 在每次 Draw 前写入。
+        /// 阈值为 1 时着色器原样返回贴图色,等价于迁移前「minAlpha ≥ 1 就退出 shader 区」的那一支
+        /// </summary>
+        private static void BeginCharredBatch(SpriteBatch spriteBatch, Effect shader, Texture2D noise) {
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, shader, Main.GameViewMatrix.TransformationMatrix);
+            Main.graphics.GraphicsDevice.Textures[1] = noise;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) {
-            //焦痕的随机量按 whoAmI 播种,每台机器的斑驳是固定的
-            UnifiedRandom random = new UnifiedRandom((NPC.type + NPC.whoAmI * 47));
-            Texture2D noise = cloudNoiseTex.Value;
-            float cAlpha = random.NextBool(6) ? random.NextFloat(0.6f, 1f) : random.NextFloat(0.8f, 1f);
-            void prepareShader(Texture2D texture) {
-                float al = float.Clamp(cAlpha + random.NextFloat(-0.1f, 0.1f), 0, 1);
-                if (random.NextBool(5))
-                    al = 0;
-                Vector2 ofs = new Vector2(random.NextFloat(0, 0.5f), random.NextFloat(0, 0.5f)) * noise.Size();
-                PrepareCharredShader(texture, noise, al, ofs, Color.Black * 0.4f);
+        private void CharredPieceHook(Rig2DInstance r, int pieceIndex, Texture2D texture, Rectangle frame) {
+            Effect shader = CommonEffects.charred;
+            if (shader == null || pieceIndex >= charredAlpha.Length) {
+                return;
             }
+            shader.Parameters["minAlpha"].SetValue(charredAlpha[pieceIndex]);
+            shader.Parameters["noiseOffset"].SetValue(charredOfs[pieceIndex]);
+            shader.Parameters["texSize"].SetValue(texture.Size());
+        }
+
+        /// <summary>
+        /// 摇出每件的焦痕参数。随机序列按 whoAmI 播种,所以每台机器的斑驳是固定的;
+        /// 调用顺序照搬迁移前逐张贴图 <c>prepareShader</c> 的顺序(内左腿、内右腿、外左腿、外右腿各三节,鱼叉臂、鱼叉、发射器、本体、炮臂两节、肩甲),
+        /// 停靠鱼叉不可见时也照样摇一次,免得后面几件的斑驳跟着鱼叉出膛跳变
+        /// </summary>
+        private void RollCharred(UnifiedRandom random, Texture2D noise) {
+            if (charredAlpha.Length != rig.Pieces.Length) {
+                charredAlpha = new float[rig.Pieces.Length];
+                charredOfs = new Vector2[rig.Pieces.Length];
+            }
+            float cAlpha = random.NextBool(6) ? random.NextFloat(0.6f, 1f) : random.NextFloat(0.8f, 1f);
+            void roll(int piece) {
+                float al = float.Clamp(cAlpha + random.NextFloat(-0.1f, 0.1f), 0, 1);
+                if (random.NextBool(5)) {
+                    al = 0;
+                }
+                Vector2 ofs = new Vector2(random.NextFloat(0, 0.5f), random.NextFloat(0, 0.5f)) * noise.Size();
+                if (piece >= 0 && piece < charredAlpha.Length) {
+                    charredAlpha[piece] = al;
+                    charredOfs[piece] = ofs;
+                }
+            }
+            //原 LegMounts 顺序:内左、内右、外左、外右;骨架腿序是 0 内左、1 外左、2 内右、3 外右
+            foreach (int leg in AcropolisDirector.LegCharredOrder) {
+                for (int p = 0; p < LegPartCount; p++) {
+                    roll(legPieces[leg, p]);
+                }
+            }
+            roll(armLinkPieces[0]);
+            roll(facingPieces[4]);
+            roll(facingPieces[3]);
+            roll(facingPieces[0]);
+            roll(armLinkPieces[1]);
+            roll(facingPieces[2]);
+            roll(facingPieces[1]);
+        }
+
+        /// <summary>
+        /// 整机集中绘制:骨架件按层序一次画出(腿 → 鱼叉臂 → 停靠鱼叉 → 发射器 → 本体 → 炮臂 → 肩甲),
+        /// 全部件同吃一个 <paramref name="drawColor"/>(天顶世界换迪斯科色),与迁移前一致。
+        /// 停靠鱼叉的蓄力轮廓光环不吃焦痕 shader,夹在鱼叉臂第一节与鱼叉本体之间画,所以骨架分两个层序带画
+        /// </summary>
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) {
+            if (!RigReady) {
+                return false;
+            }
+            Effect shader = CommonEffects.charred;
+            Texture2D noise = cloudNoiseTex?.Value;
+            if (shader == null || noise == null) {
+                Rig2DDrawContext plain = Rig2DDrawContext.World().Flat(drawColor);
+                Rig2DRenderer.Draw(spriteBatch, rig, in plain);
+                return false;
+            }
+            //焦痕的随机量按 whoAmI 播种,每台机器的斑驳是固定的
+            UnifiedRandom random = new UnifiedRandom(NPC.type + NPC.whoAmI * 47);
+            RollCharred(random, noise);
             if (Main.zenithWorld) {
                 drawColor = Main.DiscoColor;
             }
-            Texture2D body = NPC.getTexture();
-            Texture2D t1 = leg1Tex.Value;
-            Texture2D t2 = leg2Tex.Value;
-            Texture2D t3 = footTex.Value;
+            shader.Parameters["cColor"].SetValue((Color.Black * 0.4f).ToVector4());
+            shader.Parameters["noiseSize"].SetValue(noise.Size() * 2f);
 
-            if (legs == null)
-                return false;
-            foreach (var leg in legs) {
-                float l1 = 46 * NPC.scale * leg.Scale;
-                float l2 = 70 * NPC.scale * leg.Scale;
-                float l3 = 72 * NPC.scale * leg.Scale;
-                List<Vector2> points = new List<Vector2>();
-                points.Add(NPC.Center + (new Vector2(Math.Sign(leg.offset.X) * 20, 60) * NPC.scale).RotatedBy(dir > 0 ? NPC.rotation : -MathHelper.Pi + NPC.rotation));
-                Vector2 e = CalculateLegJoints(points[0], leg.StandPoint, l1, l2, l3, out var p1, out var p2);
-                points.Add(p1);
-                points.Add(CEUtils.GetCircleIntersection(p1, l2, leg.StandPoint, l3));
-                points.Add(points[points.Count - 1] + (leg.StandPoint - points[points.Count - 1]).normalize() * l3);
+            Rig2DDrawContext ctx = Rig2DDrawContext.World().Flat(drawColor).WithPieceHook(CharredPieceHook);
+            bool docked = _harpoon < 0 || HarpoonOnLauncher;
 
-                prepareShader(t1);
-                Main.EntitySpriteDraw(t1, points[0] - Main.screenPosition, null, drawColor, (points[1] - points[0]).ToRotation(), new Vector2(4, 13), NPC.scale * leg.Scale, SpriteEffects.None);
-                prepareShader(t2);
-                Main.EntitySpriteDraw(t2, points[1] - Main.screenPosition, null, drawColor, (points[2] - points[1]).ToRotation(), new Vector2(6, 9), NPC.scale * leg.Scale, SpriteEffects.None);
-                prepareShader(t3);
-                Main.EntitySpriteDraw(t3, points[2] - Main.screenPosition, null, drawColor, (points[3] - points[2]).ToRotation() + ((leg.offset.X > 0 ? 1 : -1) * MathHelper.ToRadians(24)), new Vector2(27, t3.Height / 2f), NPC.scale * leg.Scale, leg.offset.X > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);
+            BeginCharredBatch(spriteBatch, shader, noise);
+            Rig2DDrawContext lower = ctx.Layers(float.NegativeInfinity, LayerHarpoonArm);
+            Rig2DRenderer.Draw(spriteBatch, rig, in lower);
+            if (docked) {
+                spriteBatch.ExitShaderRegion();
+                DrawHarpoonOutline();
+                BeginCharredBatch(spriteBatch, shader, noise);
             }
-            NPC npc = NPC;
-            Texture2D cannon1 = cannonConnectTex.Value;
-            Texture2D cannon2 = cannonTex.Value;
-            Texture2D harpoon1 = harpoonArmTex.Value;
-            Texture2D harpoon2 = harpoonLauncherTex.Value;
-            Texture2D harpoon3 = harpoonTex.Value;
-            Texture2D harpoonOutline = harpoonOutlineTex.Value;
-
-            Texture2D shoulder = shoulderTex.Value;
-            float charge = Context?.HarpoonCharge ?? 0f;
-
-            prepareShader(harpoon1);
-            Main.EntitySpriteDraw(harpoon1, (harpoon.offset * new Vector2(dir, 1) * NPC.scale).RotatedBy(dir > 0 ? npc.rotation : (npc.rotation + MathHelper.Pi)) + NPC.Center - Main.screenPosition, null, drawColor, harpoon.Seg1Rot, new Vector2(6, harpoon1.Height / 2f), NPC.scale, SpriteEffects.None);
-            if (_harpoon < 0 || HarpoonOnLauncher) {
-                Main.spriteBatch.ExitShaderRegion();
-                for (float r = 0; r <= 360; r += 60) {
-                    Main.EntitySpriteDraw(harpoonOutline, MathHelper.ToRadians(r).ToRotationVector2() * 2 + harpoon.seg1end + harpoon.Seg2Rot.ToRotationVector2() * AcropolisDirector.HarpoonMuzzleReach * NPC.scale + new Vector2(0, AcropolisDirector.HarpoonMuzzleSide * dir).RotatedBy(harpoon.Seg2Rot) * NPC.scale - Main.screenPosition, null, Color.OrangeRed * charge, harpoon.Seg2Rot, new Vector2(70, harpoon3.Height / 2f), NPC.scale, dir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);
-                }
-                prepareShader(harpoon3);
-                Main.EntitySpriteDraw(harpoon3, harpoon.seg1end + harpoon.Seg2Rot.ToRotationVector2() * AcropolisDirector.HarpoonMuzzleReach * NPC.scale + new Vector2(0, AcropolisDirector.HarpoonMuzzleSide * dir).RotatedBy(harpoon.Seg2Rot) * NPC.scale - Main.screenPosition, null, drawColor, harpoon.Seg2Rot, new Vector2(70, harpoon3.Height / 2f), NPC.scale, dir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);
-            }
-            else {
-                //Don't mess up the random
-                prepareShader(harpoon3);
-            }
-            prepareShader(harpoon2);
-            Main.EntitySpriteDraw(harpoon2, harpoon.seg1end - Main.screenPosition, null, drawColor, harpoon.Seg2Rot, new Vector2(6, harpoon2.Height / 2f), NPC.scale, dir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);
-            prepareShader(body);
-            Main.EntitySpriteDraw(body, NPC.Center - screenPos, null, drawColor, NPC.rotation, body.Size() / 2f, NPC.scale, dir < 0 ? SpriteEffects.FlipVertically : SpriteEffects.None);
-            prepareShader(cannon1);
-            Main.EntitySpriteDraw(cannon1, (cannon.offset * new Vector2(dir, 1) * NPC.scale).RotatedBy(dir > 0 ? npc.rotation : (npc.rotation + MathHelper.Pi)) + NPC.Center - Main.screenPosition, null, drawColor, cannon.Seg1Rot, new Vector2(6, cannon1.Height / 2f), NPC.scale, SpriteEffects.None);
-            prepareShader(cannon2);
-            Main.EntitySpriteDraw(cannon2, cannon.seg1end - Main.screenPosition, null, drawColor, cannon.Seg2Rot, new Vector2(6, cannon2.Height / 2f), NPC.scale, dir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);
-
-            prepareShader(shoulder);
-            Main.EntitySpriteDraw(shoulder, NPC.Center - screenPos, null, drawColor, NPC.rotation, shoulder.Size() / 2f, NPC.scale, dir < 0 ? SpriteEffects.FlipVertically : SpriteEffects.None);
-
+            Rig2DDrawContext upper = ctx.Layers(LayerHarpoonDocked, float.PositiveInfinity);
+            Rig2DRenderer.Draw(spriteBatch, rig, in upper);
+            spriteBatch.ExitShaderRegion();
             return false;
         }
 
-        /// <summary>三段腿的解析 IK:限制第一节偏摆,再按几何解出第二节与脚踝</summary>
-        public Vector2 CalculateLegJoints(Vector2 Center, Vector2 legStandPoint, float l1, float l2, float l3, out Vector2 P1, out Vector2 P2) {
-            P1 = Vector2.Zero;
-            P2 = Vector2.Zero;
-
-            if (l1 <= 0 || l2 <= 0 || l3 <= 0) {
-                return Center;
+        /// <summary>停靠鱼叉的蓄力轮廓:六个方向各偏 2 像素叠画一遍轮廓贴图,亮度随蓄力涨。位姿从枪口骨读</summary>
+        private void DrawHarpoonOutline() {
+            float charge = Context?.HarpoonCharge ?? 0f;
+            Texture2D outline = harpoonOutlineTex?.Value;
+            Texture2D harpoon = harpoonTex?.Value;
+            if (outline == null || harpoon == null || charge <= 0.001f) {
+                return;
             }
-
-            Vector2 D = legStandPoint - Center;
-            float dist = D.Length();
-
-            Vector2 target = legStandPoint;
-            if (dist > l1 + l2 + l3) {
-                target = Center + Vector2.Normalize(D) * (l1 + l2 + l3);
+            Vector2 muzzle = HarpoonPos;
+            float rot = HarpoonArm.BarrelDir;
+            SpriteEffects fx = dir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically;
+            Vector2 origin = new Vector2(70, harpoon.Height / 2f);
+            for (float r = 0; r <= 360; r += 60) {
+                Main.EntitySpriteDraw(outline, MathHelper.ToRadians(r).ToRotationVector2() * 2 + muzzle - Main.screenPosition, null,
+                    Color.OrangeRed * charge, rot, origin, NPC.scale, fx);
             }
-
-            Vector2 downDirection = new Vector2(0, 1);
-            Vector2 targetDirection = D.Length() > 0 ? Vector2.Normalize(D) : downDirection;
-
-            float maxDeflectionAngle = MathHelper.ToRadians(68);
-            float angleToTarget = (float)Math.Atan2(targetDirection.Y, targetDirection.X) - (float)Math.PI / 2; // 相对于Y轴正方向
-            float deflectionAngle = MathHelper.Clamp(angleToTarget, -maxDeflectionAngle, maxDeflectionAngle);
-
-            float cosAngle = (float)Math.Cos(deflectionAngle);
-            float sinAngle = (float)Math.Sin(deflectionAngle);
-            Vector2 firstSegmentDirection = new Vector2(
-                downDirection.X * cosAngle - downDirection.Y * sinAngle,
-                downDirection.X * sinAngle + downDirection.Y * cosAngle
-            );
-
-            P1 = Center + l1 * firstSegmentDirection;
-
-            float y2 = target.Y - l3;
-            float deltaY = y2 - P1.Y;
-            float deltaX;
-            try {
-                deltaX = (float)Math.Sqrt(l2 * l2 - deltaY * deltaY);
-            } catch {
-                deltaX = 0;
-                y2 = P1.Y - l2;
-            }
-
-            float x2_positive = P1.X + deltaX;
-            float x2_negative = P1.X - deltaX;
-            float x2 = (Math.Abs(x2_positive - target.X) < Math.Abs(x2_negative - target.X)) ? x2_positive : x2_negative;
-
-            P2 = new Vector2(x2, y2);
-
-            float distP2ToTarget = Vector2.Distance(P2, target);
-            if (Math.Abs(distP2ToTarget - l3) > 0.001f) {
-                P2 = new Vector2(P1.X, P1.Y - l2);
-                target = new Vector2(P2.X, P2.Y + l3);
-            }
-
-            return target;
         }
 
         /// <summary>受击与解体表现。全部在 <c>!dedServ</c> 内,纯本地</summary>

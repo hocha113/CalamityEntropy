@@ -1,40 +1,33 @@
 ﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.NPCs.Prophet.Core;
-using InnoVault;
+using InnoVault.Rigs2D.Runtime;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.GameContent;
 
 namespace CalamityEntropy.Content.NPCs.Prophet
 {
     /// <summary>
     /// 先知的绘制层:纯本地,只读状态与表现量,不回写任何 gameplay 状态。
-    /// 本体、鳍、尾迹都读同一个平滑层级 —— <c>NPC.Center</c> 的原始值
-    /// (<c>NoMultiplayerSmoothingByType</c> 已关掉原版偏移,纠偏器每帧把 <c>netOffset</c> 清零),
-    /// 所以尾迹接缝不会在收包时跳开
+    /// 本体、翅、尾是同一副 Rigs2D 骨架(TheProphet.Rig.cs),读的是同一层位置:AI 开头 <c>CEBossNetMotion.BeginFrame</c> 已把
+    /// <c>netOffset</c> 清零(<c>NoMultiplayerSmoothingByType</c> 也关掉了原版偏移),骨架根又是在 AI 里按 <c>NPC.Center</c> 推进的,
+    /// 所以收包时尾根不会跳开
     /// </summary>
     public partial class TheProphet
     {
-        //绘制用贴图,加载期由 VaultLoaden 赋值,只在客户端绘制路径读取
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Prophet/Wing", 1, 2, AssetMode = AssetMode.TextureValueArray)]
-        private static Texture2D[] fintexs;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Prophet/Tail")]
-        private static Asset<Texture2D> tailTex;
-        [VaultLoaden("CalamityEntropy/Content/NPCs/Prophet/ring")]
-        private static Asset<Texture2D> ringTex;
+        //本体、两种翅、尾带与尾环的贴图都由 Rigs2D 骨架件持有(Assets/Rigs/Prophet.rig.json),这里不再声明贴图字段
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) {
+            if (!RigReady) {
+                return false;
+            }
             if (Main.zenithWorld) {
-                DrawTail();
-                DrawFins();
+                //天顶世界:骨架只出翅与尾(body 件已隐藏),本体仍由旧巡洋舰替身按原样绘制
+                DrawRig(spriteBatch);
                 return zenithAI.PreDraw(NPC, spriteBatch, screenPos, drawColor);
             }
-            else {
-                Draw();
-            }
+            Draw();
             return false;
         }
 
@@ -44,12 +37,7 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                 spawnAnm = 0;
             }
             if (spawnAnm < ProphetDirector.SpawnAnimDrawFrames) {
-                Main.spriteBatch.UseBlendState(BlendState.AlphaBlend);
-                DrawTail();
-                DrawFins();
-                Texture2D tex = TextureAssets.Npc[NPC.type].Value;
-                Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition, null, Color.White, rl + MathHelper.PiOver2, tex.Size() / 2, NPC.scale, SpriteEffects.None);
-                Main.spriteBatch.UseBlendState(BlendState.AlphaBlend);
+                DrawRig(Main.spriteBatch);
             }
             if (spawnAnm > 0) {
                 float a = (float)Math.Sin(spawnAnm / 120f * MathHelper.Pi);
@@ -125,6 +113,16 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             }
         }
 
+        /// <summary>
+        /// 整副骨架按层序一遍画完:尾带(0)→ 尾环(1)→ 内翅两片(2、3)→ 外翅两片(4、5)→ 本体(6),与原绘制顺序一致。
+        /// 件与带全是满亮(件 <c>unlit</c> + <c>Flat(Color.White)</c>,原来就是 <c>Color.White</c> 绘制);
+        /// 带状件自己切一轮批次(Immediate)并回到 Deferred / AlphaBlend,调用方处在任意已 Begin 的批次内即可
+        /// </summary>
+        private void DrawRig(SpriteBatch spriteBatch) {
+            Rig2DDrawContext ctx = Rig2DDrawContext.World().Flat(Color.White);
+            Rig2DRenderer.DrawAll(spriteBatch, rig, in ctx);
+        }
+
         /// <summary>出生光环的取点:61 个点绕一圈,随全局时间反向旋转,c 控制转速与方向</summary>
         public List<Vector2> GP(float distAdd = 0, float c = 1) {
             float dist = distAdd;
@@ -133,48 +131,6 @@ namespace CalamityEntropy.Content.NPCs.Prophet
                 points.Add(new Vector2(dist, 0).RotatedBy(MathHelper.ToRadians(i * 6 - 80 * c * Main.GlobalTimeWrappedHourly)));
             }
             return points;
-        }
-
-        public void DrawFins() {
-            float rotj = finRotCounter <= 0.4f ? CEUtils.GetRepeatedCosFromZeroToOne(finRotCounter / 0.4f, 1) : 1 - CEUtils.GetRepeatedCosFromZeroToOne((finRotCounter - 0.4f) / 0.6f, 1);
-            Main.EntitySpriteDraw(fintexs[1], NPC.Center + new Vector2(-20, -20).RotatedBy(NPC.rotation) - Main.screenPosition, null, Color.White, rl - rotj, fintexs[1].Size(), NPC.scale, SpriteEffects.None);
-            Main.EntitySpriteDraw(fintexs[1], NPC.Center + new Vector2(-20, 20).RotatedBy(rl) - Main.screenPosition, null, Color.White, rl + rotj, fintexs[1].Size() * new Vector2(1, 0), NPC.scale, SpriteEffects.FlipVertically);
-            Main.EntitySpriteDraw(fintexs[0], NPC.Center + new Vector2(0, -20).RotatedBy(rl) - Main.screenPosition, null, Color.White, rl - 1 + rotj, new Vector2(fintexs[0].Width * 0.5f, fintexs[0].Height), NPC.scale, SpriteEffects.None);
-            Main.EntitySpriteDraw(fintexs[0], NPC.Center + new Vector2(0, 20).RotatedBy(rl) - Main.screenPosition, null, Color.White, rl + 1 - rotj, new Vector2(fintexs[0].Width * 0.5f, 0), NPC.scale, SpriteEffects.FlipVertically);
-        }
-
-        public void DrawTail() {
-            if (tail == null || tail.Count < 3) {
-                return;
-            }
-            List<ColoredVertex> ve = new List<ColoredVertex>();
-            Color b = Color.White;
-
-            for (int i = 0; i < tail.Count - 3; i++) {
-                ve.Add(new ColoredVertex(tail[i].position - Main.screenPosition + (tail[i + 1].position - tail[i].position).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 40,
-                      new Vector3((((float)i) / tail.Count), 1, 1),
-                      b));
-                ve.Add(new ColoredVertex(tail[i].position - Main.screenPosition + (tail[i + 1].position - tail[i].position).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 40,
-                      new Vector3((((float)i) / tail.Count), 0, 1),
-                      b));
-
-            }
-            ve.Add(new ColoredVertex(NPC.Center - Main.screenPosition + (NPC.Center - tail[tail.Count - 1].position).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 40,
-                      new Vector3((float)1, 1, 1),
-                      b));
-            ve.Add(new ColoredVertex(NPC.Center - Main.screenPosition + (NPC.Center - tail[tail.Count - 1].position).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 40,
-                  new Vector3((float)1, 0, 1),
-                  b));
-            GraphicsDevice gd = Main.graphics.GraphicsDevice;
-            if (ve.Count >= 3) {
-                Texture2D tx = tailTex.Value;
-                gd.Textures[0] = tx;
-                gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                Texture2D ring = ringTex.Value;
-                if (tail.Count > 10) {
-                    Main.EntitySpriteDraw(ring, tail[8].position - Main.screenPosition, null, Color.White, (tail[9].position - tail[8].position).ToRotation() - MathHelper.PiOver2, ring.Size() / 2f, NPC.scale, SpriteEffects.None);
-                }
-            }
         }
     }
 }

@@ -54,9 +54,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
         /// <summary>脱战倒计时(原 <c>deactiveCount</c>),接战时重置成 150,归零即消失</summary>
         public int deactiveCount = LuminarisDirector.DeactiveFramesInitial;
 
-        /// <summary>两条尾巴的绳模拟。纯绘制,各端本地推进</summary>
-        public Rope tail1 = null;
-        public Rope tail2 = null;
+        //两条尾巴的绳模拟与本体图集件都在 Rigs2D 骨架里(Luminaris.Rig.cs)。纯绘制,各端本地推进
         #endregion
 
         #region 定义
@@ -246,7 +244,6 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
             if (Context.AfterImageTime > 0) {
                 Context.AfterImageTime--;
             }
-            EnsureTails();
             //整数除法 lifeMax / 2,单向不回退。原代码每帧无条件重写 phase,这里只在真的翻档时写一次并发包
             if (NPC.life <= NPC.lifeMax / LuminarisDirector.Phase2LifeDivisor && Context.Phase != 2) {
                 Context.Phase = 2;
@@ -283,7 +280,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
                 }
             }
 
-            UpdateTails();
+            UpdateBodyRig();
             Context.OldPos = NPC.Center;
             PushTrail();
 
@@ -319,32 +316,7 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
             NPC.rotation = 0;
         }
 
-        #region 尾巴与尾迹
-        private void EnsureTails() {
-            if (tail1 == null || tail2 == null) {
-                tail1 = new Rope(NPC.Center, LuminarisDirector.TailSegCount, LuminarisDirector.TailSegLength,
-                    LuminarisDirector.TailInitGravity, LuminarisDirector.TailDamping, LuminarisDirector.TailAccuracy);
-                tail2 = new Rope(NPC.Center, LuminarisDirector.TailSegCount, LuminarisDirector.TailSegLength,
-                    LuminarisDirector.TailInitGravity, LuminarisDirector.TailDamping, LuminarisDirector.TailAccuracy);
-            }
-        }
-
-        /// <summary>
-        /// 尾巴一帧走 5 个子步:绳根沿「上一帧位置 → 本帧位置」插值推进,每步 <c>Update()</c> 一次。
-        /// 构造用的重力是 0.14,逐帧改写成 0.12,原代码就是两个值
-        /// </summary>
-        private void UpdateTails() {
-            for (float i = 0; i <= 1; i += LuminarisDirector.TailSampleStep) {
-                Vector2 sample = NPC.velocity + Vector2.Lerp(Context.OldPos, NPC.Center, i);
-                tail1.Start = sample + new Vector2(-LuminarisDirector.TailAnchorSide, LuminarisDirector.TailAnchorBack).RotatedBy(NPC.rotation) * NPC.scale;
-                tail2.Start = sample + new Vector2(LuminarisDirector.TailAnchorSide, LuminarisDirector.TailAnchorBack).RotatedBy(NPC.rotation) * NPC.scale;
-                tail1.gravity = LuminarisDirector.TailFrameGravity;
-                tail2.gravity = LuminarisDirector.TailFrameGravity;
-                tail1.Update();
-                tail2.Update();
-            }
-        }
-
+        #region 尾迹
         /// <summary>
         /// 尾迹采样:每帧加一个点,上限 <c>24 + (int)MegaTrail × 16</c>。
         /// 裁剪循环跑三次是为了 MegaTrail 掉下来、上限缩短时能快点收敛

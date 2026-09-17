@@ -42,9 +42,9 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
 
         public int TailNPCIndex = -1;
         public NPC tail;
-        public List<TailSeg> segs;
+        //尾巴骨架(Rigs2D 实例与句柄)在 ApsychosTailRig.cs;骨节坐标读 TailSegCenter(i)
 
-        /// <summary>虚拟骨节。盔甲尾(SmolderingHelmet)用 <c>using static</c> 取这个类型,不能挪走</summary>
+        /// <summary>虚拟骨节。本体的尾巴已迁到 Rigs2D,不再用它;盔甲尾(SmolderingHelmet)用 <c>using static</c> 取这个类型,不能挪走</summary>
         public class TailSeg
         {
             public Vector2 Center = Vector2.Zero;
@@ -288,10 +288,10 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
                 PRTLoader.NewParticle<PRT_CustomPulse>(NPC.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.05f, 24);
                 PRTLoader.NewParticle<PRT_CustomPulse>(NPC.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.035f, 18);
                 PRTLoader.NewParticle<PRT_CustomPulse>(NPC.Center, Vector2.Zero, Color.OrangeRed * 1.4f, 0.005f).Configure("CalamityEntropy/Assets/Particles/ShatteredExplosion", Vector2.One, CEUtils.randomRot(), 0.005f, scale * 0.02f, 15);
-                if (tail != null && segs != null) {
+                if (tail != null && TailRigReady) {
                     Gore.NewGore(NPC.GetSource_Death(), tail.Center, CEUtils.randomPointInCircle(6), Mod.Find<ModGore>("ApsychosGore1").Type);
-                    foreach (var seg in segs) {
-                        Gore.NewGore(NPC.GetSource_Death(), seg.Center, CEUtils.randomPointInCircle(6), Mod.Find<ModGore>("ApsychosGore2").Type);
+                    for (int i = 0; i < TailSegCount; i++) {
+                        Gore.NewGore(NPC.GetSource_Death(), TailSegCenter(i), CEUtils.randomPointInCircle(6), Mod.Find<ModGore>("ApsychosGore2").Type);
                     }
                 }
             }

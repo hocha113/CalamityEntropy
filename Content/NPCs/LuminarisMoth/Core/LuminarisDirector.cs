@@ -99,27 +99,11 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.Core
         /// </summary>
         public const int TrailTrimPerFrame = 3;
 
-        //==================== 尾巴绳 ====================
-
-        /// <summary>两条尾巴的 <c>Rope</c> 构造参数:10 节、节长 11.6、初始重力 (0, 0.14)、阻尼 0.054、迭代 30 次</summary>
-        public const int TailSegCount = 10;
-        public const float TailSegLength = 11.6f;
-        public static readonly Vector2 TailInitGravity = new Vector2(0, 0.14f);
-        public const float TailDamping = 0.054f;
-        public const int TailAccuracy = 30;
-
-        /// <summary>逐帧改写的重力(注意和构造用的 0.14 不同,原代码就是两个值)</summary>
-        public static readonly Vector2 TailFrameGravity = new Vector2(0, 0.12f);
-
-        /// <summary>
-        /// 一帧内的子步长。原代码 <c>for (float i = 0; i &lt;= 1; i += 0.25f)</c> 走 5 步:
-        /// 把绳根沿「上一帧位置 → 本帧位置」插值推进,每步都 <c>Update()</c> 一次
-        /// </summary>
-        public const float TailSampleStep = 0.25f;
-
-        /// <summary>绳根相对本体的偏移:左右各 14,向下 32,随本体朝向旋转并乘 scale</summary>
-        public const float TailAnchorSide = 14f;
-        public const float TailAnchorBack = 32f;
+        //==================== 尾巴绳(Rigs2D VerletStrand,数值以 Assets/Rigs/Luminaris.rig.json 为准) ====================
+        //原 Utilities.Rope:10 质点、节长 11.6、逐帧重力 (0, 0.12)、阻尼 0.054(速度乘 1/1.054 ≈ 0.9488)、30 次约束迭代,
+        //每帧沿「上一帧位置 → 本帧位置」走 5 个整步;绳根在本体下方 (∓14, 32) 随朝向旋转并乘 scale。
+        //对应骨架里两条 9 节 VerletStrand:substeps 5、gravity 3.0(3.0 × 0.2² × 5 = 0.6 = 5 × 0.12)、
+        //damping 0.769(0.9488⁵)、iterations 30,anchorA / anchorB 骨偏移 (∓14, 32)
 
         //==================== 天顶世界的分身 ====================
 

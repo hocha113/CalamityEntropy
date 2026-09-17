@@ -1,0 +1,46 @@
+{
+  "name": "Nihility",
+  "snapDistance": 1200,
+  "vars": { "anchorBack": 64, "ropeLinks": 29, "ropeLink": 10 },
+
+  "bones": [
+    { "name": "body" },
+    { "name": "anchor", "parent": "body", "offset": ["{-anchorBack}", 0] },
+
+    { "name": "backL", "parent": "anchor" },
+    { "name": "backR", "parent": "anchor" },
+    { "name": "midL", "parent": "anchor" },
+    { "name": "midR", "parent": "anchor" },
+    { "name": "frontL", "parent": "anchor" },
+    { "name": "frontR", "parent": "anchor" },
+
+    { "name": "rope1", "parent": "anchor", "length": "{ropeLink}" },
+    { "repeat": 28, "var": "i", "start": 2, "items": [
+      { "name": "rope{i}", "parent": "rope{i-1}", "atTip": true, "length": "{ropeLink}" }
+    ] }
+  ],
+
+  "pieces": [
+    { "name": "backL", "bone": "backL", "texture": "Content/NPCs/NihilityTwin/back", "proximal": [40, 46], "axisDeg": -90, "layer": 0, "unlit": true },
+    { "name": "backR", "bone": "backR", "texture": "Content/NPCs/NihilityTwin/back", "proximal": [40, 46], "axisDeg": -90, "mirror": true, "layer": 1, "unlit": true },
+    { "name": "midL", "bone": "midL", "texture": "Content/NPCs/NihilityTwin/mid", "proximal": [76, 34], "axisDeg": -90, "layer": 2, "unlit": true },
+    { "name": "midR", "bone": "midR", "texture": "Content/NPCs/NihilityTwin/mid", "proximal": [76, 46], "axisDeg": -90, "mirror": true, "layer": 3, "unlit": true },
+
+    { "name": "body", "bone": "body", "texture": "Content/NPCs/NihilityTwin/NihilityActeriophage", "proximalNormalized": true, "proximal": [0.5, 0.5], "axisDeg": -90, "layer": 5, "unlit": true },
+    { "name": "bodyAlt", "bone": "body", "texture": "Content/NPCs/NihilityTwin/BodyAlt", "proximalNormalized": true, "proximal": [0.5, 0.5], "axisDeg": -90, "layer": 5, "unlit": true, "visible": false },
+
+    { "name": "frontL", "bone": "frontL", "texture": "Content/NPCs/NihilityTwin/front", "proximal": [50, 6], "axisDeg": -90, "layer": 6, "unlit": true },
+    { "name": "frontR", "bone": "frontR", "texture": "Content/NPCs/NihilityTwin/front", "proximal": [50, 6], "axisDeg": -90, "mirror": true, "layer": 7, "unlit": true }
+  ],
+
+  "ribbons": [
+    { "name": "rope", "bones": ["rope1", { "repeat": 28, "var": "i", "start": 2, "items": ["rope{i}"] }],
+      "texture": "Content/NPCs/NihilityTwin/NihRope", "width": 14, "uv": "tile", "tileLength": 28, "includeTip": true, "layer": -1, "unlit": true }
+  ],
+
+  "solvers": [
+    { "name": "rope", "type": "VerletStrand", "bones": ["rope1", { "repeat": 28, "var": "i", "start": 2, "items": ["rope{i}"] }],
+      "gravity": 0, "damping": 0.994, "iterations": 15, "restForce": 0, "sway": 0,
+      "fitLength": true, "fitFactor": 0.828571, "substeps": 1 }
+  ]
+}

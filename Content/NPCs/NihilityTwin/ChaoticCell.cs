@@ -1,9 +1,12 @@
-﻿using CalamityEntropy.Content.Biomes;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Biomes;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Core.AI;
 using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using InnoVault;
+using InnoVault.Rigs2D.Data;
+using InnoVault.Rigs2D.Runtime;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -113,7 +116,62 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             netMotion.OnSnapshot(NPC, 0);
         }
 
-        public List<CCTentacle> tentacles;
+        //==================== 触须骨架(Rigs2D,定义在 Assets/Rigs/ChaoticCell.rig.json) ====================
+        //八条 11 节 ChainFollow 触须带:根点在细胞中心外 30 像素、按 45° 步进,根向带一个慢余弦摆头;
+        //每节按「与前一节的相对角 ≤ 0.2、朝向以 0.4 收敘」逐节铺开,与迁移前的 CCTentacle 逐帧数学等价。纯绘制
+
+        private Rig2DInstance rig;
+        [Rig2DBone("tRoot{0}", Count = TentacleCount)]
+        private readonly int[] tentacleRoots = new int[TentacleCount];
+        [Rig2DRibbon("tent{0}", Count = TentacleCount)]
+        private readonly int[] tentacleRibbons = new int[TentacleCount];
+        [Rig2DRibbon("glow{0}", Count = TentacleCount)]
+        private readonly int[] glowRibbons = new int[TentacleCount];
+        [Rig2DPiece("body")]
+        private int bodyPiece;
+
+        /// <summary>触须条数,与 rig.json 里的 repeat 8 对齐</summary>
+        private const int TentacleCount = 8;
+        /// <summary>根向摆头:原代码每条触须各自把 <c>localAI[2]</c> 加一,八条共享一个计数器,所以相位每帧走 8 × 0.008</summary>
+        private const float TentacleWobbleSpeed = 0.008f * TentacleCount;
+        private const float TentacleWobbleAmp = 0.6f;
+
+        private bool TentacleRigReady => rig != null && rig.Bound && rig.Built;
+
+        private void EnsureTentacleRig() {
+            if (rig != null) {
+                return;
+            }
+            Vault2DRig asset = CERigAssets.ChaoticCell;
+            if (asset == null || !asset.IsValid) {
+                return;
+            }
+            rig = asset.CreateInstance(NPC.whoAmI);
+            rig.Bind(this, null);
+            //图鉴里的假体不在世界里,别让调试叠层去画它
+            rig.DebugVisible = !NPC.IsABestiaryIconDummy;
+        }
+
+        /// <summary>
+        /// 触须骨架落地。根点取「本帧结束后」的位置(<c>Center + velocity</c>,原逻辑同);
+        /// 图鉴假体缩到一半(原代码把根距与节距都乘 0.5,带宽从 12 缩到 6,这里整副 Scale 0.5 一并覆盖)
+        /// </summary>
+        private void UpdateTentacleRig() {
+            EnsureTentacleRig();
+            if (rig == null || !rig.Bound) {
+                return;
+            }
+            bool dummy = NPC.IsABestiaryIconDummy;
+            rig.Scale = dummy ? 0.5f : NPC.scale;
+            rig.SetRoot(NPC.Center + NPC.velocity, NPC.rotation);
+            for (int k = 0; k < tentacleRoots.Length; k++) {
+                float wobble = (float)Math.Cos(rig.Time * TentacleWobbleSpeed + k * 0.008f) * TentacleWobbleAmp;
+                //根骨静息朝内(链的 Dir 约定指向领队),摆头叠在半圈之上
+                rig.SetBoneLocalRotation(tentacleRoots[k], MathHelper.Pi + wobble);
+            }
+            rig.Step();
+        }
+
         /// <summary>
         /// 细胞自己只做两件事:触须骨架(纯绘制)与逐帧阻尼。攻击与航向全由本体每帧写进 <c>velocity</c>,
         /// 各端跑的是同一份本体状态机,所以这里不需要任何权威端分支
@@ -123,17 +181,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             if (client) {
                 netMotion.BeginFrame(NPC);
             }
-            if (tentacles == null) {
-                int c = 0;
-                tentacles = new List<CCTentacle>();
-                for (float i = 0; i < 358; i += 45f) {
-                    c++;
-                    tentacles.Add(new CCTentacle(MathHelper.ToRadians(i), c % 2 == 0 ? 94 : 78));
-                }
-            }
-            foreach (var t in tentacles) {
-                t.Update(NPC);
-            }
+            UpdateTentacleRig();
             if (NPC.ai[2] > 0) {
                 if (al < 1) {
                     al += 0.02f;
@@ -190,82 +238,53 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
         }
         public int frame = 1;
         public float al = 0;
-        public class CCTentacle
-        {
-            public float rot;
-            public List<Vector2> points;
-            public List<float> pointRots;
-            public float Length;
-            public void Update(NPC npc) {
-                pointRots[0] = npc.rotation + rot + (float)(Math.Cos(npc.localAI[2]++ * 0.008f) * 0.6f);
-                points[0] = npc.Center + npc.velocity + (npc.rotation + rot).ToRotationVector2() * 30 * (npc.IsABestiaryIconDummy ? 0.5f : 1);
 
-                for (int i = 1; i < points.Count; i++) {
-                    pointRots[i] = (points[i] - points[i - 1]).ToRotation();
-                    points[i] = points[i - 1] + (points[i] - points[i - 1]).normalize() * Length / 8f * (npc.IsABestiaryIconDummy ? 0.5f : 1);
-                    pointRots[i] = CEUtils.RotateTowardsAngle(pointRots[i], pointRots[i - 1], 0.4f, false);
-                    if (CEUtils.GetAngleBetweenVectors(pointRots[i - 1].ToRotationVector2(), pointRots[i].ToRotationVector2()) > 0.2f) {
-                        pointRots[i] = CEUtils.RotateTowardsAngle(pointRots[i], pointRots[i - 1], CEUtils.GetAngleBetweenVectors(pointRots[i - 1].ToRotationVector2(), pointRots[i].ToRotationVector2()) - 0.2f);
-                    }
-                    points[i] = points[i - 1] + pointRots[i].ToRotationVector2() * Length / 8f * (npc.IsABestiaryIconDummy ? 0.5f : 1);
-                }
-            }
-
-            public CCTentacle(float r, float l) {
-                rot = r;
-                Length = l;
-                pointRots = new List<float>();
-                points = new List<Vector2>();
-                for (int i = 0; i < 12; i++) {
-                    points.Add(Vector2.Zero);
-                    pointRots.Add(0);
-                }
+        /// <summary>切换正常触须带 / 加色发光带的可见性(bloom 通道用同一串骨、另一组 additive 带状件)</summary>
+        private void SetTentacleGlowVisible(bool glow) {
+            for (int k = 0; k < tentacleRibbons.Length; k++) {
+                rig.Ribbons[tentacleRibbons[k]].Visible = !glow;
+                rig.Ribbons[glowRibbons[k]].Visible = glow;
             }
         }
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) {
-            if (tentacles == null) {
-                int c = 0;
-                tentacles = new List<CCTentacle>();
-                for (float i = 0; i < 358; i += 45f) {
-                    c++;
-                    tentacles.Add(new CCTentacle(MathHelper.ToRadians(i), c % 2 == 0 ? 94 : 78));
-                }
-            }
-            Texture2D tex = NPC.getTexture();
 
-            if (NPC.IsABestiaryIconDummy) {
-                foreach (var t in tentacles) {
-                    t.Update(NPC);
-                }
-                if (tentacles != null) {
-                    foreach (var tent in tentacles) {
-                        List<ColoredVertex> ve = new List<ColoredVertex>();
-                        Color b = Color.White;
-                        List<Vector2> points = tent.points;
-                        float lc = 1;
-                        float jn = 0;
-
-                        for (int i = 1; i < points.Count; i++) {
-                            jn = (float)(i - 1) / (points.Count - 2);
-                            ve.Add(new ColoredVertex(points[i] - screenPos + (points[i] - points[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 6 * lc,
-                                  new Vector3(jn, 1, 1),
-                                  b));
-                            ve.Add(new ColoredVertex(points[i] - screenPos + (points[i] - points[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 6 * lc,
-                                  new Vector3(jn, 0, 1),
-                                  b));
-                        }
-
-                        SpriteBatch sb = Main.spriteBatch;
-                        GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                        if (ve.Count >= 3) {
-                            gd.Textures[0] = CEUtils.RequestTex($"CalamityEntropy/Content/NPCs/NihilityTwin/H{(tent.Length > 80 ? "1" : "2")}");
-                            gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                        }
+        /// <summary>
+        /// 图鉴假体:AI 不跑,骨架在这里推进;带状件直接以 <paramref name="screenPos"/> 为视口偏移画进当前批次
+        /// (图鉴批次矩阵与世界不同,Rig2DDrawContext.World 的批次参数不适用,所以这里只借骨骼坐标手铺条带,不切批次)
+        /// </summary>
+        private void DrawBestiary(SpriteBatch spriteBatch, Vector2 screenPos, Texture2D tex) {
+            UpdateTentacleRig();
+            if (TentacleRigReady) {
+                GraphicsDevice gd = Main.graphics.GraphicsDevice;
+                for (int k = 0; k < tentacleRibbons.Length; k++) {
+                    Ribbon2DDef def = rig.Definition.Ribbons[tentacleRibbons[k]];
+                    int[] chain = def.BoneIndices;
+                    List<ColoredVertex> ve = new List<ColoredVertex>();
+                    for (int i = 1; i < chain.Length; i++) {
+                        Vector2 prev = rig.Bones[chain[i - 1]].Pos;
+                        Vector2 cur = rig.Bones[chain[i]].Pos;
+                        float jn = (float)(i - 1) / (chain.Length - 2);
+                        Vector2 side = (cur - prev).ToRotation().ToRotationVector2().RotatedBy(MathHelper.PiOver2) * 6;
+                        ve.Add(new ColoredVertex(cur - screenPos + side, new Vector3(jn, 1, 1), Color.White));
+                        ve.Add(new ColoredVertex(cur - screenPos - side, new Vector3(jn, 0, 1), Color.White));
+                    }
+                    Texture2D ribbonTex = rig.Asset.RibbonTextures.Length > tentacleRibbons[k] ? rig.Asset.RibbonTextures[tentacleRibbons[k]]?.Value : null;
+                    if (ve.Count >= 3 && ribbonTex != null) {
+                        gd.Textures[0] = ribbonTex;
+                        gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
                     }
                 }
+            }
+            spriteBatch.Draw(tex, NPC.Center - screenPos, null, Color.White, NPC.rotation, tex.Size() / 2, 0.5f, SpriteEffects.None, 0);
+        }
 
-                spriteBatch.Draw(tex, NPC.Center - screenPos, null, Color.White, NPC.rotation, tex.Size() / 2, 0.5f, SpriteEffects.None, 0);
-
+        /// <summary>
+        /// 绘制顺序与迁移前一致:先请宿主画双子绳(压在最底),再在加色批次里画 8 方向 × 3 遍的 bloom(触须发光带 + 本体),
+        /// 最后正常画触须带与本体。带状件每组会自己切一轮批次,所以 bloom 的每个方向都重开一次加色批次
+        /// </summary>
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) {
+            Texture2D tex = NPC.getTexture();
+            if (NPC.IsABestiaryIconDummy) {
+                DrawBestiary(spriteBatch, screenPos, tex);
                 return false;
             }
             if (NPC.realLife >= 0) {
@@ -291,76 +310,32 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             else {
                 return false;
             }
-            Color color = Color.White;
-
-
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+            if (!TentacleRigReady) {
+                Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition, null, Color.White, NPC.rotation, tex.Size() / 2, NPC.scale, SpriteEffects.None);
+                return false;
+            }
 
             if (al > 0) {
+                SetTentacleGlowVisible(true);
+                Rig2DDrawContext glowCtx = Rig2DDrawContext.World().Flat(Color.White, al);
                 for (int i = 0; i < 8; i++) {
+                    Vector2 ofs = MathHelper.ToRadians(i * (360f / 8f)).ToRotationVector2() * 4;
+                    glowCtx.ViewOffset = Main.screenPosition - ofs;
                     for (int j = 0; j < 3; j++) {
-                        if (tentacles != null) {
-                            foreach (var tent in tentacles) {
-                                List<ColoredVertex> ve = new List<ColoredVertex>();
-                                Color b = Color.White * al;
-                                List<Vector2> points = tent.points;
-                                float lc = 1;
-                                float jn = 0;
-
-                                for (int ij = 1; ij < points.Count; ij++) {
-                                    jn = (float)(ij - 1) / (points.Count - 2);
-                                    ve.Add(new ColoredVertex(points[ij] - Main.screenPosition + MathHelper.ToRadians(i * (360f / 8f)).ToRotationVector2() * 4 + (points[ij] - points[ij - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 12 * lc,
-                                          new Vector3(jn, 1, 1),
-                                          b));
-                                    ve.Add(new ColoredVertex(points[ij] - Main.screenPosition + MathHelper.ToRadians(i * (360f / 8f)).ToRotationVector2() * 4 + (points[ij] - points[ij - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 12 * lc,
-                                          new Vector3(jn, 0, 1),
-                                          b));
-                                }
-
-                                SpriteBatch sb = Main.spriteBatch;
-                                GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                                if (ve.Count >= 3) {
-                                    gd.Textures[0] = CEUtils.RequestTex($"CalamityEntropy/Content/NPCs/NihilityTwin/H{(tent.Length > 80 ? "1" : "2")}");
-                                    gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                                }
-                            }
-                        }
-                        Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition + MathHelper.ToRadians(i * (360f / 8f)).ToRotationVector2() * 4, null, Color.White * al, NPC.rotation, tex.Size() / 2, NPC.scale, SpriteEffects.None);
+                        //本体件跟随当前批次的混合态,先在加色批次里画;发光带按定义就是加色,自己切批次
+                        Main.spriteBatch.End();
+                        Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+                        Rig2DRenderer.Draw(spriteBatch, rig, in glowCtx);
+                        Rig2DRibbonRenderer.DrawIndices(spriteBatch, rig, rig.Bones, in glowCtx, glowRibbons);
                     }
                 }
+                SetTentacleGlowVisible(false);
             }
+
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-
-            if (tentacles != null) {
-                foreach (var tent in tentacles) {
-                    List<ColoredVertex> ve = new List<ColoredVertex>();
-                    Color b = Color.White;
-                    List<Vector2> points = tent.points;
-                    float lc = 1;
-                    float jn = 0;
-
-                    for (int i = 1; i < points.Count; i++) {
-                        jn = (float)(i - 1) / (points.Count - 2);
-                        ve.Add(new ColoredVertex(points[i] - Main.screenPosition + (points[i] - points[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(90)) * 12 * lc,
-                              new Vector3(jn, 1, 1),
-                              b));
-                        ve.Add(new ColoredVertex(points[i] - Main.screenPosition + (points[i] - points[i - 1]).ToRotation().ToRotationVector2().RotatedBy(MathHelper.ToRadians(-90)) * 12 * lc,
-                              new Vector3(jn, 0, 1),
-                              b));
-                    }
-
-                    SpriteBatch sb = Main.spriteBatch;
-                    GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                    if (ve.Count >= 3) {
-                        gd.Textures[0] = CEUtils.RequestTex($"CalamityEntropy/Content/NPCs/NihilityTwin/H{(tent.Length > 80 ? "1" : "2")}");
-                        gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
-                    }
-                }
-            }
-            Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition, null, color, NPC.rotation, tex.Size() / 2, NPC.scale, SpriteEffects.None);
+            Rig2DDrawContext ctx = Rig2DDrawContext.World().Flat(Color.White);
+            Rig2DRenderer.DrawAll(spriteBatch, rig, in ctx);
             Main.spriteBatch.ExitShaderRegion();
             return false;
         }

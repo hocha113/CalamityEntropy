@@ -97,7 +97,8 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
 
             if (OnLauncher) {
                 NPC.Center = am.HarpoonPos;
-                NPC.rotation = am.harpoon.Seg2Rot;
+                //本体骨架首帧之前臂门面还没建好,先按垂下(π/2)处理
+                NPC.rotation = am.HarpoonArm?.BarrelDir ?? MathHelper.PiOver2;
                 Stuck = false;
                 NPC.velocity *= 0;
                 sVel *= 0;
@@ -107,7 +108,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             if (sVel == Vector2.Zero) {
                 sVel = NPC.velocity;
             }
-            NPC.rotation = (NPC.Center - ChainTail(am)).ToRotation();
+            NPC.rotation = (NPC.Center - am.HarpoonChainTail).ToRotation();
 
             if (!Stuck && Back-- < 0) {
                 //回收:朝枪口加速并阻尼,够近就挂回架上
@@ -166,10 +167,6 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             }
         }
 
-        /// <summary>锁链尾端:枪口沿发射方向回退 72,绘制与朝向都读它</summary>
-        private Vector2 ChainTail(AcropolisMachine am)
-            => am.HarpoonPos - am.harpoon.Seg2Rot.ToRotationVector2() * AcropolisDirector.HarpoonChainTail * NPC.scale;
-
         /// <summary>定长块。原版这个实体完全没有 ExtraAI,五个状态字段从不过线</summary>
         public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(OnLauncher);
@@ -195,13 +192,14 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             return true;
         }
 
+        /// <summary>飞行中的鱼叉:先画本体骨架里的锁链带(从枪口后方到鱼叉,压在鱼叉之下),再画轮廓与鱼叉本体</summary>
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) {
             AcropolisMachine am = OwnerMachine;
             if (OnLauncher || am == null)
                 return false;
             //复用 AcropolisMachine 声明的轮廓贴图字段
             Texture2D harpoonOutline = AcropolisMachine.harpoonOutlineTex.Value;
-            CEUtils.drawChain(NPC.Center, ChainTail(am), 18, "CalamityEntropy/Content/NPCs/Acropolis/HarpoonChain");
+            am.DrawHarpoonChain(spriteBatch);
             Texture2D harpoon3 = NPC.getTexture();
             for (float r = 0; r <= 360; r += 60) {
                 Main.EntitySpriteDraw(harpoonOutline, MathHelper.ToRadians(r).ToRotationVector2() * 2 + NPC.Center - Main.screenPosition, null, Color.OrangeRed, NPC.rotation, new Vector2(70, harpoon3.Height / 2f), NPC.scale, am.dir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);

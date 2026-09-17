@@ -1,0 +1,43 @@
+{
+  "name": "Prophet",
+  "snapDistance": 1200,
+  "vars": { "wingBack": 20, "wingSide": 20, "tailBack": 26, "tailSeg": 24 },
+
+  "bones": [
+    { "name": "body" },
+
+    { "name": "wing2L", "parent": "body", "offset": ["{-wingBack}", "{-wingSide}"] },
+    { "name": "wing2R", "parent": "body", "offset": ["{-wingBack}", "{wingSide}"] },
+    { "name": "wing1L", "parent": "body", "offset": [0, "{-wingSide}"] },
+    { "name": "wing1R", "parent": "body", "offset": [0, "{wingSide}"] },
+
+    { "name": "tailAnchor", "parent": "body", "offset": ["{-tailBack}", 0] },
+    { "name": "tail1", "parent": "tailAnchor", "rotationDeg": 180, "length": "{tailSeg}" },
+    { "repeat": 9, "var": "i", "start": 2, "items": [
+      { "name": "tail{i}", "parent": "tail{i-1}", "atTip": true, "length": "{tailSeg}" }
+    ] },
+    { "name": "tailTip", "parent": "tail10", "atTip": true }
+  ],
+
+  "pieces": [
+    { "name": "ring", "bone": "tail8", "texture": "Content/NPCs/Prophet/ring", "proximalNormalized": true, "proximal": [0.5, 0.5], "axisDeg": -90, "layer": 1, "unlit": true },
+
+    { "name": "wing2L", "bone": "wing2L", "texture": "Content/NPCs/Prophet/Wing2", "proximal": [214, 116], "axis": 0, "layer": 2, "unlit": true },
+    { "name": "wing2R", "bone": "wing2R", "texture": "Content/NPCs/Prophet/Wing2", "proximal": [214, 116], "axis": 0, "mirror": true, "layer": 3, "unlit": true },
+    { "name": "wing1L", "bone": "wing1L", "texture": "Content/NPCs/Prophet/Wing1", "proximal": [102, 148], "axis": 0, "layer": 4, "unlit": true },
+    { "name": "wing1R", "bone": "wing1R", "texture": "Content/NPCs/Prophet/Wing1", "proximal": [102, 148], "axis": 0, "mirror": true, "layer": 5, "unlit": true },
+
+    { "name": "body", "bone": "body", "texture": "Content/NPCs/Prophet/TheProphet", "proximalNormalized": true, "proximal": [0.5, 0.5], "axisDeg": -90, "layer": 6, "unlit": true }
+  ],
+
+  "ribbons": [
+    { "name": "tail", "bones": ["tailTip", { "repeat": 10, "var": "i", "start": 1, "items": ["tail{11-i}"] }],
+      "texture": "Content/NPCs/Prophet/Tail", "width": 80, "uv": "stretch", "includeTip": false, "layer": 0, "unlit": true }
+  ],
+
+  "solvers": [
+    { "name": "tail", "type": "VerletStrand", "bones": ["tail1", { "repeat": 9, "var": "i", "start": 2, "items": ["tail{i}"] }],
+      "gravity": 0, "damping": 0.9, "iterations": 8, "restForce": 4.0,
+      "sway": 0.12, "swayFreq": [6.0, 2.2], "swayStep": [-0.22, -0.09], "swaySecond": 0.4, "substeps": 4 }
+  ]
+}

@@ -53,8 +53,6 @@ namespace CalamityEntropy.Common
         [VaultLoaden("CalamityEntropy/Assets/Effects/blur", AssetMode.EffectValue, "P0")]
         internal static Effect BlurShader;
 
-        public static Asset<Effect> KnifeRendering;
-
         //以下这批 .fx 的 pass 名不是「文件名+Pass」,必须显式指明,
         //否则 VaultLoaden 自动注册的 Filters.Scene 项会带一个不存在的 pass 名
         [VaultLoaden("CalamityEntropy/Assets/Effects/Cylinder", AssetMode.Effects, "P0")]

@@ -222,19 +222,22 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         }
     }
 
-    /// <summary>滤镜驱动的帧钩子:NPC 与弹幕都上报完再结算;换世界清零</summary>
+    /// <summary>滤镜与天幕驱动的帧钩子:NPC 与弹幕都上报完再结算;换世界清零</summary>
     public class VDScreenFxSystem : ModSystem
     {
         public override void PostUpdateEverything() {
             VDScreenFx.Update();
+            VDSkyDrive.Update();
         }
 
         public override void ClearWorld() {
             VDScreenFx.Reset();
+            VDSkyDrive.Reset();
         }
 
         public override void OnWorldUnload() {
             VDScreenFx.Reset();
+            VDSkyDrive.Reset();
         }
     }
 }

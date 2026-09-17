@@ -53,6 +53,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     VDVfx.Shake(npc.Center, 12f);
                     VDVfx.SparkBurst(npc.Center, VDVfx.VoidPurple, 60, 5f, 18f, 36);
                     VDVfx.Explosion(npc.Center, 1.1f, 26);
+                    //天幕:封锁力场整面亮起,冲击环从本体扩散
+                    VDSkyDrive.PushFlash(VDDirector.SkyFlashBeat);
                 }
             }
 

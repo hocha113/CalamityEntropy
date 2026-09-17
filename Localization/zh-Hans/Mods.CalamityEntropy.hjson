@@ -5340,8 +5340,6 @@ Projectiles: {
 	NemesisAlt.DisplayName: 天罚
 	NemesisHeld.DisplayName: 天罚
 	NemesisProj.DisplayName: 天罚
-	SpwanTextProj.DisplayName: 文字
-	BaseKnife.DisplayName: 挥舞基类
 	LashingBramblerodProjectile.DisplayName: 蔓生棘鞭
 	SilvaVine.DisplayName: 藤蔓护盾
 	FinalFractalHeld.DisplayName: 幽邃分形

@@ -60,10 +60,13 @@ namespace CalamityEntropy.Content.Skies
             sb.Begin(sort, blend, sampler, DepthStencilState.None, Main.Rasterizer, null, BackgroundMatrix());
         }
 
-        /// <summary>End 后在原始像素空间(无矩阵)重开批次,给全屏 shader pass 用。</summary>
-        public static void BeginRawScreen(SpriteBatch sb, BlendState blend, SamplerState sampler, SpriteSortMode sort = SpriteSortMode.Immediate) {
+        /// <summary>
+        /// End 后在原始像素空间(无矩阵)重开批次,给全屏 shader pass 用。
+        /// 传 effect 时批次自带该效果(Immediate 下 Begin 即 Apply);参数若在 Begin 之后才喂,画之前要再 Passes[0].Apply() 一次。
+        /// </summary>
+        public static void BeginRawScreen(SpriteBatch sb, BlendState blend, SamplerState sampler, SpriteSortMode sort = SpriteSortMode.Immediate, Effect effect = null) {
             sb.End();
-            sb.Begin(sort, blend, sampler, DepthStencilState.None, RasterizerState.CullNone, null);
+            sb.Begin(sort, blend, sampler, DepthStencilState.None, RasterizerState.CullNone, effect);
         }
 
         /// <summary>不 End、直接按调用方参数开批次(配合已手动 End 过的场合,如图元渲染之后)。</summary>

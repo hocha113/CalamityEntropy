@@ -20,6 +20,9 @@ namespace CalamityEntropy.Content.Skies
             SkyManager.Instance["CalamityEntropy:Snowgrave"] = new SnowgraveSky();
             Terraria.Graphics.Effects.Filters.Scene["CalamityEntropy:SunriseSky"] = new Filter(new TransScreenShaderData("FilterMiniTower").UseColor(Color.White).UseOpacity(0f), EffectPriority.VeryHigh);
             SkyManager.Instance["CalamityEntropy:SunriseSky"] = new SunriseSky();
+            //虚空驱逐舰「轨道封锁」天幕:独立键(现有 CalamityEntropy:VoidDestroyer 滤镜由 VDScreenFx 手动开关,不能共键),滤镜对惰性只为 ManageSpecialBiomeVisuals 不空引用
+            Terraria.Graphics.Effects.Filters.Scene[VDSky.Key] = new Filter(new TransScreenShaderData("FilterMiniTower").UseColor(Color.Transparent).UseOpacity(0f), EffectPriority.VeryHigh);
+            SkyManager.Instance[VDSky.Key] = new VDSky();
         }
 
         /// <summary>

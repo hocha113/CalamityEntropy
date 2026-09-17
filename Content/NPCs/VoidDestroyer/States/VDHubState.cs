@@ -72,6 +72,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 ctx.CoreGlow = Math.Max(ctx.CoreGlow, 0.3f + 0.7f * p);
                 if (Timer == postureStart + 1) {
                     VDVfx.Sound("VoidAnticipation", 0.7f, npc.Center, 3, 0.7f);
+                    //天幕力场跟着起势轻脉冲一下(不出冲击环)
+                    VDSkyDrive.PushFlash(VDDirector.SkyFlashPosture);
                 }
             }
 

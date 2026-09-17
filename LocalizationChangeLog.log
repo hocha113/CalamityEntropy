@@ -1218,4 +1218,6 @@
 [Mods.CalamityEntropy.Projectiles.VDHoloWyvern.DisplayName] - added
 [Mods.CalamityEntropy.Configs.Config.EnableRetroLighting] - removed // 配置项本体已删除:模组不再强制改写光照模式与水波质量,复古/迷幻光照无需开关即可使用
 [Mods.CalamityEntropy.LightModeTip] - removed // 孤儿键,代码里早已没有任何读取点
+[Mods.CalamityEntropy.Projectiles.BaseKnife.DisplayName] - removed // 挥舞基类随 BaseSwing/BaseKnife 体系整体移除,天罚(NemesisHeld)改为独立手持弹幕,键名不变
+[Mods.CalamityEntropy.Projectiles.SpwanTextProj.DisplayName] - removed // 孤岛弹幕,全库无调用,随类型一并删除
 

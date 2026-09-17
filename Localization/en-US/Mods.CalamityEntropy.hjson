@@ -5281,8 +5281,6 @@ Projectiles: {
 	NemesisAlt.DisplayName: Nemesis Alt
 	NemesisHeld.DisplayName: Nemesis Held
 	NemesisProj.DisplayName: Nemesis Proj
-	SpwanTextProj.DisplayName: Spwan Text Proj
-	BaseKnife.DisplayName: Base Knife
 	LashingBramblerodProjectile.DisplayName: Lashing Bramblerod Projectile
 	SilvaVine.DisplayName: Silva Vine
 	FinalFractalHeld.DisplayName: Final Fractal Held

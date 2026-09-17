@@ -26,6 +26,19 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         public static readonly Color SkyBlue = new Color(80, 160, 255);
         public static readonly Color RiftWhite = new Color(240, 230, 255);
         public static readonly Color CannonCore = new Color(255, 200, 255);
+        /// <summary>三阶段护盾的淡紫,天幕网格 P3 换成它</summary>
+        public static readonly Color ShieldLavender = new Color(210, 160, 255);
+
+        //天幕「轨道封锁」配色:底幕暗、饱和度低,弹幕永远比天亮
+        public static readonly Color SkyTop = new Color(8, 4, 18);
+        public static readonly Color SkyHorizon = new Color(34, 16, 62);
+        public static readonly Color SkyNebula = new Color(70, 30, 120);
+        /// <summary>被侵蚀星球的挖口热边与外圈微晕</summary>
+        public static readonly Color SkyErosion = new Color(190, 90, 255);
+        /// <summary>星球边缘的冷紫背光</summary>
+        public static readonly Color SkyPlanetRim = new Color(120, 80, 200);
+        /// <summary>地表环境光被拉向的虚空暮色</summary>
+        public static readonly Color SkyTileTint = new Color(90, 70, 130);
 
         /// <summary>闪现消失/出现的粒子(旧位置与新位置各一次)</summary>
         public static void BlinkBurst(Vector2 pos) {

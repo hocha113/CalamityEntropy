@@ -439,5 +439,61 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public const float CannonOverheatDrop = 60f;
         public const float CannonVignette = 0.55f;
         public const int CannonTail = 10;
+
+        //==================== 天幕「轨道封锁」(VDSky / VDSkyDrive 的全部数字;配色在 VDVfx)====================
+
+        /// <summary>存在包络淡入步长(每 tick):基座 opacity,与强度相乘</summary>
+        public const float SkyFadeStep = 1f / 60f;
+        /// <summary>出场:虚空随门涌入吞掉天空,0→1 用 90 帧(略慢于门开的 60 帧,门开一半天先暗)</summary>
+        public const int SkyEntranceFadeFrames = 90;
+        /// <summary>死亡:门开缩入(210)起虚空随本体离开,到真死(330)收干</summary>
+        public const int SkyDeathFadeStart = DeathPortalIn;
+        public const int SkyDeathFadeEnd = DeathDuration;
+        /// <summary>撤离:60 帧收干(本体 190 帧才消失,天先走,读成「它放弃了」)</summary>
+        public const int SkyDespawnFadeFrames = 60;
+        /// <summary>强度跟随上报值的每 tick 最大步长:20 帧内追上,出场/死亡的编排斜坡不会被抹平</summary>
+        public const float SkyTrackPerTick = 1f / 20f;
+        /// <summary>无人续租(本体消失)时的衰减步长:1 秒收干</summary>
+        public const float SkyFallPerTick = 1f / 60f;
+        /// <summary>阶段配色平滑(每 tick lerp):约 1.5 秒换完色</summary>
+        public const float SkyPhaseLerp = 0.03f;
+        /// <summary>星球侵蚀量三档:P1 已被啃四分之一,P3 过半;变形/护盾演出期间肉眼可见它再被啃掉一块</summary>
+        public static float SkyErosion(int phase) => phase >= 3 ? 0.70f : phase >= 2 ? 0.45f : 0.25f;
+        /// <summary>侵蚀逼近步长(每 tick):0.2 的档差走 120 帧,恰好铺满 132 帧的变形演出</summary>
+        public const float SkyErosionPerTick = 1f / 600f;
+        /// <summary>拍点闪光衰减(每 tick 乘):约 20 帧回落</summary>
+        public const float SkyFlashDecay = 0.88f;
+        /// <summary>转阶段 / 主炮出手的整面闪光强度</summary>
+        public const float SkyFlashBeat = 1f;
+        /// <summary>hub 起势拍的网格轻脉冲(全招通用的「要出手了」信号);觉得太频繁就归零</summary>
+        public const float SkyFlashPosture = 0.2f;
+        /// <summary>只有这个强度以上的闪光才从本体处扩散冲击环(起势脉冲不出环)</summary>
+        public const float SkyFlashRingThreshold = 0.5f;
+        /// <summary>冲击环扩散速度(屏高单位 / tick):约 30 帧横过一屏</summary>
+        public const float SkyFlashRingSpeed = 0.035f;
+        /// <summary>冲击环存活帧数</summary>
+        public const int SkyFlashRingLife = 90;
+        /// <summary>主炮蓄力通道:无上报时的衰减</summary>
+        public const float SkyChargeDecay = 0.9f;
+        /// <summary>主炮扫射与过热期间网格保持的能量读数(能量在被花掉,比蓄满时低)</summary>
+        public const float SkyCannonSweepCharge = 0.6f;
+
+        /// <summary>星球圆心(屏幕 UV,上方偏右;反重力时 y 翻到下侧)与半径(屏高单位)</summary>
+        public static readonly Vector2 SkyPlanetCenter = new Vector2(0.74f, 0.30f);
+        public const float SkyPlanetRadius = 0.22f;
+        /// <summary>星球随镜头的视差(屏高单位 / 世界像素 ÷ 屏高):整个 200 格场地跑满也只挪 0.12 屏</summary>
+        public const float SkyPlanetParallax = 0.02f;
+        /// <summary>星野两层视差(远 / 近)与星云视差</summary>
+        public const float SkyStarParallaxFar = 0.03f;
+        public const float SkyStarParallaxNear = 0.08f;
+        public const float SkyNebulaParallax = 0.05f;
+        /// <summary>六边形格边长(屏高单位):1080p 下约 60px 一格</summary>
+        public const float SkyGridCell = 0.055f;
+        /// <summary>网格基础亮度三档:极淡,弹幕永远比它亮</summary>
+        public static float SkyGridAlpha(int phase) => phase >= 3 ? 0.08f : phase >= 2 ? 0.055f : 0.03f;
+        /// <summary>网格以本体为中心的亮化半径三档(屏高单位)</summary>
+        public static float SkyGridBossRadius(int phase) => phase >= 3 ? 0.42f : phase >= 2 ? 0.32f : 0.24f;
+        /// <summary>地表环境光向虚空暮色拉的比例(乘可见强度):白天压暗,夜里略提亮,始终看得见脚下</summary>
+        public const float SkyTileTintAmount = 0.5f;
     }
 }

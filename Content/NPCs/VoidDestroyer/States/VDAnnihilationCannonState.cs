@@ -42,6 +42,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     ctx.CoreGlow = 1f;
                     ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, 0.3f);
                     VDScreenFx.ReportVignette(VDDirector.CannonVignette);
+                    //扫射期间天幕力场保持在被花掉的能量读数上
+                    VDSkyDrive.ReportCharge(VDDirector.SkyCannonSweepCharge);
                     if (Timer >= VDDirector.CannonSweepFrames) {
                         SwitchBeat(Beat.Overheat);
                         VDVfx.Sound("VoidBomb", 0.6f, npc.Center, 2, 1f);
@@ -59,6 +61,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     ctx.CoreGlow = 0f;
                     ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, 0.25f * (1f - p));
                     VDScreenFx.ReportVignette(VDDirector.CannonVignette * (1f - p));
+                    VDSkyDrive.ReportCharge(VDDirector.SkyCannonSweepCharge * (1f - p));
                     if (!Main.dedServ && Timer % 3 == 0) {
                         Vector2 pos = ctx.Owner.CorePos + CEUtils.randomPointInCircle(30f);
                         VDVfx.SparkBurst(pos, VDVfx.VoidPink, 2, 2f, 6f, 24, 0.4f, 0.9f);
@@ -80,6 +83,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             ctx.CoreGlow = Math.Max(ctx.CoreGlow, progress);
             ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, progress * progress * progress);
             VDScreenFx.ReportVignette(VDDirector.CannonVignette * progress);
+            //天幕:力场随蓄力爬亮、本体周围六边形逐格填实、星野向本体吸入
+            VDSkyDrive.ReportCharge(progress);
 
             if (Timer == 1) {
                 VDVfx.Sound("VoidAnticipation", 0.55f, npc.Center, 2, 1.2f);
@@ -123,6 +128,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             VDVfx.Shake(npc.Center, 14f, 4000f);
             VDVfx.Explosion(ctx.Owner.CorePos, 1.3f, 20);
             VDVfx.SparkBurst(ctx.Owner.CorePos, VDVfx.CannonCore, 50, 6f, 22f, 40);
+            //天幕:出手一帧力场整面亮起,冲击环从本体扩散
+            VDSkyDrive.PushFlash(VDDirector.SkyFlashBeat);
             Shoot<VDAnnihilationBeam>(ctx, ctx.Owner.CorePos, dir, VDDirector.DmgAnnihilationBeam, npc.whoAmI, VDDirector.CannonSweepFrames * sweepSign, start);
         }
 

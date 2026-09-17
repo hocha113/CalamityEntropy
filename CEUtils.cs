@@ -685,20 +685,6 @@ namespace CalamityEntropy
             return false;
         }
 
-        public static NMSGItem TFAW(this Item item) => item.GetGlobalItem<NMSGItem>();
-        public static NMSPLayer TFAW(this Player player) => player.GetModPlayer<NMSPLayer>();
-
-        /// <summary>
-        /// 用于将一个武器设置为手持刀剑类，这个函数若要正确设置物品的近战属性，需要让其在初始化函数中最后调用
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="item"></param>
-        public static void SetKnifeHeld<T>(this Item item) where T : ModProjectile {
-            item.noMelee = true;
-            item.noUseGraphic = true;
-            item.TFAW().IsShootCountCorlUse = true;
-            item.shoot = ModContent.ProjectileType<T>();
-        }
         public static Vector2 randVr(int min, int max) {
             return Main.rand.NextVector2Unit() * Main.rand.Next(min, max);
         }

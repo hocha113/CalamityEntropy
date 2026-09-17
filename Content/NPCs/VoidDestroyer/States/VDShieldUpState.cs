@@ -49,6 +49,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 VDVfx.Sound("VoidAttack", 1.1f, npc.Center, 2);
                 VDVfx.Shake(npc.Center, 8f);
                 VDVfx.SparkBurst(npc.Center, new Color(220, 170, 255), 40, 6f, 16f, 40);
+                //天幕:力场整面亮起;阶段已写 3,网格随之换成盾色、星球再被啃一块
+                VDSkyDrive.PushFlash(VDDirector.SkyFlashBeat);
             }
 
             if (Timer >= VDDirector.ShieldUpDuration) {

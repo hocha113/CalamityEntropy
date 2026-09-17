@@ -524,6 +524,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
                 return;
             }
 
+            //天幕续租:存在强度按状态编排(出场随门涌入、死亡随门离开、撤离收干),本体位置给网格亮化中心,核心亮度让网格跟着出招呼吸
+            VDSkyDrive.Report(SkyIntensity(), Context.Phase, NPC.Center, CoreGlow);
+
             //抖动只走绘制层:原版把 NPC 画在 position + netOffset,NoMultiplayerSmoothing 让它每帧被清零
             if (Context.ShakeStrength > 0.02f) {
                 CEBossNetMotion.DrawShake(NPC, new Vector2(
@@ -539,6 +542,26 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
                 if (Main.rand.NextBool(3)) {
                     VDVfx.SparkBurst(pos, new Color(230, 120, 255), 1, 2f, 4f, 16, 0.4f, 0.7f);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 天幕存在强度:出场随门涌入 0→1(90 帧,门开一半天先暗),死亡从门开缩入起随本体离开 1→0,撤离线性收干,其余满值。
+        /// 三个演出态的 Timer 从进入起连续计,不换拍,可直接当区间进度
+        /// </summary>
+        private float SkyIntensity() {
+            if (stateMachine?.CurrentState is not VDStateBase state) {
+                return 1f;
+            }
+            switch (CurrentStateIndex) {
+                case VDStateIndex.Entrance:
+                    return MathHelper.Clamp(state.Timer / (float)VDDirector.SkyEntranceFadeFrames, 0f, 1f);
+                case VDStateIndex.Death:
+                    return 1f - MathHelper.Clamp((state.Timer - VDDirector.SkyDeathFadeStart) / (float)(VDDirector.SkyDeathFadeEnd - VDDirector.SkyDeathFadeStart), 0f, 1f);
+                case VDStateIndex.Despawn:
+                    return 1f - MathHelper.Clamp(state.Timer / (float)VDDirector.SkyDespawnFadeFrames, 0f, 1f);
+                default:
+                    return 1f;
             }
         }
 

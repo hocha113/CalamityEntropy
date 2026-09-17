@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.Buffs;
+using CalamityEntropy.Content.NPCs.VoidDestroyer;
 using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -107,9 +108,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
             if (age % 5 == 0) {
                 Vector2 v = -Projectile.velocity * 0.15f + CEUtils.randomPointInCircle(1.5f);
-                var s = PRTLoader.NewParticle<PRT_GlowSpark>(Projectile.Center, v, GlowColor, Main.rand.NextFloat(0.4f, 0.8f))
-                    .Configure(0.9f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), 18);
-                s.grav = false;
+                VDVfx.Spark(Projectile.Center, v, GlowColor, Main.rand.NextFloat(0.4f, 0.8f), 0.9f, 18);
             }
         }
 
@@ -119,8 +118,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
             for (int i = 0; i < 6; i++) {
                 Vector2 v = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(2f, 6f);
-                PRTLoader.NewParticle<PRT_GlowSpark>(Projectile.Center, v, GlowColor, Main.rand.NextFloat(0.5f, 0.9f))
-                    .Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), 20);
+                VDVfx.Spark(Projectile.Center, v, GlowColor, Main.rand.NextFloat(0.5f, 0.9f), 1f, 20, gravity: true);
             }
         }
 

@@ -1,5 +1,4 @@
-﻿using CalamityEntropy.Content.Particles;
-using InnoVault.PRT;
+﻿using CalamityEntropy.Content.NPCs.VoidDestroyer;
 using System;
 using Terraria;
 
@@ -51,9 +50,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             if (!Main.dedServ && Main.rand.NextBool(2)) {
                 Vector2 pos = Projectile.Center + Dir * Main.rand.NextFloat(0f, Length * 0.6f);
                 Vector2 v = Dir.RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-4f, 4f);
-                var s = PRTLoader.NewParticle<PRT_GlowSpark>(pos, v, RayColor, Main.rand.NextFloat(0.4f, 0.8f))
-                    .Configure(0.9f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), 16);
-                s.grav = false;
+                VDVfx.Spark(pos, v, RayColor, Main.rand.NextFloat(0.4f, 0.8f), 0.9f, 16);
             }
         }
 

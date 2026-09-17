@@ -45,6 +45,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 npc.velocity = Vector2.Lerp(npc.velocity, -lockedDir * (1.5f + 10f * late), 0.25f);
                 ctx.CoreGlow = Math.Max(ctx.CoreGlow, progress);
                 ctx.WingPulse = Math.Max(ctx.WingPulse, progress);
+                //塌缩风格的描边读它收半径:跟着 pow8 的后撤曲线,大半时间光晕摊得很开,最后几帧猛然吸紧贴边,放出即弹回
+                ctx.RimCharge = late;
                 if (Timer == 1) {
                     VDVfx.Sound("VoidAnticipation", 0.7f, npc.Center, 3, 1f);
                 }

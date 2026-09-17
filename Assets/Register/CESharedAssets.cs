@@ -198,5 +198,8 @@ namespace CalamityEntropy.Assets.Register
         //虚空驱逐舰「轨道封锁」天幕(深空底幕 + 程序化星野 + 被侵蚀星球 + 六边形封锁力场),VDSky 在跨 0 切片画全屏白方块;噪声 s1 TurbulentNoise、s2 Perlin
         [VaultLoaden("CalamityEntropy/Assets/Effects/VDSky", AssetMode.Effects, "SkyPass")]
         public static Asset<Effect> VDSky;
+        //虚空驱逐舰能量逸散描边(alpha 八邻内缘 + 噪声侵蚀 + 蓄力热色/出手爆闪),噪声图绑 s1;外扩光晕由 VoidDestroyer.Draw 多偏移叠画同一遍着色器
+        [VaultLoaden("CalamityEntropy/Assets/Effects/VDRimLight", AssetMode.Effects, "RimPass")]
+        public static Asset<Effect> VDRimLight;
     }
 }

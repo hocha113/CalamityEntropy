@@ -1,6 +1,5 @@
-﻿using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
-using CalamityEntropy.Content.Particles;
-using InnoVault.PRT;
+﻿using CalamityEntropy.Content.NPCs.VoidDestroyer;
+using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -112,17 +111,14 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             if (!Main.dedServ && !boss.Context.HoloWrapUp && boss.Context.HoloCharge > 0.02f && Main.rand.NextBool(2)) {
                 Vector2 from = Projectile.Center + CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(50f, 110f);
                 Vector2 v = (Projectile.Center - from) * 0.08f;
-                var s = PRTLoader.NewParticle<PRT_GlowSpark>(from, v, HoloColor, Main.rand.NextFloat(0.4f, 0.8f))
-                    .Configure(0.9f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), 13);
-                s.grav = false;
+                VDVfx.Spark(from, v, HoloColor, Main.rand.NextFloat(0.4f, 0.8f), 0.9f, 13);
             }
         }
 
         public static void SpawnHoloBurst(Vector2 pos, Color color) {
             for (int i = 0; i < 14; i++) {
                 Vector2 v = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(3f, 9f);
-                PRTLoader.NewParticle<PRT_GlowSpark>(pos, v, color, Main.rand.NextFloat(0.5f, 1f))
-                    .Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), 22);
+                VDVfx.Spark(pos, v, color, Main.rand.NextFloat(0.5f, 1f), 1f, 22, gravity: true);
             }
         }
 
@@ -270,9 +266,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 }
                 if (dashing && Main.rand.NextBool(2)) {
                     Vector2 v = -Projectile.velocity * 0.1f + CEUtils.randomPointInCircle(2f);
-                    var s = PRTLoader.NewParticle<PRT_GlowSpark>(Projectile.Center + CEUtils.randomPointInCircle(50f), v, HoloColor, Main.rand.NextFloat(0.5f, 1f))
-                        .Configure(0.9f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), 18);
-                    s.grav = false;
+                    VDVfx.Spark(Projectile.Center + CEUtils.randomPointInCircle(50f), v, HoloColor, Main.rand.NextFloat(0.5f, 1f), 0.9f, 18);
                 }
             }
 
@@ -509,9 +503,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             if (!Main.dedServ && Main.rand.NextBool(3)) {
                 int idx = Main.rand.Next(SegmentCount);
                 Vector2 v = CEUtils.randomPointInCircle(1.5f);
-                var s = PRTLoader.NewParticle<PRT_GlowSpark>(segments[idx] + CEUtils.randomPointInCircle(20f), v, HoloColor, Main.rand.NextFloat(0.4f, 0.8f))
-                    .Configure(0.8f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), 16);
-                s.grav = false;
+                VDVfx.Spark(segments[idx] + CEUtils.randomPointInCircle(20f), v, HoloColor, Main.rand.NextFloat(0.4f, 0.8f), 0.8f, 16);
             }
         }
 

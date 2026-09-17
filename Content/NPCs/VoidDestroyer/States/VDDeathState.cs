@@ -43,6 +43,12 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 float progress = t / (float)VDDirector.DeathExplosionEnd;
                 ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, progress);
                 int interval = Math.Max(4, 16 - t / 10);
+                //舰壳失控:描边从虚空紫烧成红,每次内部爆炸都让整圈闪一下,越到后面越密
+                ctx.RimCharge = progress;
+                ctx.RimColorTarget = Color.Lerp(VDVfx.VoidPurple, VDDirector.RimHeatRed, progress);
+                if (t % interval == 0) {
+                    ctx.RimFlash = 0.6f;
+                }
                 if (!Main.dedServ && t % interval == 0) {
                     Vector2 pos = npc.Center + CEUtils.randomPointInCircle(70f);
                     VDVfx.Explosion(pos, Main.rand.NextFloat(0.5f, 0.9f), 30);
@@ -62,6 +68,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 DeclareAlpha(ctx, 1f - eased, MathHelper.Lerp(1f, 0.55f, eased));
                 npc.velocity = Vector2.Zero;
                 npc.Center = Vector2.Lerp(ctx.AnchorPos + new Vector2(0, 110), ctx.AnchorPos, eased);
+                //被门吸入时保持满亮的红热缘光,随本体透明度一起消失
+                ctx.RimCharge = 1f;
+                ctx.RimColorTarget = VDDirector.RimHeatRed;
             }
             else {
                 DeclareAlpha(ctx, 0f, 0.55f);

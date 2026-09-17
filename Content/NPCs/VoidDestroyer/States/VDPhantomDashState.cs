@@ -51,12 +51,15 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     npc.Center = ctx.AnchorPos;
                     npc.velocity = Vector2.Zero;
                     DeclareAlpha(ctx, 0f, 1f);
+                    //门内隐身时描边先蓄满(本体透明看不见,但强度已到位),冲出的第一帧就是白热整圈
+                    ctx.RimCharge = MathHelper.Clamp(Timer / (float)VDDirector.PhantomWaitFrames, 0f, 1f);
                     if (Timer >= VDDirector.PhantomWaitFrames) {
                         Vector2 dir = (ctx.Target.Center - ctx.AnchorPos).SafeNormalize(Vector2.UnitY);
                         npc.velocity = dir * VDDirector.PhantomDashSpeed;
                         DeclareAlpha(ctx, 1f, 1f);
                         ctx.ContactWindow = true;
                         ctx.WingPulse = 1f;
+                        ctx.RimFlash = 1f;
                         VDVfx.Sound("CruiserDash", 1f, npc.Center, 3);
                         VDVfx.Shake(npc.Center, 4f, 1600f);
                         SwitchBeat(Beat.Dash);
@@ -66,6 +69,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 case Beat.Dash:
                     DeclareAlpha(ctx, 1f, 1f);
                     ctx.ContactWindow = npc.velocity.Length() > VDDirector.PhantomContactSpeed;
+                    //冲刺全程满亮,拖尾风格沿速度反向抹开
+                    ctx.RimCharge = 1f;
                     if (ctx.Phase >= 2 && Timer % VDDirector.PhantomTrailInterval == 3) {
                         Shoot<VDVoidBolt>(ctx, npc.Center, npc.velocity.SafeNormalize(Vector2.UnitY) * VDDirector.PhantomTrailSpeed, VDDirector.DmgVoidBolt, VDVoidBolt.ModeDashTrail);
                     }

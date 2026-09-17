@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Content.NPCs.VoidDestroyer;
+using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -57,9 +58,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             d.noGravity = true;
             if (Main.rand.NextBool(2)) {
                 Vector2 v = back * Main.rand.NextFloat(2f, 5f) + CEUtils.randomPointInCircle(1f);
-                var s = PRTLoader.NewParticle<PRT_GlowSpark>(Projectile.Center + back * 14f, v, GlowColor, Main.rand.NextFloat(0.4f, 0.8f))
-                    .Configure(0.9f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), 16);
-                s.grav = false;
+                VDVfx.Spark(Projectile.Center + back * 14f, v, GlowColor, Main.rand.NextFloat(0.4f, 0.8f), 0.9f, 16);
             }
         }
 
@@ -77,8 +76,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 .Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, 0f, 24);
             for (int i = 0; i < 10; i++) {
                 Vector2 v = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(3f, 8f);
-                PRTLoader.NewParticle<PRT_GlowSpark>(Projectile.Center, v, GlowColor, Main.rand.NextFloat(0.5f, 1f))
-                    .Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), 22);
+                VDVfx.Spark(Projectile.Center, v, GlowColor, Main.rand.NextFloat(0.5f, 1f), 1f, 22, gravity: true);
             }
         }
 

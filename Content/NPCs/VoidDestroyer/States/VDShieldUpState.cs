@@ -37,6 +37,12 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             float progress = MathHelper.Clamp(Timer / (float)VDDirector.ShieldUpDuration, 0f, 1f);
             ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, progress * 0.7f);
             ctx.CoreGlow = Math.Max(ctx.CoreGlow, progress);
+            //描边换成盾色随进度亮起,与护盾环同色系收束
+            ctx.RimCharge = progress;
+            ctx.RimColorTarget = VDVfx.ShieldLavender;
+            if (Timer == VDDirector.ShieldUpDuration - 4) {
+                ctx.RimFlash = 1f;
+            }
             VDScreenFx.ReportVignette(0.35f * progress);
 
             if (Timer == 1) {

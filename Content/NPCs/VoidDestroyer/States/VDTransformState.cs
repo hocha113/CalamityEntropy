@@ -38,6 +38,11 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             float progress = MathHelper.Clamp(Timer / (float)VDDirector.TransformBurstFrame, 0f, 1f);
             ctx.ShakeStrength = System.Math.Max(ctx.ShakeStrength, progress * progress * 0.8f);
             ctx.CoreGlow = System.Math.Max(ctx.CoreGlow, progress);
+            //描边随变形烧起来,爆闪帧整圈炸开,之后交给二阶段更高的底噪
+            ctx.RimCharge = progress;
+            if (Timer == VDDirector.TransformBurstFrame) {
+                ctx.RimFlash = 1f;
+            }
 
             if (!Main.dedServ) {
                 if (Timer == 8) {

@@ -57,6 +57,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     float aimP = MathHelper.Clamp(Timer / (float)VDDirector.FleetAimFrames, 0f, 1f);
                     ctx.CoreGlow = 1f;
                     ctx.WingPulse = Math.Max(ctx.WingPulse, aimP);
+                    //真身的第三个破绽:描边随瞄准进度烧起来,幻影舰没有
+                    ctx.RimCharge = aimP;
                     if (Timer % 3 == 0) {
                         ConvergeSparks(ctx, VDVfx.VoidWhite, 50f, 120f, 0.14f);
                     }
@@ -64,6 +66,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                         Vector2 dir = (ctx.Target.Center - npc.Center).SafeNormalize(Vector2.UnitY);
                         npc.velocity = dir * VDDirector.FleetDashSpeed;
                         ctx.WingPulse = 1f;
+                        ctx.RimFlash = 1f;
                         VDVfx.Sound("CruiserDash", 0.9f, npc.Center, 3);
                         VDVfx.Shake(npc.Center, 5f, 1800f);
                         SwitchBeat(Beat.Dash);
@@ -74,6 +77,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 case Beat.Dash:
                     DeclareAlpha(ctx, 1f, 1f);
                     ctx.ContactWindow = npc.velocity.Length() > VDDirector.PhantomContactSpeed;
+                    ctx.RimCharge = 1f;
                     if (ctx.Phase >= 3 && Timer % VDDirector.FleetTrailInterval == 3) {
                         Shoot<VDVoidBolt>(ctx, npc.Center, npc.velocity.SafeNormalize(Vector2.UnitY) * VDDirector.PhantomTrailSpeed, VDDirector.DmgVoidBolt, VDVoidBolt.ModeDashTrail);
                     }

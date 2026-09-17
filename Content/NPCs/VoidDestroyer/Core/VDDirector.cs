@@ -440,6 +440,118 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public const float CannonVignette = 0.55f;
         public const int CannonTail = 10;
 
+        //==================== 描边(能量逸散:常态底噪 / 蓄力涨起 / 出手爆闪;着色器 VDRimLight,绘制在 VoidDestroyer.Draw)====================
+
+        /// <summary>常态底噪:一阶段只是一圈若有若无的呼吸,随阶段升级抬高,描边是这只舰的固有质感而不只是预警</summary>
+        public static float RimIdle(int phase) => phase >= 3 ? RimIdleP3 : phase >= 2 ? RimIdleP2 : RimIdleP1;
+        public const float RimIdleP1 = 0.10f;
+        public const float RimIdleP2 = 0.18f;
+        public const float RimIdleP3 = 0.26f;
+        /// <summary>常态呼吸:底噪上叠 ±30% 的慢起伏,角速度 2.2 rad/s 约 2.9 秒一个来回</summary>
+        public const float RimBreathAmp = 0.3f;
+        public const float RimBreathSpeed = 2.2f;
+        /// <summary>CoreGlow 折算成描边强度的系数:20 招的起势/蓄力/出手都在推 CoreGlow,这一个系数就是全招免费覆盖的总闸</summary>
+        public const float RimFromCoreGlow = 0.85f;
+        /// <summary>强度追踪步长:约 6 帧追上目标,蓄力斜坡不被抹平,状态停止声明时也不闪断</summary>
+        public const float RimTrack = 0.18f;
+        /// <summary>爆闪每帧衰减:约 10 帧从 1 落到 0.1,爆闪只是一瞬</summary>
+        public const float RimFlashFall = 0.80f;
+        /// <summary>配色追踪步长:约 10 帧过渡,换招换色不硬切</summary>
+        public const float RimColorTrack = 0.10f;
+        /// <summary>强度过这个阈值起缘光向热色偏,到 1 全热(「蓄力发红」的通用来源,不靠逐招写死)</summary>
+        public const float RimHeatStart = 0.45f;
+        /// <summary>爆闪把热色再往纯白推的比例:蓄力是红热,出手是白热</summary>
+        public const float RimFlashWhiten = 0.8f;
+        /// <summary>默认蓄力热色:烧红的危险色</summary>
+        public static readonly Color RimHeatRed = new Color(255, 110, 80);
+
+        /// <summary>外扩叠画抽数:6 抽绕圈,再多 GPU 白花,再少能看出多边形</summary>
+        public const int RimTaps = 6;
+        /// <summary>外扩基础半径(px,乘绘制缩放):常态 3px 只是贴着轮廓的一层薄晕</summary>
+        public const float RimBaseRadius = 3f;
+        /// <summary>蓄力满时的外扩半径增量:能量逸散得更远</summary>
+        public const float RimChargeRadius = 5f;
+        /// <summary>爆闪瞬间的外扩半径增量:整圈猛地炸开一下</summary>
+        public const float RimFlashRadius = 9f;
+        /// <summary>叠画各抽的亮度分摊:6 抽合成后约 1.2 倍单抽亮度,不糊成一团白</summary>
+        public const float RimTapOpacity = 0.2f;
+        /// <summary>内缘锐光(压在本体之上那一遍)的亮度</summary>
+        public const float RimEdgeOpacity = 0.9f;
+        /// <summary>叠画偏移绕圈的角速度(rad/s):逸散的丝在慢慢转</summary>
+        public const float RimSpin = 1.6f;
+        /// <summary>拖尾风格:偏移沿速度反向拉开的最大长度(px),按速度比例</summary>
+        public const float RimStreakLength = 14f;
+        /// <summary>拖尾风格:达到最大拖长所需的速度(px/f),与残影门控 18 起点相衔接</summary>
+        public const float RimStreakFullSpeed = 30f;
+        /// <summary>塌缩风格:蓄力满时半径压到基础半径的这个倍数,贴边</summary>
+        public const float RimCollapseMin = 0.25f;
+
+        /// <summary>噪声侵蚀比例:常态碎成丝,蓄力满收成实心带,爆闪时归 0 整圈实心;过热风格常态就几乎不侵蚀</summary>
+        public const float RimErodeIdle = 0.85f;
+        public const float RimErodeCharge = 0.35f;
+        public const float RimErodeOverheat = 0.2f;
+        /// <summary>噪声漂移速度(噪声 UV/s):x 慢横流,y 向上逸散</summary>
+        public static readonly Vector2 RimNoiseScroll = new Vector2(0.07f, -0.3f);
+        /// <summary>过热风格的高频闪烁角速度(rad/s)与幅度</summary>
+        public const float RimOverheatFlickerSpeed = 38f;
+        public const float RimOverheatFlickerAmp = 0.18f;
+
+        /// <summary>描边主色:全息三招跟各自的投影色,其余按家族取 VDVfx 配色;演出/连接段沿用虚空紫</summary>
+        public static Color RimColorFor(VDStateIndex state) {
+            switch (state) {
+                case VDStateIndex.RedHell:
+                    return VDVfx.HellRed;
+                case VDStateIndex.GreenJungle:
+                    return VDVfx.JungleGreen;
+                case VDStateIndex.BlueSky:
+                    return VDVfx.SkyBlue;
+            }
+            switch (VDRotation.FamilyOf(state)) {
+                case VDAttackFamily.Finale:
+                    return VDVfx.CannonCore;
+                case VDAttackFamily.Gravity:
+                    return VDVfx.VoidDeep;
+                case VDAttackFamily.Dash:
+                    return VDVfx.VoidWhite;
+                case VDAttackFamily.Barrage:
+                    return VDVfx.VoidPink;
+                case VDAttackFamily.Zone:
+                    return VDVfx.RiftWhite;
+                default:
+                    return VDVfx.VoidPurple;
+            }
+        }
+
+        /// <summary>蓄力热色:默认烧红;绿丛林/蓝天空烧成各自的白化色,主炮跟炮芯色,奇点塌缩成冷白,不与招式主色打架</summary>
+        public static Color RimHeatColorFor(VDStateIndex state) {
+            switch (state) {
+                case VDStateIndex.GreenJungle:
+                    return Color.Lerp(VDVfx.JungleGreen, Color.White, 0.6f);
+                case VDStateIndex.BlueSky:
+                    return Color.Lerp(VDVfx.SkyBlue, Color.White, 0.6f);
+                case VDStateIndex.AnnihilationCannon:
+                    return VDVfx.CannonCore;
+                case VDStateIndex.Singularity:
+                    return VDVfx.VoidWhite;
+                default:
+                    return RimHeatRed;
+            }
+        }
+
+        /// <summary>描边风格按家族分派:引力塌缩、冲刺拖尾、压轴过热,其余往外逸散</summary>
+        public static VDRimStyle RimStyleFor(VDStateIndex state) {
+            switch (VDRotation.FamilyOf(state)) {
+                case VDAttackFamily.Gravity:
+                    return VDRimStyle.Collapse;
+                case VDAttackFamily.Dash:
+                    return VDRimStyle.Streak;
+                case VDAttackFamily.Finale:
+                    return VDRimStyle.Overheat;
+                default:
+                    return VDRimStyle.Dissipate;
+            }
+        }
+
         //==================== 天幕「轨道封锁」(VDSky / VDSkyDrive 的全部数字;配色在 VDVfx)====================
 
         /// <summary>存在包络淡入步长(每 tick):基座 opacity,与强度相乘</summary>
@@ -483,6 +595,10 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public const float SkyPlanetRadius = 0.22f;
         /// <summary>星球随镜头的视差(屏高单位 / 世界像素 ÷ 屏高):整个 200 格场地跑满也只挪 0.12 屏</summary>
         public const float SkyPlanetParallax = 0.02f;
+        /// <summary>星球自转(圈 / 秒):50 秒一圈,1080p 下盘心表面约 30px/s,看得出在转又不抢戏(实机反馈 2026-09-18:原先近乎静止像贴图)</summary>
+        public const float SkyPlanetSpin = 1f / 50f;
+        /// <summary>碎屑环绕行(圈 / 秒):35 秒一圈,比星球快,环上的亮碎块是最先被读到的动态</summary>
+        public const float SkyRingSpin = 1f / 35f;
         /// <summary>星野两层视差(远 / 近)与星云视差</summary>
         public const float SkyStarParallaxFar = 0.03f;
         public const float SkyStarParallaxNear = 0.08f;

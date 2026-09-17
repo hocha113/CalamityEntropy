@@ -129,6 +129,15 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public Vector2 AimLineDir { get; set; }
         public float AimLineStrength { get; set; }
         public Color AimLineColor { get; set; } = VDVfx.CannonCore;
+        /// <summary>
+        /// 描边蓄力 0..1(每帧重声明,回落 0):能量逸散缘光的强度。蓄力窗每帧写进度;
+        /// 不声明的招也有兜底,宿主按 <see cref="CoreGlow"/> 折算(所有招的起势与出手都在推它)
+        /// </summary>
+        public float RimCharge { get; set; }
+        /// <summary>描边爆闪单帧脉冲(每帧回落 0):出手帧写 1,宿主持有并快衰减。<c>MuzzleCue</c> 每次出手都写</summary>
+        public float RimFlash { get; set; }
+        /// <summary>描边目标色。每帧回落到当前状态的家族配色(<see cref="VDDirector.RimColorFor"/>),状态可覆盖</summary>
+        public Color RimColorTarget { get; set; } = VDVfx.VoidPurple;
         /// <summary>限制圈是否绘制/生效(出场、死亡、撤离时关)</summary>
         public bool ArenaActive { get; set; }
         /// <summary>相机聚焦(出场演出):NaN 分量 = 不聚焦</summary>
@@ -161,6 +170,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
             AimLineDir = Vector2.Zero;
             AimLineStrength = 0f;
             AimLineColor = VDVfx.CannonCore;
+            RimCharge = 0f;
+            RimFlash = 0f;
+            RimColorTarget = VDDirector.RimColorFor((VDStateIndex)(int)Npc.ai[3]);
             ArenaActive = true;
             CameraFocus = new Vector2(float.NaN);
             CameraShift = 0f;

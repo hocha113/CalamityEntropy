@@ -1,7 +1,5 @@
-﻿using CalamityEntropy.Content.Particles;
-using CalamityEntropy.Core.AI;
+﻿using CalamityEntropy.Core.AI;
 using InnoVault;
-using InnoVault.PRT;
 using InnoVault.StateMachines;
 using System;
 using Terraria;
@@ -76,6 +74,19 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         Summon,
         /// <summary>压轴</summary>
         Finale,
+    }
+
+    /// <summary>描边风格:决定外扩叠画的偏移几何与噪声侵蚀比例,按招式家族分派(<see cref="VDDirector.RimStyleFor"/>)</summary>
+    public enum VDRimStyle : byte
+    {
+        /// <summary>往外逸散:偏移绕圈匀布,半径随强度外扩(弹幕/区域/支援/演出的默认)</summary>
+        Dissipate,
+        /// <summary>塌缩:半径随蓄力收紧到贴边,读成能量被吸回(奇点)</summary>
+        Collapse,
+        /// <summary>拖尾:偏移沿速度反向拉开,与高速残影叠成一条(幻影冲刺/舰队)</summary>
+        Streak,
+        /// <summary>过热:噪声几乎不侵蚀、整圈实心白热、高频闪(湮灭主炮)</summary>
+        Overheat,
     }
 
     /// <summary>虚空驱逐舰状态接口</summary>
@@ -214,11 +225,12 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
             return Projectile.NewProjectile(ctx.Npc.GetSource_FromAI(), pos, vel, ModContent.ProjectileType<T>(), 0, 0f, Main.myPlayer, ai0, ai1, ai2);
         }
 
-        /// <summary>核心出手的通用演出:后坐、能量翼张开、核心亮起、火花、音效</summary>
+        /// <summary>核心出手的通用演出:后坐、能量翼张开、核心亮起、描边爆闪、火花、音效</summary>
         protected static void MuzzleCue(VDStateContext ctx, Vector2 dir, float recoil, string sound, float pitch = 1f, float volume = 1f) {
             ctx.Npc.velocity -= dir * recoil;
             ctx.WingPulse = Math.Max(ctx.WingPulse, 1f);
             ctx.CoreGlow = 1f;
+            ctx.RimFlash = 1f;
             if (Main.dedServ) {
                 return;
             }
@@ -228,8 +240,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
             }
             for (int i = 0; i < 8; i++) {
                 Vector2 v = dir.RotatedBy(Main.rand.NextFloat(-0.6f, 0.6f)) * Main.rand.NextFloat(4f, 10f);
-                PRTLoader.NewParticle<PRT_GlowSpark>(core, v, VDVfx.VoidPurple, Main.rand.NextFloat(0.5f, 1f))
-                    .Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), 20);
+                VDVfx.Spark(core, v, VDVfx.VoidPurple, Main.rand.NextFloat(0.5f, 1f), 1f, 20, gravity: true);
             }
         }
 
@@ -270,9 +281,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
             Vector2 core = ctx.Owner.CorePos;
             Vector2 from = core + CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(minDist, maxDist);
             Vector2 v = (core - from) * pull;
-            var s = PRTLoader.NewParticle<PRT_GlowSpark>(from, v, color, Main.rand.NextFloat(0.5f, 0.9f))
-                .Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), 12);
-            s.grav = false;
+            VDVfx.Spark(from, v, color, Main.rand.NextFloat(0.5f, 0.9f), 1f, 12);
         }
 
         /// <summary>决策点同步(权威端)</summary>

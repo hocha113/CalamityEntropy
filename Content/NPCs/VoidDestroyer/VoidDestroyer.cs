@@ -63,6 +63,14 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         public float ShieldAlpha;
         public float CoreGlow;
         public Color CoreColor = VDVfx.VoidPurple;
+        /// <summary>描边强度平滑值 0..1:底噪 / 蓄力声明 / CoreGlow 折算三者取大后追踪</summary>
+        public float RimGlow;
+        /// <summary>描边爆闪持有量:出手帧收到脉冲置 1,之后快衰减</summary>
+        public float RimFlash;
+        /// <summary>描边当前色,向 Context.RimColorTarget 过渡</summary>
+        public Color RimColor = VDVfx.VoidPurple;
+        /// <summary>描边蓄力热色,向 VDDirector.RimHeatColorFor 过渡(换招不硬切)</summary>
+        public Color RimHotColor = VDDirector.RimHeatRed;
         #endregion
 
         public VDStateIndex CurrentStateIndex => (VDStateIndex)(int)NPC.ai[3];
@@ -519,6 +527,18 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             ShieldAlpha = MathHelper.Lerp(ShieldAlpha, Context.ShieldVisible ? 1f : 0f, 0.04f);
             CoreColor = Color.Lerp(CoreColor, Context.CoreColorTarget, 0.06f);
             CoreGlow = Context.CoreGlow;
+
+            //描边:常态底噪随阶段抬高并慢呼吸,蓄力声明与 CoreGlow 折算取大压上去(所有招的起势/出手都在推 CoreGlow,
+            //不声明 RimCharge 的招也自动涨落);爆闪脉冲由宿主持有快衰减;配色向家族/状态目标色过渡
+            float breath = 1f + VDDirector.RimBreathAmp * MathF.Sin(Main.GlobalTimeWrappedHourly * VDDirector.RimBreathSpeed + NPC.whoAmI);
+            float rimTarget = Math.Max(VDDirector.RimIdle(Context.Phase) * breath, Math.Max(Context.RimCharge, CoreGlow * VDDirector.RimFromCoreGlow));
+            RimGlow = MathHelper.Lerp(RimGlow, MathHelper.Clamp(rimTarget, 0f, 1f), VDDirector.RimTrack);
+            RimFlash = Math.Max(RimFlash * VDDirector.RimFlashFall, Context.RimFlash);
+            if (RimFlash < 0.02f) {
+                RimFlash = 0f;
+            }
+            RimColor = Color.Lerp(RimColor, Context.RimColorTarget, VDDirector.RimColorTrack);
+            RimHotColor = Color.Lerp(RimHotColor, VDDirector.RimHeatColorFor(CurrentStateIndex), VDDirector.RimColorTrack);
 
             if (Main.dedServ) {
                 return;

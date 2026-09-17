@@ -40,6 +40,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     DeclareHoldRelative(ctx, VDDirector.CannonLockOffset, 0.03f, 0.15f, 10f);
                     ctx.WingPulse = 1f;
                     ctx.CoreGlow = 1f;
+                    //扫射全程描边保持过热白炽(过热风格自带高频闪)
+                    ctx.RimCharge = 1f;
+                    ctx.RimColorTarget = VDVfx.CannonCore;
                     ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, 0.3f);
                     VDScreenFx.ReportVignette(VDDirector.CannonVignette);
                     //扫射期间天幕力场保持在被花掉的能量读数上
@@ -59,6 +62,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     float drop = Timer < 20 ? 3f : 0f;
                     npc.velocity = Vector2.Lerp(npc.velocity, new Vector2(0f, drop), 0.15f);
                     ctx.CoreGlow = 0f;
+                    //过热的舰壳从烧红慢慢冷回虚空紫,描边随之收干
+                    ctx.RimCharge = 0.6f * (1f - p);
+                    ctx.RimColorTarget = Color.Lerp(VDDirector.RimHeatRed, VDVfx.VoidPurple, p);
                     ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, 0.25f * (1f - p));
                     VDScreenFx.ReportVignette(VDDirector.CannonVignette * (1f - p));
                     VDSkyDrive.ReportCharge(VDDirector.SkyCannonSweepCharge * (1f - p));
@@ -81,6 +87,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             float progress = MathHelper.Clamp(Timer / (float)VDDirector.CannonChargeFrames, 0f, 1f);
             ctx.WingPulse = Math.Max(ctx.WingPulse, progress);
             ctx.CoreGlow = Math.Max(ctx.CoreGlow, progress);
+            //描边随蓄力从虚空粉烧到炮芯色,出手前整圈已是白炽
+            ctx.RimCharge = progress;
+            ctx.RimColorTarget = Color.Lerp(VDVfx.VoidPink, VDVfx.CannonCore, progress);
             ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, progress * progress * progress);
             VDScreenFx.ReportVignette(VDDirector.CannonVignette * progress);
             //天幕:力场随蓄力爬亮、本体周围六边形逐格填实、星野向本体吸入

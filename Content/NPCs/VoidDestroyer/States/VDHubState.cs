@@ -70,6 +70,10 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 float p = MathHelper.Clamp((Timer - postureStart) / (float)VDDirector.ConnectorPostureFrames, 0f, 1f);
                 ctx.WingPulse = Math.Max(ctx.WingPulse, p);
                 ctx.CoreGlow = Math.Max(ctx.CoreGlow, 0.3f + 0.7f * p);
+                //描边提前换成下一招的家族色:起势那 12 帧里颜色就已经在告诉玩家要来的是哪一类招
+                if (ctx.PendingState >= 0) {
+                    ctx.RimColorTarget = VDDirector.RimColorFor((VDStateIndex)ctx.PendingState);
+                }
                 if (Timer == postureStart + 1) {
                     VDVfx.Sound("VoidAnticipation", 0.7f, npc.Center, 3, 0.7f);
                     //天幕力场跟着起势轻脉冲一下(不出冲击环)

@@ -37,8 +37,28 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         public static readonly Color SkyErosion = new Color(190, 90, 255);
         /// <summary>星球边缘的冷紫背光</summary>
         public static readonly Color SkyPlanetRim = new Color(120, 80, 200);
+        /// <summary>星球碎屑环的物质色(比背光暗、比底幕亮)</summary>
+        public static readonly Color SkyRing = new Color(120, 60, 170);
         /// <summary>地表环境光被拉向的虚空暮色</summary>
         public static readonly Color SkyTileTint = new Color(90, 70, 130);
+
+        /// <summary>
+        /// GlowSpark 贴图是 256px 画布上一枚 230px 长的纺锤,仓库惯例 scale 0.06~0.16(15~40px 的火花)。
+        /// 驱逐舰这批代码按「1 ≈ 一颗火花」书写,直接喂给 PRT 就把每粒火花画成巴掌大的紫椭圆(实机反馈 2026-09-18),
+        /// 所以驱逐舰的火花只许经 <see cref="Spark"/> 生成,在这里统一折算:size 1 → 贴图 scale 0.12(约 28px)
+        /// </summary>
+        public const float SparkUnit = 0.12f;
+
+        /// <summary>驱逐舰火花的唯一入口:size 以「一颗火花 ≈ 1」计,内部折算贴图 scale;gravity=false 只淡出不下坠、朝向钉在初速</summary>
+        public static PRT_GlowSpark Spark(Vector2 pos, Vector2 vel, Color color, float size, float opacity, int life, bool gravity = false) {
+            if (Main.dedServ) {
+                return null;
+            }
+            var s = PRTLoader.NewParticle<PRT_GlowSpark>(pos, vel, color, size * SparkUnit)
+                .Configure(opacity, true, PRTDrawModeEnum.AdditiveBlend, vel.ToRotation(), life);
+            s.grav = gravity;
+            return s;
+        }
 
         /// <summary>闪现消失/出现的粒子(旧位置与新位置各一次)</summary>
         public static void BlinkBurst(Vector2 pos) {
@@ -53,20 +73,18 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             }
             for (int i = 0; i < 10; i++) {
                 Vector2 v = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(4f, 12f);
-                PRTLoader.NewParticle<PRT_GlowSpark>(pos, v, VoidPurple, Main.rand.NextFloat(0.6f, 1.1f))
-                    .Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), 24);
+                Spark(pos, v, VoidPurple, Main.rand.NextFloat(0.6f, 1.1f), 1f, 24, gravity: true);
             }
         }
 
-        /// <summary>径向火花爆闪(转阶段/爆炸/收束释放)</summary>
+        /// <summary>径向火花爆闪(转阶段/爆炸/收束释放);scale 以「一颗火花 ≈ 1」计</summary>
         public static void SparkBurst(Vector2 pos, Color color, int count, float minSpeed, float maxSpeed, int life = 36, float scaleMin = 0.8f, float scaleMax = 1.5f) {
             if (Main.dedServ) {
                 return;
             }
             for (int i = 0; i < count; i++) {
                 Vector2 v = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(minSpeed, maxSpeed);
-                PRTLoader.NewParticle<PRT_GlowSpark>(pos, v, color, Main.rand.NextFloat(scaleMin, scaleMax))
-                    .Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), life);
+                Spark(pos, v, color, Main.rand.NextFloat(scaleMin, scaleMax), 1f, life, gravity: true);
             }
         }
 

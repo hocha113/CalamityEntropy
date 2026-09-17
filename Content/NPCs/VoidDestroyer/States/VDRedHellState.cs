@@ -64,6 +64,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 npc.velocity *= 0.8f;
                 float warn = MathHelper.Clamp(t / (float)VDDirector.RedHellRayWarn, 0f, 1f);
                 ctx.CoreGlow = Math.Max(ctx.CoreGlow, warn);
+                //描边与预警竖线同步烧红,射线打出后整段保持
+                ctx.RimCharge = warn;
                 if (t <= VDDirector.RedHellRayWarn) {
                     ctx.RedRayWarning = warn;
                     //汇聚流在出手前 6 帧断掉:静默即预告

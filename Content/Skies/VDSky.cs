@@ -103,6 +103,8 @@ namespace CalamityEntropy.Content.Skies
             fx.Parameters["uPlanetCenter"]?.SetValue(VDDirector.SkyPlanetCenter);
             fx.Parameters["uPlanetRadius"]?.SetValue(VDDirector.SkyPlanetRadius);
             fx.Parameters["uPlanetParallax"]?.SetValue(VDDirector.SkyPlanetParallax);
+            fx.Parameters["uPlanetSpin"]?.SetValue(VDDirector.SkyPlanetSpin);
+            fx.Parameters["uRingSpin"]?.SetValue(VDDirector.SkyRingSpin);
             fx.Parameters["uStarParallax"]?.SetValue(new Vector2(VDDirector.SkyStarParallaxFar, VDDirector.SkyStarParallaxNear));
             fx.Parameters["uNebulaParallax"]?.SetValue(VDDirector.SkyNebulaParallax);
             fx.Parameters["uColorTop"]?.SetValue(VDVfx.SkyTop.ToVector3());
@@ -111,6 +113,7 @@ namespace CalamityEntropy.Content.Skies
             fx.Parameters["uColorGrid"]?.SetValue(gridColor.ToVector3());
             fx.Parameters["uColorErosion"]?.SetValue(VDVfx.SkyErosion.ToVector3());
             fx.Parameters["uColorPlanetRim"]?.SetValue(VDVfx.SkyPlanetRim.ToVector3());
+            fx.Parameters["uColorRing"]?.SetValue(VDVfx.SkyRing.ToVector3());
 
             //原始像素空间 + 预乘输出走 AlphaBlend:随 uOpacity 压过原版远景
             CESkyDrawing.BeginRawScreen(sb, BlendState.AlphaBlend, SamplerState.LinearClamp, SpriteSortMode.Immediate, fx);

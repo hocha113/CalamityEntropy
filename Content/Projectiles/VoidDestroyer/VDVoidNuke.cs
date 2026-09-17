@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Content.NPCs.VoidDestroyer;
+using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -120,8 +121,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                         .Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, 0f, 40);
                     for (int i = 0; i < 60; i++) {
                         Vector2 v = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(6f, 26f);
-                        PRTLoader.NewParticle<PRT_GlowSpark>(Projectile.Center, v, GlowColor, Main.rand.NextFloat(0.8f, 1.6f))
-                            .Configure(1f, true, PRTDrawModeEnum.AdditiveBlend, v.ToRotation(), 40);
+                        VDVfx.Spark(Projectile.Center, v, GlowColor, Main.rand.NextFloat(0.8f, 1.6f), 1f, 40, gravity: true);
                     }
                     for (int i = 0; i < 40; i++) {
                         Vector2 v = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(4f, 14f);

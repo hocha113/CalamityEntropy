@@ -58,10 +58,11 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     ? 1f - VDVfx.EaseOut((t - VDDirector.EntranceDescendEnd) / (float)(VDDirector.EntrancePortalClose - VDDirector.EntranceDescendEnd))
                     : 0f;
                 if (t == VDDirector.EntranceDescendEnd + 1) {
-                    //落定的一记:声音 + 震屏 + 核心亮
+                    //落定的一记:声音 + 震屏 + 核心亮 + 描边爆闪
                     VDVfx.Sound("VoidAttack", 0.9f, npc.Center, 2);
                     VDVfx.Shake(npc.Center, 6f);
                     ctx.CoreGlow = 1f;
+                    ctx.RimFlash = 1f;
                     ctx.ShakeStrength = 0.6f;
                 }
             }

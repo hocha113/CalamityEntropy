@@ -77,6 +77,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                         Shoot<VDVoidPillar>(ctx, point, new Vector2(sweep, 0f), VDDirector.DmgVoidPillar, VDDirector.OrbitalPillarLife, VDDirector.OrbitalPillarWidth);
                         ctx.WingPulse = 1f;
                         ctx.CoreGlow = 1f;
+                        //每根光柱砸落,背景里的本体描边闪一下(退入纵深后描边本就减半,爆闪给足)
+                        ctx.RimFlash = 1f;
                         ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, 0.5f);
                         pillarsFired++;
                     }

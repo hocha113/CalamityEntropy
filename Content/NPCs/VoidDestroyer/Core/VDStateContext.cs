@@ -138,6 +138,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public float RimFlash { get; set; }
         /// <summary>描边目标色。每帧回落到当前状态的家族配色(<see cref="VDDirector.RimColorFor"/>),状态可覆盖</summary>
         public Color RimColorTarget { get; set; } = VDVfx.VoidPurple;
+        /// <summary>描边压暗 0..1(每帧回落 0):把常态底噪也压下去,尖叫前的静默拍用;爆闪不受它影响</summary>
+        public float RimSuppress { get; set; }
         /// <summary>限制圈是否绘制/生效(出场、死亡、撤离时关)</summary>
         public bool ArenaActive { get; set; }
         /// <summary>相机聚焦(出场演出):NaN 分量 = 不聚焦</summary>
@@ -172,7 +174,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
             AimLineColor = VDVfx.CannonCore;
             RimCharge = 0f;
             RimFlash = 0f;
-            RimColorTarget = VDDirector.RimColorFor((VDStateIndex)(int)Npc.ai[3]);
+            RimSuppress = 0f;
+            RimColorTarget = VDDirector.RimColorFor((VDStateIndex)(int)Npc.ai[3], Phase);
             ArenaActive = true;
             CameraFocus = new Vector2(float.NaN);
             CameraShift = 0f;

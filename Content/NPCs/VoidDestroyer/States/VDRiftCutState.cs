@@ -73,6 +73,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             float p = MathHelper.Clamp(framesIntoRaise / (float)VDDirector.RiftRaiseFrames, 0f, 1f);
             ctx.WingPulse = Math.Max(ctx.WingPulse, p);
             ctx.CoreGlow = Math.Max(ctx.CoreGlow, 0.4f + 0.6f * p);
+            ctx.RimCharge = p;
             if (framesIntoRaise == 1) {
                 VDVfx.Sound("VoidAnticipation", 1.4f, ctx.Owner.CorePos, 4, 0.6f);
             }
@@ -152,9 +153,10 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         }
 
         private void SpawnSeam(VDStateContext ctx, Vector2 center, float angle, int aimFrames, float halfLength, bool outwardOnly) {
-            //本体的挥砍演出:核心亮、翼张、一记短反冲、划空音
+            //本体的挥砍演出:核心亮、翼张、描边爆闪、一记短反冲、划空音
             ctx.CoreGlow = 1f;
             ctx.WingPulse = 1f;
+            ctx.RimFlash = 1f;
             ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, 0.35f);
             Vector2 dir = angle.ToRotationVector2();
             ctx.Npc.velocity -= dir.RotatedBy(MathHelper.PiOver2) * 2f;

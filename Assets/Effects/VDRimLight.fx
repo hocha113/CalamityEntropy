@@ -1,13 +1,17 @@
 // VDRimLight — 虚空驱逐舰能量逸散描边
 // 对本体贴图做:与 2 texel 外八邻 alpha 的最小值作差,得到贴着轮廓内侧、2 texel 宽的实心缘带;
-// 再用两层滚动噪声把缘带侵蚀成逸散的丝状能量(uErode 越高丝越碎,爆闪时压回实心整圈);
+// 再用噪声把缘带侵蚀成逸散的丝状能量(uErode 越高丝越碎,爆闪时压回实心整圈)。
+// 噪声分两层按 uRadialMix 混合:直角层随 uNoiseScroll 平移(拖尾风格让丝沿速度反向飞),
+// 极坐标层随 uRadialScroll 沿帧中心径向流(>0 向外逸散,<0 向内吸入,塌缩风格用负值)。
+// 两层的位移都是噪声 UV 上的纯平移,整数部分对 frac 不可见,宿主把累计位移 wrap 在 [0,1) 即可保持连续;
+// 极坐标层角向取整数个瓦片(8),atan2 的 ±π 接缝处 frac 相等,不出竖线。
 // 蓄力(uHeat)与出手(uFlash)把缘光整体拉向白热色,爆闪再叠高频闪烁与亮度。
 // 外扩光晕不在这里做:本体贴图四边只有 2~4px 留白,着色器往外膨胀会被四边裁掉,
 // 由 VoidDestroyer.Draw 用多次屏幕偏移叠画同一遍着色器完成(每次是独立四边形,不吃留白)。
 // 取样半径锁死 2 texel:VoidDestroyerTransform 条带帧高 122、行距 124,帧间隙恰好 2px,再大就串到相邻帧。
 // 用法:EnterShaderRegion(BlendState.Additive, shader),噪声图绑 GraphicsDevice.Textures[1](LinearWrap),
-// 喂 uColor/uHotColor/uHeat/uFlash/uErode/uOpacity/uNoiseScroll/uImageSize/uTime 后 Passes[0].Apply;
-// 顶点色(Draw 的 color 参数)整体乘在输出上,叠画各抽的衰减直接走它。输出预乘 alpha。无动态分支。
+// 喂全部参数后 Passes[0].Apply;顶点色(Draw 的 color 参数)整体乘在输出上,叠画各抽的衰减直接走它。
+// uOpacity 允许大于 1(加法混合下就是更亮)。输出预乘 alpha。无动态分支。
 sampler uImage0 : register(s0);
 sampler uImage1 : register(s1);
 
@@ -18,7 +22,14 @@ float3 uHotColor;
 float uHeat;
 float uFlash;
 float uErode;
+// 直角层噪声图样的平移量(噪声 UV,宿主 wrap 在 [0,1)):图样朝 +uNoiseScroll 方向流动
 float2 uNoiseScroll;
+// 极坐标层噪声图样沿径向的位移(噪声 UV,宿主 wrap 在 [0,1)):>0 图样向外流,<0 向内吸
+float uRadialScroll;
+// 极坐标层的混合权重 0..1(直角层权重为 1-uRadialMix)
+float uRadialMix;
+// 当前绘制帧在整张贴图里的 UV 中心(条带贴图不是 0.5)
+float2 uFrameCenter;
 float2 uImageSize;
 
 float4 PixelFunc(float4 baseColor : COLOR0, float2 coords : TEXCOORD0) : COLOR0
@@ -43,11 +54,23 @@ float4 PixelFunc(float4 baseColor : COLOR0, float2 coords : TEXCOORD0) : COLOR0
 
     float edge = saturate(c.a - amin);
 
-    // 噪声侵蚀:在贴图像素空间取噪声(与绘制缩放无关),两层反向漂移叠出湍流;uErode 控制侵蚀比例
-    float2 nuv = coords * uImageSize / 56.0 + uNoiseScroll;
-    float n = tex2D(uImage1, frac(nuv)).r;
-    float n2 = tex2D(uImage1, frac(nuv * 0.55 + float2(0.31, 0.77) - uNoiseScroll * 1.4)).r;
-    float wisp = smoothstep(0.28, 0.78, n * 0.6 + n2 * 0.4);
+    // 像素坐标(整张贴图空间),噪声取样与绘制缩放无关
+    float2 pix = coords * uImageSize;
+
+    // 直角层:主层随平移流动,副层大瓦片反向慢流,叠出湍流
+    float nA = tex2D(uImage1, frac(pix / 72.0 - uNoiseScroll)).r;
+    float nA2 = tex2D(uImage1, frac(pix / 130.0 + float2(0.31, 0.77) + uNoiseScroll)).r;
+    float cart = nA * 0.6 + nA2 * 0.4;
+
+    // 极坐标层:角向 8 个瓦片绕一圈无缝,径向按像素距离 / 72 再随 uRadialScroll 平移
+    float2 rel = pix - uFrameCenter * uImageSize;
+    float ang = atan2(rel.y, rel.x) / 6.2831853 + 0.5;
+    float rad = length(rel) / 72.0;
+    float nB = tex2D(uImage1, frac(float2(ang * 8.0, rad - uRadialScroll))).r;
+    float nB2 = tex2D(uImage1, frac(float2(ang * 5.0 + 0.37, rad * 0.55 + uRadialScroll))).r;
+    float polar = nB * 0.6 + nB2 * 0.4;
+
+    float wisp = smoothstep(0.26, 0.76, lerp(cart, polar, uRadialMix));
     edge *= lerp(1.0, wisp, uErode);
 
     // 热色:蓄力把缘光拉向白热,出手爆闪叠在其上;缘带内侧再渗一点机体自身亮度,光像从表面漏出来

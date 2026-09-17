@@ -63,10 +63,18 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         public float ShieldAlpha;
         public float CoreGlow;
         public Color CoreColor = VDVfx.VoidPurple;
-        /// <summary>描边强度平滑值 0..1:底噪 / 蓄力声明 / CoreGlow 折算三者取大后追踪</summary>
+        /// <summary>描边强度平滑值 0..1:底噪 / 蓄力声明 / CoreGlow 折算三者取大后追踪,只管亮度</summary>
         public float RimGlow;
+        /// <summary>描边活跃度平滑值 0..1:蓄力声明与 CoreGlow 折算取大,不含底噪;热色、侵蚀、外扩半径看它</summary>
+        public float RimActive;
         /// <summary>描边爆闪持有量:出手帧收到脉冲置 1,之后快衰减</summary>
         public float RimFlash;
+        /// <summary>描边压暗平滑值 0..1:静默拍把底噪一起压掉,爆闪不受影响</summary>
+        public float RimSuppress;
+        /// <summary>极坐标噪声层的累计径向位移(逸散为正、塌缩为负),wrap 在 [0,1),逐帧累加所以换风格只改流向不跳图样</summary>
+        public float RimRadialScroll;
+        /// <summary>直角噪声层的累计平移(常态漂移 + 拖尾时沿速度反向),各分量 wrap 在 [0,1)</summary>
+        public Vector2 RimDirScroll;
         /// <summary>描边当前色,向 Context.RimColorTarget 过渡</summary>
         public Color RimColor = VDVfx.VoidPurple;
         /// <summary>描边蓄力热色,向 VDDirector.RimHeatColorFor 过渡(换招不硬切)</summary>
@@ -528,21 +536,35 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             CoreColor = Color.Lerp(CoreColor, Context.CoreColorTarget, 0.06f);
             CoreGlow = Context.CoreGlow;
 
-            //描边:常态底噪随阶段抬高并慢呼吸,蓄力声明与 CoreGlow 折算取大压上去(所有招的起势/出手都在推 CoreGlow,
-            //不声明 RimCharge 的招也自动涨落);爆闪脉冲由宿主持有快衰减;配色向家族/状态目标色过渡
+            //描边:活跃度 = 蓄力声明与 CoreGlow 折算取大(所有招的起势/出手都在推 CoreGlow,不声明 RimCharge 的招也自动涨落),
+            //热色/侵蚀/外扩半径只看它;亮度再与随阶段抬高、慢呼吸的常态底噪取大。爆闪脉冲由宿主持有快衰减;配色向目标色过渡
+            float active = MathHelper.Clamp(Math.Max(Context.RimCharge, CoreGlow * VDDirector.RimFromCoreGlow), 0f, 1f);
+            RimActive = MathHelper.Lerp(RimActive, active, VDDirector.RimTrack);
             float breath = 1f + VDDirector.RimBreathAmp * MathF.Sin(Main.GlobalTimeWrappedHourly * VDDirector.RimBreathSpeed + NPC.whoAmI);
-            float rimTarget = Math.Max(VDDirector.RimIdle(Context.Phase) * breath, Math.Max(Context.RimCharge, CoreGlow * VDDirector.RimFromCoreGlow));
+            float rimTarget = Math.Max(VDDirector.RimIdle(Context.Phase) * breath, active);
             RimGlow = MathHelper.Lerp(RimGlow, MathHelper.Clamp(rimTarget, 0f, 1f), VDDirector.RimTrack);
             RimFlash = Math.Max(RimFlash * VDDirector.RimFlashFall, Context.RimFlash);
             if (RimFlash < 0.02f) {
                 RimFlash = 0f;
             }
+            RimSuppress = MathHelper.Lerp(RimSuppress, Context.RimSuppress, VDDirector.RimSuppressTrack);
             RimColor = Color.Lerp(RimColor, Context.RimColorTarget, VDDirector.RimColorTrack);
             RimHotColor = Color.Lerp(RimHotColor, VDDirector.RimHeatColorFor(CurrentStateIndex), VDDirector.RimColorTrack);
 
             if (Main.dedServ) {
                 return;
             }
+
+            //描边噪声流向按风格逐帧累加(纯绘制量):逸散向外、塌缩向内;拖尾时直角层再沿速度反向(贴图局部空间)流。
+            //累计量 wrap 在 [0,1),着色器里是 frac 前的纯平移,整数部分不可见,图样连续
+            VDRimStyle rimStyle = VDDirector.RimStyleFor(CurrentStateIndex);
+            float radialStep = rimStyle == VDRimStyle.Collapse ? -VDDirector.RimCollapseInSpeed : VDDirector.RimRadialSpeed;
+            RimRadialScroll = Wrap01(RimRadialScroll + radialStep / 60f);
+            Vector2 dirStep = VDDirector.RimNoiseScroll;
+            if (rimStyle == VDRimStyle.Streak && NPC.velocity.LengthSquared() > 1f) {
+                dirStep += (-NPC.velocity).SafeNormalize(Vector2.Zero).RotatedBy(-NPC.rotation) * VDDirector.RimStreakScrollSpeed;
+            }
+            RimDirScroll = new Vector2(Wrap01(RimDirScroll.X + dirStep.X / 60f), Wrap01(RimDirScroll.Y + dirStep.Y / 60f));
 
             //天幕续租:存在强度按状态编排(出场随门涌入、死亡随门离开、撤离收干),本体位置给网格亮化中心,核心亮度让网格跟着出招呼吸
             VDSkyDrive.Report(SkyIntensity(), Context.Phase, NPC.Center, CoreGlow);
@@ -564,6 +586,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
                 }
             }
         }
+
+        /// <summary>把累计位移折回 [0,1):喂给着色器 frac 之前的纯平移量,整数部分本来就不可见</summary>
+        private static float Wrap01(float v) => v - MathF.Floor(v);
 
         /// <summary>
         /// 天幕存在强度:出场随门涌入 0→1(90 帧,门开一半天先暗),死亡从门开缩入起随本体离开 1→0,撤离线性收干,其余满值。

@@ -39,6 +39,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             if (Timer == VDDirector.SkyWyvernFrame) {
                 ctx.CoreGlow = 1f;
                 ctx.WingPulse = 1f;
+                ctx.RimFlash = 1f;
                 VDVfx.Sound("VoidAnticipation", 0.75f, npc.Center, 3, 1f);
                 if (IsServer) {
                     Shoot<VDHoloWyvern>(ctx, npc.Center, Vector2.Zero, VDDirector.DmgHoloBeast, npc.whoAmI, Main.rand.NextFloat(MathHelper.TwoPi));
@@ -59,6 +60,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         private static void FireShapeBurst(VDStateContext ctx, int shapeIndex, int burstIndex) {
             ctx.WingPulse = Math.Max(ctx.WingPulse, 0.7f);
             ctx.CoreGlow = 1f;
+            //连发形状弹是节拍器,描边半闪跟拍
+            ctx.RimFlash = Math.Max(ctx.RimFlash, 0.6f);
             VDVfx.Sound("CruiserSpit", 1.1f, ctx.Npc.Center, 4, 0.7f);
             if (!IsServer) {
                 return;

@@ -31,6 +31,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             if (Timer == VDDirector.JungleSpawnFrame) {
                 ctx.CoreGlow = 1f;
                 ctx.WingPulse = 1f;
+                ctx.RimFlash = 1f;
                 VDVfx.Sound("VoidAnticipation", 0.8f, ctx.Npc.Center, 3, 0.9f);
                 if (IsServer) {
                     if (Main.getGoodWorld) {

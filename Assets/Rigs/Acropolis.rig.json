@@ -81,9 +81,9 @@
           "swingFraction": 0.42, "swingMin": 5, "swingMax": 12, "stepClearance": 20, "pressFraction": 0.18, "pressPx": 3,
           "probeLift": 46, "buriedDepth": 10, "skateStart": 15, "skateFull": 26,
           "airRadius": 0.5, "airRadiusWave": 0.08, "airTilt": 0.4, "airRate": 0.18,
-          "holdRate": 0.2, "holdStepThreshold": 30 },
+          "holdRate": 0.2, "holdStepThreshold": 30, "groundnessBand": 1.5 },
         { "name": "leg{i}", "type": "ThreeBoneLeg", "bones": ["coxa{i}", "femur{i}", "tibia{i}"],
-          "coxaSwingMaxDeg": 60, "tibiaWorldDirDeg": 90, "slack": 12, "reachTrim": 6,
+          "coxaSwingMaxDeg": 60, "slack": 12, "reachTrim": 6,
           "targetSolver": "gait{i}", "targetIndex": 0 }
       ] },
 

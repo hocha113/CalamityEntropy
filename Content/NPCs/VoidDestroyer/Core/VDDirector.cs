@@ -442,24 +442,31 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
 
         //==================== 描边(能量逸散:常态底噪 / 蓄力涨起 / 出手爆闪;着色器 VDRimLight,绘制在 VoidDestroyer.Draw)====================
 
-        /// <summary>常态底噪:一阶段只是一圈若有若无的呼吸,随阶段升级抬高,描边是这只舰的固有质感而不只是预警</summary>
+        /// <summary>
+        /// 常态底噪:平时就是一圈清楚可见的能量缘光(反馈 2026-09-18:0.1 档几乎看不见),随阶段升级抬高。
+        /// 底噪只管亮度,不进热色与侵蚀的判定,那两样看活跃度(蓄力 / CoreGlow 折算,见 <see cref="VoidDestroyer.UpdateVisualState"/>)
+        /// </summary>
         public static float RimIdle(int phase) => phase >= 3 ? RimIdleP3 : phase >= 2 ? RimIdleP2 : RimIdleP1;
-        public const float RimIdleP1 = 0.10f;
-        public const float RimIdleP2 = 0.18f;
-        public const float RimIdleP3 = 0.26f;
-        /// <summary>常态呼吸:底噪上叠 ±30% 的慢起伏,角速度 2.2 rad/s 约 2.9 秒一个来回</summary>
-        public const float RimBreathAmp = 0.3f;
+        public const float RimIdleP1 = 0.40f;
+        public const float RimIdleP2 = 0.50f;
+        public const float RimIdleP3 = 0.60f;
+        /// <summary>常态呼吸:底噪上叠 ±25% 的慢起伏,角速度 2.2 rad/s 约 2.9 秒一个来回</summary>
+        public const float RimBreathAmp = 0.25f;
         public const float RimBreathSpeed = 2.2f;
-        /// <summary>CoreGlow 折算成描边强度的系数:20 招的起势/蓄力/出手都在推 CoreGlow,这一个系数就是全招免费覆盖的总闸</summary>
-        public const float RimFromCoreGlow = 0.85f;
+        /// <summary>描边整体亮度倍率(加法混合下允许大于 1),常态与蓄力一起抬;爆闪在着色器里另乘 (1 + flash)</summary>
+        public const float RimBrightness = 1.35f;
+        /// <summary>CoreGlow 折算成描边活跃度的系数:20 招的起势/蓄力/出手都在推 CoreGlow,这一个系数就是全招免费覆盖的总闸</summary>
+        public const float RimFromCoreGlow = 0.9f;
         /// <summary>强度追踪步长:约 6 帧追上目标,蓄力斜坡不被抹平,状态停止声明时也不闪断</summary>
         public const float RimTrack = 0.18f;
         /// <summary>爆闪每帧衰减:约 10 帧从 1 落到 0.1,爆闪只是一瞬</summary>
         public const float RimFlashFall = 0.80f;
         /// <summary>配色追踪步长:约 10 帧过渡,换招换色不硬切</summary>
         public const float RimColorTrack = 0.10f;
-        /// <summary>强度过这个阈值起缘光向热色偏,到 1 全热(「蓄力发红」的通用来源,不靠逐招写死)</summary>
-        public const float RimHeatStart = 0.45f;
+        /// <summary>压暗追踪步长:静默拍要快(3 帧内压下去),否则 6 帧的静默还没暗完核弹就出了</summary>
+        public const float RimSuppressTrack = 0.4f;
+        /// <summary>活跃度(不含底噪)过这个阈值起缘光向热色偏,到 1 全热(「蓄力发红」的通用来源,不靠逐招写死)</summary>
+        public const float RimHeatStart = 0.3f;
         /// <summary>爆闪把热色再往纯白推的比例:蓄力是红热,出手是白热</summary>
         public const float RimFlashWhiten = 0.8f;
         /// <summary>默认蓄力热色:烧红的危险色</summary>
@@ -467,37 +474,67 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
 
         /// <summary>外扩叠画抽数:6 抽绕圈,再多 GPU 白花,再少能看出多边形</summary>
         public const int RimTaps = 6;
-        /// <summary>外扩基础半径(px,乘绘制缩放):常态 3px 只是贴着轮廓的一层薄晕</summary>
-        public const float RimBaseRadius = 3f;
+        /// <summary>外扩基础半径(px,乘绘制缩放):常态一圈 4px 的晕,轮廓外侧要能读出来</summary>
+        public const float RimBaseRadius = 4f;
         /// <summary>蓄力满时的外扩半径增量:能量逸散得更远</summary>
-        public const float RimChargeRadius = 5f;
+        public const float RimChargeRadius = 7f;
         /// <summary>爆闪瞬间的外扩半径增量:整圈猛地炸开一下</summary>
-        public const float RimFlashRadius = 9f;
-        /// <summary>叠画各抽的亮度分摊:6 抽合成后约 1.2 倍单抽亮度,不糊成一团白</summary>
-        public const float RimTapOpacity = 0.2f;
+        public const float RimFlashRadius = 12f;
+        /// <summary>叠画各抽的亮度分摊:6 抽合成后约 2 倍单抽亮度</summary>
+        public const float RimTapOpacity = 0.32f;
         /// <summary>内缘锐光(压在本体之上那一遍)的亮度</summary>
-        public const float RimEdgeOpacity = 0.9f;
+        public const float RimEdgeOpacity = 1f;
         /// <summary>叠画偏移绕圈的角速度(rad/s):逸散的丝在慢慢转</summary>
         public const float RimSpin = 1.6f;
-        /// <summary>拖尾风格:偏移沿速度反向拉开的最大长度(px),按速度比例</summary>
-        public const float RimStreakLength = 14f;
+
+        //---- 四种风格各自的差异量:几何(半径 / 抽数 / 拖长)、噪声流向(径向外逸 / 向内吸 / 沿速度反向)、侵蚀比例、闪烁 ----
+
+        /// <summary>逸散风格:极坐标噪声层向外流的速度(噪声 UV/s),能量看着是从轮廓往外跑</summary>
+        public const float RimRadialSpeed = 0.9f;
+        /// <summary>逸散 / 塌缩 / 过热风格里极坐标层的混合权重:流向主要由径向层表达</summary>
+        public const float RimRadialMixDefault = 0.7f;
+        /// <summary>拖尾风格里极坐标层的权重:丝主要沿速度反向飞,径向只留一点</summary>
+        public const float RimRadialMixStreak = 0.2f;
+        /// <summary>塌缩风格:向内吸的流速比往外漏快,吸进去要急</summary>
+        public const float RimCollapseInSpeed = 1.6f;
+        /// <summary>塌缩风格:蓄力满时半径压到基础半径的这个倍数,贴边;声明一停弹回</summary>
+        public const float RimCollapseMin = 0.2f;
+        /// <summary>拖尾风格:整圈沿速度反向抹开的最大长度(px),按速度比例;远端抽逐级变暗</summary>
+        public const float RimStreakLength = 28f;
         /// <summary>拖尾风格:达到最大拖长所需的速度(px/f),与残影门控 18 起点相衔接</summary>
         public const float RimStreakFullSpeed = 30f;
-        /// <summary>塌缩风格:蓄力满时半径压到基础半径的这个倍数,贴边</summary>
-        public const float RimCollapseMin = 0.25f;
-
-        /// <summary>噪声侵蚀比例:常态碎成丝,蓄力满收成实心带,爆闪时归 0 整圈实心;过热风格常态就几乎不侵蚀</summary>
-        public const float RimErodeIdle = 0.85f;
-        public const float RimErodeCharge = 0.35f;
-        public const float RimErodeOverheat = 0.2f;
-        /// <summary>噪声漂移速度(噪声 UV/s):x 慢横流,y 向上逸散</summary>
-        public static readonly Vector2 RimNoiseScroll = new Vector2(0.07f, -0.3f);
+        /// <summary>拖尾风格:直角噪声层沿速度反向流的速度(噪声 UV/s),丝往身后飞</summary>
+        public const float RimStreakScrollSpeed = 1.8f;
+        /// <summary>过热风格:外圈再叠一环(半径倍率与亮度),整圈厚实的白炽电晕</summary>
+        public const float RimOverheatOuterMult = 1.8f;
+        public const float RimOverheatOuterOpacity = 0.55f;
         /// <summary>过热风格的高频闪烁角速度(rad/s)与幅度</summary>
         public const float RimOverheatFlickerSpeed = 38f;
-        public const float RimOverheatFlickerAmp = 0.18f;
+        public const float RimOverheatFlickerAmp = 0.22f;
 
-        /// <summary>描边主色:全息三招跟各自的投影色,其余按家族取 VDVfx 配色;演出/连接段沿用虚空紫</summary>
-        public static Color RimColorFor(VDStateIndex state) {
+        /// <summary>噪声侵蚀比例:常态留一半成丝,蓄力收成实心带,爆闪时归 0 整圈实心;过热风格几乎不侵蚀</summary>
+        public const float RimErodeIdle = 0.55f;
+        public const float RimErodeCharge = 0.2f;
+        public const float RimErodeOverheat = 0.05f;
+        /// <summary>直角噪声层的常态漂移(噪声 UV/s,图样朝这个方向流):x 慢横流,y 负值向上逸散</summary>
+        public static readonly Vector2 RimNoiseScroll = new Vector2(0.05f, -0.22f);
+
+        //---- 配色:八个家族 + 三阶段各不相同,常态描边本身就报阶段 ----
+
+        /// <summary>连接段 / 演出的描边色随阶段走:一阶段虚空紫、二阶段紫粉、三阶段盾色淡紫</summary>
+        public static Color RimIdleColor(int phase) => phase >= 3 ? VDVfx.ShieldLavender : phase >= 2 ? RimIdleColorP2 : VDVfx.VoidPurple;
+        public static readonly Color RimIdleColorP2 = new Color(225, 90, 255);
+        /// <summary>区域封锁家族:切开空间的冷青,与冲刺的白、弹幕的粉拉开</summary>
+        public static readonly Color RimZoneCyan = new Color(140, 235, 255);
+        /// <summary>引力家族:深靛,比虚空深紫亮得出来,仍是「往里吸」的冷色</summary>
+        public static readonly Color RimGravityIndigo = new Color(120, 70, 255);
+        /// <summary>召唤家族:暖金,地面开门投兵是唯一的暖色招</summary>
+        public static readonly Color RimSummonGold = new Color(255, 200, 110);
+        /// <summary>冲刺家族的热色:冷白偏蓝(速度是冷的),不与弹幕的烧红混</summary>
+        public static readonly Color RimDashIce = new Color(200, 240, 255);
+
+        /// <summary>描边主色:全息三招跟各自的投影色,其余按家族;连接段 / 演出按阶段</summary>
+        public static Color RimColorFor(VDStateIndex state, int phase) {
             switch (state) {
                 case VDStateIndex.RedHell:
                     return VDVfx.HellRed;
@@ -510,29 +547,39 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
                 case VDAttackFamily.Finale:
                     return VDVfx.CannonCore;
                 case VDAttackFamily.Gravity:
-                    return VDVfx.VoidDeep;
+                    return RimGravityIndigo;
                 case VDAttackFamily.Dash:
                     return VDVfx.VoidWhite;
                 case VDAttackFamily.Barrage:
                     return VDVfx.VoidPink;
                 case VDAttackFamily.Zone:
-                    return VDVfx.RiftWhite;
+                    return RimZoneCyan;
+                case VDAttackFamily.Summon:
+                    return RimSummonGold;
                 default:
-                    return VDVfx.VoidPurple;
+                    return RimIdleColor(phase);
             }
         }
 
-        /// <summary>蓄力热色:默认烧红;绿丛林/蓝天空烧成各自的白化色,主炮跟炮芯色,奇点塌缩成冷白,不与招式主色打架</summary>
+        /// <summary>蓄力热色:弹幕 / 连接段 / 演出 / 红色地狱烧红;冲刺冷白;区域与召唤各自白化;绿丛林 / 蓝天空各自白化;主炮炮芯色;奇点冷白</summary>
         public static Color RimHeatColorFor(VDStateIndex state) {
             switch (state) {
                 case VDStateIndex.GreenJungle:
                     return Color.Lerp(VDVfx.JungleGreen, Color.White, 0.6f);
                 case VDStateIndex.BlueSky:
                     return Color.Lerp(VDVfx.SkyBlue, Color.White, 0.6f);
-                case VDStateIndex.AnnihilationCannon:
+            }
+            switch (VDRotation.FamilyOf(state)) {
+                case VDAttackFamily.Finale:
                     return VDVfx.CannonCore;
-                case VDStateIndex.Singularity:
+                case VDAttackFamily.Gravity:
                     return VDVfx.VoidWhite;
+                case VDAttackFamily.Dash:
+                    return RimDashIce;
+                case VDAttackFamily.Zone:
+                    return Color.Lerp(RimZoneCyan, Color.White, 0.6f);
+                case VDAttackFamily.Summon:
+                    return Color.Lerp(RimSummonGold, Color.White, 0.6f);
                 default:
                     return RimHeatRed;
             }

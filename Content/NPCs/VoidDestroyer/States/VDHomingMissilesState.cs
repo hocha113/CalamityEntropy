@@ -63,11 +63,14 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             if (Timer >= VDDirector.MissileChargeFrames && (Timer - VDDirector.MissileChargeFrames) % interval == 0 && volleysDone < volleys) {
                 FireMissileRing(ctx, VDDirector.MissileRingCount(phase));
                 volleysDone++;
+                //导弹环是次要节拍,描边只闪一半,核弹那记才是整圈
+                ctx.RimFlash = Math.Max(ctx.RimFlash, 0.6f);
             }
 
             if (silence) {
-                //静默拍:核心熄灭、身体绷紧(绘制层抖动),是核弹前的吸气
+                //静默拍:核心熄灭、描边压暗到底噪之下、身体绷紧(绘制层抖动),是核弹前的吸气
                 ctx.CoreGlow = 0f;
+                ctx.RimSuppress = 1f;
                 ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, 0.4f);
             }
             if (Timer == nukeTime) {

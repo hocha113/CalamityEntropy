@@ -74,6 +74,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     }
                     else if (t >= VDDirector.RedHellRayWarn - 6) {
                         ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, 0.45f);
+                        //静默拍里描边也压暗,射线出手那记爆闪才有落差
+                        ctx.RimSuppress = 1f;
                     }
                 }
             }

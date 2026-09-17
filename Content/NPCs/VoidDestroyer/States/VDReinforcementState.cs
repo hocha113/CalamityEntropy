@@ -34,6 +34,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             if (Timer == VDDirector.ReinforceSpawnFrame) {
                 ctx.WingPulse = 1f;
                 ctx.CoreGlow = 1f;
+                ctx.RimFlash = 1f;
                 VDVfx.Sound("VoidAttack", 0.7f, ctx.Npc.Center, 3, 0.8f);
                 if (IsServer) {
                     SpawnReinforcements(ctx);

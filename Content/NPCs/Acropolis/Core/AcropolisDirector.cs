@@ -9,6 +9,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.Core
     /// 本文件是 2026-09-17 状态机重构时从原 <c>AcropolisMachine.AI()</c> / <c>AttackPlayer()</c>
     /// 逐个搬出来的,<b>数值一律照搬,没有一处调整</b>。注释写的是「这个数在原代码里干什么」,
     /// 不是「这个数为什么该是这样」,原作者没留依据的地方不替他编理由。
+    /// 唯一例外是 2026-09-18 按手感反馈改过的腾空腿姿(<see cref="LegAirExtendFraction"/> 一组),注释里写明了改的理由。
     /// </para>
     /// </summary>
     internal static class AcropolisDirector
@@ -275,7 +276,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.Core
 
         /// <summary>
         /// 四条腿的落点挂点,<b>按骨架腿序</b>:0 内左、1 外左、2 内右、3 外右(原顺序是内左、内右、外左、外右)。
-        /// 迁移后只用于腾空收腿与未晋升贴体两种 Hold 目标;步态的休息位由 rig.json 里髋骨的朝向与 <c>restReach</c> 指向这四个点
+        /// 迁移后只用于未晋升贴体的 Hold 目标;步态的休息位由 rig.json 里髋骨的朝向与 <c>restReach</c> 指向这四个点
         /// </summary>
         public static readonly Vector2[] LegMounts =
         {
@@ -304,15 +305,31 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.Core
         /// <summary>未晋升形态时手臂垂向的虚拟目标与跟随率</summary>
         public const float HandDummyLerp = 0.3f;
 
-        /// <summary>腾空时的强制收腿:足端收到本体正下方 200、横向只留 0.2 倍挂点偏移(步态 Hold 目标,跟随率 = rig.json holdRate 0.2)</summary>
-        public const float LegTuckSideFactor = 0.2f;
-        public const float LegTuckDrop = 200f;
+        /// <summary>
+        /// 腾空姿态(步态 Hold 目标,跟随率 = rig.json holdRate 0.2):每条腿从髋沿「竖直向下、略向体外张开」的方向
+        /// 伸到自己全肢触及的这个比例,膝微弯、脚尖朝下,像悬空蜘蛛自然垂下的腿。
+        /// 原代码是四足一起收到本体正下方 200、横向只留 0.2 倍挂点偏移;那个点对外腿只有七成多触及,
+        /// 大腿被逼成近乎水平的蹲姿。2026-09-18 手感反馈「下落像蹲着,应自然下伸」后改成随各腿触及缩放
+        /// </summary>
+        public const float LegAirExtendFraction = 0.9f;
+        /// <summary>
+        /// 腾空张开角:内腿 / 外腿相对竖直向下向体外偏的度数。不能为零:腿正下方伸直时两个膝解左右对称,
+        /// 选边只剩浮点噪声决定;有了外偏,膝朝上的偏好才会稳定落在体外那一侧
+        /// </summary>
+        public const float LegAirSplayInnerDegrees = 10f;
+        public const float LegAirSplayOuterDegrees = 18f;
+        /// <summary>
+        /// 探地起点已没入实心时向上找地表的最大距离,找不到就按原样返回起点。
+        /// 原落点搜索里「命中实心后沿 Y 上抬到贴地」那一步的上限;步态自己的探地起点固定在目标上方 probeLift(46),
+        /// 迈向陡坡、或行进向带竖直分量时起点会埋进地里,没有这一步足端就落在地下,下一帧落差超过 stepDown 又被迫补步
+        /// </summary>
+        public const float LegProbePopUp = 64f;
         /// <summary>未晋升且腾空时腿贴着本体的偏移倍率(随本体倾角旋转;跟随率同上)</summary>
         public const float LegDummySpreadX = 0.36f;
         public const float LegDummySpreadY = 2.2f;
 
         //以下原逐腿落点搜索的参数已由步态求解器接管,只作对照:迈步阈值 100(stepThreshold)、同侧互锁(节律窗相邻两腿为一对)、
-        //落点收敛 0.2(holdRate / 摆越 swingMin~swingMax 5~12 帧)、探地含平台(自定义 Probe)、腾空收腿(Hold)
+        //落点收敛 0.2(holdRate / 摆越 swingMin~swingMax 5~12 帧)、探地含平台(自定义 Probe)
 
         //==================== 弹幕折算 ====================
 

@@ -67,6 +67,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     if (Timer == 1) {
                         ctx.WingPulse = 1f;
                         ctx.CoreGlow = 1f;
+                        ctx.RimFlash = 1f;
                         VDVfx.Sound("VoidAnticipation", 1.3f, ctx.Target.Center, 3, 0.9f);
                         if (IsServer) {
                             Vector2 c = ctx.Target.Center;

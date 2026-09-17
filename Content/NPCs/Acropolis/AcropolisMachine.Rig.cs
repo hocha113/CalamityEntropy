@@ -143,10 +143,12 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
     /// <para>
     /// 腿:每条腿一个 <see cref="FootPlantGaitSolver"/>(内外腿触及不同,150 / 188,单求解器只有一个 reach 装不下)产出足端目标,
     /// 髋 = 腿根 (±20, 60),休息位指向原 <c>LegMounts</c>;四条腿的节律窗相位各错四分之一周期,同侧两腿的窗口不重叠,
-    /// 等价于原来的同侧迈步互锁。四个 <see cref="ThreeBoneLegSolver"/> 按「胫节永远竖直」的活塞模式解膝——迁移前的解析 IK
-    /// 正是先把踝点钉在落点正上方 l3 处再解膝,静息姿态两者逐像素相同。
-    /// 落地 / 悬空 / 迈步都从步态读(<see cref="LegOnTile"/>),不再有逐腿的落点搜索、迈步冷却与 ExtraAI 过线块。
-    /// 步态公式换了(唯一的非无损迁移),手感靠 <c>.rig.json</c> 热重载进游戏调
+    /// 等价于原来的同侧迈步互锁。四个 <see cref="ThreeBoneLegSolver"/> 解膝:基节朝足端限幅摆动,腿节 + 胫节双骨余弦解,膝极性偏好朝上——
+    /// 迁移前的绘制正是这么算的(<c>CalculateLegJoints</c> 只贡献了基节,膝取的是 <c>GetCircleIntersection</c> 两解中较高的那个)。
+    /// 2026-09-18 之前这里错配成了「胫节永远竖直」的活塞模式:静息姿态与双骨解逐像素相同所以没被发现,
+    /// 但腾空 / 迈步时大腿被压平成蹲姿,腿接近竖直时膝还会在两侧间跳,已改回双骨解。
+    /// 落地 / 悬空 / 迈步都从步态读(<see cref="LegOnTile"/>,迈步途中的腿也算承重,同原 <c>OnTile</c>),
+    /// 不再有逐腿的落点搜索、迈步冷却与 ExtraAI 过线块。步态公式换了(唯一的非无损迁移),手感靠 <c>.rig.json</c> 热重载进游戏调
     /// </para>
     /// <para>
     /// 臂:见 <see cref="AcropolisArm"/>;鱼叉链:一条 <see cref="HangChainSolver"/>(垂度 0,即直线)锚在枪口后 72 的 <c>chainTail</c> 骨,
@@ -174,6 +176,8 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         private readonly int[] armSegBones = new int[4];
         [Rig2DSolver("cannonAim1", "cannonAim2", "harpoonAim1", "harpoonAim2")]
         private readonly PointAtSolver[] armSolvers = new PointAtSolver[4];
+        [Rig2DBone("coxa{0}", Count = LegCount)]
+        private readonly int[] coxaBones = new int[LegCount];
         [Rig2DSolver("gait{0}", Count = LegCount)]
         private readonly FootPlantGaitSolver[] gaits = new FootPlantGaitSolver[LegCount];
         [Rig2DSolver("chain")]
@@ -249,12 +253,34 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         /// <summary>腿的世界侧:骨架腿序 0/1 在左(−1),2/3 在右(+1)。腿是世界锚定的,不随朝向变</summary>
         public static float LegSide(int leg) => leg < 2 ? -1f : 1f;
 
+        /// <summary>外腿:骨架腿序 1 / 3(触及 188);0 / 2 是内腿(触及 150)</summary>
+        public static bool LegIsOuter(int leg) => (leg & 1) == 1;
+
         /// <summary>
         /// 落地探测:按 4 像素步进沿 <paramref name="dir"/> 扫,实心块<b>与平台</b>都算可站(原 <c>CanStandOn = !isAir(pos, true)</c>),
-        /// 落点取进入物块前的最后一个采样点
+        /// 落点取进入物块前的最后一个采样点。
+        /// <para>
+        /// 起点已经在实心里时(迈向陡坡的落点、行进向带竖直分量时的前探点都会把步态固定抬高 46 的起点埋进地里)
+        /// 先逆着 <paramref name="dir"/> 退到地表,最多退 <see cref="AcropolisDirector.LegProbePopUp"/>——原落点搜索里「沿 Y 上抬到贴地」那一步;
+        /// 退不出去(厚墙 / 厚顶)就按原样返回起点,与步态缺省探测一致。不这么做足端会落在地下,下一帧落差超过 stepDown 又被迫补步,循环不止
+        /// </para>
         /// </summary>
         private static bool ProbeStandable(Vector2 from, Vector2 dir, float maxDistance, out Vector2 hit) {
             const float step = 4f;
+            if (!CEUtils.isAir(from, true)) {
+                Vector2 back = from;
+                float climbed = 0f;
+                while (climbed < AcropolisDirector.LegProbePopUp) {
+                    back -= dir * step;
+                    climbed += step;
+                    if (CEUtils.isAir(back, true)) {
+                        hit = back;
+                        return true;
+                    }
+                }
+                hit = from;
+                return true;
+            }
             Vector2 p = from;
             Vector2 prev = from;
             float travelled = 0f;
@@ -273,17 +299,34 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
 
         //==================== 步态查询(gameplay 读它们) ====================
 
-        /// <summary>踩在实体上:足端钉在落点且足下有承托(原 <c>AcropolisLeg.OnTile</c>)。迈步途中不算</summary>
+        /// <summary>
+        /// 踩在实体上:足端钉在落点且足下有承托,<b>或正在迈向落点</b>。
+        /// 原 <c>AcropolisLeg.OnTile</c> 看的是落脚点所在处有没有块,换步途中落脚点沿地面滑过去、一直算着地。
+        /// 摆越中的腿若不算:节律窗允许一左一右两腿同窗迈步,那十几帧着地数掉到 2,本体按「没落脚点」自由落体,
+        /// 落地后悬停再把它抬回去——站着不动也一直上下顿,腿跟着一抽一抽
+        /// </summary>
         public bool LegOnTile(int leg) {
             if (!RigReady || leg < 0 || leg >= gaits.Length || gaits[leg] == null) {
                 return false;
             }
             FootPlantGaitSolver.LegState ls = gaits[leg].Leg(0);
-            return ls.Inited && ls.Planted && ls.Grounded;
+            return ls.Inited && (ls.Planted && ls.Grounded || ls.Swinging);
         }
 
-        /// <summary>足端位置(原 <c>StandPoint</c>)</summary>
-        public Vector2 LegFoot(int leg) => RigReady && leg >= 0 && leg < gaits.Length && gaits[leg] != null ? gaits[leg].Foot(0) : NPC.Center;
+        /// <summary>承重点(原 <c>StandPoint</c>):落地时是足端,迈步途中是本步的落点而不是抬在半空的脚。悬停高度与地形倾角都读它</summary>
+        public Vector2 LegFoot(int leg) {
+            if (!RigReady || leg < 0 || leg >= gaits.Length || gaits[leg] == null) {
+                return NPC.Center;
+            }
+            FootPlantGaitSolver.LegState ls = gaits[leg].Leg(0);
+            return ls.Swinging ? ls.SwingTo : ls.Foot;
+        }
+
+        /// <summary>髋(腿根)的本帧位置:根位姿已写入而骨骼还没 Step,从根直接算,不读上一帧传播出的坐标</summary>
+        private Vector2 HipPosition(int leg) {
+            Vector2 offset = rig.LocalOffset(coxaBones[leg]) * rig.Scale;
+            return rig.RootPosition + offset.RotatedBy(rig.RootRotation);
+        }
 
         //==================== 鱼叉几何(骨骼读出) ====================
 
@@ -332,27 +375,44 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
         }
 
         /// <summary>
-        /// 腿的模式:未晋升且腾空(<see cref="Dummy"/>)时贴着本体收拢;腾空时收到本体正下方;其余走世界落足步态。
-        /// 两种收拢都是原代码的 <c>targetPos</c> 直写 + 0.2 收敛,这里用步态的 Hold 模式(<c>holdRate</c> 0.2)表达
+        /// 腿的模式:未晋升且腾空(<see cref="Dummy"/>)时贴着本体收拢;腾空时向下自然伸展(<see cref="AirborneFootTarget"/>);其余走世界落足步态。
+        /// 两种非步态目标都用步态的 Hold 模式(<c>holdRate</c> 0.2)表达,即原代码的 <c>targetPos</c> 直写 + 0.2 收敛
         /// </summary>
         private void UpdateLegTargets() {
             for (int i = 0; i < LegCount; i++) {
                 FootPlantGaitSolver gait = gaits[i];
                 gait.Velocity = NPC.velocity;
-                Vector2 mount = AcropolisDirector.LegMounts[i];
                 if (Dummy) {
+                    Vector2 mount = AcropolisDirector.LegMounts[i];
                     Vector2 hug = NPC.Center + (mount * new Vector2(AcropolisDirector.LegDummySpreadX, AcropolisDirector.LegDummySpreadY))
                         .RotatedBy(NPC.rotation) * NPC.scale;
                     gait.SetLegHold(0, hug);
                 }
                 else if (Jumping) {
-                    Vector2 tuck = NPC.Center + new Vector2(mount.X * AcropolisDirector.LegTuckSideFactor, AcropolisDirector.LegTuckDrop) * NPC.scale;
-                    gait.SetLegHold(0, tuck);
+                    gait.SetLegHold(0, AirborneFootTarget(i, gait));
                 }
                 else {
                     gait.SetLegMode(0, null);
                 }
             }
+        }
+
+        /// <summary>
+        /// 腾空腿姿:从髋沿「竖直向下、向体外偏内 / 外腿各自的张开角」伸到本腿触及的 <see cref="AcropolisDirector.LegAirExtendFraction"/>,
+        /// 内外腿各按自己的触及缩放,四条腿都是膝微弯的下垂,不再一齐缩到本体正下方(那个点对外腿只有七成多触及,大腿被压成水平的蹲姿)。
+        /// 方向取世界竖直、不随本体倾角转:腾空时腿是被重力拽着的。
+        /// 沿伸展方向探到地面就停在地表,落地前脚先搭上去;髋已埋进实心时探测退到髋上方,那种结果不用
+        /// </summary>
+        private Vector2 AirborneFootTarget(int leg, FootPlantGaitSolver gait) {
+            Vector2 hip = HipPosition(leg);
+            float splay = MathHelper.ToRadians(LegIsOuter(leg) ? AcropolisDirector.LegAirSplayOuterDegrees : AcropolisDirector.LegAirSplayInnerDegrees);
+            Vector2 dir = (MathHelper.PiOver2 - LegSide(leg) * splay).ToRotationVector2();
+            float length = gait.Reach * AcropolisDirector.LegAirExtendFraction;
+            Vector2 target = hip + dir * length;
+            if (ProbeStandable(hip, dir, length, out Vector2 ground) && Vector2.Dot(ground - hip, dir) > 0f) {
+                target = ground;
+            }
+            return target;
         }
 
         /// <summary>

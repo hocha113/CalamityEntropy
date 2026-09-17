@@ -40,7 +40,7 @@ namespace CalamityEntropy.Content.Projectiles
                 Projectile.Opacity -= 1 / 40f;
             }
             for (int i = 0; i < 5; i++) {
-                //PRT_Abyssal不进常规PRT桶,EffectLoader DrawParticleEffectsAlt RT画
+                //PRT_Abyssal不进常规PRT桶,CEAbyssScreen RT画
                 var p = PRTLoader.NewParticle<PRT_Abyssal>(Projectile.Center, CEUtils.randomPointInCircle(3), Color.White, 1f);
                 p.vd = 0.96f;
                 p.ad = 0.05f;

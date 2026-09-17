@@ -14,13 +14,28 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
     {
         public override CruiserStateIndex StateIndex => CruiserStateIndex.QuickDash;
 
+        /// <summary>
+        /// 锁向拍锁存(本地,不过线)。原判据是 <c>ChangeCounter == 0</c>,而 ChangeCounter 带 ±2 容差收养:
+        /// 换态包若被 Boss 节流推迟三帧以上,客户端会直接采用权威端的 3,把锁向这一帧跨过去,
+        /// 于是整段冲刺的方向来自本地残留朝向。锁向写的是各端都跑的 rotation,所以改成闩锁 + 宽限窗
+        /// </summary>
+        private bool aimLocked;
+
+        public override void OnEnter(CruiserStateContext ctx) {
+            base.OnEnter(ctx);
+            aimLocked = false;
+        }
+
         public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
 
-            if (ctx.ChangeCounter == 0) {
-                npc.rotation = (player.Center - npc.Center).ToRotation();
-                MarkNetUpdate(ctx);
+            if (!aimLocked) {
+                aimLocked = true;
+                if (!CuePassed(ctx.ChangeCounter, 0)) {
+                    npc.rotation = (player.Center - npc.Center).ToRotation();
+                    MarkNetUpdate(ctx);
+                }
             }
             ctx.ChangeCounter++;
 

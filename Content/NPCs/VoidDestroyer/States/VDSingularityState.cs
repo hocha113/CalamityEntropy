@@ -16,7 +16,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
     {
         public override string StateName => "Singularity";
         public override VDStateIndex StateIndex => VDStateIndex.Singularity;
-        public override bool NeedsRepositionBlink => true;
+        public override Vector2 AnchorFor(VDStateContext ctx)
+            => ctx.Target.Center + new Vector2(ctx.SideDir * VDDirector.SingHoverOffset.X, VDDirector.SingHoverOffset.Y);
 
         private enum Beat { Charge, Hold }
         private Beat beat;
@@ -35,7 +36,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             if (beat == Beat.Charge) {
                 float progress = MathHelper.Clamp(Timer / (float)VDDirector.SingChargeFrames, 0f, 1f);
                 //锁向前追瞄,最后 8 帧死向
-                if (Timer <= VDDirector.SingChargeFrames - 8) {
+                if (Timer <= VDDirector.SingChargeFrames - VDDirector.SingLockLead) {
                     lockedDir = (ctx.Target.Center - ctx.Owner.CorePos).SafeNormalize(Vector2.UnitX);
                 }
                 //迟滞后撤:pow8,几乎不动 → 最后猛吸

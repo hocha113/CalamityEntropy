@@ -1,5 +1,7 @@
-﻿using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
+﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using CalamityEntropy.Content.Projectiles.VoidDestroyer;
+using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -99,38 +101,97 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         #endregion
 
         #region 传送门
+        /// <summary>椭圆短轴 / 长轴之比:门面朝 rotation 方向,侧视成窄椭圆</summary>
+        private const float PortalAspect = 0.42f;
+        /// <summary>环折线段数:40 段在 400px 周长上每段 10px,肉眼是平滑曲线</summary>
+        private const int PortalRimSegments = 40;
         /// <summary>
-        /// 椭圆形紫色传送门:SoulVortex 四点绘制(先旋转再压 X 再整体转向,纹理在固定椭圆内自转),外圈叠加加法光环。
-        /// rotation 是椭圆短轴的朝向(门面垂直于通过方向);Boss 本体与 VDPortal 弹幕共用
+        /// 旋流盘四边形全宽 / 椭圆长轴半径。着色器里吸积盘的实亮外沿在 r=0.55(r=1 为四边形半宽),
+        /// 3.1 让实亮沿落在 0.85 倍长轴、正好贴着环内侧,0.55~1 的渐散尾巴溢出环外成一圈软雾
+        /// </summary>
+        private const float PortalDiskQuadMult = 3.1f;
+
+        /// <summary>
+        /// 椭圆形虚空传送门。盘体走 VDSingularity 着色器(极坐标旋流 + 暗核)画在白方块上再按椭圆压扁转向,
+        /// 着色器缺失时退回 SoulVortex 四点贴图;环用等宽折线沿椭圆周长画(紫宽层 + 白细层 + 一段转动的亮弧),
+        /// 背光用 Glow 径向渐变。这里刻意不用 BloomRing 压椭圆:灰度环贴图非等比缩放会得到两侧薄、上下厚的歪光圈。
+        /// rotation 是椭圆短轴的朝向(门面垂直于通过方向);glowMult 只放大白层亮度(幻影舰队真身门的破绽)。
+        /// Boss 本体与 VDPortal 弹幕共用
         /// </summary>
         public static void DrawPortalAt(Vector2 worldPos, float openness, float rotation, float baseSize, Vector2 screenPos, float glowMult = 1f) {
             float size = baseSize * openness;
-            float xmul = 0.42f;
-            float angle = Main.GlobalTimeWrappedHourly * 1.6f;
-            Vector2 lu = new Vector2(size, 0).RotatedBy(angle - MathHelper.ToRadians(135));
-            Vector2 ru = new Vector2(size, 0).RotatedBy(angle - MathHelper.ToRadians(45));
-            Vector2 ld = new Vector2(size, 0).RotatedBy(angle + MathHelper.ToRadians(135));
-            Vector2 rd = new Vector2(size, 0).RotatedBy(angle + MathHelper.ToRadians(45));
-            lu.X *= xmul;
-            ru.X *= xmul;
-            ld.X *= xmul;
-            rd.X *= xmul;
-            lu = lu.RotatedBy(rotation);
-            ru = ru.RotatedBy(rotation);
-            ld = ld.RotatedBy(rotation);
-            rd = rd.RotatedBy(rotation);
+            if (size < 2f)
+            {
+                return;
+            }
             Vector2 dp = worldPos - screenPos;
-            Color inner = VDVfx.VoidDeep * MathHelper.Clamp(openness * 1.2f, 0f, 1f);
-            CEUtils.drawTextureToPoint(Main.spriteBatch, CEUtils.getExtraTex("SoulVortex"), inner, dp + lu, dp + ru, dp + ld, dp + rd);
+            Effect shader = CEEffectAssets.VDSingularity?.Value;
+            Texture2D quad = CEExtraAssets.white ?? CEUtils.getExtraTex("white");
 
+            //背光:径向渐变可以压椭圆(没有环线可被扭曲),亮度压低只做衬底
             Main.spriteBatch.UseAdditive();
             Texture2D glow = CEUtils.getExtraTex("Glow");
-            Vector2 ringScale = new Vector2(size * xmul * 2.6f / glow.Width, size * 2.6f / glow.Height);
-            Main.spriteBatch.Draw(glow, dp, null, VDVfx.VoidPurple * (0.55f * openness * glowMult), rotation, glow.Size() / 2f, ringScale, SpriteEffects.None, 0f);
-            Texture2D ring = CEUtils.getExtraTex("BloomRing");
-            Vector2 rimScale = new Vector2(size * xmul * 2.9f / ring.Width, size * 2.9f / ring.Height);
-            Main.spriteBatch.Draw(ring, dp, null, new Color(230, 150, 255) * (0.9f * openness * glowMult), rotation, ring.Size() / 2f, rimScale, SpriteEffects.None, 0f);
+            Vector2 glowScale = new Vector2(size * PortalAspect * 2.4f / glow.Width, size * 2.4f / glow.Height);
+            Main.spriteBatch.Draw(glow, dp, null, VDVfx.VoidPurple * (0.3f * openness), rotation, glow.Size() / 2f, glowScale, SpriteEffects.None, 0f);
             CEUtils.ReSetToEndShader();
+
+            //盘体:旋流盘,四边形按椭圆压扁,旋流随之斜视
+            if (shader != null && quad != null)
+            {
+                Texture2D noise = CEExtraAssets.TurbulentNoise ?? CEUtils.getExtraTex("TurbulentNoise");
+                Main.spriteBatch.EnterShaderRegion(BlendState.AlphaBlend, shader);
+                Main.instance.GraphicsDevice.Textures[1] = noise;
+                Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
+                shader.Parameters["uTime"]?.SetValue(Main.GlobalTimeWrappedHourly);
+                shader.Parameters["uColor"]?.SetValue(VDVfx.VoidPurple.ToVector3());
+                shader.Parameters["uColor2"]?.SetValue(VDVfx.VoidWhite.ToVector3());
+                shader.Parameters["uCoreRadius"]?.SetValue(0.12f);
+                shader.Parameters["uOpacity"]?.SetValue(MathHelper.Clamp(openness * 1.2f, 0f, 1f));
+                shader.Parameters["uSpin"]?.SetValue(2.2f);
+                shader.CurrentTechnique.Passes[0].Apply();
+                Vector2 quadScale = new Vector2(size * PortalAspect * PortalDiskQuadMult / quad.Width, size * PortalDiskQuadMult / quad.Height);
+                Main.spriteBatch.Draw(quad, dp, null, Color.White, rotation, quad.Size() / 2f, quadScale, SpriteEffects.None, 0f);
+                Main.spriteBatch.ExitShaderRegion();
+            }
+            else
+            {
+                float angle = Main.GlobalTimeWrappedHourly * 1.6f;
+                Vector2 lu = new Vector2(size, 0).RotatedBy(angle - MathHelper.ToRadians(135));
+                Vector2 ru = new Vector2(size, 0).RotatedBy(angle - MathHelper.ToRadians(45));
+                Vector2 ld = new Vector2(size, 0).RotatedBy(angle + MathHelper.ToRadians(135));
+                Vector2 rd = new Vector2(size, 0).RotatedBy(angle + MathHelper.ToRadians(45));
+                lu.X *= PortalAspect;
+                ru.X *= PortalAspect;
+                ld.X *= PortalAspect;
+                rd.X *= PortalAspect;
+                Color inner = VDVfx.VoidDeep * MathHelper.Clamp(openness * 1.2f, 0f, 1f);
+                CEUtils.drawTextureToPoint(Main.spriteBatch, CEUtils.getExtraTex("SoulVortex"), inner,
+                    dp + lu.RotatedBy(rotation), dp + ru.RotatedBy(rotation), dp + ld.RotatedBy(rotation), dp + rd.RotatedBy(rotation));
+            }
+
+            //环:等宽折线沿椭圆周长,紫宽层 + 白细层;一段亮弧绕环转动
+            Main.spriteBatch.UseAdditive();
+            float glint = Main.GlobalTimeWrappedHourly * 2.4f;
+            Vector2 prev = worldPos + PortalRimPoint(0f, size, rotation);
+            for (int i = 1; i <= PortalRimSegments; i++)
+            {
+                float t = MathHelper.TwoPi * i / PortalRimSegments;
+                Vector2 next = worldPos + PortalRimPoint(t, size, rotation);
+                //亮弧:与转动相位的角距在 0.6 弧度内渐亮
+                float glintDist = Math.Abs(MathHelper.WrapAngle(t - glint));
+                float hot = MathHelper.Clamp(1f - glintDist / 0.6f, 0f, 1f);
+                CEUtils.drawLine(prev, next, VDVfx.VoidPurple * (0.45f * openness), 6f, 1);
+                CEUtils.drawLine(prev, next, Color.White * ((0.55f + 0.45f * hot) * openness * glowMult), 2f, 1);
+                prev = next;
+            }
+            CEUtils.ReSetToEndShader();
+        }
+
+        /// <summary>椭圆周长上的点:短轴沿 rotation(半径 size·Aspect),长轴垂直(半径 size)</summary>
+        private static Vector2 PortalRimPoint(float t, float size, float rotation)
+        {
+            Vector2 p = new Vector2((float)Math.Cos(t) * size * PortalAspect, (float)Math.Sin(t) * size);
+            return p.RotatedBy(rotation);
         }
         #endregion
 

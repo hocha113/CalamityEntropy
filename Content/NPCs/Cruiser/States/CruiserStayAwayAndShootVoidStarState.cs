@@ -14,6 +14,18 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
     {
         public override CruiserStateIndex StateIndex => CruiserStateIndex.StayAwayAndShootVoidStar;
 
+        /// <summary>
+        /// 尾鞭一次性拍锁存(本地,不过线)。原判据是 <c>ChangeCounter == 90</c>,
+        /// 而 ChangeCounter 带 ±2 容差收养,收养跨过 90 就整段尾鞭不起手、跳回去就重起一次。
+        /// 尾鞭写的是各端都跑的三个累加量,所以改成「闩锁 + <c>&gt;= 90</c>」,并用宽限窗压掉中途加入的补放
+        /// </summary>
+        private bool whipCued;
+
+        public override void OnEnter(CruiserStateContext ctx) {
+            base.OnEnter(ctx);
+            whipCued = false;
+        }
+
         public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
@@ -27,9 +39,12 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
             }
 
             ctx.ChangeCounter++;
-            if (ctx.ChangeCounter == CruiserDirector.StayAwayWhipCue) {
-                ctx.TailWhipCue = true;
-                MarkNetUpdate(ctx);
+            if (!whipCued && ctx.ChangeCounter >= CruiserDirector.StayAwayWhipCue) {
+                whipCued = true;
+                if (!CuePassed(ctx.ChangeCounter, CruiserDirector.StayAwayWhipCue)) {
+                    ctx.TailWhipCue = true;
+                    MarkNetUpdate(ctx);
+                }
             }
             if (ctx.ChangeCounter > CruiserDirector.StayAwayTurnStart) {
                 npc.velocity = Vector2.Lerp(npc.velocity, dir * npc.velocity.Length(), CruiserDirector.StayAwayTurnLerp);

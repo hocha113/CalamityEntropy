@@ -32,7 +32,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             DeclareAlpha(ctx, fade, 1f);
 
             if (ctx.TargetValid) {
-                ctx.AttackCooldown = VDDirector.AttackCooldown(ctx.Phase);
                 return new VDHubState();
             }
             if (Timer > VDDirector.NoTargetDespawnFrames && IsServer) {

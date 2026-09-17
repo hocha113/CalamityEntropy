@@ -5,7 +5,7 @@ using Terraria;
 namespace CalamityEntropy.Content.Particles
 {
     //本身不画,PreDraw恒false,每2tick吐PRT_AbyssalLine(常规PRT斩击线,不是PRT_Abyssal metaball)
-    //子线mode:旧逻辑Additive vs 其余全NonPremultiplied,跟EffectLoader/EnablePixelEffect无关
+    //子线mode:旧逻辑Additive vs 其余全NonPremultiplied,跟屏幕特效管线/EnablePixelEffect无关
     public class PRT_MultiSlash : BasePRT
     {
         public bool Glow = true;

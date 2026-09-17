@@ -299,11 +299,18 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
 
         #region 同步
         /// <summary>
+        /// 定长块的字节数契约:计时 3×int + 朝向 2×float + 三个标量 3×float + 三个 int = 44。
+        /// 两端共用同一个常量,改了一侧忘了改另一侧,哪侧跑偏哪侧自己在 DEBUG 下报出来
+        /// </summary>
+        private const int ExtraAIBytes = 44;
+
+        /// <summary>
         /// 定长块,顺序固定。累加量(朝向)写在计时之后,不改 CEBossNetMotion 的线格式。
         /// 字节数是编译期常量:不许加运行时条件决定写不写某个字段
         /// </summary>
         public override void SendExtraAI(BinaryWriter writer) {
             EnsureContext();
+            CEBossNetDiag.BeginWrite(nameof(Apsychos), writer);
             int stateId = (int)NPC.ai[3];
             int timer = 0;
             int counter = 0;
@@ -321,10 +328,12 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             writer.Write(Context.AttackIndex);
             writer.Write(Context.TailDashReps);
             writer.Write(TailNPCIndex);
+            CEBossNetDiag.EndWrite(nameof(Apsychos), writer, ExtraAIBytes);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader) {
             EnsureContext();
+            CEBossNetDiag.BeginRead(nameof(Apsychos), reader);
             int localStateId = -1;
             int localTimer = 0;
             if (stateMachine?.CurrentState is ApsychosStateBase state) {
@@ -335,9 +344,11 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
 
             NPC.rotation = reader.ReadSingle();
             float tailRot = reader.ReadSingle();
-            Context.Num1 = AdoptScalar(Context.Num1, reader.ReadSingle());
-            Context.Num2 = AdoptScalar(Context.Num2, reader.ReadSingle());
-            Context.Num3 = AdoptScalar(Context.Num3, reader.ReadSingle());
+            //三个槽都是帧计数,整段跨度远大于 ±2 容差:Num1 在四个状态里分别走到 17 / 6 / 50 / 60,
+            //Num2 与 Num3 在甩尾里走到 95 / 268。判据与逐槽实测见 CEBossNetAdopt 的守则
+            Context.Num1 = CEBossNetAdopt.AdoptFrameCounter(Context.Num1, reader.ReadSingle());
+            Context.Num2 = CEBossNetAdopt.AdoptFrameCounter(Context.Num2, reader.ReadSingle());
+            Context.Num3 = CEBossNetAdopt.AdoptFrameCounter(Context.Num3, reader.ReadSingle());
             Context.AttackIndex = reader.ReadInt32();
             Context.TailDashReps = reader.ReadInt32();
             TailNPCIndex = reader.ReadInt32();
@@ -347,19 +358,10 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
                     tail.rotation = tailRot;
                 }
             }
-
-#if DEBUG
-            if (stateMachine?.CurrentState is ApsychosStateBase adopted
-                && System.Math.Abs(localTimer - adopted.Timer) > CEBossNetMotion.TimerTolerance)
-            {
-                Mod.Logger.Debug($"Apsychos net |v|={NPC.velocity.Length():0.0} frameDelta~{localTimer - adopted.Timer} state={adopted.StateIndex}");
-            }
-#endif
-        }
-
-        /// <summary>标量当帧计数用:容差内不动,对齐 AdoptTimer 的口径</summary>
-        private static float AdoptScalar(float local, float synced) {
-            return System.Math.Abs(synced - local) > CEBossNetMotion.TimerTolerance ? synced : local;
+            //失步诊断不写在这里:此刻 ReceiveTiming 只把计时存进了待收养槽,状态对象上的 Timer
+            //还没被动过,拿它和 localTimer 比条件恒假。真正的探针在 CEBossStateBase.AdoptNetTiming,
+            //也就是收养真的发生的那一刻,见 CEBossNetDiag.TimingAdopted
+            CEBossNetDiag.EndRead(nameof(Apsychos), reader, ExtraAIBytes);
         }
         #endregion
 

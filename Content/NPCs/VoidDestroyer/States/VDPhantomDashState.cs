@@ -6,8 +6,9 @@ using Terraria;
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
     /// <summary>
-    /// 幻影冲刺:淡出 → 玩家某角 480px 外开门待机 30 帧(门即预告)→ 一帧定速 40 冲 30 帧 → 回到淡出,共五冲。
-    /// 公平阀:门开 0.5 秒才出手;伤害窗 = 速度门槛;P2 起路径上留加速虚空弹
+    /// 幻影冲刺:淡出 → 玩家某角 480px 外开门待机 36 帧(门开即预告,接触档前摇)→ 一帧定速 40 冲 30 帧
+    /// → 硬刹 10 帧(冲刺 → 急停 → 消失,不是冲完即闪)→ 回到淡出;P1 三冲、P2 起四冲。
+    /// 公平阀:伤害窗 = 速度门槛;P2 起路径上留加速虚空弹
     /// </summary>
     [VaultState((int)VDStateIndex.PhantomDash, typeof(VDStateContext))]
     public class VDPhantomDashState : VDStateBase
@@ -16,7 +17,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         public override VDStateIndex StateIndex => VDStateIndex.PhantomDash;
         public override bool ContactByDefault => false;
 
-        private enum Beat { FadeOut, Wait, Dash, End }
+        private enum Beat { FadeOut, Wait, Dash, Brake, End }
         private Beat beat;
         private int dashes;
 
@@ -70,8 +71,20 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     }
                     if (Timer >= VDDirector.PhantomDashFrames) {
                         dashes++;
-                        SwitchBeat(dashes >= VDDirector.PhantomDashes ? Beat.End : Beat.FadeOut);
+                        SwitchBeat(Beat.Brake);
                         MarkNetUpdate(ctx);
+                    }
+                    break;
+                case Beat.Brake:
+                    //硬刹:×0.7/帧,伤害窗随速度关掉,刹车火花
+                    DeclareAlpha(ctx, 1f, 1f);
+                    npc.velocity *= 0.7f;
+                    ctx.ContactWindow = npc.velocity.Length() > VDDirector.PhantomContactSpeed;
+                    if (Timer == 1) {
+                        VDVfx.SparkBurst(npc.Center, VDVfx.VoidPurple, 12, 3f, 9f, 20, 0.5f, 1f);
+                    }
+                    if (Timer >= VDDirector.PhantomBrakeFrames) {
+                        SwitchBeat(dashes >= VDDirector.PhantomDashes(ctx.Phase) ? Beat.End : Beat.FadeOut);
                     }
                     break;
                 default:

@@ -5,7 +5,7 @@ using Terraria;
 namespace CalamityEntropy.Content.Particles
 {
     //CanPool不开:首帧播音效,池化复用要么重播要么漏播
-    //常规PRT桶,CruiserHead/CEUtils.spawn,不耦合EffectLoader void/像素管线
+    //常规PRT桶,CruiserHead/CEUtils.spawn,不耦合CEVoidScreen/CEPixelScreen
     public class PRT_RealisticExplosion : BasePRT
     {
         public int frame = -1;

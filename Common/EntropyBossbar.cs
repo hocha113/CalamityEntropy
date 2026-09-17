@@ -62,6 +62,74 @@ namespace CalamityEntropy.Common
             bossbarColor = null;
             profanedEnrageNPCs = null;
         }
+
+        //一次性闩:EModSys 首帧按贴图给"没登记过颜色的原版 Boss"自动取色,取完就关
+        public static bool SetupColorsAuto = true;
+
+        /// <summary>
+        /// 原版与本模组自有 Boss 的手调色表。3.33 原样搬来,原先整块摊在模组入口的 PostSetupContent 里。
+        /// 调用顺序:本表 → 灾厄色表(<see cref="Core.CalamityRef.CECalContentRegistry"/>)→ 外部模组色表,
+        /// 三者键互不相交,但顺序沿用原样以防将来出现重叠。
+        /// </summary>
+        public static void SetupVanillaColors() {
+            bossbarColor[NPCID.KingSlime] = new Color(90, 160, 255);
+            bossbarColor[NPCID.EyeofCthulhu] = new Color(255, 40, 40);
+            bossbarColor[NPCID.EaterofWorldsBody] = new Color(80, 40, 255);
+            bossbarColor[NPCID.EaterofWorldsHead] = new Color(80, 40, 255);
+            bossbarColor[NPCID.EaterofWorldsTail] = new Color(80, 40, 255);
+            bossbarColor[NPCID.BrainofCthulhu] = new Color(255, 40, 40);
+            bossbarColor[NPCID.QueenBee] = new Color(242, 242, 145);
+            bossbarColor[NPCID.DD2DarkMageT1] = new Color(180, 230, 255);
+            bossbarColor[NPCID.DD2DarkMageT3] = new Color(180, 230, 255);
+            bossbarColor[NPCID.SkeletronHead] = new Color(221, 221, 188);
+            bossbarColor[NPCID.Deerclops] = new Color(220, 200, 200);
+            bossbarColor[NPCID.WallofFlesh] = new Color(255, 40, 40);
+            bossbarColor[NPCID.Retinazer] = new Color(190, 190, 190);
+            bossbarColor[NPCID.Spazmatism] = new Color(190, 190, 190);
+            bossbarColor[NPCID.TheDestroyer] = new Color(190, 190, 190);
+            bossbarColor[NPCID.SkeletronPrime] = new Color(190, 190, 190);
+            bossbarColor[491] = new Color(180, 120, 80);
+            bossbarColor[NPCID.QueenSlimeBoss] = new Color(200, 160, 240);
+            bossbarColor[NPCID.Plantera] = new Color(255, 170, 255);
+            bossbarColor[NPCID.Golem] = new Color(225, 106, 9);
+            bossbarColor[NPCID.GolemHead] = new Color(225, 106, 9);
+            bossbarColor[325] = new Color(255, 206, 106);
+            bossbarColor[327] = new Color(244, 184, 106);
+            //TODO 3.33 遗留:344 号连写两次,前一行是死赋值,最终生效的是 (240,28,28)。
+            //不确定原意是不是想写另一个 ID,原样保留待作者裁决
+            bossbarColor[344] = new Color(0, 255, 172);
+            bossbarColor[344] = new Color(240, 28, 28);
+            bossbarColor[345] = new Color(200, 244, 246);
+            bossbarColor[392] = new Color(150, 250, 255);
+            bossbarColor[NPCID.DukeFishron] = new Color(80, 146, 255);
+            bossbarColor[636] = Color.White;
+            bossbarColor[551] = new Color(180, 75, 80);
+            bossbarColor[NPCID.CultistBoss] = new Color(0, 60, 255);
+            bossbarColor[422] = new Color(208, 255, 235);
+            bossbarColor[493] = new Color(14, 155, 230);
+            bossbarColor[507] = new Color(255, 30, 170);
+            bossbarColor[517] = new Color(255, 100, 46);
+            bossbarColor[NPCID.MoonLordCore] = new Color(213, 194, 156);
+            bossbarColor[NPCID.MoonLordLeechBlob] = new Color(213, 194, 156);
+            bossbarColor[NPCID.MoonLordHead] = new Color(213, 194, 156);
+            bossbarColor[NPCID.MoonLordHand] = new Color(213, 194, 156);
+            bossbarColor[ModContent.NPCType<Content.NPCs.Cruiser.CruiserHead>()] = new Color(150, 60, 255);
+            bossbarColor[ModContent.NPCType<Content.NPCs.VoidInvasion.VoidPope>()] = new Color(200, 40, 255);
+            bossbarColor[ModContent.NPCType<Content.NPCs.NihilityTwin.NihilityActeriophage>()] = new Color(255, 155, 248);
+            bossbarColor[ModContent.NPCType<Content.NPCs.NihilityTwin.ChaoticCell>()] = new Color(255, 155, 248);
+            bossbarColor[ModContent.NPCType<Content.NPCs.Prophet.TheProphet>()] = new Color(180, 233, 255);
+            bossbarColor[ModContent.NPCType<Content.NPCs.LuminarisMoth.Luminaris>()] = new Color(150, 100, 215);
+            bossbarColor[ModContent.NPCType<Content.NPCs.Acropolis.AcropolisMachine>()] = new Color(255, 93, 13);
+            bossbarColor[ModContent.NPCType<Content.NPCs.Apsychos.Apsychos>()] = new Color(255, 160, 20);
+            bossbarColor[ModContent.NPCType<Content.NPCs.VoidDestroyer.VoidDestroyer>()] = new Color(190, 60, 255);
+        }
+
+        /// <summary>未命中的 NPC 类型(CEID 在灾厄缺席时返回 0)不得污染色表</summary>
+        public static void SetColorIfFound(int npcType, Color color) {
+            if (npcType > 0) {
+                bossbarColor[npcType] = color;
+            }
+        }
         public static Color getNpcBarColor(NPC npc) {
             EntropyBossbar.bossbarColor[636] = Main.DiscoColor;
             int type = npc.type;

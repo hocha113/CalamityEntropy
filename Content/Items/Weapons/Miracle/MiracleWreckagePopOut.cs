@@ -53,7 +53,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Miracle
                 }
                 if (Projectile.localAI[0] >= 80 * Projectile.MaxUpdates) {
                     if (Projectile.ai[0] % 20 == 0) {
-                        //AbyssalLine/Abyssal有的走EffectLoader RT合成,Configure只管常规参数
+                        //AbyssalLine/Abyssal有的走CEAbyssScreen RT合成,Configure只管常规参数
                         PRTLoader.NewParticle<PRT_GlowSparkCal>(Projectile.Center, Projectile.velocity * 0.1f, Color.MediumVioletRed, 0.05f).Configure(false, 16, new Vector2(0.32f, 1));
                         var p = PRTLoader.NewParticle<PRT_AbyssalLine>(Projectile.Center, Vector2.Zero, Color.White, 1);
                         p.lx = 0.8f;

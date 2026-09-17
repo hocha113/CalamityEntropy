@@ -5,7 +5,7 @@ using Terraria;
 namespace CalamityEntropy.Content.Particles
 {
     //旧PixelParticle,2×2白块贝塞尔轨迹,走常规PRT AlphaBlend桶
-    //类名容易和IPixelPassPRT/PreparePixelShader那条像素RT通道搞混,这类完全不接EffectLoader,EnablePixelEffect关着也照常画
+    //类名容易和IPixelPassPRT/PreparePixelShader那条像素RT通道搞混,这类完全不接屏幕特效管线,EnablePixelEffect关着也照常画
     public class PRT_Pixel : BasePRT
     {
         public float lifePercent;

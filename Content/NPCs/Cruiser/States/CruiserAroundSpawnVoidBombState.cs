@@ -27,6 +27,8 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
                 * npc.velocity.Length();
 
             ctx.ChangeCounter++;
+            //取模等值判定安全:IsServer 就写在同一个条件里,拍体只有权威端动作,
+            //而 ChangeCounter 的容差收养只发生在客户端;权威端每帧稳定 +1,每 7 帧命中恰好一次
             if (ctx.ChangeCounter < CruiserDirector.BombWindow
                 && ctx.ChangeCounter % CruiserDirector.BombInterval == 0
                 && IsServer) {

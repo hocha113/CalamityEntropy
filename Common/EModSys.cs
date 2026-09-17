@@ -15,6 +15,7 @@ using CalamityEntropy.Content.UI;
 using CalamityEntropy.Content.UI.EntropyBookUI;
 using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Graphics.Screen;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -278,8 +279,8 @@ namespace CalamityEntropy.Common
                 }
             }
 
-            if (CalamityEntropy.SetupBossbarClrAuto) {
-                CalamityEntropy.SetupBossbarClrAuto = false;
+            if (EntropyBossbar.SetupColorsAuto) {
+                EntropyBossbar.SetupColorsAuto = false;
                 for (int i = 0; i < NPCLoader.NPCCount; i++) {
                     if (!EntropyBossbar.bossbarColor.ContainsKey(i) && ContentSamples.NpcsByNetId[i].boss) {
                         Main.instance.LoadNPC(i);
@@ -419,30 +420,16 @@ namespace CalamityEntropy.Common
             Main.spriteBatch.End();
         }
         public float DWAlpha = 0;
-        public static bool sayTip = true;
+        //光照模式、波浪质量都是玩家自己的画面设置,本模组一概不改写。
+        //复古/迷幻光照下原版不捕获主画面,屏幕特效管线由 CEScreenPipeline 的门控自行退让
         public override void UpdateUI(GameTime gameTime) {
             lhBarTarget = float.Lerp(lhBarTarget, ((float)Main.LocalPlayer.statLife / (float)Main.LocalPlayer.statLifeMax2), 0.1f);
             lhBarTarget2 = float.Lerp(lhBarTarget2, lhBarTarget, 0.06f);
-
-            if (Lighting.Mode != Terraria.Graphics.Light.LightMode.Color) {
-                if (sayTip) {
-                    sayTip = false;
-                }
-            }
-            if (!ModContent.GetInstance<Config>().EnableRetroLighting) {
-                if (Lighting.Mode == Terraria.Graphics.Light.LightMode.Retro || Lighting.Mode == Terraria.Graphics.Light.LightMode.Trippy) {
-                    Lighting.Mode = Terraria.Graphics.Light.LightMode.Color;
-                }
-                Main.WaveQuality = 3;
-            }
 
             noItemUse = false;
             counter += 1f;
             if (ArmorForgingStationUI.Visible) {
                 CalamityEntropy.Instance.userInterface?.Update(gameTime);
-            }
-            if (ModContent.GetInstance<Config>().EnableRetroLighting && ModContent.GetInstance<Config>().EnablePixelEffect) {
-                ModContent.GetInstance<Config>().EnablePixelEffect = false;
             }
         }
 
@@ -460,6 +447,9 @@ namespace CalamityEntropy.Common
                 CalamityEntropy.cutScreen = 0;
                 CalamityEntropy.cutScreenVel = 0;
             }
+            //以下两项原先由绘制函数按渲染帧推进,复古/迷幻光照下管线不跑会连带冻结,现在统一走游戏帧
+            CECinematicScreen.UpdateBlackMask();
+            CalamityEntropy.Instance.cvcount += 3;
         }
 
         public override void PostUpdatePlayers() {
@@ -719,7 +709,9 @@ namespace CalamityEntropy.Common
                     if (npc.type == 0)
                         npc.active = false;
             if (CalamityEntropy.Instance.screenShakeAmp > 0) {
+                //乘性那半原先写在全屏管线的开头、按渲染帧衰减(高刷屏衰得更快),并入这里改由游戏帧驱动
                 CalamityEntropy.Instance.screenShakeAmp -= 0.5f;
+                CalamityEntropy.Instance.screenShakeAmp *= 0.9f;
             }
             bool eow = false;
             int maxlifeEows = 0;

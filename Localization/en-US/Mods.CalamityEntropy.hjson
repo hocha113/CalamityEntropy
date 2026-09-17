@@ -6613,11 +6613,6 @@ Configs: {
 			Tooltip: ""
 		}
 
-		EnableRetroLighting: {
-			Label: Allow Retro Lighting and allow zero wave quality
-			Tooltip: If you still want use retro light mode, set this to true. Ensure the Enable Pixel Effect option closed to show UI correct
-		}
-
 		TextEffects: {
 			Label: Chat Text Effects
 			Tooltip: When enabled, special text in chat and dialogue (such as Cruiser speech) is drawn with dynamic effects; when disabled, it is drawn as plain text
@@ -6935,7 +6930,6 @@ GameTips.VoidOreTip: Void ore will spawn high in the sky after defeated Cruiser
 LuminarisLoreDesc: Gain {1}% increased maximum flight time
 LoreApsychosDesc: Immunity to [cebuff:OnFire] and [cebuff:OnFire3]
 SlotInfo2: InsertItem
-LightModeTip: Warning: Other lighting modes will cause some projectiles and NPCs of Calamity Entropy to become invisible. Best to use color mode.
 PrefixHeavyDesc: +10% increased fall speed
 DamageReduceCD: Damage Reduction Cooldown
 DeltaruneCH5ShadowCrystal: Get shadow crystal in Deltarune chapter5

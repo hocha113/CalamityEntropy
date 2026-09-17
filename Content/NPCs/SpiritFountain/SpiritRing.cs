@@ -148,7 +148,12 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
 
             bool DontSetPos = false;
             bool DontSetRot = false;
-            if (fountain.aiTimer == 1) {
+            //原代码写的是 == 1。fountain.aiTimer 现在是过线并带 ±2 容差收养的状态计时,
+            //客户端可能一步跨过第 1 帧;而落环喷泉整段没有第二处清这个预警透明度,
+            //跨过去就会拿着上一招的激光预警光束画满 280 帧。
+            //这是一次幂等的清零,提前到换态帧(aiTimer == 0)再清一次不改变任何后续取值,
+            //代价只是预警光束早一帧熄灭,所以改成区间判定
+            if (fountain.aiTimer <= 1) {
                 AlphaLaserWarning = 0;
             }
             if (fountain.ClearMyProjs > 0) {
@@ -231,7 +236,9 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
                                 AlphaLaserWarning = 0;
                                 NPC.rotation = CEUtils.RotateTowardsAngle(NPC.rotation, 0, 0.12f, false);
                             }
-                            if (NPC.localAI[1] == 66 && fountain.phase == 2) {
+                            //随机初速只在权威端骰,结果随弹幕本体过线;客户端不空转 Main.rand。
+                            //等值判定安全:权威端的 localAI[1] 从不被收养(ReceiveExtraAI 只在客户端跑),严格单调
+                            if (NPC.localAI[1] == 66 && fountain.phase == 2 && IsServer) {
                                 fountain.Shoot(ModContent.ProjectileType<SpiritBullet>(), NPC.Center, CEUtils.randomRot().ToRotationVector2() * 4, 1, owner.whoAmI, 2, 1);
                             }
                             NPC.velocity.Y *= 0.97f;
@@ -307,13 +314,17 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             if (fountain.ai == SpiritFountainStateIndex.RingFountains) {
                 DontSetPos = true;
                 DontSetRot = true;
-                if (fountain.aiTimer == 1) {
+                //扶正同样从 == 1 放宽成区间:SyncNPC 不带 NPC.rotation,而本段一路 DontSetRot,
+                //客户端跨过第 1 帧就会顶着上一招的朝向抛飞(判定盒宽高也是按朝向算的)。
+                //写的是常量 0,提前一帧到换态帧清一次等价
+                if (fountain.aiTimer <= 1) {
                     NPC.rotation = 0;
-                    if (IsServer) {
-                        //抛飞初速只在权威端骰,原版 NPC 同步自带 velocity,立刻发包让客户端接上
-                        NPC.velocity = new Vector2(Main.rand.NextFloat(-45, 45), -6);
-                        NPC.netUpdate = true;
-                    }
+                }
+                //抛飞初速仍钉死在恰好第 1 帧:权威端计时不被收养,严格单调,骰一次就是一次
+                if (fountain.aiTimer == 1 && IsServer) {
+                    //只在权威端骰,原版 NPC 同步自带 velocity,立刻发包让客户端接上
+                    NPC.velocity = new Vector2(Main.rand.NextFloat(-45, 45), -6);
+                    NPC.netUpdate = true;
                 }
                 if (fountain.aiTimer > 1) {
                     if (NPC.velocity.Y == 0) {

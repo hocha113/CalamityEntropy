@@ -22,8 +22,8 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
     /// <summary>
     /// 巡游者:本模组的终局 Boss,蠕虫链型多部件,InnoVault 状态机宿主。
     /// <para>
-    /// 宿主按固定顺序落地:客户端纠偏与计时收养 → 原版层补偿 → 死亡演出 → 登场骑瓶 →
-    /// 战场半径 → 目标校验 → 全局转移(阶段/转阶段) → 清声明 → 状态机 → 朝向结算 →
+    /// 宿主按固定顺序落地:客户端纠偏与计时收养 → 死亡演出 → 登场骑瓶 →
+    /// 选目标 → 战场半径 → 目标校验 → 全局转移(阶段/转阶段) → 清声明 → 状态机 → 朝向结算 →
     /// 嘴部/尾焰/尾鞭结算 → 心跳 → 整链骨架落地。
     /// </para>
     /// <para>
@@ -48,7 +48,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
 
         /// <summary>
         /// 阶段 1 或 2。映射到已同步的 <c>ai[2]</c>,不再是单独同步的字段。
-        /// <c>EffectLoader</c> 的二阶段像素通道读它,名字与可见性都不能改
+        /// <c>CEEntityOverlay</c> 的二阶段代绘读它,名字与可见性都不能改
         /// </summary>
         public int phase => System.Math.Max(1, (int)NPC.ai[2]);
         #endregion
@@ -78,6 +78,13 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         private bool b_added = false;
         /// <summary>转阶段的体节增删只做一次(纯本地闩锁,判据 <c>phaseTrans &gt;= 122</c> 本身是同步量)</summary>
         private bool phase2SegmentsDone = false;
+        /// <summary>
+        /// 登场揭幕与转阶段首帧两处一次性拍的锁存(纯本地)。
+        /// 它们原来是对 <c>noaitime</c> / <c>phaseTrans</c> 的等值判定,而这两个计数器都随 ExtraAI 过线,
+        /// 收包时会被硬写成权威端的值,等值判定因此可能被一步跨过
+        /// </summary>
+        private bool introRevealed = false;
+        private bool phaseTransCued = false;
         #endregion
 
         #region 链条与表现字段
@@ -98,7 +105,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         public float whiteLerp = 0;
         public float camLerp = 0;
         public float WarningAlpha = 0;
-        /// <summary>二阶段像素通道用:只有 <c>EffectLoader</c> 代调 <see cref="PreDraw"/> 时才为真</summary>
+        /// <summary>二阶段像素通道用:只有 <c>CEEntityOverlay</c> 代调 <see cref="PreDraw"/> 时才为真</summary>
         public bool candraw = false;
         #endregion
 
@@ -136,10 +143,12 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
             NPCID.Sets.ImmuneToRegularBuffs[Type] = true;
-            //蠕虫平滑陷阱:原版只在 aiStyle >= 0 时查 NoMultiplayerSmoothingByAI,而这条虫从来没设过
-            //aiStyle(默认 0),所以它一直吃着原版 netOffset 平滑;状态机要占 ai[3] 又必须把 aiStyle 改 -1,
-            //于是只剩按类型豁免这一条路。整链是头部集中绘制、读裸坐标,头与体节任一节留着平滑,
-            //接缝就会每包崩一次——所以头/体/尾三个类型都要显式关掉(体节与尾节在各自文件里关)
+            //蠕虫平滑陷阱:原版的豁免只有两条路(NPC.cs 88540-88547)——按类型,或者
+            //aiStyle >= 0 且该 aiStyle 在 NoMultiplayerSmoothingByAI 里。模组 NPC 的 aiStyle
+            //默认就是 -1(NPC.cs 3533),过不了那个 >= 0;就算是 0,该集合也只含 6/8/37。
+            //所以迁移前这三型一直吃着原版 netOffset 平滑,只剩按类型豁免这一条路。
+            //整链是头部集中绘制、读裸坐标,头与体节任一节留着平滑,接缝就会每包崩一次——
+            //所以头/体/尾三个类型都要显式关掉(体节与尾节在各自文件里关)
             NPCID.Sets.NoMultiplayerSmoothingByType[Type] = true;
         }
 
@@ -147,7 +156,9 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             // 原灾厄 DR 体系本地化:一阶段减伤 54%,二阶段 42%(见 DamageReduction/ModifyIncomingHit)
             DamageReduction = CruiserDirector.DRPhase1;
             NPC.boss = true;
-            //状态机把状态号写在 ai[3],原版 AI 层必须让位
+            //状态机把状态号写在 ai[3],原版 AI 层不能占它。模组 NPC 的默认值本来就是 -1
+            //(NPC.cs 3533 `aiStyle = Type >= NPCID.Count ? -1 : 0`),这里是显式重申而非改动:
+            //迁移前后 aiStyle 都是 -1,原版 aiStyle == 0 那层从未为这只 Boss 执行过
             NPC.aiStyle = -1;
             NPC.width = CruiserDirector.Width;
             NPC.height = CruiserDirector.Height;
@@ -237,16 +248,6 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                 CEBossHost.AdoptTimingAtFrameStart(netMotion, stateMachine);
             }
 
-            //原本 aiStyle = 0 时由原版 AI 层每帧代做的两件事。状态机占用 ai[3] 迫使 aiStyle 改 -1,
-            //原版层随之不再执行,这里自己补上(原代码在接战分支里另有一次等价的 TargetClosest)
-            int lastTarget = NPC.target;
-            NPC.TargetClosest();
-            NPC.spriteDirection = NPC.direction;
-            if (!client && NPC.target != lastTarget) {
-                //换目标是决策点
-                NPC.netUpdate = true;
-            }
-
             UpdateHitRecords();
 
             if (DeathAnm) {
@@ -288,18 +289,37 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             }
             noaitime--;
 
-            if (noaitime == 0) {
-                NPC.dontTakeDamage = false;
-                //登场揭幕拍点:天幕闪电齐发
-                CruiserSkyDrive.PushBurst(CruiserDirector.SkyIntroBurstBolts);
-                if (!client) {
-                    NPC.netUpdate = true;
+            //原判据是 noaitime == 0。noaitime 随 ExtraAI 硬写过线,客户端可能一步跨过 0,
+            //于是这一拍(解除免伤 + 揭幕闪电)整个丢掉——那正是「等值判定被收养跨过」这一类。
+            //免伤本身另有 dontTakeDamage 过线兜底,不会卡成永久无敌,但演出会丢,所以改成闩锁 + 区间判定
+            if (!introRevealed && noaitime <= 0) {
+                introRevealed = true;
+                //中途加入的客户端 noaitime 早已深负,整拍静默吞掉:它既不该补揭幕闪电,
+                //更不该把 dontTakeDamage 抹成 false——那会盖掉刚从包里读到的转阶段免伤
+                if (noaitime > -CruiserStateBase.CueCatchUpGrace) {
+                    NPC.dontTakeDamage = false;
+                    //登场揭幕拍点:天幕闪电齐发
+                    CruiserSkyDrive.PushBurst(CruiserDirector.SkyIntroBurstBolts);
+                    if (!client) {
+                        NPC.netUpdate = true;
+                    }
                 }
             }
 
             if (noaitime < 0) {
                 EnsureChainParts();
                 Main.LocalPlayer.Entropy().crSky = CruiserDirector.LegacySkyTimer;
+                //选目标的唯一一处,位置与参数与迁移前一字不差(旧 726,无参 ⇒ faceTarget: true,
+                //所以 target / direction / directionY 仍按原样每帧重写)。
+                //模组 NPC 的 aiStyle 默认就是 -1(NPC.cs 3533),原版 aiStyle == 0 那层代做的
+                //TargetClosest / spriteDirection 从来没为这只 Boss 跑过,不存在要补偿的东西
+                int lastTarget = NPC.target;
+                NPC.TargetClosest();
+                //纯联机记账:原代码每帧无条件 netUpdate,本轮换成决策点,换目标是其中一个。
+                //只影响发包时机,不写任何 gameplay 字段
+                if (!VaultUtils.isClient && NPC.target != lastTarget) {
+                    NPC.netUpdate = true;
+                }
                 maxDistance += (maxDistanceTarget - maxDistance) * CruiserDirector.ArenaRadiusLerp;
                 ApplyArenaDebuff();
 
@@ -481,9 +501,13 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                     stateMachine.ChangeState(new CruiserPhaseTransingState());
                 }
                 phaseTrans++;
-                //二阶段转换拍点:一次性闪电爆发
-                if (phaseTrans == 1) {
-                    CruiserSkyDrive.PushBurst(CruiserDirector.SkyPhaseTransBurstBolts);
+                //二阶段转换拍点:一次性闪电爆发。原判据 phaseTrans == 1,同样是过线计数器上的等值判定,
+                //改成闩锁 + 区间;中途加入(phaseTrans 已越过宽限窗)只静默记账
+                if (!phaseTransCued && phaseTrans >= 1) {
+                    phaseTransCued = true;
+                    if (phaseTrans <= 1 + CruiserStateBase.CueCatchUpGrace) {
+                        CruiserSkyDrive.PushBurst(CruiserDirector.SkyPhaseTransBurstBolts);
+                    }
                 }
                 alpha *= CruiserDirector.PhaseTransAlphaDecay;
                 Context.AttackIndex = 0;
@@ -673,8 +697,9 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             maxDistance = reader.ReadSingle();
             SpaceCenter = reader.ReadVector2();
 
-            Context.ChangeCounter = AdoptCounter(Context.ChangeCounter, reader.ReadInt32());
-            Context.LaserAim = AdoptCounter(Context.LaserAim, reader.ReadInt32());
+            //两个都是帧计数,且各状态都对它们做 `== N` 型等值判定:硬对齐会让那一拍被跳过或重放
+            Context.ChangeCounter = CEBossNetAdopt.AdoptFrameCounter(Context.ChangeCounter, reader.ReadInt32());
+            Context.LaserAim = CEBossNetAdopt.AdoptFrameCounter(Context.LaserAim, reader.ReadInt32());
             Context.AttackIndex = reader.ReadInt32();
             noaitime = reader.ReadInt32();
             phaseTrans = reader.ReadInt32();
@@ -686,10 +711,6 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
 
             tail = reader.ReadInt32();
         }
-
-        /// <summary>帧计数按计时口径收养:容差内不动本地值,硬对齐会让 <c>== N</c> 型一次性拍被跳过或重放</summary>
-        private static int AdoptCounter(int local, int synced)
-            => CEBossNetMotion.AdoptTimer(local, synced);
         #endregion
 
     }

@@ -74,12 +74,12 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             float env = Envelope();
             Vector2 top = Projectile.Center + new Vector2(0, -HalfLength);
             VDBeamDraw.Draw(top, Vector2.UnitY, HalfLength * 2f, Width, VDVfx.VoidPurple, VDVfx.CannonCore, env, 1f, Projectile.whoAmI * 0.41f);
-            //落点冲击环
+            //落点冲击环:等比扩散淡出(灰度环贴图不许压椭圆),与落点标记同一语言
             Main.spriteBatch.UseAdditive();
             var ring = CEUtils.getExtraTex("BloomRing");
-            float ringP = MathHelper.Clamp(Age / 14f, 0f, 1f);
-            float ringScale = Width * 2.4f / ring.Width * (0.4f + 0.8f * ringP);
-            Main.spriteBatch.Draw(ring, Projectile.Center - Main.screenPosition, null, VDVfx.VoidPink * ((1f - ringP) * 0.9f), 0f, ring.Size() / 2f, new Vector2(ringScale, ringScale * 0.35f), Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0f);
+            float ringP = MathHelper.Clamp(Age / 16f, 0f, 1f);
+            float ringScale = Width * 1.2f / ring.Width * (0.5f + 0.9f * ringP);
+            Main.spriteBatch.Draw(ring, Projectile.Center - Main.screenPosition, null, VDVfx.VoidPurple * ((1f - ringP) * 0.7f), 0f, ring.Size() / 2f, ringScale, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0f);
             CEUtils.ReSetToEndShader();
             return false;
         }

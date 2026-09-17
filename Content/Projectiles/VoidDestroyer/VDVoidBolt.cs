@@ -131,12 +131,14 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             float fade = Mode == ModeShapeBurst ? MathHelper.Clamp(Projectile.timeLeft / 30f, 0f, 1f) : 1f;
 
             Main.spriteBatch.UseAdditive();
-            if (Mode != ModeShapeBurst) {
+            float speed = Projectile.velocity.Length();
+            //拖尾:细长速度线,只在真的飞得快时画(旧版 26px 高的实心药丸拖在每颗弹后,叠在亮背景上就是一串粉椭圆)
+            if (Mode != ModeShapeBurst && speed > 10f) {
                 Texture2D streak = CEUtils.getExtraTex("StreakSolid");
-                float len = MathHelper.Clamp(Projectile.velocity.Length() * 4f, 40f, 120f);
-                Vector2 streakScale = new Vector2(len / streak.Width, 26f / streak.Height);
-                Vector2 tailPos = drawPos - Projectile.velocity.SafeNormalize(Vector2.Zero) * len * 0.5f;
-                Main.spriteBatch.Draw(streak, tailPos, null, GlowColor * 0.8f, Projectile.velocity.ToRotation(), streak.Size() / 2f, streakScale, SpriteEffects.None, 0f);
+                float len = MathHelper.Clamp(speed * 3f, 24f, 60f);
+                Vector2 streakScale = new Vector2(len / streak.Width, 8f / streak.Height);
+                Vector2 tailPos = drawPos - Projectile.velocity.SafeNormalize(Vector2.Zero) * (len * 0.5f + 6f);
+                Main.spriteBatch.Draw(streak, tailPos, null, GlowColor * 0.45f, Projectile.velocity.ToRotation(), streak.Size() / 2f, streakScale, SpriteEffects.None, 0f);
             }
             for (int i = 1; i < Projectile.oldPos.Length; i++) {
                 float a = (1f - i / (float)Projectile.oldPos.Length) * 0.35f * fade;
@@ -144,7 +146,7 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 Main.spriteBatch.Draw(tex, pos, null, GlowColor * a, Projectile.oldRot[i], origin, Projectile.scale * (1f - i * 0.04f), SpriteEffects.None, 0f);
             }
             Texture2D glow = CEUtils.getExtraTex("Glow");
-            Main.spriteBatch.Draw(glow, drawPos, null, GlowColor * (0.7f * fade), 0f, glow.Size() / 2f, 0.22f * Projectile.scale, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(glow, drawPos, null, GlowColor * (0.6f * fade), 0f, glow.Size() / 2f, 0.16f * Projectile.scale, SpriteEffects.None, 0f);
             CEUtils.ReSetToEndShader();
 
             Main.spriteBatch.Draw(tex, drawPos, null, Color.White * fade, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0f);

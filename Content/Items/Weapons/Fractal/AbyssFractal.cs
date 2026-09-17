@@ -166,7 +166,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 PositionInWorld = target.Center,
                 MovementVector = Vector2.Zero
             });
-            //PRT_Abyssal不进常规桶,EffectLoader DrawParticleEffectsAlt RT画,vd/ad直赋对齐旧AbyssalParticles
+            //PRT_Abyssal不进常规桶,CEAbyssScreen RT画,vd/ad直赋对齐旧AbyssalParticles
             //slash那套AbyssalLine是常规PRT桶,Configure设AdditiveBlend就行
             for (int i = 0; i < 64; i++) {
                 var p = PRTLoader.NewParticle<PRT_Abyssal>(

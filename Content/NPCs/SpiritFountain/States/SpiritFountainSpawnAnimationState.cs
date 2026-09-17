@@ -25,6 +25,14 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
     {
         public override SpiritFountainStateIndex StateIndex => SpiritFountainStateIndex.SpawnAnimation;
 
+        /// <summary>出场闪光的本地一次性闸。纯表现,不过线:它的作用就是「本端第一次跑到这里」</summary>
+        private bool shineFired;
+
+        public override void OnEnter(SpiritFountainStateContext ctx) {
+            base.OnEnter(ctx);
+            shineFired = false;
+        }
+
         protected override IVaultState<SpiritFountainStateContext> RunBody(SpiritFountainStateContext ctx) {
             NPC npc = ctx.Npc;
             SpiritFountain owner = ctx.Owner;
@@ -48,14 +56,22 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
                 MarkNetUpdate(ctx);
             }
 
-            if (ctx.GatheringAnimation == SpiritFountainDirector.GatheringShineFrame && IsLocal) {
-                //出场首帧双 Shine,lifetime 320 的一次性大粒子
-                PRT_ShineParticle shine1 = PRTLoader.NewParticle<PRT_ShineParticle>(npc.Center, Vector2.Zero, Color.AliceBlue, SpiritFountainDirector.GatheringShineScale1);
-                shine1.flag = true;
-                shine1.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, SpiritFountainDirector.GatheringShineLife);
-                PRT_ShineParticle shine2 = PRTLoader.NewParticle<PRT_ShineParticle>(npc.Center, Vector2.Zero, Color.White, SpiritFountainDirector.GatheringShineScale2);
-                shine2.flag = true;
-                shine2.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, SpiritFountainDirector.GatheringShineLife);
+            //原代码判的是 GatheringAnimation == 300(那是个纯本地字段,各端第一次跑到这里时必然是 300)。
+            //迁移后聚魂倒计时随 ExtraAI 过线并带 ±2 容差收养,拿到快照的客户端会从 300 以下起跑,
+            //等值判定被一步跨过 = 客户端永远看不到出场闪光。改成「本状态第一个执行帧」的本地一次性闸:
+            //权威端首帧的倒计时就是 300,二者完全等价;客户端则恢复原代码「第一次看见就放」的表现。
+            //倒计时已经走完(中途加入到显形段)时不补放,免得凭空多一发 320 帧的大闪光
+            if (!shineFired && ctx.GatheringAnimation > 0) {
+                shineFired = true;
+                if (IsLocal) {
+                    //出场首帧双 Shine,lifetime 320 的一次性大粒子
+                    PRT_ShineParticle shine1 = PRTLoader.NewParticle<PRT_ShineParticle>(npc.Center, Vector2.Zero, Color.AliceBlue, SpiritFountainDirector.GatheringShineScale1);
+                    shine1.flag = true;
+                    shine1.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, SpiritFountainDirector.GatheringShineLife);
+                    PRT_ShineParticle shine2 = PRTLoader.NewParticle<PRT_ShineParticle>(npc.Center, Vector2.Zero, Color.White, SpiritFountainDirector.GatheringShineScale2);
+                    shine2.flag = true;
+                    shine2.Configure(1, true, PRTDrawModeEnum.AdditiveBlend, 0, SpiritFountainDirector.GatheringShineLife);
+                }
             }
 
             //自减写在判据里:无论是否还在聚魂期都会减,演出后半段它一路走进负数,照搬

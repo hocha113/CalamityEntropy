@@ -53,7 +53,7 @@ namespace CalamityEntropy.Content.Particles
         }
 
         public override bool PreDraw(SpriteBatch sb) {
-            //双通道:PixelPass=true只走EffectLoader像素RT(PreparePixelShader三桶),这层PreDraw直接return
+            //双通道:PixelPass=true只走CEPixelScreen像素RT(三桶),这层PreDraw直接return
             //普通层和像素层各画一遍DrawSlash,EnablePixelEffect关着时像素那路本来就不显示,别加回退
             if (PixelPass)
                 return false;

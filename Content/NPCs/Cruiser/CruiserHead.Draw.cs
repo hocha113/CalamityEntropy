@@ -1,5 +1,6 @@
 ﻿using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Common;
+using CalamityEntropy.Core.Graphics.Screen;
 using CalamityEntropy.Content.NPCs.Cruiser.Core;
 using CalamityEntropy.Core.Graphics;
 using InnoVault;
@@ -51,8 +52,9 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             if (NPC.IsABestiaryIconDummy)
                 return false;
 
-            //二阶段交给 EffectLoader 的像素通道代画(candraw 只在那条路径上为真)
-            if (!candraw && !(phase == 1) && ModContent.GetInstance<Config>().EnablePixelEffect) {
+            //二阶段交给 CEEntityOverlay.DrawLateOverlay 代画(candraw 只在那条路径上为真)。
+            //门必须跟代画方一致:复古/迷幻光照或关掉绚丽特效时管线不跑,这里就得自己画,否则整只消失
+            if (!candraw && !(phase == 1) && CEScreenPipeline.PixelPassActive) {
                 return false;
             }
             if (noaitime > 0) {

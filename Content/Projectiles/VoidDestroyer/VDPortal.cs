@@ -55,7 +55,11 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                     CEUtils.PlaySound("portal_emerge", Mode == ModeDash ? 1.2f : 0.9f, Projectile.Center, 4, 0.8f);
                 }
             }
-            if (Projectile.velocity != Vector2.Zero) {
+            //支援门开在地面上:短轴竖直,门面是横椭圆;冲刺门短轴指向通过方向
+            if (Mode == ModeReinforce) {
+                Projectile.rotation = MathHelper.PiOver2;
+            }
+            else if (Projectile.velocity != Vector2.Zero) {
                 Projectile.rotation = Projectile.velocity.ToRotation();
             }
             Lighting.AddLight(Projectile.Center, VoidDestroyerNPC.VoidPurple.ToVector3() * 0.8f * Openness());

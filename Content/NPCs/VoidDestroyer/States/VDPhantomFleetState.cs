@@ -8,7 +8,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
     /// <summary>
     /// 幻影舰队:本体淡出 → 玩家周围 520px 十字(第二波 X 形)开四门,三门出全息幻影舰、真身占第四门
-    /// (真身门环更亮 + 核心亮 = 可读的破绽)→ 30 帧同步瞄准 → 四舰齐冲(真身接触伤害,幻影 60%)→ 幻影碎成全息碎片。
+    /// (真身门环更亮 + 核心拉满 + 翼张 = 可读的破绽)→ 40 帧同步瞄准 → 四舰齐冲(真身接触伤害,幻影 60%)→ 幻影碎成全息碎片,
+    /// 两波之间全员静止 20 帧。
     /// P2 起两波;P3 幻影沿路留冲刺尾弹。门开 30 帧才出手,伤害窗按速度门槛
     /// </summary>
     [VaultState((int)VDStateIndex.PhantomFleet, typeof(VDStateContext))]
@@ -18,7 +19,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         public override VDStateIndex StateIndex => VDStateIndex.PhantomFleet;
         public override bool ContactByDefault => false;
 
-        private enum Beat { FadeOut, Aim, Dash, End }
+        private enum Beat { FadeOut, Aim, Dash, WaveHold, End }
         private Beat beat;
         private int wave;
 
@@ -52,8 +53,13 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     npc.velocity = Vector2.Zero;
                     float p = MathHelper.Clamp(Timer / 8f, 0f, 1f);
                     DeclareAlpha(ctx, p, 1f);
-                    //真身破绽:核心持续亮
-                    ctx.CoreGlow = Math.Max(ctx.CoreGlow, 0.6f + 0.4f * MathHelper.Clamp(Timer / (float)VDDirector.FleetAimFrames, 0f, 1f));
+                    //真身破绽:核心拉满、翼随瞄准进度张开(幻影没有这两样)
+                    float aimP = MathHelper.Clamp(Timer / (float)VDDirector.FleetAimFrames, 0f, 1f);
+                    ctx.CoreGlow = 1f;
+                    ctx.WingPulse = Math.Max(ctx.WingPulse, aimP);
+                    if (Timer % 3 == 0) {
+                        ConvergeSparks(ctx, VDVfx.VoidWhite, 50f, 120f, 0.14f);
+                    }
                     if (Timer >= VDDirector.FleetAimFrames) {
                         Vector2 dir = (ctx.Target.Center - npc.Center).SafeNormalize(Vector2.UnitY);
                         npc.velocity = dir * VDDirector.FleetDashSpeed;
@@ -73,8 +79,17 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     }
                     if (Timer >= VDDirector.FleetDashFrames) {
                         wave++;
-                        SwitchBeat(wave >= VDDirector.FleetWaves(ctx.Phase) ? Beat.End : Beat.FadeOut);
+                        SwitchBeat(wave >= VDDirector.FleetWaves(ctx.Phase) ? Beat.End : Beat.WaveHold);
                         MarkNetUpdate(ctx);
+                    }
+                    break;
+                case Beat.WaveHold:
+                    //两波之间全员静止:刹停、核心熄、可见,段落之间的一口气
+                    DeclareAlpha(ctx, 1f, 1f);
+                    npc.velocity *= 0.75f;
+                    ctx.CoreGlow = 0f;
+                    if (Timer >= VDDirector.FleetWaveHold) {
+                        SwitchBeat(Beat.FadeOut);
                     }
                     break;
                 default:

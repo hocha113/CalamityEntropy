@@ -44,8 +44,12 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth.Core
         /// 而这里换态由返回值驱动、新招的体下一帧读到时长值,中间没有多出或少掉任何一帧。
         /// </para>
         /// <para>逐帧积分且驱动全部节拍,所以必须过线,口径与 <c>Timer</c> 一致(±2 容差内不动本地值)。</para>
+        /// <para>
+        /// 覆写基类的同名槽(而不是另声明一个),这样共用层按 <see cref="CEBossStateContext"/>
+        /// 读到的就是本 Boss 真正在用的那个值;本 Boss 的相位换算与初值 -1 留在这里说明
+        /// </para>
         /// </summary>
-        public int Countdown { get; set; } = -1;
+        public override int Countdown { get; set; } = -1;
 
         /// <summary>
         /// 位置锚点一号,对应原代码的 <c>vec1</c>。几乎每个状态都用它当

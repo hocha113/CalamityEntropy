@@ -5,6 +5,7 @@ using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Graphics.Screen;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -212,7 +213,7 @@ namespace CalamityEntropy.Content.Items.Weapons.ElectrocauteryWand
                 Texture2D pulse = CEExtraAssets.HollowCircleSoftEdge;
                 Main.spriteBatch.End();
                 GraphicsDevice gd = Main.graphics.GraphicsDevice;
-                EffectLoader.PreparePixelShader(gd);
+                CEPixelScreen.PreparePixelShader(gd);
                 Main.spriteBatch.UseBlendState(BlendState.Additive);
                 foreach (NPC npc in target) {
                     if (npc.active) {
@@ -236,7 +237,7 @@ namespace CalamityEntropy.Content.Items.Weapons.ElectrocauteryWand
                 CEUtils.DrawGlow(Projectile.Center, Color.White, 1.4f * Projectile.ai[2]);
                 Main.spriteBatch.ExitShaderRegion();
                 Main.spriteBatch.End();
-                EffectLoader.ApplyPixelShader(gd);
+                CEPixelScreen.ApplyPixelShader(gd);
                 Main.spriteBatch.begin_();
             }
             return false;

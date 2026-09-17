@@ -208,7 +208,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
     {
         public const float DashDistance = 200f * 16f;
         public const int DashFrames = 90;
-        public const int AppearFrames = 12;
+        /// <summary>出现到起冲 18 帧(旧 12):陆龟传送到侧面后要能被看到一下再冲</summary>
+        public const int AppearFrames = 18;
         public const float StartOffset = 80f * 16f;
 
         public override string Texture => "CalamityEntropy/Assets/Extra/Empty";

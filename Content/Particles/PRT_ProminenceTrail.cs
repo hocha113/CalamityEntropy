@@ -31,8 +31,8 @@ namespace CalamityEntropy.Content.Particles
 
         public override void SetProperty() {
             ShouldKillWhenOffScreen = false;
-            //旧drawAll里Prominence走像素pass单独遍历,现挂IPixelPassPRT让EffectLoader回调DrawPixelPass
-            PixelPass = true;   //走EffectLoader像素RT通道,常规PRT分桶PreDraw直接return
+            //旧drawAll里Prominence走像素pass单独遍历,现挂IPixelPassPRT让CEPixelScreen回调DrawPixelPass
+            PixelPass = true;   //走CEPixelScreen像素RT通道,常规PRT分桶PreDraw直接return
             if (Lifetime <= 0)
                 Lifetime = 11;   //短寿命武器拖尾,11是旧默认
         }
@@ -56,7 +56,7 @@ namespace CalamityEntropy.Content.Particles
 
         public override bool PreDraw(SpriteBatch sb) {
             if (PixelPass)
-                return false;   //正常路径EffectLoader回调DrawPixelPass,别在这画
+                return false;   //正常路径CEPixelScreen回调DrawPixelPass,别在这画
             DrawPixelPass(sb);
             sb.End();
             PRTLoader.BeginDrawingWithMode(PRTDrawMode, sb);   //非PixelPass兜底路径,End完还得接回PRT批次
@@ -101,7 +101,7 @@ namespace CalamityEntropy.Content.Particles
                 gd.Textures[0] = PRTExtraTextures.SimpleNoise.Value;
                 gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
 
-                //EnterShaderRegion把Sampler搞成AnisotropicClamp了,还回去得跟EffectLoader DrawPixelPassPRT开的那批对上
+                //EnterShaderRegion把Sampler搞成AnisotropicClamp了,还回去得跟CEPixelScreen开的那批对上
                 //不然同桶里后面的粒子Blend/Sampler全乱
                 sb.End();
                 sb.Begin(SpriteSortMode.Deferred, PRTLoader.GetBlendStateFor(PRTDrawMode), SamplerState.AnisotropicClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);

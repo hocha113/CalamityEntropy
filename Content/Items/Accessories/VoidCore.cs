@@ -112,7 +112,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             for (int i = 0; i < 3; i++) {
                 PRTLoader.NewParticle<PRT_LineCal>(CEUtils.randomPointInCircle(18) + player.Center - back * Main.rand.NextFloat(), back * Main.rand.NextFloat(0.4f, 0.6f), Color.LightBlue, Main.rand.NextFloat(0.6f, 1)).Configure(false, 8);
             }
-            //AbyssalLine被EffectLoader捞起走RT合成,xadd/lx得spawn后赋
+            //AbyssalLine被CEAbyssScreen捞起走RT合成,xadd/lx得spawn后赋
             var dashLine = PRTLoader.NewParticle<PRT_AbyssalLine>(player.Center - axis * 8f, Vector2.Zero, Color.LightBlue, 1);
             dashLine.xadd = 0.84f;
             dashLine.lx = 0.84f;

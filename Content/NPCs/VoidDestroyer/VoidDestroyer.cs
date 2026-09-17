@@ -301,10 +301,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             if (Context.NoContactTimer > 0) {
                 Context.NoContactTimer--;
             }
-            if (Context.AttackCooldown > 0) {
-                Context.AttackCooldown--;
-            }
-
             Context.BeginFrameDefaults();
             stateMachine.Update();
 
@@ -590,6 +586,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             writer.Write(Context.AttackIndex);
             writer.Write(Context.QueuedChainState);
             writer.Write(Context.ForcedNextState);
+            writer.Write(Context.PendingState);
             for (int i = 0; i < Context.RecentHistory.Length; i++) {
                 writer.Write((sbyte)Context.RecentHistory[i]);
             }
@@ -627,6 +624,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             Context.AttackIndex = reader.ReadInt32();
             Context.QueuedChainState = reader.ReadInt32();
             Context.ForcedNextState = reader.ReadInt32();
+            Context.PendingState = reader.ReadInt32();
             for (int i = 0; i < Context.RecentHistory.Length; i++) {
                 Context.RecentHistory[i] = reader.ReadSByte();
             }

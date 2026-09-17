@@ -6707,16 +6707,6 @@ Configs: {
 			Tooltip: 是否播放某些持续音效，仅推荐在某些武器（过载熔炉等）导致闪退时关闭（这可能是由于无法检测到扬声器导致的）
 		}
 
-		EnableRetroLighting: {
-			Label: 允许复古照明模式和关闭水波
-			Tooltip:
-				'''
-				如果你仍然想使用复古照明或者关闭水波质量模式，开启此选项。
-				关闭此选项将会关闭[启用绚丽特效]选项，由于Bug，在这些模式下UI不会正常显示
-				[c/FF0000:警告：开启复古照明模式或关闭水波会导致某些特效、射弹或NPC无法正常绘制进而影响游戏体验]
-				'''
-		}
-
 		TextEffects: {
 			Label: 聊天文字特效
 			Tooltip: 开启后聊天与对话中的特殊文字（如巡洋者语）显示动态特效；关闭则以普通文本显示
@@ -7043,7 +7033,6 @@ GameTips.VoidOreTip: 虚渺矿会在击败巡游者后在太空生成
 LuminarisLoreDesc: +{1}%最大飞行时间
 LoreApsychosDesc: 使你免疫着火了和狱火减益
 SlotInfo2: 存放原矿
-LightModeTip: 警告：颜色以外的照明模式会导致灾熵的部分射弹和敌怪不显示，最好使用颜色照明
 PrefixHeavyDesc: +10% 下落速度
 DamageReduceCD: 减伤冷却
 DeltaruneCH5ShadowCrystal: 获取Deltarune第五章的暗影水晶

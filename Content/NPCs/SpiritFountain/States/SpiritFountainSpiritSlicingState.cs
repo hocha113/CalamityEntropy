@@ -31,26 +31,40 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain.States
             ctx.EyeAlphaTarget = 1;
             int t = SpiritFountainDirector.SlicingPeriod;
 
-            if (Timer == SpiritFountainDirector.SlicingInitFrame) {
+            //原代码把两柱的朝向写在 aiTimer == 1 那一拍里。计时随快照过线且带 ±2 容差收养,
+            //客户端可能一步跨过第 1 帧,而 SyncNPC 本身不带 NPC.rotation、这两个量在本状态里
+            //又没有第二处写入口,跨过去就会拿着上一招的朝向画满整个 801 帧周期。
+            //这两行写的是常量,从第 1 帧起每帧重写一遍与只写一次完全等价(本状态里没有别的写入口),
+            //所以改成区间判定,彻底取消「被跨过」这个可能
+            if (Timer >= SpiritFountainDirector.SlicingInitFrame) {
                 owner.column1.rotation = -MathHelper.PiOver2;
                 owner.column2.rotation = 0;
-                if (IsServer) {
-                    //两柱各自的起始方向:只在权威端骰,结果随 ExtraAI 的 Num 过线
-                    owner.column1.Num = SpiritFountainDirector.SlicingReach * (Main.rand.NextBool() ? 1 : -1);
-                    owner.column2.Num = SpiritFountainDirector.SlicingReach * (Main.rand.NextBool() ? 1 : -1);
-                    MarkNetUpdate(ctx);
-                }
+            }
+            //骰点仍然钉死在恰好第 1 帧:权威端的 Timer 从不被收养
+            //(ReceiveExtraAI 只在客户端跑,服务端会丢弃 MessageID.SyncNPC),
+            //严格 +1 单调递增,所以这一拍在权威端不可能被跳过、也不可能重放
+            if (Timer == SpiritFountainDirector.SlicingInitFrame && IsServer) {
+                //两柱各自的起始方向:只在权威端骰,结果随 ExtraAI 的 Num 过线
+                owner.column1.Num = SpiritFountainDirector.SlicingReach * (Main.rand.NextBool() ? 1 : -1);
+                owner.column2.Num = SpiritFountainDirector.SlicingReach * (Main.rand.NextBool() ? 1 : -1);
+                MarkNetUpdate(ctx);
             }
             owner.column1.offset.X = float.Lerp(owner.column1.offset.X, owner.column1.Num, SpiritFountainDirector.SlicingOffsetLerp);
             owner.column2.offset.Y = float.Lerp(owner.column2.offset.Y, owner.column2.Num, SpiritFountainDirector.SlicingOffsetLerp);
             if (Timer % t == SpiritFountainDirector.SlicingFlipPhase) {
                 owner.column1.Num *= -1;
                 owner.column2.Num *= -1;
+                //翻向是决策点。权威端这一拍是精确的;客户端万一因收养跨过或重放了它,
+                //靠这一包把 Num 直接对回来(Num 在 ExtraAI 里是无容差直取)
+                MarkNetUpdate(ctx);
             }
 
             if (Timer > SpiritFountainDirector.SlicingLoopAfter && Timer % t < SpiritFountainDirector.SlicingLoopWindow) {
-                //原代码在这里写了 ai = SpiritSlicing(状态没变)+ aiTimer = 0,等价于原地重开
+                //原代码在这里写了 ai = SpiritSlicing(状态没变)+ aiTimer = 0,等价于原地重开。
+                //窗口宽 40 帧,±2 的收养容差跨不过去;发包让客户端的计时跟着一起重开,
+                //免得在途的旧快照把刚归零的计时又拽回 800 上下
                 Timer = 0;
+                MarkNetUpdate(ctx);
             }
             return null;
         }

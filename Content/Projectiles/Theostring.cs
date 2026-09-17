@@ -1,5 +1,6 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Items.Vanity;
+using CalamityEntropy.Core.Graphics.Screen;
 using CalamityEntropy.Utilities;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -73,7 +74,7 @@ namespace CalamityEntropy.Content.Projectiles
             }
             if (odp.Count > 1) {
                 Main.spriteBatch.End();
-                EffectLoader.PreparePixelShader(gdv);
+                CEPixelScreen.PreparePixelShader(gdv);
                 int xp = Projectile.GetOwner().direction * -4 - 2;
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
@@ -108,7 +109,7 @@ namespace CalamityEntropy.Content.Projectiles
                     gd.DrawUserPrimitives(PrimitiveType.TriangleStrip, ve.ToArray(), 0, ve.Count - 2);
 
                     Main.spriteBatch.End();
-                    EffectLoader.ApplyPixelShader(gdv, Projectile.GetOwner().GetModPlayer<VanityModPlayer>().TheocrazyDyeItemID, Projectile.GetOwner(), true);
+                    CEPixelScreen.ApplyPixelShader(gdv, Projectile.GetOwner().GetModPlayer<VanityModPlayer>().TheocrazyDyeItemID, Projectile.GetOwner(), true);
                     Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
                 }

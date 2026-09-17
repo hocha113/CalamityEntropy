@@ -33,7 +33,8 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.States
 
             NPC npc = ctx.Npc;
             AcropolisHand cannon = ctx.Cannon;
-            ctx.CannonAim = ctx.Player.Center + new Vector2(0f, AcropolisDirector.BarrageAimRise);
+            //瞄准立刻落地,下面才能从转过去的枪口开火(原代码同一帧内先转后打)
+            ctx.AimCannon(ctx.Player.Center + new Vector2(0f, AcropolisDirector.BarrageAimRise));
 
             if (Timer >= AcropolisDirector.BarrageFireStartFrame) {
                 ctx.TeslaUpCD -= ctx.Enrange;

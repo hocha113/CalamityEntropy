@@ -47,8 +47,9 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.States
             int before = ctx.JumpAndShoot;
             ctx.JumpAndShoot = before - 1;
             if (before > 0) {
-                ctx.CannonAim = npc.Center + cannon.offset * npc.scale + new Vector2(0f, AcropolisDirector.JumpShootAimDrop);
-                ctx.CannonAimTimes = AcropolisDirector.JumpShootAimTimes;
+                //原代码对这一发连调两次 PointAPos(转向速率翻倍),且转完立刻开火
+                ctx.AimCannon(npc.Center + cannon.offset * npc.scale + new Vector2(0f, AcropolisDirector.JumpShootAimDrop),
+                    AcropolisDirector.JumpShootAimTimes);
                 ctx.TeslaUpCD -= ctx.Enrange;
                 if (ctx.TeslaUpCD <= 0f) {
                     ctx.TeslaUpCD = AcropolisDirector.JumpShootInterval;

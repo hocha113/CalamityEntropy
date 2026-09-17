@@ -21,6 +21,8 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.States
             base.OnEnter(ctx);
             NPC npc = ctx.Npc;
             ctx.Airborne = true;
+            //原代码的追高跳写在地面推进块内部,起跳这一帧悬停控制与横向推进照样跑完
+            ctx.KeepGroundedThisFrame = true;
             ctx.Owner.JumpCD = AcropolisDirector.LeapJumpCD;
             if (ctx.Target != null) {
                 npc.velocity = new Vector2(

@@ -143,7 +143,7 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
             if (NPC.life <= 0 && DeathAnmCount <= 10 && !Main.dedServ) {
                 if (!Main.zenithWorld) {
                     CEUtils.PlaySound("VoidAttack", 1, NPC.Center);
-                    //死亡爆散全走 EffectLoader RT 合成,shape=4 是旧 VoidParticles 几何,zenith 改 RealisticExplosion
+                    //死亡爆散全走 CEVoidScreen RT 合成,shape=4 是旧 VoidParticles 几何,zenith 改 RealisticExplosion
                     for (int i = 0; i < CruiserDirector.DeathVoidParticles; i++) {
                         var p = PRTLoader.NewParticle<PRT_Void>(NPC.Center, CEUtils.randomPointInCircle(CruiserDirector.DeathVoidScatter), Color.White, 1f);
                         p.Opacity = Main.rand.NextFloat(1f, 2f);

@@ -15,7 +15,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
     {
         public override string StateName => "HomingMissiles";
         public override VDStateIndex StateIndex => VDStateIndex.HomingMissiles;
-        public override bool NeedsRepositionBlink => true;
+        public override Vector2 AnchorFor(VDStateContext ctx) => ctx.Target.Center + VDDirector.MissileHoverOffset;
 
         private int volleysDone;
 

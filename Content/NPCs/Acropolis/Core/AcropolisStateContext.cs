@@ -98,6 +98,13 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.Core
 
         /// <summary>本帧对炮口调用几次追瞄。跳射原代码连调两次,等于转向速率翻倍</summary>
         public int CannonAimTimes { get; set; } = 1;
+
+        /// <summary>
+        /// 本帧仍按「站在地上」结算走位。只有追高跳的起跳帧会置位:
+        /// 原代码的追高跳写在地面推进块<b>内部</b>,起跳那一帧悬停控制与横向推进照样跑完。
+        /// 骰点起跳的那一支不同,它写在推进块<b>之前</b>,所以那一帧直接走腾空分支
+        /// </summary>
+        public bool KeepGroundedThisFrame { get; set; }
         #endregion
 
         #region 本地:不过线
@@ -116,6 +123,26 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.Core
             base.BeginFrameDefaults();
             CannonAim = null;
             CannonAimTimes = 1;
+            KeepGroundedThisFrame = false;
+        }
+
+        /// <summary>
+        /// 状态声明炮口瞄点,<b>并立刻落地</b>。
+        /// <para>
+        /// 必须立刻落地而不是攒到宿主结算:原代码是「先 <c>PointAPos</c> 再从 <c>TopPos</c> 开火」,
+        /// 同一帧内枪口已经转过去了。若只记声明、等宿主之后再转,出膛位置与方向就整整慢一帧
+        /// </para>
+        /// </summary>
+        public void AimCannon(Vector2 pos, int times = 1) {
+            CannonAim = pos;
+            CannonAimTimes = times;
+            AcropolisHand hand = Cannon;
+            if (hand == null) {
+                return;
+            }
+            for (int i = 0; i < times; i++) {
+                hand.PointAPos(pos);
+            }
         }
 
         /// <summary>目标玩家,读之前看 <see cref="CEBossStateContext.TargetValid"/></summary>

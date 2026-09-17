@@ -110,7 +110,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Whips
             Projectile.timeLeft += 20;
             if (Projectile.timeLeft > 80)
                 Projectile.timeLeft = 80;
-            //AbyssalLine/Abyssal有的走EffectLoader RT合成,Configure只管常规参数
+            //AbyssalLine/Abyssal有的走CEAbyssScreen RT合成,Configure只管常规参数
             var p = PRTLoader.NewParticle<PRT_AbyssalLine>(Projectile.Center, Vector2.Zero, Color.White, 1);
             p.lx = 0.8f;
             p.xadd = 0.62f;

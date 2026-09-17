@@ -99,8 +99,15 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
 
         /// <summary>本状态默认开接触伤害窗;冲刺类/演出类关掉后按拍自行声明</summary>
         public virtual bool ContactByDefault => true;
-        /// <summary>进入本招前是否要 hub 先做一次四角闪现(段落分隔);自带传送逻辑的招不需要</summary>
+        /// <summary>
+        /// 几何上必须由 hub 闪现到 <see cref="AnchorFor"/> 才能起手的招(如压到玩家脚下的虚空火焰)。
+        /// 其余招在连接段里飞过去;距离锚点超过 <see cref="VDDirector.ConnectorBlinkDistance"/> 时 hub 也会闪现一次。
+        /// 自带传送/开门逻辑的招返回 false
+        /// </summary>
         public virtual bool NeedsRepositionBlink => false;
+        /// <summary>本招起手时本体想待的位置:hub 连接段里飞向它(或闪现到它)。默认玩家斜上方的通用悬停点</summary>
+        public virtual Vector2 AnchorFor(VDStateContext ctx)
+            => ctx.Target.Center + new Vector2(ctx.SideDir * VDDirector.ConnectorDefaultAnchor.X, VDDirector.ConnectorDefaultAnchor.Y);
         /// <summary>闪现进行中是否仍推进本状态(只有演出/hub 需要)</summary>
         public virtual bool RunsDuringBlink => false;
         /// <summary>状态总龄超时上限(帧),超过即强制收招。演出态返回 int.MaxValue</summary>
@@ -159,7 +166,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         #region 公共小件
         protected static bool IsServer => !VaultUtils.isClient;
 
-        /// <summary>结束攻击:有连击队列且合法直接接招,否则回 hub 挂冷却</summary>
+        /// <summary>结束攻击:有连击队列且合法直接接招(连段刻意跳过连接段),否则回 hub 走连接段三拍</summary>
         protected static IVDState EndAttack(VDStateContext ctx) {
             if (ctx.QueuedChainState >= 0 && ctx.TargetValid) {
                 VDStateIndex next = (VDStateIndex)ctx.QueuedChainState;
@@ -173,8 +180,18 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
                 }
             }
             ctx.QueuedChainState = -1;
-            ctx.AttackCooldown = VDDirector.AttackCooldown(ctx.Phase);
             return new States.VDHubState();
+        }
+
+        /// <summary>本 Boss 存活的敌对弹幕数(不计演出弹幕):杂波阀的判据</summary>
+        protected static int CountHostileProjectiles() {
+            int n = 0;
+            foreach (Projectile p in Main.ActiveProjectiles) {
+                if (p.hostile && p.ModProjectile is Projectiles.VoidDestroyer.IVoidDestroyerProjectile) {
+                    n++;
+                }
+            }
+            return n;
         }
 
         /// <summary>目标预测点</summary>

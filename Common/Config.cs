@@ -57,8 +57,7 @@ namespace CalamityEntropy.Common
         [DefaultValue(true)]
         public bool EnableLoopingSound { get; set; }
 
-        [DefaultValue(false)]
-        public bool EnableRetroLighting { get; set; }
-
+        //EnableRetroLighting 已删除:它唯一的作用是给「把复古光照改回颜色」的强制逻辑开后门,
+        //那套强制已连同本项一并移除,复古/迷幻光照现在无需任何开关即可使用
     }
 }

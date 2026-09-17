@@ -482,7 +482,10 @@ namespace CalamityEntropy
             if (args.Length < 1 || !(args[0] is int projID))
                 throw new ArgumentException("CopyProjForTTwin requires projectile ID (int)");
 
-            return CalamityEntropy.Instance.Call("CopyProjForTTwin", projID);
+            //不能回调 CalamityEntropy.Instance.Call:Call 的第一句就是 ModCall 分发,
+            //会再次命中本处理器,一次调用直接爆栈,而 StackOverflowException 抓不住
+            Core.Integrations.CELegacyCallApi.CopyProjectileForTwistedTwin(projID);
+            return SuccessResponse($"Copied projectile {projID} for Twisted Twins");
         }
 
         #endregion

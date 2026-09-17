@@ -10,7 +10,10 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
 {
     /// <summary>
     /// 表现门面(纯本地,不回写 gameplay):配色常量、闪现/爆闪粒子、震屏、找地面,
-    /// 以及权威端的清自家弹幕。状态与弹幕都从这里取共用动作,不各自散写
+    /// 以及权威端的清自家弹幕。状态与弹幕都从这里取共用动作,不各自散写。
+    /// 贴图铁律(实机反馈 2026-09-17):BloomRing / Circle / StreakSolid / BasicTrail 这类底为不透明黑的灰度贴图
+    /// 只能加法画,且环形与实心带状贴图不许非等比缩放:环压成椭圆会得到两侧薄、上下厚的歪光圈,
+    /// 实心带拉成粗药丸叠在亮背景上就是一串粉紫椭圆。要椭圆就用等宽折线(见 DrawPortalAt)或 Glow 这类径向渐变
     /// </summary>
     public static class VDVfx
     {

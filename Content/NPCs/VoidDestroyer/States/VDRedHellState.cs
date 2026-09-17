@@ -16,7 +16,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
     {
         public override string StateName => "RedHell";
         public override VDStateIndex StateIndex => VDStateIndex.RedHell;
-        public override bool NeedsRepositionBlink => true;
+        public override Vector2 AnchorFor(VDStateContext ctx) => ctx.Target.Center + VDDirector.RedHellHoverOffset;
 
         private int round;
         private bool wrapUp;

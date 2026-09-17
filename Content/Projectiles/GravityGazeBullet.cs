@@ -2,6 +2,7 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Graphics.Screen;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -85,7 +86,7 @@ namespace CalamityEntropy.Content.Projectiles
 
             var gdv = Main.graphics.GraphicsDevice;
             Main.spriteBatch.End();
-            EffectLoader.PreparePixelShader(gdv);
+            CEPixelScreen.PreparePixelShader(gdv);
             Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
             Asset<Texture2D> texture = CEExtraAssets.EnchantedAsset;
 
@@ -133,7 +134,7 @@ namespace CalamityEntropy.Content.Projectiles
             Main.spriteBatch.Draw(gx, Projectile.Center - Main.screenPosition, null, Color.AliceBlue * alpha, Projectile.rotation + MathHelper.PiOver2, gx.Size() * 0.5f, 2f * Projectile.scale, SpriteEffects.None, 0);
             Main.spriteBatch.ExitShaderRegion();
             Main.spriteBatch.End();
-            EffectLoader.ApplyPixelShader(gdv, state: BlendState.Additive);
+            CEPixelScreen.ApplyPixelShader(gdv, state: BlendState.Additive);
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             CEUtils.DrawGlow(Projectile.Center, Color.SkyBlue * 0.5f * alpha, 1.6f);
             CEUtils.DrawGlow(Projectile.Center, Color.SkyBlue * 0.8f * alpha, 0.7f);

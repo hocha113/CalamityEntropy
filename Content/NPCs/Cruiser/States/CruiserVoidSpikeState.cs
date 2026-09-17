@@ -31,6 +31,10 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
                 * npc.velocity.Length();
 
             ctx.ChangeCounter++;
+            //等值判定在这里是安全的,不必改区间:ChangeCounter 的容差收养写在 ReceiveExtraAI 里,
+            //而 NPC 的 SyncNPC 只有客户端会收,权威端的 ChangeCounter 从不被收养、每帧稳定 +1,
+            //四个阈值各命中恰好一次。这一拍的整个拍体又都在 IsServer 门内(弹幕 + netUpdate),
+            //客户端跨过或重放它都不产生任何效果——没有速度写入,也没有本地演出
             if (ctx.ChangeCounter == CruiserDirector.SpikeRingFrameA
                 || ctx.ChangeCounter == CruiserDirector.SpikeRingFrameB
                 || ctx.ChangeCounter == CruiserDirector.SpikeRingFrameC

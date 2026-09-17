@@ -16,6 +16,20 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
     {
         public override CruiserStateIndex StateIndex => CruiserStateIndex.VoidResidue;
 
+        /// <summary>
+        /// 两处一次性拍的锁存(本地,不过线)。原判据是 <c>ChangeCounter == 2</c> 与 <c>== 80</c>,
+        /// ChangeCounter 带 ±2 容差收养,等值判定会被跨过——弹幕在权威端不受影响,
+        /// 但音效各端本地放,漏掉就等于这一口喷射对客户端没有蓄力预告、也没有出手声
+        /// </summary>
+        private bool windupCued;
+        private bool burstCued;
+
+        public override void OnEnter(CruiserStateContext ctx) {
+            base.OnEnter(ctx);
+            windupCued = false;
+            burstCued = false;
+        }
+
         public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
@@ -40,10 +54,18 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
                 npc.velocity *= CruiserDirector.ResidueNearDrag;
                 npc.velocity += dir * CruiserDirector.ResidueNearThrust;
             }
-            if (ctx.ChangeCounter == CruiserDirector.ResidueSoundFrame) {
+            if (!windupCued && CuePassed(ctx.ChangeCounter, CruiserDirector.ResidueSoundFrame)) {
+                windupCued = true;
+            }
+            if (!windupCued && ctx.ChangeCounter >= CruiserDirector.ResidueSoundFrame) {
+                windupCued = true;
                 CEUtils.PlaySound("voidSound", CruiserDirector.ResidueSoundPitch, npc.Center);
             }
-            if (ctx.ChangeCounter == CruiserDirector.ResidueBurstFrame) {
+            if (!burstCued && CuePassed(ctx.ChangeCounter, CruiserDirector.ResidueBurstFrame)) {
+                burstCued = true;
+            }
+            if (!burstCued && ctx.ChangeCounter >= CruiserDirector.ResidueBurstFrame) {
+                burstCued = true;
                 if (IsServer) {
                     for (int i = 0; i < CruiserDirector.ResidueBurstCount; i++) {
                         Shoot(ctx, ModContent.ProjectileType<VoidResidue>(), npc.Center,

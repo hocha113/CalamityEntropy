@@ -15,7 +15,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
     {
         public override string StateName => "GreenJungle";
         public override VDStateIndex StateIndex => VDStateIndex.GreenJungle;
-        public override bool NeedsRepositionBlink => true;
+        public override Vector2 AnchorFor(VDStateContext ctx) => ctx.Target.Center + VDDirector.JungleHoverOffset;
 
         public override IVDState OnUpdate(VDStateContext ctx) {
             Timer++;

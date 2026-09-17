@@ -25,8 +25,9 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
     /// 状态只写运动与声明,宿主按固定顺序落地:生成/从属 → 冻结门 → 逐帧杂项 → 目标校验 → 状态机 → 尾巴骨架 → 尾迹采样。
     /// <para>
     /// 联机:状态号走 <c>ai[3]</c>、阶段走 <c>ai[2]</c>,选招与骰点只在权威端;
-    /// 各端跑同一套运动数学;出招倒计时、朝向、两个位置锚点与三个标量随 <c>SendExtraAI</c> 过线,
-    /// 客户端带容差收养。弹幕只在权威端生成。
+    /// 各端跑同一套运动数学;出招倒计时、朝向、两个位置锚点与三个标量随 <c>SendExtraAI</c> 过线。
+    /// 倒计时是全部节拍的判据,带 ±2 容差收养;朝向、锚点与三个标量是锁存几何量,无容差直取。
+    /// 弹幕只在权威端生成。
     /// </para>
     /// <para>
     /// 数值在 <see cref="LuminarisDirector"/>,选招在 <see cref="LuminarisRotation"/>,绘制在 Luminaris.Draw.cs
@@ -425,14 +426,13 @@ namespace CalamityEntropy.Content.NPCs.LuminarisMoth
             Context.AttackIndex = reader.ReadInt32();
             Context.Vec1 = reader.ReadVector2();
             Context.Vec2 = reader.ReadVector2();
-            Context.Num1 = AdoptScalar(Context.Num1, reader.ReadSingle());
-            Context.Num2 = AdoptScalar(Context.Num2, reader.ReadSingle());
-            Context.Num3 = AdoptScalar(Context.Num3, reader.ReadSingle());
-        }
-
-        /// <summary>标量当帧计数用:容差内不动,对齐 <see cref="CEBossNetMotion.AdoptTimer"/> 的口径</summary>
-        private static float AdoptScalar(float local, float synced) {
-            return System.Math.Abs(synced - local) > CEBossNetMotion.TimerTolerance ? synced : local;
+            //三个标量一律无容差直取:本 Boss 里它们全是锁存几何量(半径、方位角、绕转方向 ±1),
+            //没有一处当帧计数用,也没有任何 `== N` 等值判定会被硬对齐跳过。
+            //±2 容差对它们是反向错误:Num3 整段取值只有 -1 / +1,跨度恰好等于容差,等于永远不纠正——
+            //客户端会一直拿着 0 不转圈、或者按反方向绕。角度也一样,±2 rad 是 114°,白过线
+            Context.Num1 = reader.ReadSingle();
+            Context.Num2 = reader.ReadSingle();
+            Context.Num3 = reader.ReadSingle();
         }
         #endregion
 

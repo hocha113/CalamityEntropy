@@ -15,6 +15,19 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
     {
         public override CruiserStateIndex StateIndex => CruiserStateIndex.SplittingVoidStar;
 
+        /// <summary>
+        /// 两处一次性拍的锁存(本地,不过线),与虚空残渣同型:原 <c>== 20</c> 蓄力音与 <c>== 100</c> 出手音
+        /// 都在各端本地放,而 ChangeCounter 带 ±2 容差收养会跨过等值判定
+        /// </summary>
+        private bool windupCued;
+        private bool burstCued;
+
+        public override void OnEnter(CruiserStateContext ctx) {
+            base.OnEnter(ctx);
+            windupCued = false;
+            burstCued = false;
+        }
+
         public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
@@ -27,7 +40,11 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
             else if (ctx.ChangeCounter < CruiserDirector.SplitMouthCloseUntil) {
                 ctx.MouthRot += CruiserDirector.SplitMouthCloseRate;
             }
-            if (ctx.ChangeCounter == CruiserDirector.SplitSoundFrame) {
+            if (!windupCued && CuePassed(ctx.ChangeCounter, CruiserDirector.SplitSoundFrame)) {
+                windupCued = true;
+            }
+            if (!windupCued && ctx.ChangeCounter >= CruiserDirector.SplitSoundFrame) {
+                windupCued = true;
                 CEUtils.PlaySound("voidSound", CruiserDirector.SplitSoundPitch, npc.Center);
             }
 
@@ -42,7 +59,11 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
                 npc.velocity *= CruiserDirector.SplitNearDrag;
                 npc.velocity += dir * CruiserDirector.SplitNearThrust;
             }
-            if (ctx.ChangeCounter == CruiserDirector.SplitBurstFrame) {
+            if (!burstCued && CuePassed(ctx.ChangeCounter, CruiserDirector.SplitBurstFrame)) {
+                burstCued = true;
+            }
+            if (!burstCued && ctx.ChangeCounter >= CruiserDirector.SplitBurstFrame) {
+                burstCued = true;
                 if (IsServer) {
                     for (int i = 0; i < CruiserDirector.SplitBurstCount; i++) {
                         Shoot(ctx, ModContent.ProjectileType<VoidStar>(), npc.Center,

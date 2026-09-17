@@ -27,8 +27,12 @@ namespace CalamityEntropy.Core.AI
         /// 少了这一条,慢半拍的客户端会在收养计时之后把最大的那一拍直接吞掉——
         /// 硬按「已经过了拍点就算放过了」判定,等于让每个落后一帧的客户端都听不到演出。
         /// </para>
+        /// <para>
+        /// 值本身归 <see cref="CEBossCue.CatchUpGrace"/> 所有,这里只是转发,
+        /// 免得手写闩锁与 <see cref="CEBossCue"/> 两套窗口各调各的
+        /// </para>
         /// </summary>
-        public const int CueCatchUpGrace = 20;
+        public const int CueCatchUpGrace = CEBossCue.CatchUpGrace;
 
         /// <summary>
         /// 状态总龄上限(帧),超过即走 <see cref="OnTimeout"/> 强制收招。
@@ -81,21 +85,39 @@ namespace CalamityEntropy.Core.AI
 
         /// <summary>
         /// 收养权威端随快照过线的状态计时(客户端)。接口成员必须是 public,不能收成 internal。
-        /// 容差内不动本地值:只差一两帧是网络抖动的常态,硬对齐会让 <c>Timer == N</c> 型一次性拍被跳过或重放
+        /// 容差内不动本地值:只差一两帧是网络抖动的常态,硬对齐会让 <c>Timer == N</c> 型一次性拍被跳过或重放。
+        /// <para>
+        /// <b>这里是全模组唯一真正落盘计时的地方</b>,所以失步诊断也挂在这里:
+        /// <see cref="CEBossNetMotion.ReceiveTiming"/> 只把计时存进待收养槽,
+        /// 在 <c>ReceiveExtraAI</c> 里比较收养前后的值恒等,那种探针永远不会响
+        /// </para>
         /// </summary>
         public void AdoptNetTiming(int timer, int counter) {
+            CEBossNetDiag.TimingAdopted(StateName, StateId, Timer, timer);
             Timer = CEBossNetMotion.AdoptTimer(Timer, timer);
             Counter = counter;
         }
 
         /// <summary>
         /// 某个拍点是否已经真的错过(而不是本地慢了一两帧)。
-        /// 用法:一次性标志在收养计时后靠它静默置位,<c>if (CuePassed(BurstFrame)) burstFired = true;</c>
+        /// 用法:一次性标志在收养计时后靠它静默置位,<c>if (CuePassed(BurstFrame)) burstFired = true;</c>。
+        /// 新代码优先用 <see cref="CEBossCue"/>,它把「窗内触发 / 越窗静默 / 永不二次」三条一起管了
         /// </summary>
-        protected bool CuePassed(int beat) => Timer > beat + CueCatchUpGrace;
+        protected bool CuePassed(int beat) => CEBossCue.Passed(Timer, beat);
 
         /// <summary>同上,但判据是别的已过线的帧计数(例如状态自己的 num 槽)</summary>
-        protected static bool CuePassed(float counterValue, int beat) => counterValue > beat + CueCatchUpGrace;
+        protected static bool CuePassed(float counterValue, int beat) => CEBossCue.Passed(counterValue, beat);
+
+        /// <summary>
+        /// <see cref="CuePassed(float, int)"/> 的<b>递减</b>版,倒计时型 Boss 用
+        /// (判据是 <see cref="CEBossStateContext.Countdown"/> 这一类往下走的时钟)。
+        /// <para>
+        /// 递增版在这里全是反的:倒计时一开始就远大于拍点,拿 <c>counter &gt; beat + grace</c> 判,
+        /// 第一帧就会把每一拍都判成「已经错过」,整招在客户端全哑
+        /// </para>
+        /// </summary>
+        protected static bool CuePassedDescending(float countdown, int beat)
+            => CEBossCue.PassedDescending(countdown, beat);
 
         /// <summary>权威端(服务端或单机)。骰点、生成、世界写入只在这里做;运动数学各端都要跑</summary>
         protected static bool IsServer => !VaultUtils.isClient;

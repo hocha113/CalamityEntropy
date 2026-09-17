@@ -7,6 +7,7 @@ using CalamityEntropy.Content.Items.Tools;
 using CalamityEntropy.Content.NPCs.Acropolis.Core;
 using CalamityEntropy.Content.NPCs.Acropolis.States;
 using CalamityEntropy.Content.Particles;
+using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Core.AI;
 using CalamityEntropy.Core.CalamityRef;
 using InnoVault;
@@ -448,7 +449,8 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             ConsumeShotCue();
             UpdateHarpoonCycle(enrange, harpoonEntity);
 
-            if (!Jumping) {
+            //追高跳的起跳帧仍按地面结算:原代码那一支写在地面推进块内部,起跳后悬停控制照样跑完
+            if (!Jumping || Context.KeepGroundedThisFrame) {
                 UpdateGroundedMovement(player, enrange);
             }
             else {
@@ -463,12 +465,27 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
             }
         }
 
-        /// <summary>单发电球的本地表现。骰点只在权威端,各端靠过线的开火计数补上反冲与音效</summary>
+        /// <summary>
+        /// 单发电球。骰点只在权威端,结果靠 <c>ShotCue</c> 过线,各端在这里补上反冲与音效。
+        /// <para>
+        /// 判据是「计数变了没有」而不是 <c>== 某个值</c>,所以哪怕两包之间连开两发被并成一次,
+        /// 也只是少放一声,永远不会被跨过去而彻底静音。
+        /// </para>
+        /// <para>
+        /// 弹幕本身也在这里生成,不在骰点处:原代码的开火点位于常态瞄准<b>之后</b>,
+        /// 而常态瞄准在本函数上方刚刚落地,这样出膛方向才与原代码同帧
+        /// </para>
+        /// </summary>
         private void ConsumeShotCue() {
             if (Context.LocalShotCue == Context.ShotCue) {
                 return;
             }
             Context.LocalShotCue = Context.ShotCue;
+            if (!VaultUtils.isClient) {
+                Shoot<AcropolisTeslaBall>(cannon.TopPos,
+                    cannon.Seg2Rot.ToRotationVector2().RotatedByRandom(AcropolisDirector.SingleShotSpread) * AcropolisDirector.SingleShotSpeed,
+                    1f, 0f, NPC.whoAmI);
+            }
             cannon.Seg1RotV = AcropolisDirector.SingleShotRecoil * dir;
             CEUtils.PlaySound("ofshoot", 1, cannon.TopPos);
         }
@@ -479,6 +496,11 @@ namespace CalamityEntropy.Content.NPCs.Acropolis
                 Context.HarpoonCD -= enrange;
             }
             if (Context.HarpoonCD > 0f) {
+                return;
+            }
+            //防二次发射:收到一包比本地慢的蓄力值时,若鱼叉已经出膛就不再累积
+            //(原代码靠「出膛后冷却写成 160」隐式挡住,过线之后那道隐式闸不再可靠)
+            if (!Context.HarpoonOnLauncher) {
                 return;
             }
             Context.HarpoonCharge += AcropolisDirector.HarpoonChargeRate * enrange;

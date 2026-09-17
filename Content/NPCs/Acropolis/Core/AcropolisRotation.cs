@@ -1,5 +1,4 @@
-﻿using CalamityEntropy.Content.Projectiles;
-using InnoVault.StateMachines;
+﻿using InnoVault.StateMachines;
 using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.Acropolis.Core
@@ -23,7 +22,7 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.Core
     public static class AcropolisRotation
     {
         /// <summary>
-        /// 骰点选下一手。<b>只该由权威端调用</b>:它带副作用(生成弹幕、推进开火计数、重置冷却),
+        /// 骰点选下一手。<b>只该由权威端调用</b>:它带副作用(推进开火计数、重置冷却),
         /// 而 <see cref="VaultStateMachine{TContext}"/> 在客户端会照常跑 <c>OnUpdate</c> 却丢弃返回值。
         /// 返回 <see langword="null"/> 表示「这一手是单发,留在行走态」
         /// </summary>
@@ -37,16 +36,12 @@ namespace CalamityEntropy.Content.NPCs.Acropolis.Core
                 return VaultStateRegistry<AcropolisStateContext>.Create((int)AcropolisStateIndex.JumpShoot);
             }
 
-            //单发:不换态。冷却与开火计数都过线,各端靠计数的边沿补上炮臂反冲与音效
+            //单发:不换态,只推进开火计数。真正的开火与出膛由宿主的 ConsumeShotCue 做,
+            //因为原代码的开火点在常态瞄准之后,宿主那一步才刚把枪口转过去
             ctx.TeslaCD = AcropolisDirector.TeslaCDAfterShot;
             ctx.ShotCue++;
-            NPC npc = ctx.Npc;
-            AcropolisHand cannon = ctx.Cannon;
-            ctx.Owner.Shoot<AcropolisTeslaBall>(cannon.TopPos,
-                cannon.Seg2Rot.ToRotationVector2().RotatedByRandom(AcropolisDirector.SingleShotSpread) * AcropolisDirector.SingleShotSpeed,
-                1f, 0f, npc.whoAmI);
             //决策点同步:骰子只在权威端摇,结果必须立刻过线
-            npc.netUpdate = true;
+            ctx.Npc.netUpdate = true;
             return null;
         }
     }

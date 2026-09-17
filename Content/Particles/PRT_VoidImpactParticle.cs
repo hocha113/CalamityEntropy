@@ -4,8 +4,8 @@ using Terraria;
 
 namespace CalamityEntropy.Content.Particles
 {
-    //VoidImpact命中特效,常规PRT PreDraw拉伸贴图,不吃EffectLoader void metaball也不吃EnablePixelEffect门控
-    //跟PRT_Void(PreDraw恒false、EffectLoader遍历画)是两条完全独立的管线
+    //VoidImpact命中特效,常规PRT PreDraw拉伸贴图,不吃CEVoidScreen虚空metaball也不吃EnablePixelEffect门控
+    //跟PRT_Void(PreDraw恒false、CEVoidScreen遍历画)是两条完全独立的管线
     public class PRT_VoidImpactParticle : BasePRT
     {
         public bool Glow = true;   //旧字段,PreDraw没读,Configure仍传保持调用点签名

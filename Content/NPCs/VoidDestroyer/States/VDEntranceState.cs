@@ -72,7 +72,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             }
 
             if (t >= VDDirector.EntranceDuration) {
-                ctx.AttackCooldown = 0;
                 return new VDHubState();
             }
             return null;

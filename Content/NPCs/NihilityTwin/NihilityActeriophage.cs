@@ -472,13 +472,19 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
 
             NPC.rotation = reader.ReadSingle();
             Context.RotSpeed = reader.ReadSingle();
-            Context.Num2 = AdoptScalar(Context.Num2, reader.ReadSingle());
+            //Num2 走容差是因为客户端「唯一会读它的地方」是两手冲刺的子计时(20 倒数到 -30、每帧 -1、
+            //为正即推进窗),那是范围 50 的正经帧计数;一阶段 6 号招拿同一个槽存环射基准角,
+            //但那个角的全部读取点都在 IsServer 里,容差吃不到客户端要用的东西。
+            //哪天有状态让客户端读这个槽里的角度,就必须把角度拆成独立字段直取——
+            //±2 rad 是 114°,带着容差等于永远不纠正(CEBossNetAdopt 守则第 5 条:一个槽只准一种语义)
+            Context.Num2 = CEBossNetAdopt.AdoptFrameCounter(Context.Num2, reader.ReadSingle());
 
             Context.Num3 = reader.ReadSingle();
             float nzX = reader.ReadSingle();
             float nzY = reader.ReadSingle();
             Context.Nz = new Vector2(nzX, nzY);
-            Context.Num1 = AdoptCounter(Context.Num1, reader.ReadInt32());
+            //Num1 是帧计数:能量球、激光、对撞都靠 `Num1 == N` 的等值判定起拍,硬对齐会跳过或重放
+            Context.Num1 = CEBossNetAdopt.AdoptFrameCounter(Context.Num1, reader.ReadInt32());
             spawnAnm = reader.ReadInt32();
 
             cellIndex = reader.ReadInt32();
@@ -488,17 +494,6 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
             }
         }
 
-        /// <summary>
-        /// 帧计数型标量:容差内不动本地值,对齐 <see cref="CEBossNetMotion.AdoptTimer"/> 的口径。
-        /// 硬对齐会让 <c>Num1 == N</c> 那一类一次性拍被跳过或重放(能量球、激光、对撞都靠等值判定起拍)
-        /// </summary>
-        private static int AdoptCounter(int local, int synced) {
-            return CEBossNetMotion.AdoptTimer(local, synced);
-        }
-
-        private static float AdoptScalar(float local, float synced) {
-            return System.Math.Abs(synced - local) > CEBossNetMotion.TimerTolerance ? synced : local;
-        }
         #endregion
 
         #region 掉落

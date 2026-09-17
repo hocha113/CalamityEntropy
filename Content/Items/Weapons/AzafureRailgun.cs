@@ -7,6 +7,7 @@ using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Graphics.Screen;
 using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -138,7 +139,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             float offset = (1.14f - Charge) * 56;
             //Main.spriteBatch.End();
             //GraphicsDevice gdv = Main.graphics.GraphicsDevice;
-            //EffectLoader.PreparePixelShader(gdv);
+            //CEPixelScreen.PreparePixelShader(gdv);
             //Main.spriteBatch.End();
             //Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             float Mxl = 1;
@@ -156,7 +157,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Main.spriteBatch.Draw(line, FirePos - Main.screenPosition - new Vector2(0, offset).RotatedBy(Projectile.rotation), null, (Charge >= 1 ? Color.OrangeRed : Color.Firebrick) * Charge, Projectile.rotation, new Vector2(0, 10), new Vector2(0.14f * Mxl, 0.4f), SpriteEffects.None, 0);
 
             Main.spriteBatch.End();
-            //EffectLoader.ApplyPixelShader(gdv);
+            //CEPixelScreen.ApplyPixelShader(gdv);
             Main.spriteBatch.begin_();
             return false;
         }

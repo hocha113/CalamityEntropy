@@ -54,7 +54,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             if (Timer >= VDDirector.ShieldUpDuration) {
                 ctx.ForcedNextState = (int)VDStateIndex.AnnihilationCannon;
                 ctx.AttackIndex = 1;
-                ctx.AttackCooldown = 0;
                 MarkNetUpdate(ctx);
                 return new VDHubState();
             }

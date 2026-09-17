@@ -37,9 +37,14 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     float p = MathHelper.Clamp(Timer / (float)VDDirector.OrbitalAscendFrames, 0f, 1f);
                     ctx.FakeZ = 1f - MathF.Pow(1f - p, 3f);
                     if (Timer == 1) {
+                        //起手后仰:朝远离玩家的方向一记反冲,再退入纵深
                         VDVfx.Sound("vbdisapear", 0.7f, npc.Center, 3, 0.9f);
                         ctx.WingPulse = 1f;
+                        Vector2 away = (npc.Center - ctx.Target.Center).SafeNormalize(-Vector2.UnitY);
+                        npc.velocity += away * VDDirector.OrbitalAscendRecoil;
+                        ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, 0.4f);
                     }
+                    ctx.CoreGlow = Math.Max(ctx.CoreGlow, p * 0.6f);
                     if (Timer >= VDDirector.OrbitalAscendFrames) {
                         SwitchBeat(Beat.Mark);
                     }

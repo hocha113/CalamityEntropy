@@ -2,6 +2,7 @@
 using CalamityEntropy.Common;
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Core.CalamityRef;
+using CalamityEntropy.Core.Graphics.Screen;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -143,7 +144,8 @@ namespace CalamityEntropy.Content.Items.Books
         }
 
         public override bool PreDraw(ref Color lightColor) {
-            if (!ModContent.GetInstance<Config>().EnablePixelEffect)
+            //深渊裂隙平时由 CEAbyssScreen 的 RT 通道代画;管线不跑时(复古/迷幻光照、或关掉绚丽特效)自己画
+            if (!CEScreenPipeline.PixelPassActive)
                 draw();
             return false;
         }

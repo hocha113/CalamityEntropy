@@ -40,8 +40,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         }
         /// <summary>轮换出招序号(hub 沿表推进)</summary>
         public int AttackIndex { get; set; }
-        /// <summary>出招冷却(hub 喘息)</summary>
-        public int AttackCooldown { get; set; }
+        /// <summary>hub 连接段开头已选定、连接段末尾才进入的下一招(-1 无);客户端读它做起势表现与飞行预测</summary>
+        public int PendingState { get; set; } = -1;
         /// <summary>连击队列:收招后直接接的状态号(-1 无)</summary>
         public int QueuedChainState { get; set; } = -1;
         /// <summary>阶段签名首招:转阶段收尾写入,hub 下一手强制取它(-1 无)</summary>

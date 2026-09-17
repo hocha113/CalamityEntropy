@@ -7,6 +7,7 @@ using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
+using CalamityEntropy.Core.Graphics.Screen;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -152,7 +153,7 @@ namespace CalamityEntropy.Content.Items.Weapons
 
             Main.spriteBatch.End();
             GraphicsDevice gd = Main.graphics.GraphicsDevice;
-            EffectLoader.PreparePixelShader(gd);
+            CEPixelScreen.PreparePixelShader(gd);
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             if (Helding) {
                 foreach (NPC npc in targetNpcs) {
@@ -168,7 +169,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Main.spriteBatch.Draw(pulse, topPos - Main.screenPosition, null, new Color(240, 240, 255) * 0.76f * RPulseAlpha, 0, pulse.Size() / 2f, (AttackR / (float)pulse.Width), SpriteEffects.None, 0); ;
             Main.spriteBatch.ExitShaderRegion();
             Main.spriteBatch.End();
-            EffectLoader.ApplyPixelShader(gd);
+            CEPixelScreen.ApplyPixelShader(gd);
             Main.spriteBatch.begin_();
             return false;
         }

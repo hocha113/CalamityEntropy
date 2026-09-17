@@ -16,7 +16,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
     {
         public override string StateName => "BlueSky";
         public override VDStateIndex StateIndex => VDStateIndex.BlueSky;
-        public override bool NeedsRepositionBlink => true;
+        /// <summary>小白龙绕本体转,本体停在玩家斜上方即可</summary>
+        public override Vector2 AnchorFor(VDStateContext ctx)
+            => ctx.Target.Center + new Vector2(ctx.SideDir * VDDirector.ConnectorDefaultAnchor.X, VDDirector.ConnectorDefaultAnchor.Y);
 
         private int bursts;
 

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace CalamityEntropy.Content.Particles
 {
-    //IPixelPassPRT,绘制耦合EffectLoader两层门控:
-    //1)CE_EffectHandler整段包在EnablePixelEffect里,关=config里像素特效全灭
-    //2)PixelPass=true才进DrawPixelPassPRT→Screen2 RT→ApplyPixelShader; false时PreDraw也return false,旧行为就是不显示
+    //IPixelPassPRT,绘制耦合CEPixelScreen两层门控:
+    //1)整条管线包在CEScreenPipeline.PixelPassActive里,绚丽特效关掉或复古/迷幻光照=像素特效全灭
+    //2)PixelPass=true才进CEPixelScreen三桶→Screen2 RT→ApplyPixelShader; false时PreDraw也return false,旧行为就是不显示
     public class PRT_ElecParticle : BasePRT, IPixelPassPRT
     {
         public bool Glow = true;
@@ -49,7 +49,7 @@ namespace CalamityEntropy.Content.Particles
             return false;
         }
 
-        public void DrawPixelPass(SpriteBatch sb) => DrawLines(sb);   //EffectLoader.DrawPixelPassPRT按PRTDrawMode分三桶后调这里
+        public void DrawPixelPass(SpriteBatch sb) => DrawLines(sb);   //CEPixelScreen按PRTDrawMode分三桶后调这里
     }
 
 

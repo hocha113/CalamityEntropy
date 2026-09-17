@@ -49,7 +49,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override void AI() {
             if (Projectile.localAI[0] == 0 && !Main.dedServ) {
                 for (int i = 0; i < 32; i++) {
-                    //PRT_Abyssal不进常规PRT桶,EffectLoader DrawParticleEffectsAlt RT画
+                    //PRT_Abyssal不进常规PRT桶,CEAbyssScreen RT画
                     var p = PRTLoader.NewParticle<PRT_Abyssal>(Projectile.Center, CEUtils.randomPointInCircle(18), Color.White, 1f);
                     p.Opacity = Main.rand.NextFloat(0.35f, 0.7f);  //Opacity旧初始化器字段,Configure管不了
                     p.vd = 0.9f;

@@ -61,7 +61,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 //签名首招:轨道轰炸;表指针跳过 0 号槽(那正是轨道轰炸,历史闸也会拦,这里只是把意图写明)
                 ctx.ForcedNextState = (int)VDStateIndex.OrbitalStrike;
                 ctx.AttackIndex = 1;
-                ctx.AttackCooldown = 0;
                 MarkNetUpdate(ctx);
                 return new VDHubState();
             }

@@ -5,7 +5,7 @@ using Terraria;
 namespace CalamityEntropy.Content.Particles
 {
     //EXPLOSION类名全大写,贴图文件名绑着,迁移纪律别美化
-    //常规PRT桶,跟EffectLoader/EnablePixelEffect无关; RustyGrenade走NonPremultiplied但PreDraw直接画Color没乘Opacity,老代码就这样的
+    //常规PRT桶,跟屏幕特效管线/EnablePixelEffect无关; RustyGrenade走NonPremultiplied但PreDraw直接画Color没乘Opacity,老代码就这样的
     public class PRT_EXPLOSION : BasePRT
     {
         public bool Glow = true;

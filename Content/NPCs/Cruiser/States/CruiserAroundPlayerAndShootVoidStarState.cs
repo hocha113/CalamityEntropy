@@ -14,6 +14,22 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
     {
         public override CruiserStateIndex StateIndex => CruiserStateIndex.AroundPlayerAndShootVoidStar;
 
+        /// <summary>
+        /// 已发出的尾鞭次数(本地,不过线)。
+        /// <para>
+        /// 原判据是 <c>ChangeCounter % 40 == 0</c>,而 ChangeCounter 现在带 ±2 容差收养,
+        /// 收养一步跨过 40 的倍数就少一次尾鞭、跳回去就多一次。尾鞭会写
+        /// <c>whipActive / whipSpeed / flagellumAngle</c> 这三个各端都跑的累加量,
+        /// 所以改成单调的「应发次数 = ChangeCounter / 40」,只在它涨上去时补发,回退不重发
+        /// </para>
+        /// </summary>
+        private int whipsFired;
+
+        public override void OnEnter(CruiserStateContext ctx) {
+            base.OnEnter(ctx);
+            whipsFired = 0;
+        }
+
         public override IVaultState<CruiserStateContext> OnUpdate(CruiserStateContext ctx) {
             NPC npc = ctx.Npc;
             Player player = ctx.Target;
@@ -24,9 +40,16 @@ namespace CalamityEntropy.Content.NPCs.Cruiser.States
             npc.velocity *= CruiserDirector.AroundDrag;
 
             ctx.ChangeCounter++;
-            if (ctx.ChangeCounter % CruiserDirector.AroundWhipInterval == 0) {
-                ctx.TailWhipCue = true;
-                MarkNetUpdate(ctx);
+            //权威端每帧 +1,所以「应发次数」恰在 40 的倍数那一帧涨 1,与原等值判定逐帧等价
+            int due = ctx.ChangeCounter / CruiserDirector.AroundWhipInterval;
+            if (due > whipsFired) {
+                int beat = due * CruiserDirector.AroundWhipInterval;
+                whipsFired = due;
+                //中途加入且已越过这一拍很久就静默记账,不补演出
+                if (!CuePassed(ctx.ChangeCounter, beat)) {
+                    ctx.TailWhipCue = true;
+                    MarkNetUpdate(ctx);
+                }
             }
             if (ctx.ChangeCounter > CruiserDirector.AroundDuration) {
                 return NextAttack(ctx);

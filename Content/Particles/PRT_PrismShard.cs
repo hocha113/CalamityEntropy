@@ -6,7 +6,7 @@ using Terraria.ID;
 
 namespace CalamityEntropy.Content.Particles
 {
-    //IPixelPassPRT,门控同ElecParticle:EnablePixelEffect+PixelPass缺任一就不画(PreDraw/DrawPixelPass都跳过)
+    //IPixelPassPRT,门控同ElecParticle:CEScreenPipeline.PixelPassActive+PixelPass缺任一就不画(PreDraw/DrawPixelPass都跳过)
     public class PRT_PrismShard : BasePRT, IPixelPassPRT
     {
         public bool Glow = true;
@@ -67,7 +67,7 @@ namespace CalamityEntropy.Content.Particles
         }
     }
 
-    //碎片子粒子,PixelPass从父shard拷贝,EffectLoader三桶分流看PRTDrawMode不是看类名
+    //碎片子粒子,PixelPass从父shard拷贝,CEPixelScreen三桶分流看PRTDrawMode不是看类名
     public class PRT_PrismShardSmall : BasePRT, IPixelPassPRT
     {
         public bool Glow = true;

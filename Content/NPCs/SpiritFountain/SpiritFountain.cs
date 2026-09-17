@@ -522,18 +522,13 @@ namespace CalamityEntropy.Content.NPCs.SpiritFountain
             Context.MCounter = reader.ReadSingle();
             Context.MAmp = reader.ReadSingle();
 
-            Context.GlobalCounter = AdoptScalar(Context.GlobalCounter, reader.ReadSingle());
+            Context.GlobalCounter = CEBossNetAdopt.AdoptFrameCounter(Context.GlobalCounter, reader.ReadSingle());
             //回旋进度不走容差:它整段只涨到 1.66,±2 的帧计数口径等于永远不纠正,
             //而魂环脱柱与否直接读它,必须认权威端
             Context.Num1 = reader.ReadSingle();
-            Context.GatheringAnimation = (int)AdoptScalar(Context.GatheringAnimation, reader.ReadInt32());
+            Context.GatheringAnimation = CEBossNetAdopt.AdoptFrameCounter(Context.GatheringAnimation, reader.ReadInt32());
             Context.SpawnSpirits = reader.ReadBoolean();
             Context.SpawnSpirits2 = reader.ReadBoolean();
-        }
-
-        /// <summary>标量当帧计数用:容差内不动,对齐 AdoptTimer 的口径</summary>
-        private static float AdoptScalar(float local, float synced) {
-            return Math.Abs(synced - local) > CEBossNetMotion.TimerTolerance ? synced : local;
         }
         #endregion
     }

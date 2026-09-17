@@ -5,7 +5,7 @@ using Terraria;
 namespace CalamityEntropy.Content.Particles
 {
     //类名Premult但多数spawn走Additive(CruiserHead),NonPremultiplied第三分支才走clr.A*=Opacity那套
-    //常规PRT PreDraw,跟EffectLoader无关; 下面ShockParticle*同款premult分支,改一处记得对表
+    //常规PRT PreDraw,跟屏幕特效管线无关; 下面ShockParticle*同款premult分支,改一处记得对表
     public class PRT_PremultBurst : BasePRT
     {
         public bool Glow = true;

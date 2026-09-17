@@ -39,8 +39,13 @@ namespace CalamityEntropy.Content.NPCs.Prophet.Core
         /// <para>
         /// 基类的 <c>Timer</c> / <c>Counter</c> 仍然照跑,只当收养通道与超时兜底,不参与节拍
         /// </para>
+        /// <para>
+        /// 覆写基类的同名槽(而不是另声明一个),这样共用层按 <see cref="CEBossStateContext"/>
+        /// 读到的就是本 Boss 真正在用的那个值。本 Boss <b>不减 1</b>:
+        /// 原代码在状态体<b>之后</b>才自减,体读到的就是原字段的值,相位天然对齐
+        /// </para>
         /// </summary>
-        public int Countdown { get; set; }
+        public override int Countdown { get; set; }
 
         /// <summary>
         /// 原 <c>spawnAnm</c>:出生演出倒计时,归零后<b>继续往负数走</b>(原代码没有下限)。

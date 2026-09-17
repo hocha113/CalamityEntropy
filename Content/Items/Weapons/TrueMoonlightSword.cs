@@ -350,7 +350,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             return false;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
-            //AbyssalLine/Abyssal有的走EffectLoader RT合成,Configure只管常规参数
+            //AbyssalLine/Abyssal有的走CEAbyssScreen RT合成,Configure只管常规参数
             var line1 = PRTLoader.NewParticle<PRT_AbyssalLine>(target.Center, Vector2.Zero, new Color(220, 220, 255), 1f);
             line1.xadd = 0.8f;
             line1.lx = 1.4f;

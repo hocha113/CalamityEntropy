@@ -5,7 +5,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.Particles
 {
-    //三变体都是常规PRT Additive桶(HowlingCannon/AbyssalStar等),不走EffectLoader RT
+    //三变体都是常规PRT Additive桶(HowlingCannon/AbyssalStar等),不走屏幕特效管线RT
     public class PRT_HeavenfallStar : BasePRT
     {
         public bool Glow = true;

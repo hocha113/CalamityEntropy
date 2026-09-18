@@ -201,5 +201,8 @@ namespace CalamityEntropy.Assets.Register
         //虚空驱逐舰能量逸散描边(alpha 八邻内缘 + 噪声侵蚀 + 蓄力热色/出手爆闪),噪声图绑 s1;外扩光晕由 VoidDestroyer.Draw 多偏移叠画同一遍着色器
         [VaultLoaden("CalamityEntropy/Assets/Effects/VDRimLight", AssetMode.Effects, "RimPass")]
         public static Asset<Effect> VDRimLight;
+        //虚空驱逐舰纵深雾化(噪声热闪 + 菱形模糊 + 去饱和 + 雾色),远景层里的本体与深度弹幕贴图都经它;噪声图绑 s1,AlphaBlend 预乘输出。消费口 VDDepthDraw
+        [VaultLoaden("CalamityEntropy/Assets/Effects/VDDepthFog", AssetMode.Effects, "DepthFogPass")]
+        public static Asset<Effect> VDDepthFog;
     }
 }

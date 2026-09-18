@@ -7,9 +7,10 @@ using Terraria;
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
     /// <summary>
-    /// 轨道轰炸(P2 阶段签名):本体 30 帧退入背景纵深(假 Z:缩小、冷色、无接触)→ 沿玩家移动方向标 4/5 个落点
-    /// (标记 40 帧收缩,标记就是承诺)→ 虚空光柱按 8 帧错拍从屏顶砸落(P3 缓慢横扫)→ 立方曲线 20 帧俯冲回前景 + 冲击波。
-    /// 深度只改绘制与接触窗,判定位置不动
+    /// 轨道轰炸(P2 阶段签名):本体 30 帧退入纵深(Z 0 → 2.2:真透视,向消失点收缩、进远景层、雾化、无接触不可攻击)→
+    /// 沿玩家移动方向标 4/5 个落点(标记 50 帧收缩,标记就是承诺)→ 虚空光柱按 10 帧错拍从屏顶砸落(P3 缓慢横扫)→
+    /// 20 帧俯冲归位(立方曲线「朝镜头飞来」,落点大环从起手就画,落地震屏 + 6 帧接触窗)。
+    /// 表观悬停点是玩家头顶 380px,世界坐标按深度换算,退远时世界位置往上飞、投影位置基本不动,读成「越来越远」
     /// </summary>
     [VaultState((int)VDStateIndex.OrbitalStrike, typeof(VDStateContext))]
     public class VDOrbitalStrikeState : VDStateBase
@@ -33,9 +34,10 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             int count = VDDirector.OrbitalPillars(ctx.Phase);
             switch (beat) {
                 case Beat.Ascend: {
-                    DeclareHoverTo(ctx, ctx.Target.Center + VDDirector.OrbitalHoverOffset, 16f, 0.1f, 160f);
                     float p = MathHelper.Clamp(Timer / (float)VDDirector.OrbitalAscendFrames, 0f, 1f);
-                    ctx.FakeZ = 1f - MathF.Pow(1f - p, 3f);
+                    ctx.Depth = VDDirector.OrbitalFarDepth * VDDepth.RetreatCurve(p);
+                    //世界坐标追着「表观 380px 头顶」在当前深度下的位置飞,越远越高
+                    DeclareHoverTo(ctx, ctx.Target.Center + VDDepth.WorldOffset(VDDirector.OrbitalHoverOffset, ctx.Depth), 40f, 0.15f, 160f);
                     if (Timer == 1) {
                         //起手后仰:朝远离玩家的方向一记反冲,再退入纵深
                         VDVfx.Sound("vbdisapear", 0.7f, npc.Center, 3, 0.9f);
@@ -51,13 +53,13 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     break;
                 }
                 case Beat.Mark:
-                    ctx.FakeZ = 1f;
-                    DeclareHoldRelative(ctx, VDDirector.OrbitalHoverOffset, 0.05f, 0.2f, 16f);
+                    ctx.Depth = VDDirector.OrbitalFarDepth;
+                    DeclareHoldRelativeDepth(ctx, VDDirector.OrbitalHoverOffset, VDDirector.OrbitalFarDepth, 0.05f, 0.2f, 40f);
                     if (Timer == 1) {
                         if (IsServer) {
                             RollTargets(ctx, count);
                             for (int i = 0; i < count; i++) {
-                                SpawnVisual<VDTargetReticle>(ctx, ctx.RolledPoints[i], Vector2.Zero, VDDirector.OrbitalMarkFrames + VDDirector.OrbitalPillarStagger * i);
+                                SpawnVisual<VDTargetReticle>(ctx, ctx.RolledPoints[i], Vector2.Zero, VDDirector.OrbitalMarkFrames + VDDirector.OrbitalPillarStagger * i, npc.whoAmI + 1);
                             }
                             npc.netUpdate = true;
                         }
@@ -69,18 +71,26 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     }
                     break;
                 case Beat.Fire: {
-                    ctx.FakeZ = 1f;
-                    DeclareHoldRelative(ctx, VDDirector.OrbitalHoverOffset, 0.05f, 0.2f, 16f);
+                    ctx.Depth = VDDirector.OrbitalFarDepth;
+                    DeclareHoldRelativeDepth(ctx, VDDirector.OrbitalHoverOffset, VDDirector.OrbitalFarDepth, 0.05f, 0.2f, 40f);
                     if (pillarsFired < count && Timer == 1 + VDDirector.OrbitalPillarStagger * pillarsFired) {
                         Vector2 point = ctx.RolledPoints[pillarsFired];
                         float sweep = VDDirector.OrbitalPillarSweep(ctx.Phase) * Math.Sign(ctx.Target.Center.X - point.X + 0.01f);
-                        Shoot<VDVoidPillar>(ctx, point, new Vector2(sweep, 0f), VDDirector.DmgVoidPillar, VDDirector.OrbitalPillarLife, VDDirector.OrbitalPillarWidth);
+                        Shoot<VDVoidPillar>(ctx, point, new Vector2(sweep, 0f), VDDirector.DmgVoidPillar, VDDirector.OrbitalPillarLife, VDDirector.OrbitalPillarWidth, npc.whoAmI + 1);
                         ctx.WingPulse = 1f;
                         ctx.CoreGlow = 1f;
                         //每根光柱砸落,背景里的本体描边闪一下(退入纵深后描边本就减半,爆闪给足)
                         ctx.RimFlash = 1f;
                         ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, 0.5f);
                         pillarsFired++;
+                    }
+                    //P3:柱子的错拍空档里从背景朝玩家预测点射纵深贯穿炮弹(越来越大地飞来,自带落点标记)
+                    int shells = VDDirector.OrbitalShells(ctx.Phase);
+                    if (shells > 0 && Timer % VDDirector.OrbitalPillarStagger == VDDirector.OrbitalPillarStagger / 2 && Timer < 1 + VDDirector.OrbitalPillarStagger * shells) {
+                        Vector2 landing = PredictTarget(ctx, VDDirector.OrbitalShellLead);
+                        (Vector2 vel, float zVel) = AimThroughPlane(npc.Center, VDDirector.OrbitalFarDepth, landing, VDDirector.OrbitalShellFrames);
+                        ShootDepth<VDVoidBolt>(ctx, npc.Center, vel, VDDirector.DmgVoidBolt, VDDirector.OrbitalFarDepth, zVel, 0f, VDVoidBolt.ModeZPierce);
+                        MuzzleCue(ctx, Vector2.UnitY, 2f, "CruiserSpit", 1.1f, 0.7f);
                     }
                     if (pillarsFired >= count && Timer >= 1 + VDDirector.OrbitalPillarStagger * count + 10) {
                         SwitchBeat(Beat.Return);
@@ -89,18 +99,11 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     break;
                 }
                 default: {
-                    //俯冲归位:立方曲线,朝镜头飞来,落定一记震屏
-                    float p = MathHelper.Clamp(Timer / (float)VDDirector.OrbitalReturnFrames, 0f, 1f);
-                    ctx.FakeZ = 1f - MathF.Pow(p, 3f);
+                    //俯冲归位:立方曲线朝镜头飞来,落点大环 + 落地震屏 + 接触窗都在 DeclareDive 里
                     Vector2 dest = ctx.Target.Center + new Vector2(ctx.SideDir * 200f, -300f);
-                    DeclareHoverTo(ctx, dest, 30f, 0.18f, 100f);
-                    if (Timer == VDDirector.OrbitalReturnFrames) {
-                        VDVfx.Sound("VoidAttack", 0.9f, npc.Center, 2);
-                        VDVfx.Shake(npc.Center, VDDirector.OrbitalReturnShake);
-                        VDVfx.SparkBurst(npc.Center, VDVfx.VoidPurple, 30, 5f, 16f, 30);
-                        ctx.ShakeStrength = 0.7f;
-                    }
-                    if (Timer >= VDDirector.OrbitalReturnFrames + 6) {
+                    DeclareHoverTo(ctx, dest, 50f, 0.2f, 100f);
+                    DeclareDive(ctx, VDDirector.OrbitalFarDepth, Timer, VDDirector.OrbitalReturnFrames, dest);
+                    if (Timer >= VDDirector.OrbitalReturnFrames + VDDirector.DiveContactFrames) {
                         return EndAttack(ctx);
                     }
                     break;

@@ -36,6 +36,8 @@ namespace CalamityEntropy.Content.Items.Donator
 
         private int swingCount;
         private int spiritCooldown;
+        //每次挥砍交替下劈 / 上撩
+        private int swingDir = 1;
 
         public override void SetDefaults() {
             Item.width = 122;
@@ -44,15 +46,18 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.crit = 12;
             Item.DamageType = DamageClass.Melee;
             Item.useTime = Item.useAnimation = 24;
-            Item.useStyle = ItemUseStyleID.Swing;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.useTurn = true;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
             Item.knockBack = 7f;
             Item.scale = 1.15f;
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.UseSound = SoundID.Item1;
+            Item.UseSound = null;
             Item.value = Item.buyPrice(platinum: 2);
             Item.rare = ModContent.RarityType<VoidPurple>();
-            Item.shoot = ModContent.ProjectileType<HeroPhantomSlash>();
+            Item.shoot = ModContent.ProjectileType<OldHeroBladeHeld>();
             Item.shootSpeed = 18f;
         }
 
@@ -62,19 +67,15 @@ namespace CalamityEntropy.Content.Items.Donator
             }
         }
 
+        //手持弹幕存活期间不许再次使用
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             swingCount++;
             bool great = swingCount % GreatSlashEvery == 0;
-            int dmg = (int)(damage * (great ? GreatSlashDamageMult : PhantomDamageMult));
-            Projectile.NewProjectile(source, player.MountedCenter, velocity, type, dmg, knockback, player.whoAmI, great ? 1f : 0f);
-            if (great) {
-                CEUtils.PlaySound("swing3", 0.85f, player.Center, 6, 0.9f);
-            }
+            Projectile.NewProjectile(source, player.MountedCenter, velocity, type, damage, knockback, player.whoAmI, great ? 1f : 0f, swingDir);
+            swingDir *= -1;
             return false;
-        }
-
-        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone) {
-            TrySummonSpirits(player, target, Item);
         }
 
         /// <summary>剑刃或残影命中时唤出英灵兔,共用物品实例上的内置冷却;只在所有者端生成。</summary>

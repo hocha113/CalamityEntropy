@@ -1221,3 +1221,33 @@
 [Mods.CalamityEntropy.Projectiles.BaseKnife.DisplayName] - removed // 挥舞基类随 BaseSwing/BaseKnife 体系整体移除,天罚(NemesisHeld)改为独立手持弹幕,键名不变
 [Mods.CalamityEntropy.Projectiles.SpwanTextProj.DisplayName] - removed // 孤岛弹幕,全库无调用,随类型一并删除
 
+[Mods.CalamityEntropy.Items.LightDarkDragonDagger.DisplayName] - added // 捐赠武器 光暗龙匕(紫墨),世花后投掷远程
+[Mods.CalamityEntropy.Items.LightDarkDragonDagger.Tooltip] - added
+[Mods.CalamityEntropy.Items.LightDarkDragonDagger.StackTooltip] - added // 悬停时显示当前暴击层数与基础伤害加成
+[Mods.CalamityEntropy.Items.KevinsNurglePot.DisplayName] - added // 捐赠武器 凯文的纳垢锅(Reficul),困难模式敲祭坛 0.66% 掉落
+[Mods.CalamityEntropy.Items.KevinsNurglePot.Tooltip] - added
+[Mods.CalamityEntropy.Items.OldHeroBlade.DisplayName] - added // 捐赠武器 昔日的英雄之刃(littlefish),虚空井合成
+[Mods.CalamityEntropy.Items.OldHeroBlade.Tooltip] - added
+[Mods.CalamityEntropy.Items.NightSpiritStaff.DisplayName] - added // 捐赠武器 暗夜灵杖(The Fool),月后一阶魔法
+[Mods.CalamityEntropy.Items.NightSpiritStaff.Tooltip] - added
+[Mods.CalamityEntropy.Projectiles.LDDaggerHeld.DisplayName] - added // 以下 9 键为光暗龙匕弹幕名(LD 前缀与光暗之龙)
+[Mods.CalamityEntropy.Projectiles.LDKnifeLight.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.LDKnifeDark.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.LDHelixKnifeLight.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.LDHelixKnifeDark.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.LDSlash.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.LDBlinkStrike.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.LDShadowRift.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.LightDarkDragon.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.NurglePotHeld.DisplayName] - added // 以下 5 键为纳垢锅弹幕名(Nurgle 前缀)
+[Mods.CalamityEntropy.Projectiles.NurgleSlimeGlob.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.NurgleBoilingGlob.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.NurglePlagueMist.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.NurgleStinkMist.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.OldHeroBladeHeld.DisplayName] - added // 以下 3 键为昔日的英雄之刃弹幕名
+[Mods.CalamityEntropy.Projectiles.HeroPhantomSlash.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.HeroSpiritBunny.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.NightSpiritStaffHeld.DisplayName] - added // 以下 4 键为暗夜灵杖弹幕名
+[Mods.CalamityEntropy.Projectiles.NightWisp.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.NightfallStar.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.NightVeil.DisplayName] - added

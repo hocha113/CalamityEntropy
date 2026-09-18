@@ -51,7 +51,8 @@ namespace CalamityEntropy.Content.Items.Weapons.Nemesis
         public const int SpinHitCooldownFrames = 10;
         public const float ChargePoseDeg = 60f;
         //刀身可达长度(柄到尖)、碰撞线宽、割草线宽,均再乘 scale
-        public const float BladeReach = 210f;
+        //198x180 贴图以左下角为原点,刀尖像素 (197,0) 距原点 266.9,刀光与判定必须盖过它(2026-09-18 实测,原 210 短了 57)
+        public const float BladeReach = 268f;
         public const float HitLineWidth = 56f;
         public const float CutTileWidth = 50f;
         //刀光:主层内缘占比、刃线内缘占比、历史采样上限、旋转期环形刀光覆盖的角度(留口不闭合,避免加法混合叠圈)、爆发后完全消散的进度、刃线白闪帧数

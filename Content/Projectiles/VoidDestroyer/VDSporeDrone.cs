@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.NPCs.VoidDestroyer;
+using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -10,8 +11,8 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 {
     /// <summary>
     /// 孢子无人机:出现后沿固定方向亮起淡紫预警线,ai[1] 帧后瞬发一道 VDSporeLaser 并消失(自身无伤害)。
-    /// ai[0] 模式:0 向右射,1 向下射,2 纯装饰(绕 ai[2] 号 NPC 转,ai[1] 为相位);ai[2] 在射击模式下为激光长度。
-    /// 激光的伤害值由本弹幕的 damage 承接
+    /// ai[0] 模式:0 向右射,1 向下射,2 纯装饰(绕 ai[2] 号 NPC 转,ai[1] 为相位;从 Z 2 的背景降入环阵,装饰即深度预告);
+    /// ai[2] 在射击模式下为激光长度。激光的伤害值由本弹幕的 damage 承接
     /// </summary>
     public class VDSporeDrone : ModProjectile, IVoidDestroyerProjectile
     {
@@ -92,6 +93,13 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Texture2D tex = TextureAssets.Projectile[Type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition;
             Texture2D glow = CEUtils.getExtraTex("Glow");
+            float drawScale = Projectile.scale;
+            if (Mode == ModeDecor) {
+                //装饰无人机从 Z 2 的背景降入环阵:纯绘制的假深度(它本来就没有判定),装饰即深度预告
+                float z = VDDirector.LaserDecorDepth * (1f - VDVfx.EaseOut(Age / (float)VDDirector.LaserDecorDescend));
+                drawPos = VDDepth.Project(Projectile.Center, z) - Main.screenPosition;
+                drawScale *= VDDepth.Scale(z);
+            }
 
             Main.spriteBatch.UseAdditive();
             if (Mode != ModeDecor && Age < WarnTime) {

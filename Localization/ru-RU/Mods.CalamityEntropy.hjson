@@ -1,6 +1,63 @@
 ModNameOverride: Call of Void
 
 Items: {
+	LightDarkDragonDagger: {
+		// DisplayName: Light-Dark Dragon Dagger
+		/* Tooltip:
+			'''
+			Left click alternates between three Radiant Blades and three Umbral Blades that pass through walls and hit up to 3 enemies
+			Radiant Blades fly along the upper arc and inflict Ichor, Umbral Blades fly along the lower arc and inflict Shadowflame
+			When one kind of blade hits an enemy struck by the other kind within 2 seconds,
+			a Light-Dark Slash follows up and heals you for 2 life
+			24 blade hits fill the charge; right click spends it to throw two entwined Radiant and two Umbral Blades
+			Entwined blades pierce enemies and tiles endlessly; right click again while they fly to blink to them
+			Enemies along the blink path take damage and an empowered Light-Dark Slash, and a Woven Shadow Rift is left behind
+			Every critical hit adds +2 base damage, up to 15 stacks; any non-critical hit resets the stacks
+			Favorite it in your inventory and a hazy light-dark dragon follows you, growing clearer with your stacks
+			''' */
+		// StackTooltip: Light-Dark Resonance: {0}/{1} stacks, +{2} base damage
+	}
+
+	KevinsNurglePot: {
+		// DisplayName: Kevin's Nurgle Pot
+		/* Tooltip:
+			'''
+			Left click swings the pot with both hands, splashing corrosive slime
+			Slime stuck to enemies deals damage once per second and inflicts Poisoned for 10 seconds
+			Slime puddles on tiles damage passing enemies every 0.5 seconds for 5 seconds
+			Hold right click to aim the pot and heat it with fire magic
+			After 1.5 seconds the slime boils and spits a scalding glob every 0.4 seconds, costing 6 mana each
+			Scalding slime sticks for 5 seconds, dealing damage once per second and inflicting Poisoned and Venom
+			When it wears off the slime vaporizes into a plague mist that inflicts Plague on passing enemies
+			While held, the pot leaks a stinking mist that drifts with the wind; it deals no damage and only makes things stinky
+			0.66% chance to drop when smashing a Demon or Crimson Altar in Hardmode
+			''' */
+	}
+
+	OldHeroBlade: {
+		// DisplayName: Blade of a Bygone Hero
+		/* Tooltip:
+			'''
+			Every swing releases a Hero's Phantom that pierces up to 4 enemies
+			Every fourth swing becomes a Bygone Slash: a larger, heavier blade and an endlessly piercing phantom
+			When the blade or a phantom hits an enemy, two Spirit Bunnies leap from behind you at the target, with a 0.5 second cooldown
+			[c/9ad0ff:"It once stood beside a band of bunnies and held a dawn no one remembers"]
+			''' */
+	}
+
+	NightSpiritStaff: {
+		// DisplayName: Night Spirit Staff
+		/* Tooltip:
+			'''
+			Hold left click to release Night Wisps that snake forward, then home in on enemies through walls
+			Wisps inflict Shadowflame and leave a Night Mark; at 4 marks a Nightfall Star descends
+			The Nightfall Star dives at the target and bursts for 4 times a wisp's damage in an area
+			Right click raises the staff to lower a Night Veil at the cursor for 6 seconds, damaging enemies inside every 0.5 seconds
+			Wisps hitting enemies inside the veil deal 50% more damage and leave two marks
+			All damage is increased by 15% at night
+			''' */
+	}
+
 	VoidBlade: {
 		DisplayName: Клинок пустоты
 		Tooltip: Быстрое исполнение непрерывной резни..
@@ -4611,6 +4668,27 @@ MissileLauncherDescTooltip: Запускайте ракеты, которые м
 MissileLauncherMaxStickTooltip: Каждый монстр прилипает {0}
 
 Projectiles: {
+	// LDDaggerHeld.DisplayName: Light-Dark Dragon Dagger
+	// LDKnifeLight.DisplayName: Radiant Blade
+	// LDKnifeDark.DisplayName: Umbral Blade
+	// LDHelixKnifeLight.DisplayName: Entwined Radiant Blade
+	// LDHelixKnifeDark.DisplayName: Entwined Umbral Blade
+	// LDSlash.DisplayName: Light-Dark Slash
+	// LDBlinkStrike.DisplayName: Light-Dark Blink
+	// LDShadowRift.DisplayName: Woven Shadow Rift
+	// LightDarkDragon.DisplayName: Light-Dark Dragon
+	// NurglePotHeld.DisplayName: Kevin's Nurgle Pot
+	// NurgleSlimeGlob.DisplayName: Corrosive Slime
+	// NurgleBoilingGlob.DisplayName: Scalding Slime
+	// NurglePlagueMist.DisplayName: Plague Mist
+	// NurgleStinkMist.DisplayName: Stinking Mist
+	// OldHeroBladeHeld.DisplayName: Blade of a Bygone Hero
+	// HeroPhantomSlash.DisplayName: Hero's Phantom
+	// HeroSpiritBunny.DisplayName: Spirit Bunny
+	// NightSpiritStaffHeld.DisplayName: Night Spirit Staff
+	// NightWisp.DisplayName: Night Wisp
+	// NightfallStar.DisplayName: Nightfall Star
+	// NightVeil.DisplayName: Night Veil
 	VoidBladeProj.DisplayName: Клинок пустоты
 	VoidBladeHit.DisplayName: Удар пустотного клинка
 	Rvshoot.DisplayName: Rv-выстрел
@@ -5374,6 +5452,10 @@ Projectiles: {
 	// VDSingularity.DisplayName: V D Singularity
 	// VDTargetReticle.DisplayName: V D Target Reticle
 	// VDVoidPillar.DisplayName: V D Void Pillar
+	// VDDropPod.DisplayName: V D Drop Pod
+	// VDEscortShip.DisplayName: V D Escort Ship
+	// VDGateBolt.DisplayName: V D Gate Bolt
+	// VDLatticeField.DisplayName: V D Lattice Field
 }
 
 LegendTooltip: - Легенда -

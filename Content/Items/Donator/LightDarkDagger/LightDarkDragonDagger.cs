@@ -54,7 +54,8 @@ namespace CalamityEntropy.Content.Items.Donator.LightDarkDagger
             Item.crit = 8;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 22;
-            Item.useStyle = ItemUseStyleID.Swing;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.useTurn = true;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
@@ -63,13 +64,17 @@ namespace CalamityEntropy.Content.Items.Donator.LightDarkDagger
             Item.UseSound = null;
             Item.value = Item.buyPrice(gold: 15);
             Item.rare = ItemRarityID.Yellow;
-            Item.shoot = ModContent.ProjectileType<LDKnifeLight>();
+            Item.shoot = ModContent.ProjectileType<LDDaggerHeld>();
             Item.shootSpeed = 15f;
         }
 
         public override bool AltFunctionUse(Player player) => true;
 
         public override bool CanUseItem(Player player) {
+            //投掷动作进行中不许再次使用
+            if (player.ownedProjectileCounts[Item.shoot] > 0) {
+                return false;
+            }
             if (player.altFunctionUse != 2) {
                 return true;
             }
@@ -80,63 +85,36 @@ namespace CalamityEntropy.Content.Items.Donator.LightDarkDagger
             return CEChargeWeapon.IsReady(Item);
         }
 
+        /// <summary>
+        /// 决定本次动作并生成手持弹幕:飞刃由手持弹幕在释放帧生成;闪烁即时发生,手持弹幕只补一个收势。
+        /// 手持模式:0 耀光三连 / 1 黯影三连 / 2 螺旋刃 / 3 闪烁收势。
+        /// </summary>
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             LDDaggerPlayer mp = player.GetModPlayer<LDDaggerPlayer>();
             mp.AttackAnimTime = 30;
+            int mode;
             if (player.altFunctionUse == 2) {
                 if (mp.HasHelixKnives()) {
-                    if (TryGetBlinkTarget(player, out Vector2 dest)) {
-                        Blink(player, source, dest, damage, knockback);
+                    if (!TryGetBlinkTarget(player, out Vector2 dest)) {
+                        return false;
                     }
-                    return false;
+                    Blink(player, source, dest, damage, knockback);
+                    mode = 3;
                 }
-                if (CEChargeWeapon.TryConsume(player, Item)) {
-                    ThrowHelix(player, source, position, velocity, damage, knockback);
+                else {
+                    if (!CEChargeWeapon.TryConsume(player, Item)) {
+                        return false;
+                    }
+                    mode = 2;
                 }
-                return false;
             }
-            ThrowVolley(player, source, position, velocity, damage, knockback);
-            nextVolleyDark = !nextVolleyDark;
+            else {
+                mode = nextVolleyDark ? 1 : 0;
+                nextVolleyDark = !nextVolleyDark;
+            }
+            Projectile.NewProjectile(source, player.MountedCenter, velocity, type, damage, knockback, player.whoAmI, mode);
             return false;
         }
-
-        #region 左键三连弧刃
-        private void ThrowVolley(Player player, IEntitySource source, Vector2 position, Vector2 velocity, int damage, float knockback) {
-            Vector2 aim = velocity.SafeNormalize(Vector2.UnitX * player.direction);
-            //正向旋转是否朝屏幕上方:据此决定耀光走上半弧、黯影走下半弧
-            float upSign = aim.RotatedBy(0.1f).Y < aim.Y ? 1f : -1f;
-            float sideSign = nextVolleyDark ? -upSign : upSign;
-            int type = nextVolleyDark ? ModContent.ProjectileType<LDKnifeDark>() : ModContent.ProjectileType<LDKnifeLight>();
-            float speed = velocity.Length();
-            for (int i = 0; i < VolleyOffsetsDeg.Length; i++) {
-                float off = MathHelper.ToRadians(VolleyOffsetsDeg[i]) * sideSign;
-                Vector2 vel = aim.RotatedBy(off) * speed;
-                //ai[0] = 剩余回转总角(反向并略过冲),ai[1] = 剩余回转帧数
-                Projectile.NewProjectile(source, position, vel, type, damage, knockback, player.whoAmI, -off * ArcOvershoot, ArcTurnFrames);
-            }
-            CEUtils.PlaySound("throw", nextVolleyDark ? 0.85f : 1.1f, player.Center, 6, 0.8f);
-        }
-        #endregion
-
-        #region 右键螺旋刃
-        private void ThrowHelix(Player player, IEntitySource source, Vector2 position, Vector2 velocity, int damage, float knockback) {
-            Vector2 vel = velocity.SafeNormalize(Vector2.UnitX * player.direction) * HelixSpeed;
-            int light = ModContent.ProjectileType<LDHelixKnifeLight>();
-            int dark = ModContent.ProjectileType<LDHelixKnifeDark>();
-            //光股相位 0、暗股相位 π,同股第二把刃落后 HelixLagFrames 帧
-            SpawnHelix(source, position, vel, light, damage, knockback, player.whoAmI, 0f, 0);
-            SpawnHelix(source, position, vel, light, damage, knockback, player.whoAmI, 0f, HelixLagFrames);
-            SpawnHelix(source, position, vel, dark, damage, knockback, player.whoAmI, MathHelper.Pi, 0);
-            SpawnHelix(source, position, vel, dark, damage, knockback, player.whoAmI, MathHelper.Pi, HelixLagFrames);
-            CEUtils.PlaySound("throw", 0.7f, player.Center, 6, 1f);
-            CEUtils.PlaySound("soulshine", 1.2f, player.Center, 4, 0.6f);
-        }
-
-        private static void SpawnHelix(IEntitySource source, Vector2 position, Vector2 vel, int type, int damage, float knockback, int owner, float phase, int lag) {
-            int p = Projectile.NewProjectile(source, position, vel, type, damage, knockback, owner, phase, lag);
-            CEChargeWeapon.Empower(p);
-        }
-        #endregion
 
         #region 右键闪烁
         /// <summary>螺旋刃在场时的闪烁落点:取所有螺旋刃的中心,再在附近找一处玩家能站下的空位。</summary>

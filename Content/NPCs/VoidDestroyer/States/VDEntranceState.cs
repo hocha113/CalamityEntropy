@@ -1,12 +1,16 @@
 ﻿using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using InnoVault.StateMachines;
+using System;
 using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
     /// <summary>
-    /// 传送门出场:0-60 门在锚点展开;60-180 本体自门内下滑、淡入放大;180-220 门关闭;220-260 停顿并交还相机。
-    /// 全程无敌无接触、限制圈不生效;相机前 30 帧滑向门,200 帧后不再赋值,交给 EModPlayer 的自然衰减滑回玩家
+    /// 深空跃迁出场(260 帧):0-40 在 Z 6 的深空里开一枚极小的跃迁门(天幕闪光 + 冲击环);40-130 本体从门里出来、
+    /// 立方缓入地朝镜头飞来(Z 6 → -0.45,先是一颗星,最后几帧猛地放大到擦着屏幕上缘飞过);130 掠过镜头(呼啸 + 震屏 + 径向拖影);
+    /// 130-170 从镜头后方拉回平面(立方缓出硬刹,落定一记冲击环);170-260 静止威压并交还相机。
+    /// 全程无敌无接触、限制圈不生效;世界坐标钉在锚点,深度变化让投影位置自己从消失点滑到锚点再越过屏幕边缘再回来;
+    /// 相机前 30 帧滑向锚点,200 帧后不再赋值,交给 EModPlayer 的自然衰减滑回玩家
     /// </summary>
     [VaultState((int)VDStateIndex.Entrance, typeof(VDStateContext))]
     public class VDEntranceState : VDStateBase
@@ -21,6 +25,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             base.OnEnter(ctx);
             ctx.BlinkTimer = 0;
             ctx.Npc.velocity = Vector2.Zero;
+            //从深空起手:深度视觉直接钉在起点,不能从平面缩过去
+            ctx.Owner.SnapDepth(VDDirector.EntranceStartDepth);
         }
 
         public override IVDState OnUpdate(VDStateContext ctx) {
@@ -28,43 +34,65 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             NPC npc = ctx.Npc;
             DeclareDirect(ctx);
             npc.velocity = Vector2.Zero;
+            npc.Center = ctx.AnchorPos;
             ctx.ArenaActive = false;
             ctx.WingsVisible = false;
 
-            if (Timer == 1) {
-                VDVfx.Sound("portal_emerge", 1f, ctx.AnchorPos, 2);
-            }
-
             int t = Timer;
-            if (t <= VDDirector.EntrancePortalOpen) {
-                DeclareAlpha(ctx, 0f, 0.6f);
-                npc.Center = ctx.AnchorPos;
-                ctx.PortalOpenness = VDVfx.EaseOut(t / (float)VDDirector.EntrancePortalOpen);
-            }
-            else if (t <= VDDirector.EntranceDescendEnd) {
-                float p = (t - VDDirector.EntrancePortalOpen) / (float)(VDDirector.EntranceDescendEnd - VDDirector.EntrancePortalOpen);
-                float eased = VDVfx.EaseOut(p);
-                DeclareAlpha(ctx, eased, MathHelper.Lerp(0.6f, 1f, eased));
-                npc.Center = ctx.AnchorPos + new Vector2(0, 150f * eased);
-                ctx.PortalOpenness = 1f;
-                if (!Main.dedServ && t % 6 == 0) {
-                    Vector2 v = new Vector2(Main.rand.NextFloat(-3f, 3f), Main.rand.NextFloat(1f, 4f));
-                    VDVfx.VoidPuff(ctx.AnchorPos + new Vector2(Main.rand.NextFloat(-80f, 80f), 0), v, 1.4f, 0.7f);
+            if (t <= VDDirector.EntranceWarpFrames) {
+                //跃迁门在深空里张开:本体还没出来
+                ctx.Depth = VDDirector.EntranceStartDepth;
+                DeclareAlpha(ctx, 0f, 1f);
+                ctx.PortalDepth = VDDirector.EntranceStartDepth;
+                ctx.PortalOpenness = VDVfx.EaseOut(t / (float)VDDirector.EntranceWarpFrames);
+                if (t == 1) {
+                    VDVfx.Sound("portal_emerge", 1.3f, ctx.Owner.ProjectedCenter, 2, 0.8f);
+                }
+                if (t == VDDirector.EntranceWarpFrames / 2) {
+                    //天幕:跃迁闪光够强,从门的位置放一圈冲击环
+                    VDSkyDrive.PushFlash(0.8f);
                 }
             }
-            else {
+            else if (t <= VDDirector.EntranceApproachEnd) {
+                float p = (t - VDDirector.EntranceWarpFrames) / (float)(VDDirector.EntranceApproachEnd - VDDirector.EntranceWarpFrames);
+                //立方缓入:大半时间是一颗慢慢变大的星,最后十几帧猛扑过来
+                ctx.Depth = MathHelper.Lerp(VDDirector.EntranceStartDepth, VDDirector.EntrancePassDepth, VDDepth.DiveCurve(p));
+                DeclareAlpha(ctx, MathHelper.Clamp((t - VDDirector.EntranceWarpFrames) / 20f, 0f, 1f), 1f);
+                //门在本体出来后 30 帧内关上
+                ctx.PortalDepth = VDDirector.EntranceStartDepth;
+                ctx.PortalOpenness = 1f - MathHelper.Clamp((t - VDDirector.EntranceWarpFrames) / 30f, 0f, 1f);
+                ctx.CoreGlow = Math.Max(ctx.CoreGlow, p * 0.8f);
+                ctx.RimCharge = p;
+                //引擎音逐级升调:越近越尖
+                int local = t - VDDirector.EntranceWarpFrames;
+                if (local == 20 || local == 50 || local == 75) {
+                    VDVfx.Sound("VoidAnticipation", 0.6f + local / 190f, ctx.Owner.ProjectedCenter, 3, 0.9f);
+                }
+                if (t == VDDirector.EntranceApproachEnd) {
+                    //掠过镜头的一瞬
+                    VDVfx.PassBy(ctx.Owner.ProjectedCenter, 1f);
+                    VDVfx.Shake(npc.Center, 8f);
+                    ctx.RimFlash = 1f;
+                    ctx.ShakeStrength = 0.5f;
+                }
+            }
+            else if (t <= VDDirector.EntranceArriveFrame) {
+                //从镜头后方拉回平面:立方缓出 = 硬刹
+                float p = (t - VDDirector.EntranceApproachEnd) / (float)(VDDirector.EntranceArriveFrame - VDDirector.EntranceApproachEnd);
+                ctx.Depth = VDDirector.EntrancePassDepth * (1f - VDDepth.RetreatCurve(p));
                 DeclareAlpha(ctx, 1f, 1f);
-                ctx.PortalOpenness = t <= VDDirector.EntrancePortalClose
-                    ? 1f - VDVfx.EaseOut((t - VDDirector.EntranceDescendEnd) / (float)(VDDirector.EntrancePortalClose - VDDirector.EntranceDescendEnd))
-                    : 0f;
-                if (t == VDDirector.EntranceDescendEnd + 1) {
-                    //落定的一记:声音 + 震屏 + 核心亮 + 描边爆闪
-                    VDVfx.Sound("VoidAttack", 0.9f, npc.Center, 2);
-                    VDVfx.Shake(npc.Center, 6f);
+                ctx.CoreGlow = Math.Max(ctx.CoreGlow, 0.5f);
+                if (t == VDDirector.EntranceArriveFrame) {
+                    //落定的一记:冲击环 + 震屏 + 核心亮 + 描边爆闪
+                    VDVfx.DiveShock(npc.Center, 1.2f);
                     ctx.CoreGlow = 1f;
                     ctx.RimFlash = 1f;
                     ctx.ShakeStrength = 0.6f;
                 }
+            }
+            else {
+                ctx.Depth = 0f;
+                DeclareAlpha(ctx, 1f, 1f);
             }
 
             if (t <= VDDirector.EntranceCameraFrames) {

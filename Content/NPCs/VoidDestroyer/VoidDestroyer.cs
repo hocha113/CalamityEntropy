@@ -55,8 +55,15 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         #region 本地视觉字段(由同步状态逐帧推导,不过线)
         public float Alpha = 1f;
         public float DrawScale = 1f;
-        /// <summary>假 Z 深度平滑值 0..1</summary>
-        public float FakeZ;
+        /// <summary>纵深平滑值(Z:0 平面,+ 远,- 近;数学见 <see cref="VDDepth"/>),追踪 Context.Depth 的声明</summary>
+        public float Depth;
+        /// <summary>闪现期间状态不跑、声明回落 0,这里持住上一帧的深度声明,免得闪现中途本体先缩回平面再弹回去</summary>
+        private float heldDepth;
+        /// <summary>限制圈圆心:只在本体处于判定带内时跟随,退入深处时(世界坐标为表观位置飞得很远)钉住不动</summary>
+        private Vector2 arenaCenter;
+        private bool arenaCenterSet;
+        /// <summary>本帧所在绘制层(DrawBehind 里按深度判定)</summary>
+        private VDDepthLayer drawLayer = VDDepthLayer.Plane;
         public float WingAlpha;
         public float WingExpand;
         public float WingRotation;
@@ -86,8 +93,14 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         public bool Dying => Context != null && Context.Dying;
         public int Phase => Context?.Phase ?? Math.Max(1, (int)NPC.ai[2]);
         public Vector2 AnchorPos => Context?.AnchorPos ?? NPC.Center;
-        /// <summary>核心世界坐标(弹幕出手点)</summary>
+        /// <summary>核心世界坐标(弹幕出手点,平面坐标;深度弹幕从这里出发时带本体的 Z)</summary>
         public Vector2 CorePos => NPC.Center + CoreOffset.RotatedBy(NPC.rotation) * DrawScale;
+        /// <summary>本体当前声明的深度(gameplay 判据用声明值,不用平滑值)</summary>
+        public float DeclaredDepth => Context?.Depth ?? 0f;
+        /// <summary>本体是否在判定带内(可被打、可接触)</summary>
+        public bool OnPlane => VDDepth.InHitBand(DeclaredDepth);
+        /// <summary>限制圈圆心(退入深处时钉住)</summary>
+        public Vector2 ArenaCenter => arenaCenterSet ? arenaCenter : NPC.Center;
         public bool InCinematic => CurrentStateIndex is VDStateIndex.Entrance or VDStateIndex.Transform
             or VDStateIndex.ShieldUp or VDStateIndex.Death or VDStateIndex.Despawn;
         #endregion
@@ -192,15 +205,23 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             return Math.Max(1, (int)Math.Round(NPC.defDamage * (masterShown / (float)VDDirector.MasterContactDamage) / 2f));
         }
 
-        /// <summary>接触伤害窗:演出/闪现/落地宽限/半透明/退入背景时一律关,其余由状态声明</summary>
+        /// <summary>接触伤害窗:演出/闪现/落地宽限/半透明/不在判定带(退入深处或掠过镜头)时一律关,其余由状态声明</summary>
         public bool ContactDamageActive() {
             if (Context == null || Context.Dying || InCinematic || Context.BlinkTimer > 0 || Context.NoContactTimer > 0) {
                 return false;
             }
-            if (Alpha < 0.6f || FakeZ > 0.3f) {
+            if (Alpha < 0.6f || !OnPlane) {
                 return false;
             }
             return Context.ContactWindow;
+        }
+
+        /// <summary>带外(退入深处 / 掠过镜头)不画原版悬停血条:它会画在未投影的世界坐标上</summary>
+        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) {
+            if (!OnPlane) {
+                return false;
+            }
+            return null;
         }
         #endregion
 
@@ -320,6 +341,14 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             Context.BeginFrameDefaults();
             stateMachine.Update();
 
+            //闪现期间状态不推进、深度声明回落 0:持住上一帧的声明,闪现前后深度不跳
+            if (Context.BlinkTimer > 0 && stateMachine.CurrentState is VDStateBase cur && !cur.RunsDuringBlink) {
+                Context.Depth = heldDepth;
+            }
+            else {
+                heldDepth = Context.Depth;
+            }
+
             if (Context.BlinkTimer > 0) {
                 UpdateBlink();
             }
@@ -329,7 +358,10 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             ApplyTilt();
 
             NPC.damage = ContactDamageActive() ? NPC.defDamage : 0;
-            NPC.dontTakeDamage = Context.Dying || InCinematic && CurrentStateIndex != VDStateIndex.ShieldUp && CurrentStateIndex != VDStateIndex.Despawn;
+            //带外(退入深处 / 掠过镜头)不可攻击也不被召唤物追:画出来的位置不是世界位置,打得中反而读成穿模
+            bool onPlane = OnPlane;
+            NPC.dontTakeDamage = Context.Dying || !onPlane || InCinematic && CurrentStateIndex != VDStateIndex.ShieldUp && CurrentStateIndex != VDStateIndex.Despawn;
+            NPC.chaseable = onPlane && !Context.Dying;
 
             UpdateArena();
             UpdateVisualState();
@@ -448,18 +480,28 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         #endregion
 
         #region 切技闪现
-        /// <summary>开始闪现:锚点即落点,前半段淡出,过半换位,后半段淡入;落地后一段时间没有接触伤害</summary>
+        /// <summary>开始闪现:锚点即落点,前半段淡出,过半换位,后半段淡入;落地后一段时间没有接触伤害。演出粒子放在投影位置</summary>
         public void StartBlink(Vector2 destination) {
             Context.AnchorPos = destination;
             Context.BlinkTimer = VDDirector.BlinkDuration;
             Context.NoContactTimer = VDDirector.PostTeleportGrace + VDDirector.BlinkDuration;
             NPC.velocity = Vector2.Zero;
             if (!Main.dedServ) {
-                VDVfx.Sound("vbdisapear", 1f, NPC.Center, 3);
-                VDVfx.BlinkBurst(NPC.Center);
+                Vector2 shown = ProjectedCenter;
+                VDVfx.Sound("vbdisapear", 1f, shown, 3);
+                VDVfx.BlinkBurst(shown);
             }
             if (!VaultUtils.isClient) {
                 NPC.netUpdate = true;
+            }
+        }
+
+        /// <summary>把深度视觉值直接钉到某个 Z(演出起手用:出场从 Z 6 开始,不能从平面缩过去)</summary>
+        public void SnapDepth(float z) {
+            Depth = z;
+            heldDepth = z;
+            if (Context != null) {
+                Context.Depth = z;
             }
         }
 
@@ -470,8 +512,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             if (Context.BlinkTimer <= half) {
                 //后半段幂等地钉在锚点上,收包晚一帧也不会漏掉换位
                 if (Context.BlinkTimer == half && !Main.dedServ) {
-                    VDVfx.Sound("vbapear", 1f, Context.AnchorPos, 3);
-                    VDVfx.BlinkBurst(Context.AnchorPos);
+                    Vector2 shown = VDDepth.Project(Context.AnchorPos, Depth);
+                    VDVfx.Sound("vbapear", 1f, shown, 3);
+                    VDVfx.BlinkBurst(shown);
                 }
                 if (NPC.Center != Context.AnchorPos) {
                     NPC.Center = Context.AnchorPos;
@@ -487,8 +530,18 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         #endregion
 
         #region 限制圈
-        /// <summary>半径 200 格,圆心随本体。只处理本地玩家:玩家速度归其自身客户端所有,服务端不碰</summary>
+        /// <summary>
+        /// 半径 200 格,圆心随本体,但只在本体处于判定带内时跟随:退入深处时本体的世界坐标是为表观位置算出来的、可能飞得很远,
+        /// 圈心跟过去会把玩家拉走。全端同算(声明深度与位置都是同步量),只处理本地玩家:玩家速度归其自身客户端所有,服务端不碰
+        /// </summary>
         private void UpdateArena() {
+            if (!arenaCenterSet) {
+                arenaCenter = NPC.Center;
+                arenaCenterSet = true;
+            }
+            else if (OnPlane) {
+                arenaCenter = Vector2.Lerp(arenaCenter, NPC.Center, 0.2f);
+            }
             if (Main.dedServ || !Context.ArenaActive || Context.Dying) {
                 return;
             }
@@ -496,7 +549,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             if (!player.active || player.dead) {
                 return;
             }
-            Vector2 toCenter = NPC.Center - player.Center;
+            Vector2 toCenter = arenaCenter - player.Center;
             float dist = toCenter.Length();
             if (dist <= VDDirector.ArenaRadius) {
                 return;
@@ -525,9 +578,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
                     DrawScale = MathHelper.Lerp(DrawScale, 1f, 0.15f);
                 }
             }
-            FakeZ = MathHelper.Lerp(FakeZ, Context.FakeZ, 0.2f);
-            if (FakeZ < 0.005f) {
-                FakeZ = 0f;
+            Depth = MathHelper.Lerp(Depth, Context.Depth, VDDirector.DepthTrack);
+            if (Math.Abs(Depth) < 0.004f) {
+                Depth = 0f;
             }
             WingAlpha = MathHelper.Lerp(WingAlpha, Context.WingsVisible ? 1f : 0f, 0.05f);
             WingExpand = Math.Max(WingExpand * 0.94f, Context.WingPulse);
@@ -566,8 +619,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             }
             RimDirScroll = new Vector2(Wrap01(RimDirScroll.X + dirStep.X / 60f), Wrap01(RimDirScroll.Y + dirStep.Y / 60f));
 
-            //天幕续租:存在强度按状态编排(出场随门涌入、死亡随门离开、撤离收干),本体位置给网格亮化中心,核心亮度让网格跟着出招呼吸
-            VDSkyDrive.Report(SkyIntensity(), Context.Phase, NPC.Center, CoreGlow);
+            //天幕续租:存在强度按状态编排(出场随门涌入、死亡随门离开、撤离收干),投影后的本体位置给网格亮化中心(亮点跟着画出来的船走),核心亮度让网格跟着出招呼吸
+            VDSkyDrive.Report(SkyIntensity(), Context.Phase, VDDepth.Project(NPC.Center, Depth), CoreGlow);
 
             //抖动只走绘制层:原版把 NPC 画在 position + netOffset,NoMultiplayerSmoothing 让它每帧被清零
             if (Context.ShakeStrength > 0.02f) {
@@ -649,6 +702,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             for (int i = 0; i < Context.RolledPoints.Length; i++) {
                 writer.WriteVector2(Context.RolledPoints[i]);
             }
+            for (int i = 0; i < Context.RolledDepths.Length; i++) {
+                writer.Write(Context.RolledDepths[i]);
+            }
             writer.Write(Context.BlinkTimer);
             writer.Write(Context.NoContactTimer);
             writer.Write(Context.AttackIndex);
@@ -687,6 +743,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             for (int i = 0; i < Context.RolledPoints.Length; i++) {
                 Context.RolledPoints[i] = reader.ReadVector2();
             }
+            for (int i = 0; i < Context.RolledDepths.Length; i++) {
+                Context.RolledDepths[i] = reader.ReadSingle();
+            }
             int packetBlink = reader.ReadInt32();
             Context.NoContactTimer = reader.ReadInt32();
             Context.AttackIndex = reader.ReadInt32();
@@ -708,8 +767,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             Context.BlinkTimer = CEBossNetMotion.AdoptTimer(Context.BlinkTimer, packetBlink);
             //闪现是服务端发起的,客户端在这里补放旧位置的消失演出(此时包里的位置还是旧位置)
             if (prev <= 0 && Context.BlinkTimer > VDDirector.BlinkDuration / 2 && !Main.dedServ) {
-                VDVfx.Sound("vbdisapear", 1f, NPC.Center, 3);
-                VDVfx.BlinkBurst(NPC.Center);
+                Vector2 shown = ProjectedCenter;
+                VDVfx.Sound("vbdisapear", 1f, shown, 3);
+                VDVfx.BlinkBurst(shown);
             }
             //快速移动实体不吃原版平滑,收包后位置即最终位置
             NPC.netOffset = Vector2.Zero;

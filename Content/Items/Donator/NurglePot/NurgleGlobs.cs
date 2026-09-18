@@ -1,7 +1,6 @@
 using CalamityEntropy.Assets.Register;
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles.CalamityPorts;
-using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -18,8 +17,6 @@ namespace CalamityEntropy.Content.Items.Donator.NurglePot
     /// </summary>
     public abstract class NurgleGlobBase : ModProjectile
     {
-        public override string Texture => CEUtils.WhiteTexPath;
-
         protected enum GlobState : byte
         {
             Flying = 0,
@@ -32,8 +29,6 @@ namespace CalamityEntropy.Content.Items.Donator.NurglePot
         protected abstract int StickHitCooldown { get; }
         protected abstract int PuddleHitCooldown { get; }
         protected abstract float Gravity { get; }
-        protected abstract Color OuterColor { get; }
-        protected abstract Color InnerColor { get; }
         //沾在敌怪上的每次结算 / 粘液坑的结算分别施加什么减益
         protected abstract void ApplyStuckDebuffs(NPC target);
         protected virtual void ApplyPuddleDebuffs(NPC target) { }
@@ -147,6 +142,8 @@ namespace CalamityEntropy.Content.Items.Donator.NurglePot
             }
             state = GlobState.Puddle;
             puddleVertical = Projectile.velocity.X != oldVelocity.X;
+            //此时 velocity 已是碰撞裁剪后允许的位移,先走完它让粘液贴面
+            Projectile.position += Projectile.velocity;
             //贴着碰到的面摊开:落地/顶天摊成横条,撞墙摊成竖条,并保持接触边不动
             Rectangle old = Projectile.Hitbox;
             int w = puddleVertical ? 10 : 34;
@@ -191,26 +188,23 @@ namespace CalamityEntropy.Content.Items.Donator.NurglePot
             }
         }
 
+        /// <summary>粘液坑贴图:与本体同名加 Puddle 后缀,竖坑用横坑旋转 90 度。</summary>
+        protected Texture2D PuddleTexture => CEUtils.RequestTex(Texture + "Puddle");
+
         public override bool PreDraw(ref Color lightColor) {
-            Texture2D circle = CEExtraAssets.Circle;
+            //像素画本体走默认批次与环境光,不换混合模式;发光层用 A=0 的颜色在同一批次里做加法
             Vector2 pos = Projectile.Center - Main.screenPosition;
-            Color light = Lighting.GetColor(Projectile.Center.ToTileCoordinates());
-            Vector2 size;
-            float wobble = 1f + 0.06f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f + Projectile.whoAmI);
             if (state == GlobState.Puddle) {
-                size = puddleVertical ? new Vector2(12f, 38f) : new Vector2(38f, 12f);
+                Texture2D puddle = PuddleTexture;
+                float rot = puddleVertical ? MathHelper.PiOver2 : 0f;
+                Main.EntitySpriteDraw(puddle, pos, null, lightColor, rot, puddle.Size() / 2f, Projectile.scale, SpriteEffects.None);
+                return false;
             }
-            else {
-                size = new Vector2(18f * wobble, 18f / wobble);
-            }
-            Vector2 scaleOuter = size / circle.Width;
-            Vector2 scaleInner = scaleOuter * 0.62f;
-            Vector2 origin = circle.Size() / 2f;
-            Main.spriteBatch.UseBlendState(BlendState.NonPremultiplied);
-            Main.spriteBatch.Draw(circle, pos, null, OuterColor.MultiplyRGB(light), Projectile.rotation, origin, scaleOuter, SpriteEffects.None, 0f);
-            Main.spriteBatch.Draw(circle, pos - new Vector2(0, size.Y * 0.08f), null, InnerColor.MultiplyRGB(light), Projectile.rotation, origin, scaleInner, SpriteEffects.None, 0f);
-            Main.spriteBatch.Draw(circle, pos - new Vector2(size.X * 0.18f, size.Y * 0.22f), null, Color.White * 0.55f, 0f, origin, scaleOuter * 0.22f, SpriteEffects.None, 0f);
-            Main.spriteBatch.ExitShaderRegion();
+            Texture2D tex = Projectile.GetTexture();
+            float wobble = 1f + 0.06f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f + Projectile.whoAmI);
+            Vector2 scale = new Vector2(wobble, 1f / wobble) * Projectile.scale;
+            float rot2 = state == GlobState.Flying ? Projectile.rotation : 0f;
+            Main.EntitySpriteDraw(tex, pos, null, lightColor, rot2, tex.Size() / 2f, scale, SpriteEffects.None);
             return false;
         }
     }
@@ -218,13 +212,12 @@ namespace CalamityEntropy.Content.Items.Donator.NurglePot
     /// <summary>侵蚀性粘液:沾敌怪 10 秒,每秒结算伤害并中毒;沾物块成 5 秒粘液坑,每 0.5 秒伤害经过者。</summary>
     public class NurgleSlimeGlob : NurgleGlobBase
     {
+        public override string Texture => "CalamityEntropy/Content/Items/Donator/NurglePot/NurgleSlimeGlob";
         protected override int StickDuration => 600;
         protected override int PuddleDuration => 300;
         protected override int StickHitCooldown => 60;
         protected override int PuddleHitCooldown => 30;
         protected override float Gravity => 0.32f;
-        protected override Color OuterColor => new Color(58, 110, 24);
-        protected override Color InnerColor => new Color(120, 200, 48);
 
         protected override void ApplyStuckDebuffs(NPC target) {
             target.AddBuff(BuffID.Poisoned, 120);
@@ -236,13 +229,12 @@ namespace CalamityEntropy.Content.Items.Donator.NurglePot
     /// </summary>
     public class NurgleBoilingGlob : NurgleGlobBase
     {
+        public override string Texture => "CalamityEntropy/Content/Items/Donator/NurglePot/NurgleBoilingGlob";
         protected override int StickDuration => 300;
         protected override int PuddleDuration => 300;
         protected override int StickHitCooldown => 60;
         protected override int PuddleHitCooldown => 60;
         protected override float Gravity => 0.18f;
-        protected override Color OuterColor => new Color(120, 90, 20);
-        protected override Color InnerColor => new Color(230, 170, 60);
 
         protected override void ApplyStuckDebuffs(NPC target) {
             target.AddBuff(BuffID.Poisoned, 300);
@@ -280,13 +272,15 @@ namespace CalamityEntropy.Content.Items.Donator.NurglePot
         }
 
         public override bool PreDraw(ref Color lightColor) {
-            base.PreDraw(ref lightColor);
-            Main.spriteBatch.UseBlendState(BlendState.Additive);
+            //热光垫在本体下面:A=0 的颜色在默认批次里等价加法混合,不用切混合状态
             Texture2D glow = CEExtraAssets.Glow2;
             float pulse = 0.7f + 0.3f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 9f + Projectile.whoAmI);
-            Main.EntitySpriteDraw(glow, Projectile.Center - Main.screenPosition, null, new Color(255, 140, 40) * 0.5f * pulse, 0f, glow.Size() / 2f, 0.16f, SpriteEffects.None);
-            Main.spriteBatch.ExitShaderRegion();
-            return false;
+            Color heat = new Color(255, 140, 40) * (0.45f * pulse);
+            heat.A = 0;
+            Main.EntitySpriteDraw(glow, Projectile.Center - Main.screenPosition, null, heat, 0f, glow.Size() / 2f, 0.16f, SpriteEffects.None);
+            //本体自带热光,不吃环境光压暗
+            Color lit = Color.Lerp(lightColor, Color.White, 0.6f);
+            return base.PreDraw(ref lit);
         }
     }
 

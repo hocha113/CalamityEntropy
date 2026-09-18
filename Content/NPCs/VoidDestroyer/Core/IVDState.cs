@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
 {
-    /// <summary>状态索引,写入 npc.ai[3] 网络同步。0~9 演出/连接段,10~19 既有招式,20+ 新招</summary>
+    /// <summary>状态索引,写入 npc.ai[3] 网络同步。0~9 演出/连接段,10~19 既有招式,20~24 第二批,25+ 纵深招</summary>
     public enum VDStateIndex
     {
         /// <summary>传送门出场</summary>
@@ -54,6 +54,11 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         PhantomFleet = 23,
         /// <summary>湮灭主炮:P3 压轴蓄力扫射</summary>
         AnnihilationCannon = 24,
+
+        /// <summary>纵深环门:退到深处逐个推出带缺口的弹环,环从背景逼近平面</summary>
+        DepthGates = 25,
+        /// <summary>深空掠袭:在背景里带两艘幻影舰横越,一路朝平面射纵深贯穿弹</summary>
+        DeepStrafe = 26,
     }
 
     /// <summary>招式家族:轮换表的防复读按家族判同类相邻</summary>
@@ -123,6 +128,11 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public virtual bool RunsDuringBlink => false;
         /// <summary>状态总龄超时上限(帧),超过即强制收招。演出态返回 int.MaxValue</summary>
         public virtual int TimeoutFrames => VDDirector.AttackTimeoutFrames;
+        /// <summary>
+        /// 本招起手时本体所在的深度(0 平面)。hub 连接段的落定拍把 Depth 朝它爬:「它在退远」本身就是「要轰炸了」的可读预告。
+        /// 招式进入后自己每帧声明 Depth,这里只给连接段一个目标
+        /// </summary>
+        public virtual float StartDepth(VDStateContext ctx) => 0f;
 
         public virtual void OnEnter(VDStateContext context) {
             Timer = 0;
@@ -225,6 +235,71 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
             return Projectile.NewProjectile(ctx.Npc.GetSource_FromAI(), pos, vel, ModContent.ProjectileType<T>(), 0, 0f, Main.myPlayer, ai0, ai1, ai2);
         }
 
+        #region 纵深小件
+        /// <summary>
+        /// 服务端生成深度弹幕:初始 Z / Z 速度 / Z 加速度经 <see cref="Projectiles.VoidDestroyer.VDDepthSource"/> 在 OnSpawn 就位,
+        /// 生成包里的 ExtraAI 已是正确深度。伤害按大师显示值折算;客户端返回 -1
+        /// </summary>
+        protected static int ShootDepth<T>(VDStateContext ctx, Vector2 pos, Vector2 vel, int masterShown, float z, float zVel, float zAccel = 0f, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile {
+            if (!IsServer) {
+                return -1;
+            }
+            var source = new Projectiles.VoidDestroyer.VDDepthSource(ctx.Npc, z, zVel, zAccel);
+            return Projectile.NewProjectile(source, pos, vel, ModContent.ProjectileType<T>(), ctx.Owner.ProjDamage(masterShown), 0f, Main.myPlayer, ai0, ai1, ai2);
+        }
+
+        /// <summary>纯演出的深度弹幕(远处的门、坠落舱壳等),伤害 0</summary>
+        protected static int SpawnVisualDepth<T>(VDStateContext ctx, Vector2 pos, Vector2 vel, float z, float zVel, float zAccel = 0f, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f) where T : ModProjectile {
+            if (!IsServer) {
+                return -1;
+            }
+            var source = new Projectiles.VoidDestroyer.VDDepthSource(ctx.Npc, z, zVel, zAccel);
+            return Projectile.NewProjectile(source, pos, vel, ModContent.ProjectileType<T>(), 0, 0f, Main.myPlayer, ai0, ai1, ai2);
+        }
+
+        /// <summary>
+        /// 纵深配速:从平面点 <paramref name="from"/>、深度 <paramref name="z"/> 出发,<paramref name="frames"/> 帧后恰好在
+        /// <paramref name="landing"/> 处到达平面。返回平面速度与 Z 速度(无加速度)
+        /// </summary>
+        protected static (Vector2 vel, float zVel) AimThroughPlane(Vector2 from, float z, Vector2 landing, int frames) {
+            frames = Math.Max(frames, 1);
+            return ((landing - from) / frames, -z / frames);
+        }
+
+        /// <summary>深度锚点:相对目标玩家的表观偏移 + Z → 世界坐标(服务端以目标玩家中心做相机代理)</summary>
+        protected static Vector2 DepthAnchor(VDStateContext ctx, Vector2 apparentOffset, float z)
+            => VDDepth.WorldFromApparent(ctx.Target.Center, apparentOffset, z);
+
+        /// <summary>声明:与目标保持相对静止,偏移按深度换算成世界偏移(表观上就是 apparentOffset)</summary>
+        protected static void DeclareHoldRelativeDepth(VDStateContext ctx, Vector2 apparentOffset, float z, float stiffness = 0.12f, float lerp = 0.35f, float maxSpeed = 40f) {
+            DeclareHoldRelative(ctx, VDDepth.WorldOffset(apparentOffset, z), stiffness, lerp, maxSpeed);
+        }
+
+        /// <summary>
+        /// 俯冲拍(退远的招收尾都用它):深度从 <paramref name="fromDepth"/> 按立方缓入归零(慢起猛到,「朝镜头飞来」),
+        /// 全程在 <paramref name="landing"/> 画落点大环,落地前 2 帧到落地后 DiveContactFrames 帧开接触窗,落地帧震屏 + 冲击环。
+        /// 调用方按自己的拍内 Timer 逐帧调用;返回是否已落地(含落地后的接触窗期)
+        /// </summary>
+        protected static bool DeclareDive(VDStateContext ctx, float fromDepth, int timer, int frames, Vector2 landing) {
+            float p = MathHelper.Clamp(timer / (float)frames, 0f, 1f);
+            ctx.Depth = fromDepth * (1f - VDDepth.DiveCurve(p));
+            ctx.DiveMarkerPos = landing;
+            ctx.DiveMarkerProgress = timer <= frames ? p : 0f;
+            ctx.CoreGlow = Math.Max(ctx.CoreGlow, 0.4f + 0.6f * p);
+            if (timer >= frames - 2 && timer <= frames + VDDirector.DiveContactFrames) {
+                ctx.ContactWindow = true;
+            }
+            if (timer == frames) {
+                VDVfx.DiveShock(ctx.Npc.Center);
+                ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, 0.7f);
+                ctx.RimFlash = 1f;
+                ctx.WingPulse = 1f;
+                ctx.CoreGlow = 1f;
+            }
+            return timer >= frames;
+        }
+        #endregion
+
         /// <summary>核心出手的通用演出:后坐、能量翼张开、核心亮起、描边爆闪、火花、音效</summary>
         protected static void MuzzleCue(VDStateContext ctx, Vector2 dir, float recoil, string sound, float pitch = 1f, float volume = 1f) {
             ctx.Npc.velocity -= dir * recoil;
@@ -234,13 +309,15 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
             if (Main.dedServ) {
                 return;
             }
-            Vector2 core = ctx.Owner.CorePos;
+            //粒子系统不分层,一律放在投影后的核心位置(本体在平面时投影 = 世界坐标)
+            Vector2 core = ctx.Owner.ProjectedCorePos;
+            float depthScale = VDDepth.Scale(ctx.Owner.Depth);
             if (sound != null) {
                 CEUtils.PlaySound(sound, pitch, core, 6, volume);
             }
             for (int i = 0; i < 8; i++) {
-                Vector2 v = dir.RotatedBy(Main.rand.NextFloat(-0.6f, 0.6f)) * Main.rand.NextFloat(4f, 10f);
-                VDVfx.Spark(core, v, VDVfx.VoidPurple, Main.rand.NextFloat(0.5f, 1f), 1f, 20, gravity: true);
+                Vector2 v = dir.RotatedBy(Main.rand.NextFloat(-0.6f, 0.6f)) * Main.rand.NextFloat(4f, 10f) * depthScale;
+                VDVfx.Spark(core, v, VDVfx.VoidPurple, Main.rand.NextFloat(0.5f, 1f) * depthScale, 1f, 20, gravity: true);
             }
         }
 
@@ -273,15 +350,16 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
             ctx.DrawScaleDeclared = scale;
         }
 
-        /// <summary>汇聚粒子:从四周向核心收束(蓄力语法的第一层)</summary>
+        /// <summary>汇聚粒子:从四周向核心收束(蓄力语法的第一层);位置与半径按本体投影与深度缩放</summary>
         protected static void ConvergeSparks(VDStateContext ctx, Color color, float minDist = 80f, float maxDist = 160f, float pull = 0.09f) {
             if (Main.dedServ) {
                 return;
             }
-            Vector2 core = ctx.Owner.CorePos;
-            Vector2 from = core + CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(minDist, maxDist);
+            float depthScale = VDDepth.Scale(ctx.Owner.Depth);
+            Vector2 core = ctx.Owner.ProjectedCorePos;
+            Vector2 from = core + CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(minDist, maxDist) * depthScale;
             Vector2 v = (core - from) * pull;
-            VDVfx.Spark(from, v, color, Main.rand.NextFloat(0.5f, 0.9f), 1f, 12);
+            VDVfx.Spark(from, v, VDDepth.Fog(color, ctx.Owner.Depth), Main.rand.NextFloat(0.5f, 0.9f) * Math.Max(depthScale, 0.4f), 1f, 12);
         }
 
         /// <summary>决策点同步(权威端)</summary>

@@ -52,20 +52,27 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.mana = 14;
             Item.useTime = Item.useAnimation = 22;
             Item.useStyle = ItemUseStyleID.Shoot;
+            Item.useTurn = true;
             Item.noMelee = true;
+            Item.noUseGraphic = true;
+            Item.channel = true;
             Item.autoReuse = true;
             Item.maxStack = 1;
             Item.knockBack = 4f;
-            Item.UseSound = SoundID.Item8;
+            Item.UseSound = null;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
             Item.rare = ModContent.RarityType<NihilityBlue>();
-            Item.shoot = ModContent.ProjectileType<NightWisp>();
+            Item.shoot = ModContent.ProjectileType<NightSpiritStaffHeld>();
             Item.shootSpeed = 12f;
         }
 
         public override bool AltFunctionUse(Player player) => true;
 
         public override bool CanUseItem(Player player) {
+            //手持弹幕存活期间不许再次使用;夜幕同时只存在一片
+            if (player.ownedProjectileCounts[Item.shoot] > 0) {
+                return false;
+            }
             if (player.altFunctionUse == 2) {
                 return player.ownedProjectileCounts[ModContent.ProjectileType<NightVeil>()] <= 0;
             }
@@ -86,23 +93,10 @@ namespace CalamityEntropy.Content.Items.Donator
             }
         }
 
-        public override Vector2? HoldoutOrigin() => new Vector2(8f, 8f);
-
+        /// <summary>只生成手持弹幕:夜灵与夜幕都由它在对应动作帧放出。模式 0 持杖连发,1 举杖降幕。</summary>
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
-            if (player.altFunctionUse == 2) {
-                Vector2 pos = player.mouseWorld();
-                Projectile.NewProjectile(source, pos, Vector2.Zero, ModContent.ProjectileType<NightVeil>(), (int)(damage * VeilDamageMult), knockback * 0.5f, player.whoAmI);
-                CEUtils.PlaySound("VoidAnticipation", 0.9f, pos, 4, 0.7f);
-                return false;
-            }
-            Vector2 aim = velocity.SafeNormalize(Vector2.UnitX * player.direction);
-            float speed = velocity.Length();
-            for (int i = 0; i < WispsPerCast; i++) {
-                float off = MathHelper.Lerp(-WispSpread, WispSpread, WispsPerCast == 1 ? 0.5f : i / (WispsPerCast - 1f));
-                Vector2 vel = aim.RotatedBy(off) * speed * Main.rand.NextFloat(0.9f, 1.1f);
-                //ai[0] = 蛇行相位,ai[1] = 蛇行方向
-                Projectile.NewProjectile(source, position, vel, type, damage, knockback, player.whoAmI, Main.rand.NextFloat(MathHelper.TwoPi), i % 2 == 0 ? 1f : -1f);
-            }
+            int mode = player.altFunctionUse == 2 ? 1 : 0;
+            Projectile.NewProjectile(source, player.MountedCenter, velocity, type, damage, knockback, player.whoAmI, mode);
             return false;
         }
 
@@ -276,11 +270,14 @@ namespace CalamityEntropy.Content.Items.Donator
         }
 
         public override void SetDefaults() {
-            Projectile.FriendlySetDefaults(DamageClass.Magic, false, 1);
+            Projectile.FriendlySetDefaults(DamageClass.Magic, false, -1);
             Projectile.width = Projectile.height = 34;
             Projectile.timeLeft = Life;
             Projectile.ignoreWater = true;
         }
+
+        //星体本身不判定,伤害全部由抵达时的范围爆发结算,避免直击与爆发对同一目标重复计算
+        public override bool? CanDamage() => false;
 
         public override void AI() {
             int idx = (int)Projectile.ai[0];
@@ -303,15 +300,19 @@ namespace CalamityEntropy.Content.Items.Donator
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
-            target.AddBuff(BuffID.ShadowFlame, 240);
-        }
-
         public override void OnKill(int timeLeft) {
             if (burst) {
                 return;
             }
             burst = true;
+            if (Main.myPlayer == Projectile.owner) {
+                //爆发范围内的敌怪补上暗影焰,爆发本体只管伤害
+                foreach (NPC npc in Main.ActiveNPCs) {
+                    if (!npc.friendly && npc.CanBeChasedBy(Projectile) && npc.Distance(Projectile.Center) <= BurstRadius + npc.width * 0.5f) {
+                        npc.AddBuff(BuffID.ShadowFlame, 240);
+                    }
+                }
+            }
             CEUtils.PlaySound("VoidBomb", 1.1f, Projectile.Center, 4, 0.8f);
             SoundEngine.PlaySound(SoundID.Item122 with { Volume = 0.5f }, Projectile.Center);
             if (Main.myPlayer == Projectile.owner) {

@@ -8,37 +8,52 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
     /// 手写轮换表 + 家族标签 + 硬性防复读校验。选招不用随机:
     /// 每阶段一张表,压力招(Dash)与区域/弹幕招交替、同家族不相邻、同招间隔 ≥3;
     /// 表只是「建议序」,真正的兜底是 <see cref="IsLegal"/>:候选命中最近三手或与上一手同家族就沿表往后找,
-    /// 替补阀、连段队列头、阶段签名首招全部过同一道闸。阶段切换不清历史,变形前后不可能连出同招
+    /// 替补阀、连段队列头、阶段签名首招全部过同一道闸。阶段切换不清历史,变形前后不可能连出同招。
+    /// <para>
+    /// 四种玩家持续条件的推演(2026-09-18 读码,未经真机):替补阀只有两处(舰队远距 → 幻影冲刺;支援无地面 / 满员 → 裂隙斩),
+    /// 所以塌陷面很小。全程悬空到脚下 60 格无地面:支援投送退成裂隙斩,P2 表第 5 手变裂隙斩后第 8 手的裂隙斩被历史闸拦下顺延到传送火弹,
+    /// 裂隙斩一轮两手、不相邻;P3 同理。全程贴脸:没有替补触发,表原样出。全程 1200px 外风筝:两处舰队都退成幻影冲刺,
+    /// P1 第 4 手被历史闸拦下(第 1 手刚出过)顺延到虚空火焰,一轮里幻影冲刺 3 手(1 / 7 / 11)占 25%,是各条件下的上限;
+    /// P2 / P3 各只有一处舰队,退成冲刺后与既有冲刺槽至少隔三手。地下战斗(远景层不可用)不改选招,只改绘制层。
+    /// 纵深招的时长预算:每轮本体带外(不可攻击)的时间 P1 约 22%、P2 约 28%、P3 约 26%,都在 <see cref="VDDirector.FarTimeBudget"/> 之内
+    /// </para>
     /// </summary>
     public static class VDRotation
     {
-        /// <summary>P1(12):弹幕 / 冲刺 / 区域交替,裂隙斩与舰队从 P1 就有</summary>
+        /// <summary>
+        /// P1(12):弹幕 / 冲刺 / 区域交替,纵深环门是 P1 的远景签名(整场的 Z 轴语法从第三手就亮出来);
+        /// 深度波形:平面(回旋火)→ 平面(冲刺)→ 远(环门)→ 平面(导弹)→ 立体(舰队)→ 平面(火焰)→ 远(点阵)→ …
+        /// </summary>
         private static readonly VDStateIndex[] Phase1 =
         {
-            VDStateIndex.ArcFireball, VDStateIndex.PhantomDash, VDStateIndex.RiftCut, VDStateIndex.HomingMissiles,
+            VDStateIndex.ArcFireball, VDStateIndex.PhantomDash, VDStateIndex.DepthGates, VDStateIndex.HomingMissiles,
             VDStateIndex.PhantomFleet, VDStateIndex.VoidFlame, VDStateIndex.PhaseLaser, VDStateIndex.PhantomDash,
-            VDStateIndex.ArcFireball, VDStateIndex.RiftCut, VDStateIndex.VoidFlame, VDStateIndex.PhantomFleet,
+            VDStateIndex.RiftCut, VDStateIndex.DepthGates, VDStateIndex.ArcFireball, VDStateIndex.PhantomFleet,
         };
 
-        /// <summary>P2(14):首手轨道轰炸是阶段签名(变形收尾强制),全息三模式与奇点/支援穿插;末尾蓝色天空回绕到轨道轰炸,家族不相邻</summary>
+        /// <summary>
+        /// P2(14):首手轨道轰炸是阶段签名(变形收尾强制),全息三模式与奇点/支援穿插;深空掠袭在第 12 手接在第二次轨道轰炸之后隔一手,
+        /// 远景招不相邻;末尾蓝色天空回绕到轨道轰炸,家族不相邻
+        /// </summary>
         private static readonly VDStateIndex[] Phase2 =
         {
             VDStateIndex.OrbitalStrike, VDStateIndex.PhantomDash, VDStateIndex.RedHell, VDStateIndex.HomingMissiles,
             VDStateIndex.Singularity, VDStateIndex.Reinforcement, VDStateIndex.PhantomFleet, VDStateIndex.GreenJungle,
-            VDStateIndex.RiftCut, VDStateIndex.TeleportFire, VDStateIndex.OrbitalStrike, VDStateIndex.PhantomDash,
+            VDStateIndex.RiftCut, VDStateIndex.TeleportFire, VDStateIndex.OrbitalStrike, VDStateIndex.DeepStrafe,
             VDStateIndex.PhaseLaser, VDStateIndex.BlueSky,
         };
 
         /// <summary>
         /// P3(16):首手湮灭主炮(护盾收尾强制),主炮一轮两手;连段头(裂隙斩/奇点/轨道轰炸)排在其后手不在最近三手里的位置,
-        /// 连段后手也记入历史,所以舰队只在表里出现一次(另两次由裂隙斩连段带出)。连段见 <see cref="ChainFollow"/>
+        /// 连段后手也记入历史,所以舰队只在表里出现一次(另一次由裂隙斩连段带出);环门与掠袭各一手,远景招之间至少隔两手。
+        /// 连段见 <see cref="ChainFollow"/>
         /// </summary>
         private static readonly VDStateIndex[] Phase3 =
         {
             VDStateIndex.AnnihilationCannon, VDStateIndex.RedHell, VDStateIndex.RiftCut, VDStateIndex.Singularity,
-            VDStateIndex.Reinforcement, VDStateIndex.OrbitalStrike, VDStateIndex.GreenJungle, VDStateIndex.TeleportFire,
+            VDStateIndex.DeepStrafe, VDStateIndex.OrbitalStrike, VDStateIndex.GreenJungle, VDStateIndex.TeleportFire,
             VDStateIndex.PhantomFleet, VDStateIndex.AnnihilationCannon, VDStateIndex.PhantomDash, VDStateIndex.BlueSky,
-            VDStateIndex.Singularity, VDStateIndex.RiftCut, VDStateIndex.TeleportFire, VDStateIndex.PhaseLaser,
+            VDStateIndex.DepthGates, VDStateIndex.Reinforcement, VDStateIndex.PhaseLaser, VDStateIndex.HomingMissiles,
         };
 
         public static VDStateIndex[] TableFor(int phase) => phase >= 3 ? Phase3 : phase >= 2 ? Phase2 : Phase1;
@@ -54,10 +69,12 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
                 case VDStateIndex.VoidFlame:
                 case VDStateIndex.TeleportFire:
                 case VDStateIndex.HomingMissiles:
+                case VDStateIndex.DeepStrafe:
                     return VDAttackFamily.Barrage;
                 case VDStateIndex.PhaseLaser:
                 case VDStateIndex.RiftCut:
                 case VDStateIndex.OrbitalStrike:
+                case VDStateIndex.DepthGates:
                     return VDAttackFamily.Zone;
                 case VDStateIndex.Singularity:
                     return VDAttackFamily.Gravity;

@@ -3,11 +3,13 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
 using Terraria.ModLoader;
+using VoidDestroyerNPC = CalamityEntropy.Content.NPCs.VoidDestroyer.VoidDestroyer;
 
 namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 {
     /// <summary>
-    /// 轨道轰炸的落点标记(纯演出,无伤害):ai[0] 寿命。外环收缩、内十字旋转,末 12 帧由紫转白闪烁;
+    /// 轨道轰炸的落点标记(纯演出,无伤害):ai[0] 寿命,ai[1] = 本体 whoAmI + 1(0 为无)。外环收缩、内十字旋转,末 12 帧由紫转白闪烁;
+    /// 本体在深处时另从它的投影核心拉一条越来越粗的透视瞄准线到落点(远端细、近端粗,炮是从背景里那艘船打下来的);
     /// 寿命结束即光柱砸落的那一帧,标记就是承诺
     /// </summary>
     public class VDTargetReticle : ModProjectile, IVoidDestroyerProjectile
@@ -16,6 +18,17 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 
         public int Life => (int)Math.Max(Projectile.ai[0], 10f);
         public int Age => Life - Projectile.timeLeft;
+
+        /// <summary>发射它的本体(在深处时瞄准线从它的投影核心出发)</summary>
+        private VoidDestroyerNPC OwnerBoss {
+            get {
+                int idx = (int)Projectile.ai[1] - 1;
+                if (idx < 0 || idx >= Main.maxNPCs || !Main.npc[idx].active || Main.npc[idx].ModNPC is not VoidDestroyerNPC boss) {
+                    return null;
+                }
+                return boss;
+            }
+        }
 
         public override void SetDefaults() {
             Projectile.width = 20;
@@ -69,6 +82,13 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             CEUtils.drawLineBetter(Projectile.Center, up, c * (0.35f * p), 4f + 8f * p);
             Main.spriteBatch.Draw(glow, pos, null, c * (0.5f + 0.5f * p), 0f, glow.Size() / 2f, 0.25f + 0.25f * p, SpriteEffects.None, 0f);
             CEUtils.ReSetToEndShader();
+
+            //透视瞄准线:背景里那艘船 → 落点,随标记成熟由发丝变粗,末段闪白
+            VoidDestroyerNPC boss = OwnerBoss;
+            if (boss != null && boss.Depth > 0.5f) {
+                float w = 2f + 12f * p;
+                VDBeamDraw.DrawTapered(boss.ProjectedCorePos, Projectile.Center, w * 0.25f, w, VDVfx.VoidPurple, c, 1f, (0.3f + 0.5f * p) * flicker, Projectile.whoAmI * 0.37f, endGlow: false);
+            }
             return false;
         }
     }

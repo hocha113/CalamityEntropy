@@ -8,8 +8,10 @@ using Terraria;
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
     /// <summary>
-    /// 蓝色天空(全息三模式之一):本体定住,20 帧放出绕本体 75 格快速圆周的全息小白龙(玩家出圈即脱轨直冲),
-    /// 60 帧起每 30 帧(P3 24)一发 60 弹形状弹幕:三角 → 圆 → 方 → 圆 → 五角星 → 圆,乘法外扩形状不变,持续 720 帧
+    /// 倾斜轨道小白龙(全息三模式之一):本体定住,30 帧放出绕本体做倾 55° 三维椭圆轨道的全息小白龙
+    /// (下半圈退到远处小而雾化、上半圈压到镜头前巨大半透明,只有穿过平面的那几节有判定;玩家出圈即脱轨直冲),
+    /// 60 帧起每当龙头穿过平面(θ 过 0 / π,P1/P2 每 60 帧、P3 每 50 帧)本体放一发 60 弹形状弹幕:三角 → 圆 → 方 → 圆 → 五角星 → 圆,
+    /// 乘法外扩形状不变,持续 420 帧。节拍钉在龙的角速度上:看见龙从背景里绕到跟前那一瞬,弹幕就来
     /// </summary>
     [VaultState((int)VDStateIndex.BlueSky, typeof(VDStateContext))]
     public class VDBlueSkyState : VDStateBase
@@ -25,7 +27,16 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         public override void OnEnter(VDStateContext ctx) {
             base.OnEnter(ctx);
             bursts = 0;
+            if (IsServer) {
+                //龙的起始角与状态同一颗骰子:形状弹要在龙头穿过平面那一帧释放,两边都得算得出 θ
+                ctx.RolledAngles[0] = Main.rand.NextFloat(MathHelper.TwoPi);
+                MarkNetUpdate(ctx);
+            }
         }
+
+        /// <summary>龙头此刻的轨道角(与 VDHoloWyvern 同一公式:起始角 + 角速度 × 龙龄)</summary>
+        private float WyvernAngle(VDStateContext ctx, int timer)
+            => ctx.RolledAngles[0] + VDDirector.WyvernAngularSpeed(ctx.Phase) * Math.Max(0, timer - VDDirector.SkyWyvernFrame);
 
         public override IVDState OnUpdate(VDStateContext ctx) {
             Timer++;
@@ -33,7 +44,6 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             ctx.CoreColorTarget = VDVfx.SkyBlue;
             DeclareDirect(ctx);
             npc.velocity *= 0.85f;
-            int interval = VDDirector.SkyBurstInterval(ctx.Phase);
 
             ctx.CoreGlow = Math.Max(ctx.CoreGlow, MathHelper.Clamp(Timer / (float)VDDirector.SkyWyvernFrame, 0f, 1f));
             if (Timer == VDDirector.SkyWyvernFrame) {
@@ -42,13 +52,26 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 ctx.RimFlash = 1f;
                 VDVfx.Sound("VoidAnticipation", 0.75f, npc.Center, 3, 1f);
                 if (IsServer) {
-                    Shoot<VDHoloWyvern>(ctx, npc.Center, Vector2.Zero, VDDirector.DmgHoloBeast, npc.whoAmI, Main.rand.NextFloat(MathHelper.TwoPi));
+                    Shoot<VDHoloWyvern>(ctx, npc.Center, Vector2.Zero, VDDirector.DmgHoloBeast, npc.whoAmI, ctx.RolledAngles[0]);
                 }
             }
             int burstEnd = VDDirector.SkyBurstStart + VDDirector.SkyBurstDuration;
-            if (Timer >= VDDirector.SkyBurstStart && Timer < burstEnd && (Timer - VDDirector.SkyBurstStart) % interval == 0) {
-                FireShapeBurst(ctx, bursts % 6, bursts);
-                bursts++;
+            if (Timer >= VDDirector.SkyBurstStart && Timer < burstEnd) {
+                //龙头穿过平面(sinθ 变号)那一帧放形状弹
+                int prevHalf = (int)Math.Floor(WyvernAngle(ctx, Timer - 1) / MathHelper.Pi);
+                int curHalf = (int)Math.Floor(WyvernAngle(ctx, Timer) / MathHelper.Pi);
+                if (curHalf != prevHalf) {
+                    FireShapeBurst(ctx, bursts % 6, bursts);
+                    bursts++;
+                }
+                else {
+                    //穿越前 10 帧核心先亮起来:节拍的可读预告
+                    float toCross = (curHalf + 1) * MathHelper.Pi - WyvernAngle(ctx, Timer);
+                    float framesToCross = toCross / VDDirector.WyvernAngularSpeed(ctx.Phase);
+                    if (framesToCross < 10f) {
+                        ctx.CoreGlow = Math.Max(ctx.CoreGlow, 1f - framesToCross / 10f);
+                    }
+                }
             }
             if (Timer >= burstEnd + VDDirector.SkyTail) {
                 return EndAttack(ctx);

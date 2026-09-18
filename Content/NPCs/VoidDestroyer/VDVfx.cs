@@ -3,13 +3,14 @@ using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles.VoidDestroyer;
 using InnoVault;
 using InnoVault.PRT;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
 
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer
 {
     /// <summary>
-    /// 表现门面(纯本地,不回写 gameplay):配色常量、闪现/爆闪粒子、震屏、找地面,
+    /// 表现门面(纯本地,不回写 gameplay):配色常量、闪现/爆闪粒子、震屏、找地面,纵深的呼啸/俯冲落地/落点标记,
     /// 以及权威端的清自家弹幕。状态与弹幕都从这里取共用动作,不各自散写。
     /// 贴图铁律(实机反馈 2026-09-17):BloomRing / Circle / StreakSolid / BasicTrail 这类底为不透明黑的灰度贴图
     /// 只能加法画,且环形与实心带状贴图不许非等比缩放:环压成椭圆会得到两侧薄、上下厚的歪光圈,
@@ -28,6 +29,10 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         public static readonly Color CannonCore = new Color(255, 200, 255);
         /// <summary>三阶段护盾的淡紫,天幕网格 P3 换成它</summary>
         public static readonly Color ShieldLavender = new Color(210, 160, 255);
+        /// <summary>纵深雾色:退入深处的东西向它插值(冷蓝紫,比天幕地平线亮一档,远物暗而不透)</summary>
+        public static readonly Color FarFog = new Color(70, 60, 130);
+        /// <summary>纵深落点标记的基色:比虚空紫冷,与平面弹幕拉开</summary>
+        public static readonly Color DepthMarker = new Color(150, 200, 255);
 
         //天幕「轨道封锁」配色:底幕暗、饱和度低,弹幕永远比天亮
         public static readonly Color SkyTop = new Color(8, 4, 18);
@@ -110,6 +115,61 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         /// <summary>全息碎片爆闪(全息生物出现/传送/消散)</summary>
         public static void HoloBurst(Vector2 pos, Color color) {
             SparkBurst(pos, color, 14, 3f, 9f, 22, 0.5f, 1f);
+        }
+
+        /// <summary>
+        /// 掠过镜头的一瞬(深度实体的 Z 穿过 <see cref="VDDirector.DepthWhooshZ"/>):呼啸音 + 轻震屏 + 滤镜从投影点向外的径向拖影。
+        /// 投影点是世界坐标(已投影),滤镜自己折成 UV
+        /// </summary>
+        public static void PassBy(Vector2 projectedWorld, float strength = 1f) {
+            if (Main.dedServ) {
+                return;
+            }
+            CEUtils.PlaySound("vbdisapear", 0.6f, projectedWorld, 4, 0.7f * strength);
+            CEUtils.SetShake(projectedWorld, VDDirector.WhooshShake * strength, 2400f);
+            VDScreenFx.ReportWhoosh(projectedWorld, VDDirector.WhooshStreak * strength);
+        }
+
+        /// <summary>俯冲落地的一记:冲击环粒子 + 震屏 + 落地音</summary>
+        public static void DiveShock(Vector2 pos, float strength = 1f) {
+            if (Main.dedServ) {
+                return;
+            }
+            Sound("VoidAttack", 0.9f, pos, 2);
+            Shake(pos, VDDirector.DiveShake * strength);
+            Explosion(pos, 0.8f * strength, 18);
+            SparkBurst(pos, VoidPurple, (int)(30 * strength), 5f, 16f, 30);
+            for (int i = 0; i < 12; i++) {
+                Vector2 v = CEUtils.randomRot().ToRotationVector2() * Main.rand.NextFloat(3f, 7f);
+                VoidPuff(pos + v * 3f, v, 1.3f, 0.6f);
+            }
+        }
+
+        /// <summary>
+        /// 平面落点标记(所有 Z 轴弹幕的公平阀):收缩环随逼近变亮,末段闪白。progress 0 = 刚出现,1 = 即将命中。
+        /// 只能加法画,环贴图等比缩放。<paramref name="ownBatch"/> 为假时调用方已开加法批次(点阵一次画几十枚,不逐枚切批次)
+        /// </summary>
+        public static void DrawDepthMarker(Vector2 worldPos, float progress, float radius, Color color, float opacity = 1f, bool ownBatch = true) {
+            if (Main.dedServ || opacity <= 0.01f) {
+                return;
+            }
+            progress = MathHelper.Clamp(progress, 0f, 1f);
+            Texture2D ring = CEUtils.getExtraTex("BloomRing");
+            Texture2D glow = CEUtils.getExtraTex("Glow");
+            Vector2 pos = worldPos - Main.screenPosition;
+            float flicker = progress > 0.8f ? 0.6f + 0.4f * MathF.Sin(Main.GlobalTimeWrappedHourly * 50f) : 1f;
+            Color c = Color.Lerp(color, Color.White, progress * progress) * (opacity * flicker);
+            if (ownBatch) {
+                Main.spriteBatch.UseAdditive();
+            }
+            //外环从 2.4 倍收缩到落点半径,内环反向慢转
+            float outer = MathHelper.Lerp(2.4f, 1f, EaseOut(progress)) * radius * 2f / ring.Width;
+            Main.spriteBatch.Draw(ring, pos, null, c * (0.35f + 0.55f * progress), Main.GlobalTimeWrappedHourly * 1.5f, ring.Size() / 2f, outer, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(ring, pos, null, c * (0.25f + 0.35f * progress), -Main.GlobalTimeWrappedHourly * 2.2f, ring.Size() / 2f, outer * 0.6f, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(glow, pos, null, c * (0.25f + 0.45f * progress), 0f, glow.Size() / 2f, radius * 1.6f / glow.Width * (0.6f + 0.4f * progress), SpriteEffects.None, 0f);
+            if (ownBatch) {
+                CEUtils.ReSetToEndShader();
+            }
         }
 
         /// <summary>一次性震屏(带距离衰减)</summary>

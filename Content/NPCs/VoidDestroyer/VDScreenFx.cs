@@ -11,8 +11,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
 {
     /// <summary>
     /// 虚空驱逐舰全屏滤镜的客户端驱动(键 CalamityEntropy:VoidDestroyer,着色器 VDScreenFx.fxc)。
-    /// 四条通道按帧「租约上报」:引力透镜(奇点)、空间裂隙位移(裂隙斩,最多 3 段)、暗角(护盾/主炮蓄力)、
-    /// 冲击帧(黑白对比,整场一次)。状态与弹幕在 AI 里 Report*,本类在 PostUpdateEverything 把上报值
+    /// 五条通道按帧「租约上报」:引力透镜(奇点)、空间裂隙位移(裂隙斩,最多 3 段)、暗角(护盾/主炮蓄力)、
+    /// 冲击帧(黑白对比,整场一次)、掠镜呼啸(深度实体越过镜头那一瞬的径向拖影)。状态与弹幕在 AI 里 Report*,本类在 PostUpdateEverything 把上报值
     /// 平滑进当前值并驱动 Filters.Scene 的激活/停用;没人上报的通道自然衰减到 0。
     /// 纯表现:服务端不会调用到这里的任何绘制路径,Report* 在 dedServ 上直接返回
     /// </summary>
@@ -30,6 +30,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         private static int pendRiftCount;
         private static float pendVignette;
         private static float pendImpact;
+        private static Vector2 pendWhooshCenter;
+        private static float pendWhoosh;
 
         //当前值(平滑后,着色器读)
         private static Vector2 lensCenter;
@@ -39,12 +41,23 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         private static readonly float[] riftOpen = new float[MaxRifts];
         private static float vignette;
         private static float impact;
+        private static Vector2 whooshCenter;
+        private static float whoosh;
         private static bool filterOn;
 
         public static bool Enabled => !Main.dedServ && Config.Instance.EnablePixelEffect;
 
         /// <summary>任一通道仍有可见量</summary>
-        public static bool Active => lensStrength > 0.002f || vignette > 0.005f || impact > 0.005f || AnyRiftOpen();
+        public static bool Active => lensStrength > 0.002f || vignette > 0.005f || impact > 0.005f || whoosh > 0.005f || AnyRiftOpen();
+
+        /// <summary>掠过镜头的径向拖影:世界坐标中心(已投影)+ 强度 0..1,同帧取最大;之后按帧快衰减</summary>
+        public static void ReportWhoosh(Vector2 worldCenter, float strength) {
+            if (Main.dedServ || strength <= pendWhoosh) {
+                return;
+            }
+            pendWhooshCenter = worldCenter;
+            pendWhoosh = MathHelper.Clamp(strength, 0f, 1f);
+        }
 
         /// <summary>引力透镜:世界坐标中心、强度(0.05~0.12 可读)、半径(像素)</summary>
         public static void ReportLens(Vector2 worldCenter, float strength, float radius) {
@@ -124,11 +137,23 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             else {
                 impact = pendImpact > 0f ? pendImpact : impact * 0.6f;
             }
+            //呼啸:新上报直接顶上(掠过是一瞬),之后约 8 帧衰减到 1/6
+            if (pendWhoosh > whoosh) {
+                whooshCenter = pendWhooshCenter;
+                whoosh = pendWhoosh;
+            }
+            else {
+                whoosh *= 0.8f;
+                if (whoosh < 0.004f) {
+                    whoosh = 0f;
+                }
+            }
 
             pendLensStrength = 0f;
             pendRiftCount = 0;
             pendVignette = 0f;
             pendImpact = 0f;
+            pendWhoosh = 0f;
 
             Filter filter = Filters.Scene[FilterKey];
             if (filter == null) {
@@ -152,6 +177,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             lensStrength = 0f;
             vignette = 0f;
             impact = 0f;
+            whoosh = 0f;
             impactHold = 0;
             for (int i = 0; i < MaxRifts; i++) {
                 riftOpen[i] = 0f;
@@ -160,6 +186,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             pendRiftCount = 0;
             pendVignette = 0f;
             pendImpact = 0f;
+            pendWhoosh = 0f;
             if (filterOn && !Main.dedServ && Filters.Scene[FilterKey] != null) {
                 Filters.Scene.Deactivate(FilterKey);
             }
@@ -202,6 +229,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             shader.Parameters["uRiftOpen"]?.SetValue(new Vector4(riftOpen[0], riftOpen[1], riftOpen[2], 0f));
             shader.Parameters["uVignette"]?.SetValue(vignette);
             shader.Parameters["uImpact"]?.SetValue(impact);
+            Vector2 whooshUv = WorldToUv(whooshCenter);
+            shader.Parameters["uWhoosh"]?.SetValue(new Vector4(whooshUv.X, whooshUv.Y, whoosh, 0f));
             shader.Parameters["uAspect"]?.SetValue(Main.screenWidth / (float)Main.screenHeight);
         }
     }

@@ -11,6 +11,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
     /// 缝以发丝白线可见 36 帧(预告 = 承诺),再拉开 12 帧(判定窗 + 全屏沿线撕裂),猛合时两侧各喷一排垂直虚空弹。
     /// P1 两道依次(第二道与第一道垂直);P2 三道米字依次画线,前一道开口那一帧下一道才出现(同时只有一道在开口);
     /// P3 以玩家为心的六边形笼(边线只向外喷弹,笼内安全)开口后,再补一刀穿心。
+    /// 猛合喷弹一半留平面、一半抛入深处再回头收敛(两层弹雨一近一远);穿心刀的喷弹改为从背景里收敛到缝两侧的纵深贯穿弹。
     /// 缝的几何在服务端出手帧定死并随弹幕生成包过线,状态只管节拍与本体姿态
     /// </summary>
     [VaultState((int)VDStateIndex.RiftCut, typeof(VDStateContext))]
@@ -140,10 +141,10 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 seamsSpawned = 6;
                 lastSeamAt = Timer;
             }
-            //笼开口那一帧补穿心一刀(它自己再预告 36 帧,开口时笼已合上)
+            //笼开口那一帧补穿心一刀(它自己再预告 36 帧,开口时笼已合上);穿心刀的喷弹是从背景里飞来的纵深贯穿弹
             if (seamsSpawned == 6 && Timer == 1 + raise + VDDirector.RiftAimFrames) {
                 float ang = ctx.RolledAngles[0] + MathHelper.PiOver4;
-                SpawnSeam(ctx, PredictTarget(ctx, VDDirector.RiftPredictLead * 0.5f), ang, VDDirector.RiftAimFrames, VDDirector.RiftHalfLength, false);
+                SpawnSeam(ctx, PredictTarget(ctx, VDDirector.RiftPredictLead * 0.5f), ang, VDDirector.RiftAimFrames, VDDirector.RiftHalfLength, false, pierce: true);
                 seamsSpawned = 7;
                 lastSeamAt = Timer;
             }
@@ -152,7 +153,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             }
         }
 
-        private void SpawnSeam(VDStateContext ctx, Vector2 center, float angle, int aimFrames, float halfLength, bool outwardOnly) {
+        /// <summary>划一道缝:半长取负 = 穿心刀(喷弹改纵深贯穿),喷弹伤害取负 = 只向外喷(笼边)</summary>
+        private void SpawnSeam(VDStateContext ctx, Vector2 center, float angle, int aimFrames, float halfLength, bool outwardOnly, bool pierce = false) {
             //本体的挥砍演出:核心亮、翼张、描边爆闪、一记短反冲、划空音
             ctx.CoreGlow = 1f;
             ctx.WingPulse = 1f;
@@ -162,7 +164,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
             ctx.Npc.velocity -= dir.RotatedBy(MathHelper.PiOver2) * 2f;
             VDVfx.Sound("CruiserSpit2", 1.3f, ctx.Owner.CorePos, 4, 0.8f);
             int boltDamage = ctx.Owner.ProjDamage(VDDirector.DmgVoidBolt) * (outwardOnly ? -1 : 1);
-            Shoot<VDRiftSeam>(ctx, center, dir, VDDirector.DmgRiftSeam, aimFrames, halfLength, boltDamage);
+            Shoot<VDRiftSeam>(ctx, center, dir, VDDirector.DmgRiftSeam, aimFrames, pierce ? -halfLength : halfLength, boltDamage);
         }
 
         private void SwitchBeat(Beat next) {

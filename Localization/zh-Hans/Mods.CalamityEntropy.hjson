@@ -1,6 +1,63 @@
 ModNameOverride: 虚空召唤
 
 Items: {
+	LightDarkDragonDagger: {
+		DisplayName: 光暗龙匕
+		Tooltip:
+			'''
+			左键交替掷出三把耀光飞刃与三把黯影飞刃，穿墙并最多命中3个敌怪
+			耀光飞刃沿上半弧飞行并施加灵液，黯影飞刃沿下半弧飞行并施加暗影焰
+			一种飞刃命中2秒内被另一种飞刃命中过的敌怪时
+			会追加一次光影斩切并回复2点生命
+			飞刃命中24次充满蓄势，右键清空蓄势掷出相互纠缠的两把耀光刃与两把黯影刃
+			纠缠刃无限穿透敌怪与物块，它们在场时再按右键会闪烁到刃的位置
+			闪烁路径上的敌怪受到伤害并被强化的光影斩切追击，路径留下织影裂隙
+			每次暴击使基础伤害+2，最多叠加15层，任意一次未暴击的命中会清空层数
+			将它收藏在背包中时，一头朦胧的光暗之龙会跟随你，层数越高它越清晰
+			'''
+		StackTooltip: 光影共鸣：{0}/{1}层，基础伤害+{2}
+	}
+
+	KevinsNurglePot: {
+		DisplayName: 凯文的纳垢锅
+		Tooltip:
+			'''
+			左键双手甩锅撒出一片侵蚀性粘液
+			沾在敌怪身上的粘液每秒造成一次伤害并施加中毒，持续10秒
+			沾在物块上的粘液坑每0.5秒伤害一次经过的敌怪，持续5秒
+			按住右键把锅口对准目标方向，用火魔法加热锅底
+			加热1.5秒后粘液沸腾，每0.4秒喷出一坨滚烫粘液，每坨消耗6点魔力
+			滚烫粘液命中后附着5秒，每秒造成一次伤害并施加中毒与酸性中毒
+			附着结束时粘液汽化为一团瘟疫毒雾，让经过的敌怪染上瘟疫
+			手持时锅口会飘出随风散去的臭雾，不造成伤害，只让沾到的家伙发臭
+			困难模式下敲碎恶魔祭坛或猩红祭坛时有0.66%的概率掉落
+			'''
+	}
+
+	OldHeroBlade: {
+		DisplayName: 昔日的英雄之刃
+		Tooltip:
+			'''
+			每次挥砍放出一道英雄残影，可穿透4个敌怪
+			每第四次挥砍改为昔日之斩，剑刃与残影都更大更重，残影无限穿透
+			剑刃或残影命中敌怪时，从身后唤出两只英灵兔扑向目标，内置冷却0.5秒
+			[c/9ad0ff:“它曾与一群兔子并肩，守住过一个没人记得的黎明”]
+			'''
+	}
+
+	NightSpiritStaff: {
+		DisplayName: 暗夜灵杖
+		Tooltip:
+			'''
+			按住左键持杖连续放出夜灵，夜灵蛇行一段后追踪敌怪并穿墙
+			夜灵命中时施加暗影焰并留下一道夜痕，夜痕积满4道时降下永夜之星
+			永夜之星坠向目标并爆发，造成夜灵4倍的范围伤害
+			右键举杖在光标处降下一片夜幕，持续6秒，每0.5秒伤害幕中敌怪
+			夜灵在夜幕中命中时伤害提高50%，并留下两道夜痕
+			夜间使用时全部伤害提高15%
+			'''
+	}
+
 	VoidBlade: {
 		DisplayName: 虚空锋刃
 		Tooltip: 快速，连续的进行斩击
@@ -4982,6 +5039,27 @@ MissileLauncherDescTooltip: 发射可黏附在敌怪身上的导弹
 MissileLauncherMaxStickTooltip: 每个敌怪最多黏附{0}个
 
 Projectiles: {
+	LDDaggerHeld.DisplayName: 光暗龙匕
+	LDKnifeLight.DisplayName: 耀光飞刃
+	LDKnifeDark.DisplayName: 黯影飞刃
+	LDHelixKnifeLight.DisplayName: 纠缠耀光刃
+	LDHelixKnifeDark.DisplayName: 纠缠黯影刃
+	LDSlash.DisplayName: 光影斩切
+	LDBlinkStrike.DisplayName: 光暗闪烁
+	LDShadowRift.DisplayName: 织影裂隙
+	LightDarkDragon.DisplayName: 光暗之龙
+	NurglePotHeld.DisplayName: 凯文的纳垢锅
+	NurgleSlimeGlob.DisplayName: 侵蚀性粘液
+	NurgleBoilingGlob.DisplayName: 滚烫粘液
+	NurglePlagueMist.DisplayName: 瘟疫毒雾
+	NurgleStinkMist.DisplayName: 臭雾
+	OldHeroBladeHeld.DisplayName: 昔日的英雄之刃
+	HeroPhantomSlash.DisplayName: 英雄残影
+	HeroSpiritBunny.DisplayName: 英灵兔
+	NightSpiritStaffHeld.DisplayName: 暗夜灵杖
+	NightWisp.DisplayName: 夜灵
+	NightfallStar.DisplayName: 永夜之星
+	NightVeil.DisplayName: 夜幕
 	VoidBladeProj.DisplayName: 虚空锋刃
 	VoidBladeHit.DisplayName: 虚空缝隙
 	Rvshoot.DisplayName: 启示录
@@ -5745,6 +5823,10 @@ Projectiles: {
 	// VDSingularity.DisplayName: V D Singularity
 	// VDTargetReticle.DisplayName: V D Target Reticle
 	// VDVoidPillar.DisplayName: V D Void Pillar
+	// VDDropPod.DisplayName: V D Drop Pod
+	// VDEscortShip.DisplayName: V D Escort Ship
+	// VDGateBolt.DisplayName: V D Gate Bolt
+	// VDLatticeField.DisplayName: V D Lattice Field
 }
 
 LegendTooltip: - 传奇物品 -

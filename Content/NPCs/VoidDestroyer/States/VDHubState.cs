@@ -27,11 +27,14 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         /// <summary>按 PendingState 缓存的下一招实例(只用来问锚点/是否必须闪现,不进状态机)</summary>
         private VDStateBase pendingProbe;
         private int pendingProbeId = -1;
+        /// <summary>进 hub 那一帧上一招留下的深度声明:落定拍从它爬向下一招的起手深度(上一招收在深处时这一拍就是俯冲归位)</summary>
+        private float entryDepth;
 
         public override void OnEnter(VDStateContext ctx) {
             base.OnEnter(ctx);
             pendingProbe = null;
             pendingProbeId = -1;
+            entryDepth = ctx.Depth;
             //只有权威端清:客户端进 hub 往往晚于携带 PendingState 的那个包,清掉就丢了起势表现的依据
             if (IsServer) {
                 ctx.PendingState = -1;
@@ -41,6 +44,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
         public override IVDState OnUpdate(VDStateContext ctx) {
             Timer++;
             if (!ctx.TargetValid) {
+                ctx.Depth = entryDepth;
                 return null;
             }
             NPC npc = ctx.Npc;
@@ -54,6 +58,16 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 
             VDStateBase probe = Probe(ctx.PendingState);
             Vector2 anchor = probe != null ? probe.AnchorFor(ctx) : DefaultAnchor(ctx);
+
+            //深度落定:落定拍里从上一招留下的深度爬到下一招的起手深度;退远本身就是「要轰炸了」的预告,归零就是俯冲回来
+            float targetDepth = probe?.StartDepth(ctx) ?? 0f;
+            float settle = MathHelper.Clamp(Timer / (float)VDDirector.ConnectorSettleFrames, 0f, 1f);
+            ctx.Depth = MathHelper.Lerp(entryDepth, targetDepth, VDVfx.EaseOut(settle));
+            if (Timer == VDDirector.ConnectorSettleFrames && entryDepth > VDDirector.DepthFarLayerZ && VDDepth.InHitBand(targetDepth)) {
+                //从深处回到平面的落定一记(比正式俯冲轻)
+                VDVfx.DiveShock(npc.Center, 0.5f);
+                ctx.RimFlash = 0.6f;
+            }
 
             if (Timer <= VDDirector.ConnectorSettleFrames) {
                 //落定:刚闪现的话宿主正在换位,这里声明的运动被闪现接管;没闪现就开始飞
@@ -115,11 +129,20 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                 return;
             }
             Vector2 anchor = probe.AnchorFor(ctx);
-            float dist = Vector2.Distance(ctx.Npc.Center, anchor);
+            //距离按表观算:起手在深处的招其世界锚点天然很远(表观偏移 ÷ 缩放),用世界距离会误判成要闪现
+            float dist = ApparentDistance(ctx, anchor, probe.StartDepth(ctx));
             if (probe.NeedsRepositionBlink || dist > VDDirector.ConnectorBlinkDistance) {
                 ctx.Owner.StartBlink(anchor);
             }
             ctx.Npc.netUpdate = true;
+        }
+
+        /// <summary>本体当前投影位置(按进 hub 时的深度)到「锚点在起手深度下的投影位置」的距离,以目标玩家中心为相机代理(服务端没有相机)</summary>
+        private float ApparentDistance(VDStateContext ctx, Vector2 anchor, float anchorDepth) {
+            Vector2 proxy = ctx.Target.Center;
+            Vector2 a = VDDepth.Project(anchor, anchorDepth, proxy);
+            Vector2 b = VDDepth.Project(ctx.Npc.Center, entryDepth, proxy);
+            return Vector2.Distance(a, b);
         }
 
         /// <summary>取下一招的探针实例(缓存,PendingState 变了才重建)</summary>

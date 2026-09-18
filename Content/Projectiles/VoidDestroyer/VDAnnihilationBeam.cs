@@ -10,7 +10,8 @@ using VoidDestroyerNPC = CalamityEntropy.Content.NPCs.VoidDestroyer.VoidDestroye
 namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 {
     /// <summary>
-    /// 湮灭主炮射线:起点每帧钉在本体核心,从 ai[2] 起始角以恒定角速度扫 100°,ai[1] = 扫射帧数 × 方向符号,ai[0] 本体。
+    /// 湮灭主炮射线:枢每帧钉在本体的平面核心,从 ai[2] 起始角以恒定角速度扫 100°,ai[1] = 扫射帧数 × 方向符号,ai[0] 本体。
+    /// 本体在镜头后(越肩主炮)时另从它的投影核心画一段收敛的透视光锥到枢:炮是从屏幕上缘的巨影打进画面的,判定只有平面上绕枢转的那条线。
     /// 一帧亮起(4 帧张满)、末 12 帧收拢;出手 3 帧后开判定;沿射线每 10 帧向两侧落一发虚空弹雨;持续低频震屏与暗角压场
     /// </summary>
     public class VDAnnihilationBeam : VDHostileProjectile
@@ -109,8 +110,15 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 
         public override bool PreDraw(ref Color lightColor) {
             float env = Envelope();
+            VoidDestroyerNPC boss = Owner;
+            //越肩段:从镜头后巨影的投影核心到平面枢的光锥,近端(巨影处)粗、枢处收到射线宽度
+            if (boss != null && boss.Depth < -0.05f) {
+                Vector2 from = boss.ProjectedCorePos;
+                float nearWidth = Width * VDDepth.Scale(boss.Depth);
+                VDBeamDraw.DrawTapered(from, Projectile.Center, nearWidth * env, Width * env, VDVfx.VoidPurple, VDVfx.CannonCore, 1f, 1f, 0.77f, endGlow: false);
+            }
             VDBeamDraw.Draw(Projectile.Center, Dir, VDDirector.CannonBeamLength, Width, VDVfx.VoidPurple, VDVfx.CannonCore, env, 1f, 0.77f);
-            //炮口爆闪:出手前 6 帧最亮
+            //枢的爆闪:出手前 6 帧最亮
             Main.spriteBatch.UseAdditive();
             Texture2D glow = CEUtils.getExtraTex("Glow");
             float flash = MathHelper.Clamp(1f - Age / 6f, 0f, 1f);

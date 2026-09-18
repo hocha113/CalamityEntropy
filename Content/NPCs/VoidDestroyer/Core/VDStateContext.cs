@@ -71,6 +71,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public float[] RolledAngles { get; } = new float[4];
         /// <summary>掷骰落点槽(轨道轰炸目标等)</summary>
         public Vector2[] RolledPoints { get; } = new Vector2[6];
+        /// <summary>掷骰深度槽(立体舰队门位深度、立体四角的角位深度等)</summary>
+        public float[] RolledDepths { get; } = new float[4];
         /// <summary>切技闪现计时,>0 正在闪现:前半淡出,过半换位,后半淡入</summary>
         public int BlinkTimer { get; set; }
         /// <summary>传送后的无接触伤害窗口</summary>
@@ -107,8 +109,14 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public float AlphaDeclared { get; set; } = float.NaN;
         /// <summary>绘制缩放声明(随 AlphaDeclared 一起)</summary>
         public float DrawScaleDeclared { get; set; } = 1f;
-        /// <summary>假 Z 深度 0..1(轨道轰炸退入背景:缩小 + 蓝移 + 无接触)</summary>
-        public float FakeZ { get; set; }
+        /// <summary>
+        /// 纵深声明(Z:0 玩家平面,+ 越远越深,- 朝镜头;每帧回落 0)。
+        /// 决定绘制的透视投影 / 缩放 / 雾化 / 所在绘制层,以及 gameplay 门:带外不可攻击、无接触、不被追。数学见 <see cref="VDDepth"/>
+        /// </summary>
+        public float Depth { get; set; }
+        /// <summary>俯冲落点大环:位置与进度 0..1(每帧回落 0 = 不画),<c>DeclareDive</c> 每帧声明</summary>
+        public Vector2 DiveMarkerPos { get; set; }
+        public float DiveMarkerProgress { get; set; }
         /// <summary>核心目标色(全息三模式换色)</summary>
         public Color CoreColorTarget { get; set; } = VDVfx.VoidPurple;
         /// <summary>全息红恶魔蓄力读数 0..1(红色地狱状态每帧声明,弹幕只读)</summary>
@@ -121,10 +129,10 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public bool WingsVisible { get; set; }
         /// <summary>传送门开合 0..1(出场/死亡演出每帧声明,画在 AnchorPos)</summary>
         public float PortalOpenness { get; set; }
+        /// <summary>传送门所在深度(每帧回落 0):出场的跃迁门开在 Z 6 的深空里,画时按深度投影缩小</summary>
+        public float PortalDepth { get; set; }
         /// <summary>变形动画帧(-1 = 不在变形)</summary>
         public int TransformFrame { get; set; } = -1;
-        /// <summary>红射线预警进度 0..1(红色地狱预警窗声明)</summary>
-        public float RedRayWarning { get; set; }
         /// <summary>导引线(主炮扫射起点预告):方向,零向量 = 无</summary>
         public Vector2 AimLineDir { get; set; }
         public float AimLineStrength { get; set; }
@@ -160,15 +168,16 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
 
             AlphaDeclared = float.NaN;
             DrawScaleDeclared = 1f;
-            FakeZ = 0f;
+            Depth = 0f;
+            DiveMarkerProgress = 0f;
             HoloCharge = 0f;
             HoloWrapUp = false;
             CoreColorTarget = VDVfx.VoidPurple;
             ShieldVisible = Phase >= 3 && !Dying;
             WingsVisible = Phase >= 2 && !Dying;
             PortalOpenness = 0f;
+            PortalDepth = 0f;
             TransformFrame = -1;
-            RedRayWarning = 0f;
             AimLineDir = Vector2.Zero;
             AimLineStrength = 0f;
             AimLineColor = VDVfx.CannonCore;

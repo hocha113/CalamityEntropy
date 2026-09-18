@@ -4,6 +4,7 @@
 //   空间裂隙  uRift[3](线段端点 UV)+ uRiftOpen(三段开口量):沿线段法向外推 + RGB 色散 + 缝口亮白
 //   暗角      uVignette:四周压暗并向深紫偏色(护盾展开 / 主炮蓄力压场)
 //   冲击帧    uImpact:亮度→黑白高对比(整场一次)
+//   掠镜呼啸  uWhoosh(xy 中心 UV,z 强度):从中心向外的 6 抽径向拖影,越靠外拖得越长(深度实体越过镜头那一瞬)
 // uOpacity 由原版喂(EnablePixelEffect 关则为 0,滤镜整体被跳过),这里用它对原图做整体 lerp。
 // 无动态分支:循环 [unroll],所有门用 step/saturate。
 sampler uImage0 : register(s0);
@@ -17,6 +18,7 @@ float4 uRift[3];
 float4 uRiftOpen;
 float uVignette;
 float uImpact;
+float4 uWhoosh;
 float uAspect;
 
 float4 PixelFunc(float2 uv : TEXCOORD0) : COLOR0
@@ -64,6 +66,21 @@ float4 PixelFunc(float2 uv : TEXCOORD0) : COLOR0
     col.g = tex2D(uImage0, finalUv).g;
     col.b = tex2D(uImage0, finalUv - disp * 0.35 * chroma).b;
     col.a = 1.0;
+
+    // 掠镜呼啸:从中心沿径向向外取 6 抽,距中心越远拖得越长,中心一圈不拖(那里正是掠过的实体本身)
+    float2 toW = (uv - uWhoosh.xy) * asp;
+    float wd = length(toW);
+    float2 wdir = toW / max(wd, 0.0005);
+    float wAmt = uWhoosh.z * saturate(wd * 1.6) * 0.045;
+    float4 streak = col;
+    [unroll]
+    for (int k = 1; k <= 6; k++)
+    {
+        float2 suv = finalUv - wdir / asp * wAmt * k / 6.0;
+        streak += tex2D(uImage0, suv);
+    }
+    streak /= 7.0;
+    col.rgb = lerp(col.rgb, streak.rgb, saturate(uWhoosh.z * 1.2));
 
     // 视界压暗、缝口亮白(缝口带一点紫边)
     col.rgb *= 1.0 - darken * 0.75;

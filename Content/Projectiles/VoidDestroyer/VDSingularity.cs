@@ -13,8 +13,9 @@ using VoidDestroyerNPC = CalamityEntropy.Content.NPCs.VoidDestroyer.VoidDestroye
 namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 {
     /// <summary>
-    /// 虚空奇点:飘行 30 帧减速停住 → 150 帧引力(本地玩家被拉向它、封顶可逃;全屏引力透镜;吸积盘边缘螺旋放弹;
-    /// 视界接触伤害)→ 20 帧塌缩(盘缩到 40%,余弦闪烁,粒子先断)→ 24 发环爆 + 冲击环;P3 且整场未用过时点燃唯一一次冲击帧。
+    /// 虚空奇点:飘行 30 帧减速停住 → 150 帧引力(本地玩家被拉向它、封顶可逃;全屏引力透镜;吸积盘边缘放三维螺旋弹,
+    /// 绕倾斜轨道螺旋外扩、一圈两次穿过平面才有判定;视界接触伤害)→ 20 帧塌缩(盘缩到 40%,余弦闪烁,粒子先断)
+    /// → 24 发环爆分三向(8 平面、8 朝镜头掠过、8 遁入深处的纯演出)+ 冲击环;P3 且整场未用过时点燃唯一一次冲击帧。
     /// ai[0] 本体,ai[1] 阶段,ai[2] 环爆/螺旋弹伤害(已折算)
     /// </summary>
     public class VDSingularity : VDHostileProjectile
@@ -92,12 +93,11 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             if (ActivePull) {
                 PullLocalPlayer();
                 VDScreenFx.ReportLens(Projectile.Center, VDDirector.SingLensStrength * scale, VDDirector.SingLensRadius);
-                //吸积盘边缘螺旋放弹(切向 + 少量径向,越飞越远)
+                //吸积盘边缘放三维螺旋弹:绕奇点的倾斜轨道螺旋外扩,Z 在正负间来回,一圈两次穿过平面才有判定
                 if (IsServer && BoltDamage > 0 && (age - TravelFrames) % VDDirector.SingOrbitBoltInterval == 0) {
                     float ang = Main.rand.NextFloat(MathHelper.TwoPi);
                     Vector2 radial = ang.ToRotationVector2();
-                    Vector2 vel = radial.RotatedBy(MathHelper.PiOver2) * VDDirector.SingOrbitBoltSpeed + radial * 1.5f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + radial * VDDirector.SingDiskRadius, vel, ModContent.ProjectileType<VDVoidBolt>(), BoltDamage, 0f, Main.myPlayer, VDVoidBolt.ModeStraight);
+                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + radial * VDDirector.SingDiskRadius, Vector2.Zero, ModContent.ProjectileType<VDVoidBolt>(), BoltDamage, 0f, Main.myPlayer, VDVoidBolt.ModeZOrbit, Projectile.Center.X, Projectile.Center.Y);
                 }
                 //被吸进来的碎屑(客户端)
                 if (!Main.dedServ && Main.rand.NextBool(2)) {
@@ -158,9 +158,24 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             }
             VoidDestroyerNPC boss = Owner;
             if (IsServer && BoltDamage > 0) {
+                int type = ModContent.ProjectileType<VDVoidBolt>();
                 for (int i = 0; i < VDDirector.SingBurstCount; i++) {
                     Vector2 dir = (MathHelper.TwoPi * i / VDDirector.SingBurstCount).ToRotationVector2();
-                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, dir * VDDirector.SingBurstSpeed, ModContent.ProjectileType<VDVoidBolt>(), BoltDamage, 0f, Main.myPlayer, VDVoidBolt.ModeStraight);
+                    Vector2 vel = dir * VDDirector.SingBurstSpeed;
+                    switch (i % 3) {
+                        case 0:
+                            //平面
+                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, vel, type, BoltDamage, 0f, Main.myPlayer, VDVoidBolt.ModeStraight);
+                            break;
+                        case 1:
+                            //朝镜头:起点即带内,越来越大地掠过镜头
+                            Projectile.NewProjectile(new VDDepthSource(boss?.NPC, 0f, VDDirector.SingBurstNearZVel, 0f), Projectile.Center, vel * 0.7f, type, BoltDamage, 0f, Main.myPlayer, VDVoidBolt.ModeZPierce);
+                            break;
+                        default:
+                            //遁入深处:出带后再无判定,纯演出的一圈向消失点收拢的火星
+                            Projectile.NewProjectile(new VDDepthSource(boss?.NPC, 0f, VDDirector.SingBurstFarZVel, 0f), Projectile.Center, vel, type, BoltDamage, 0f, Main.myPlayer, VDVoidBolt.ModeZPierce);
+                            break;
+                    }
                 }
             }
             //冲击帧单发闸:各端按本地已知的闸位裁决,权威端把闸位写进包

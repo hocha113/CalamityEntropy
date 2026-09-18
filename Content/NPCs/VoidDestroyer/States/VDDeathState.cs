@@ -6,8 +6,9 @@ using Terraria;
 namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 {
     /// <summary>
-    /// 死亡演出:0-150 逐级加密的爆炸与震屏;150-210 传送门在头顶打开、本体缩入;210-290 门关闭;330 真正死亡并掉落。
-    /// 演出不依赖目标;真死走 StrikeInstantKill,联机下由击杀包把死亡带到各客户端
+    /// 死亡演出(330 帧):0-150 平面上逐级加密的爆炸与震屏;150-210 失去动力,翻滚着漂进深处(Z 0 → 3,引擎火焰熄灭);
+    /// 210-290 远处连锁小爆,250 帧最后一炸点亮整片天幕(闪光 + 冲击环),之后随天幕一起收干;330 真正死亡并掉落。
+    /// 世界坐标钉在平面锚点(掉落位置不变),只有深度在走。演出不依赖目标;真死走 StrikeInstantKill,联机下由击杀包把死亡带到各客户端
     /// </summary>
     [VaultState((int)VDStateIndex.Death, typeof(VDStateContext))]
     public class VDDeathState : VDStateBase
@@ -40,6 +41,7 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
 
             if (t <= VDDirector.DeathExplosionEnd) {
                 DeclareAlpha(ctx, 1f, 1f);
+                ctx.Depth = 0f;
                 float progress = t / (float)VDDirector.DeathExplosionEnd;
                 ctx.ShakeStrength = Math.Max(ctx.ShakeStrength, progress);
                 int interval = Math.Max(4, 16 - t / 10);
@@ -57,32 +59,61 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.States
                     VDVfx.Shake(npc.Center, 3f + t / 25f);
                 }
                 if (t == VDDirector.DeathExplosionEnd) {
-                    ctx.AnchorPos = npc.Center + new Vector2(0, -110);
-                    VDVfx.Sound("portal_emerge", 1f, ctx.AnchorPos, 2);
+                    ctx.AnchorPos = npc.Center;
+                    npc.velocity = Vector2.Zero;
+                    VDVfx.Sound("vbdisapear", 0.5f, npc.Center, 2, 1.2f);
                     MarkNetUpdate(ctx);
                 }
             }
-            else if (t <= VDDirector.DeathPortalIn) {
-                float p = (t - VDDirector.DeathExplosionEnd) / (float)(VDDirector.DeathPortalIn - VDDirector.DeathExplosionEnd);
-                float eased = VDVfx.EaseOut(p);
-                DeclareAlpha(ctx, 1f - eased, MathHelper.Lerp(1f, 0.55f, eased));
+            else if (t <= VDDirector.DeathDriftEnd) {
+                //失去动力:平滑步进地漂进深处,一边翻滚
+                float p = (t - VDDirector.DeathExplosionEnd) / (float)(VDDirector.DeathDriftEnd - VDDirector.DeathExplosionEnd);
+                float s = p * p * (3f - 2f * p);
+                ctx.Depth = VDDirector.DeathDriftDepth * s;
+                ctx.TiltOverride = ctx.SideDir * 1.1f * s;
+                DeclareAlpha(ctx, 1f, 1f);
                 npc.velocity = Vector2.Zero;
-                npc.Center = Vector2.Lerp(ctx.AnchorPos + new Vector2(0, 110), ctx.AnchorPos, eased);
-                //被门吸入时保持满亮的红热缘光,随本体透明度一起消失
-                ctx.RimCharge = 1f;
+                npc.Center = ctx.AnchorPos;
+                ctx.RimCharge = 1f - 0.5f * p;
                 ctx.RimColorTarget = VDDirector.RimHeatRed;
+                if (!Main.dedServ && t % 5 == 0) {
+                    Vector2 shown = ctx.Owner.ProjectedCenter;
+                    float sc = VDDepth.Scale(ctx.Owner.Depth);
+                    VDVfx.VoidPuff(shown + CEUtils.randomPointInCircle(40f * sc), CEUtils.randomRot().ToRotationVector2() * 2f * sc, 1.2f * sc, 0.6f);
+                    if (t % 15 == 0) {
+                        VDVfx.Explosion(shown + CEUtils.randomPointInCircle(30f * sc), 0.5f * sc, 24);
+                        VDVfx.Sound("VoidBomb", 1.2f, shown, 4, 0.4f);
+                    }
+                }
             }
             else {
-                DeclareAlpha(ctx, 0f, 0.55f);
+                //远处连锁小爆,直到最后一炸点亮天幕
+                ctx.Depth = VDDirector.DeathDriftDepth;
+                ctx.TiltOverride = ctx.SideDir * 1.1f;
                 npc.velocity = Vector2.Zero;
-            }
-
-            //传送门:150 开、250 起关、290 关完
-            if (t >= VDDirector.DeathExplosionEnd) {
-                if (t <= 180) ctx.PortalOpenness = VDVfx.EaseOut((t - 150) / 30f);
-                else if (t <= 250) ctx.PortalOpenness = 1f;
-                else if (t <= 290) ctx.PortalOpenness = 1f - VDVfx.EaseOut((t - 250) / 40f);
-                else ctx.PortalOpenness = 0f;
+                npc.Center = ctx.AnchorPos;
+                float fade = 1f - MathHelper.Clamp((t - VDDirector.DeathFinalFlashFrame) / (float)(VDDirector.DeathFadeEnd - VDDirector.DeathFinalFlashFrame), 0f, 1f);
+                DeclareAlpha(ctx, fade, 1f);
+                ctx.RimCharge = fade;
+                ctx.RimColorTarget = VDDirector.RimHeatRed;
+                if (!Main.dedServ) {
+                    Vector2 shown = ctx.Owner.ProjectedCenter;
+                    float sc = VDDepth.Scale(ctx.Owner.Depth);
+                    if (t < VDDirector.DeathFinalFlashFrame && t % 6 == 0) {
+                        VDVfx.Explosion(shown + CEUtils.randomPointInCircle(26f * sc), Main.rand.NextFloat(0.25f, 0.45f), 22);
+                        VDVfx.SparkBurst(shown, VDVfx.VoidPink, 4, 1f, 4f, 24, 0.4f, 0.8f);
+                        VDVfx.Sound("VoidBomb", Main.rand.NextFloat(1.1f, 1.3f), shown, 4, 0.35f);
+                    }
+                    if (t == VDDirector.DeathFinalFlashFrame) {
+                        //最后一炸:远处的一点白光,天幕整面亮起、冲击环从那里扩散出去
+                        VDVfx.Explosion(shown, 1.2f, 40);
+                        VDVfx.SparkBurst(shown, Color.White, 40, 2f, 9f, 50, 0.5f, 1.2f);
+                        VDVfx.Sound("VoidBomb", 0.6f, shown, 2, 1.2f);
+                        VDVfx.Shake(npc.Center, 10f);
+                        VDSkyDrive.PushFlash(VDDirector.SkyFlashBeat);
+                        ctx.RimFlash = 1f;
+                    }
+                }
             }
 
             if (t >= VDDirector.DeathDuration - 1 && IsServer && !ctx.DeathPerformanceFinished) {

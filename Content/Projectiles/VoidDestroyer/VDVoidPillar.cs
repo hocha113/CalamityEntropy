@@ -4,12 +4,13 @@ using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using System;
 using Terraria;
 using Terraria.ModLoader;
+using VoidDestroyerNPC = CalamityEntropy.Content.NPCs.VoidDestroyer.VoidDestroyer;
 
 namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
 {
     /// <summary>
-    /// 轨道轰炸的虚空光柱:以 Center 为落点、竖直贯穿上下各半长的光柱。ai[0] 寿命,ai[1] 宽度,velocity.X 为横扫速度(P3)。
-    /// 出现 6 帧后开判定、末 10 帧收拢;出现帧落点炸一圈火花 + 震屏
+    /// 轨道轰炸的虚空光柱:以 Center 为落点、竖直贯穿上下各半长的光柱。ai[0] 寿命,ai[1] 宽度,ai[2] = 本体 whoAmI + 1(0 为无),velocity.X 为横扫速度(P3)。
+    /// 出现 6 帧后开判定、末 10 帧收拢;出现帧落点炸一圈火花 + 震屏;本体在深处时前 8 帧沿瞄准线从它的投影核心跑一记亮脉冲到落点(炮弹从背景飞来的那一下)
     /// </summary>
     public class VDVoidPillar : VDHostileProjectile
     {
@@ -21,6 +22,18 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public float Width => Projectile.ai[1] > 0 ? Projectile.ai[1] : VDDirector.OrbitalPillarWidth;
         public int Age => Life - Projectile.timeLeft;
         public float HalfLength => VDDirector.OrbitalPillarLength * 0.5f;
+        /// <summary>脉冲跑完瞄准线的帧数</summary>
+        private const int LanceFrames = 8;
+
+        private VoidDestroyerNPC OwnerBoss {
+            get {
+                int idx = (int)Projectile.ai[2] - 1;
+                if (idx < 0 || idx >= Main.maxNPCs || !Main.npc[idx].active || Main.npc[idx].ModNPC is not VoidDestroyerNPC boss) {
+                    return null;
+                }
+                return boss;
+            }
+        }
 
         public override void SetExtraDefaults() {
             Projectile.width = 20;
@@ -81,6 +94,16 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             float ringScale = Width * 1.2f / ring.Width * (0.5f + 0.9f * ringP);
             Main.spriteBatch.Draw(ring, Projectile.Center - Main.screenPosition, null, VDVfx.VoidPurple * ((1f - ringP) * 0.7f), 0f, ring.Size() / 2f, ringScale, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0f);
             CEUtils.ReSetToEndShader();
+
+            //瞄准线上的亮脉冲:从背景里的船跑到落点,一段越来越粗的白热短光
+            VoidDestroyerNPC boss = OwnerBoss;
+            if (boss != null && boss.Depth > 0.5f && Age < LanceFrames) {
+                float t = Age / (float)LanceFrames;
+                Vector2 from = boss.ProjectedCorePos;
+                Vector2 a = Vector2.Lerp(from, Projectile.Center, Math.Max(0f, t - 0.25f));
+                Vector2 b = Vector2.Lerp(from, Projectile.Center, t);
+                VDBeamDraw.DrawTapered(a, b, 3f, Width * 0.45f * (0.4f + 0.6f * t), VDVfx.VoidPurple, VDVfx.CannonCore, 1f, 1f, Projectile.whoAmI * 0.53f, endGlow: false);
+            }
             return false;
         }
     }

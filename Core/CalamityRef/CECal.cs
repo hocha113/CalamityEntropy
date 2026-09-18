@@ -156,50 +156,7 @@ namespace CalamityEntropy.Core.CalamityRef
 
         #endregion
 
-        #region 稀有度
-
-        /// <summary>灾厄 BurnishedAuric。4.0 兜底由调用点给</summary>
-        public static int RarityBurnishedAuric(int ownFallback) {
-            return RarityOr(CEID.Rarity_BurnishedAuric, ownFallback);
-        }
-
-        public static int RarityTurquoise(int ownFallback) {
-            return RarityOr(CEID.Rarity_Turquoise, ownFallback);
-        }
-
-        public static int RarityCosmicPurple(int ownFallback) {
-            return RarityOr(CEID.Rarity_CosmicPurple, ownFallback);
-        }
-
-        public static int RarityHotPink(int ownFallback) {
-            return RarityOr(CEID.Rarity_HotPink, ownFallback);
-        }
-
-        public static int RarityCalamityRed(int ownFallback) {
-            return RarityOr(CEID.Rarity_CalamityRed, ownFallback);
-        }
-
-        public static int RarityPureGreen(int ownFallback) {
-            return RarityOr(CEID.Rarity_PureGreen, ownFallback);
-        }
-
-        public static int RarityDarkOrange(int ownFallback) {
-            return RarityOr(CEID.Rarity_DarkOrange, ownFallback);
-        }
-
-        public static int RarityExoticRainbow(int ownFallback) {
-            return RarityOr(CEID.Rarity_ExoticRainbow, ownFallback);
-        }
-
-        //ModRarity 的 Type 从 12 起,未命中的 0 与任何真实模组稀有度都不会混淆
-        private static int RarityOr(int calRarity, int ownFallback) {
-            if (!CERef.Has || calRarity <= 0) {
-                return ownFallback;
-            }
-            return calRarity;
-        }
-
-        #endregion
+        //稀有度不再走灾厄:11 档全部自有,见 Content/Rarities/CERarity(2026-09-19 撤销 OPEN-DECISIONS A2)
 
         #region NPC 状态
 

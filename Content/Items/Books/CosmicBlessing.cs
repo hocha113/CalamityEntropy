@@ -29,7 +29,7 @@ namespace CalamityEntropy.Content.Items.Books
             Item.crit = 10;
             Item.mana = 12;
             Item.ArmorPenetration = 32;
-            Item.rare = CECal.RarityCosmicPurple(ModContent.RarityType<AbyssalBlue>());
+            Item.rare = ModContent.RarityType<AbyssalBlue>();
             Item.value = Item.buyPrice(platinum: 2);
         }
         [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/CB")]

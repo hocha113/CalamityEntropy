@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Items.Books
             Item.useAnimation = Item.useTime = 25;
             Item.crit = 10;
             Item.mana = 20;
-            Item.rare = CECal.RarityTurquoise(ModContent.RarityType<NihilityBlue>());
+            Item.rare = ModContent.RarityType<NihilityBlue>();
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
         }
         [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/BookMark5")]

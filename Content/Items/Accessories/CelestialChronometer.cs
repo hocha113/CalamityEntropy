@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.width = 40;
             Item.height = 40;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
-            Item.rare = CECal.RarityTurquoise(ModContent.RarityType<NihilityBlue>());
+            Item.rare = ModContent.RarityType<NihilityBlue>();
             Item.accessory = true;
             // 配方与效果都随时代走,防御也一起:装灾厄时交的是 3.33 那三件成品饰品,回 3.33 的 28 防
             Item.defense = CERef.Has ? 28 : 8;

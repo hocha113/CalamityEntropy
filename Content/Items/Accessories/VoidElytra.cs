@@ -1,7 +1,6 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Rarities;
-using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Dash;
 using InnoVault.PRT;
 using Terraria;
@@ -35,7 +34,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.width = 22;
             Item.height = 20;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
-            Item.rare = CECal.RarityTurquoise(ModContent.RarityType<NihilityBlue>());
+            Item.rare = ModContent.RarityType<NihilityBlue>();
             Item.accessory = true;
 
         }

@@ -1,7 +1,6 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Projectiles.TwistedTwin;
 using CalamityEntropy.Content.Rarities;
-using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -35,7 +34,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.noMelee = true;
             Item.mana = 10;
             Item.buffType = ModContent.BuffType<TwistedTwinBuff>();
-            Item.rare = CECal.RarityHotPink(ModContent.RarityType<VoidPurple>());
+            Item.rare = ModContent.RarityType<VoidPurple>();
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             player.AddBuff(Item.buffType, 3);

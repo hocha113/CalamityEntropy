@@ -19,7 +19,7 @@ namespace CalamityEntropy.Content.Items
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.createTile = ModContent.TileType<AToilet>();
-            Item.rare = CECal.RarityBurnishedAuric(ModContent.RarityType<Golden>());
+            Item.rare = ModContent.RarityType<Golden>();
         }
 
         public override void AddRecipes() {

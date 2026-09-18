@@ -15,7 +15,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.width = 22;
             Item.height = 22;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
-            Item.rare = CECal.RarityTurquoise(ModContent.RarityType<NihilityBlue>());
+            Item.rare = ModContent.RarityType<NihilityBlue>();
             Item.accessory = true;
 
         }

@@ -28,6 +28,10 @@ namespace CalamityEntropy.Common
         [DefaultValue(true)]
         public bool TextEffects { get; set; }
 
+        /// <summary>稀有度名称特效开关:关掉后本模组稀有度的物品名交回原版画普通描边字。CERarityNameEffects 读取。</summary>
+        [DefaultValue(true)]
+        public bool RarityNameEffects { get; set; }
+
         [DefaultValue(true)]
         public bool ScreenWarpEffects { get; set; }
 

@@ -2,7 +2,6 @@
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityEntropy.Core.CalamityRef;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -35,7 +34,7 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.knockBack = 5f;
             Item.mana = 500;
             Item.value = Item.buyPrice(platinum: 3, gold: 20);
-            Item.rare = CECal.RarityCalamityRed(ModContent.RarityType<VoidPurple>());
+            Item.rare = ModContent.RarityType<VoidPurple>();
             Item.shootSpeed = 16f;
             Item.crit = 8;
             Item.shoot = ModContent.ProjectileType<FilthyCircle>();

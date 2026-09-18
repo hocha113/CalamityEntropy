@@ -31,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Donator.RocketLauncher
             Item.knockBack = 2f;
             Item.UseSound = null;
             Item.value = Item.buyPrice(platinum: 3, gold: 20);
-            Item.rare = CECal.RarityCalamityRed(ModContent.RarityType<VoidPurple>());
+            Item.rare = ModContent.RarityType<VoidPurple>();
         }
 
         #region Animations

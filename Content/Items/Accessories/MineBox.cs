@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.width = 38;
             Item.height = 22;
             Item.value = Item.buyPrice(gold: 2);
-            Item.rare = CECal.RarityDarkOrange(ModContent.RarityType<AzafureOrange>());
+            Item.rare = ModContent.RarityType<AzafureOrange>();
             Item.accessory = true;
         }
 

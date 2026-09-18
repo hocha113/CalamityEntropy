@@ -2,7 +2,6 @@
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -18,7 +17,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
 
         public override void SetDefaults() {
             base.SetDefaults();
-            Item.rare = CECal.RarityBurnishedAuric(ModContent.RarityType<Golden>());
+            Item.rare = ModContent.RarityType<Golden>();
             Item.value = Item.buyPrice(platinum: 2, gold: 40);
 
         }

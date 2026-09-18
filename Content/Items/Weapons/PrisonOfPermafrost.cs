@@ -21,7 +21,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.channel = true;
             Item.knockBack = 5;
             Item.value = 145000;
-            Item.rare = CECal.RarityHotPink(ModContent.RarityType<VoidPurple>());
+            Item.rare = ModContent.RarityType<VoidPurple>();
             Item.UseSound = null;
             Item.shoot = ModContent.ProjectileType<PrisonOfPermafrostCircle>();
             Item.shootSpeed = 1f;

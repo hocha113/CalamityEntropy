@@ -26,7 +26,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.noMelee = true;
             Item.knockBack = 5f;
             Item.value = Item.buyPrice(platinum: 2, gold: 40);
-            Item.rare = CECal.RarityBurnishedAuric(ModContent.RarityType<Golden>());
+            Item.rare = ModContent.RarityType<Golden>();
             Item.shoot = ProjectileID.WoodenArrowFriendly;
             Item.channel = true;
             Item.shootSpeed = 16f;

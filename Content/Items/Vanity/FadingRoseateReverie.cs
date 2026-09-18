@@ -51,13 +51,13 @@ namespace CalamityEntropy.Content.Items.Vanity
         public override bool PreDrawTooltipLine(DrawableTooltipLine line, ref int yOffset) {
             if (line.Mod == "Terraria") {
                 if (line.Name == "ItemName") {
-                    ShiningViolet.Draw(Item, line, Color.DeepPink, Color.LightPink, Color.LightPink);
+                    CERarityNameEffects.DrawCrystal(Item, line, Color.DeepPink, Color.LightPink, Color.LightPink);
                     return false;
                 }
                 if (line.Text.StartsWith("^")) {
                     TooltipLine parent = new TooltipLine(Mod, line.Name, line.Text.Substring(1));
                     var newLine = new DrawableTooltipLine(parent, line.Index, line.X, line.Y, line.Color);
-                    ShiningViolet.Draw(Item, newLine, new Color(255, 42, 54), new Color(90, 84, 255), Color.LightPink, false);
+                    CERarityNameEffects.DrawCrystal(Item, newLine, new Color(255, 42, 54), new Color(90, 84, 255), Color.LightPink, false);
                     return false;
                 }
             }

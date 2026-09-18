@@ -34,7 +34,7 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.noMelee = true;
             Item.knockBack = 6f;
             Item.value = Item.buyPrice(platinum: 2, gold: 40);
-            Item.rare = CECal.RarityBurnishedAuric(ModContent.RarityType<Golden>());
+            Item.rare = ModContent.RarityType<Golden>();
             Item.UseSound = CEUtils.GetSound("gunshot_large");
             Item.autoReuse = true;
             Item.shoot = ProjectileID.Bullet;

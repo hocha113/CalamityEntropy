@@ -34,17 +34,12 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.autoReuse = true;
             Item.maxStack = 1;
             Item.value = Item.buyPrice(platinum: 2);
-            Item.rare = CECal.RarityCosmicPurple(ModContent.RarityType<AbyssalBlue>());
+            Item.rare = ModContent.RarityType<AbyssalBlue>();
             Item.shoot = ModContent.ProjectileType<TheDeadCutProjectile>();
             Item.shootSpeed = 16f;
             Item.DamageType = DamageClass.Melee;
             Item.ArmorPenetration = 50;
-            Item.Entropy().tooltipStyle = 3;
-            Item.Entropy().NameColor = new Color(110, 0, 140);
-            Item.Entropy().stroke = true;
-            Item.Entropy().strokeColor = new Color(200, 0, 255);
-            Item.Entropy().HasCustomStrokeColor = true;
-            Item.Entropy().HasCustomNameColor = true;
+            //名字走 AbyssalBlue 稀有度自绘。旧的 tooltipStyle = 3 配置一直被稀有度分支盖住从未生效,2026-09-19 随分发顺序统一一并删除
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             bool ult = CEChargeWeapon.TryConsume(player, Item);

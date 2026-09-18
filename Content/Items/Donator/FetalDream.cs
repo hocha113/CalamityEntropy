@@ -71,7 +71,7 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.shoot = ModContent.ProjectileType<FetalDreamSlash>();
             Item.shootSpeed = 16;
             Item.DamageType = DamageClass.Default;
-            Item.rare = CECal.RarityPureGreen(ModContent.RarityType<GlowGreen>());
+            Item.rare = ModContent.RarityType<GlowGreen>();
             Item.Entropy().stroke = true;
             Item.Entropy().NameColor = Color.LightGreen;
             Item.Entropy().strokeColor = Color.DarkGreen;

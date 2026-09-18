@@ -3,7 +3,6 @@ using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityEntropy.Core.CalamityRef;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -19,7 +18,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     {
         public override void SetDefaults() {
             base.SetDefaults();
-            Item.rare = CECal.RarityCosmicPurple(ModContent.RarityType<AbyssalBlue>());
+            Item.rare = ModContent.RarityType<AbyssalBlue>();
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Cosmic");
         public override EBookProjectileEffect getEffect() {

@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Rarities;
-using CalamityEntropy.Core.CalamityRef;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -13,7 +12,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
         }
         public override void SetDefaults() {
             base.SetDefaults();
-            Item.rare = CECal.RarityBurnishedAuric(ModContent.RarityType<Golden>());
+            Item.rare = ModContent.RarityType<Golden>();
             Item.value = Item.buyPrice(platinum: 2, gold: 40);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Auric");

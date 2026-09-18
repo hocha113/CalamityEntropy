@@ -393,16 +393,7 @@ namespace CalamityEntropy.Core.CalamityRef
         public static int Buff_Plague => Get();
         #endregion
 
-        #region 稀有度
-        public static int Rarity_BurnishedAuric => Get();
-        public static int Rarity_CalamityRed => Get();
-        public static int Rarity_CosmicPurple => Get();
-        public static int Rarity_DarkOrange => Get();
-        public static int Rarity_ExoticRainbow => Get();
-        public static int Rarity_HotPink => Get();
-        public static int Rarity_PureGreen => Get();
-        public static int Rarity_Turquoise => Get();
-        #endregion
+        //稀有度前缀已撤(2026-09-19):11 档稀有度全部自有,不再按名取灾厄 ModRarity
 
         private static int Get([CallerMemberName] string name = "") {
             if (idCache.TryGetValue(name, out int cached)) {
@@ -448,12 +439,6 @@ namespace CalamityEntropy.Core.CalamityRef
                 case "Buff":
                     if (ModContent.TryFind(CalName, typeName, out ModBuff modBuff)) {
                         result = modBuff.Type;
-                        found = true;
-                    }
-                    break;
-                case "Rarity":
-                    if (ModContent.TryFind(CalName, typeName, out ModRarity modRarity)) {
-                        result = modRarity.Type;
                         found = true;
                     }
                     break;

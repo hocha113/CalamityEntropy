@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Items.Weapons.CrystalBalls
             Item.UseSound = CEUtils.GetSound("soulshine");
             Item.maxStack = 1;
             Item.value = Item.buyPrice(1, 75);
-            Item.rare = CECal.RarityPureGreen(ModContent.RarityType<GlowGreen>());
+            Item.rare = ModContent.RarityType<GlowGreen>();
             Item.shoot = ModContent.ProjectileType<EyeOfOthersideHoldout>();
             Item.shootSpeed = 16f;
             Item.mana = 3;

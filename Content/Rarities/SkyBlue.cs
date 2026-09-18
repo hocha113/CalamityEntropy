@@ -1,11 +1,10 @@
-﻿using Terraria.ModLoader;
-
-namespace CalamityEntropy.Content.Rarities
+﻿namespace CalamityEntropy.Content.Rarities
 {
-    public class SkyBlue : ModRarity
+    /// <summary>天蓝。主色同旧提示框字色 (84,84,255),拾取飘字与之对齐</summary>
+    public sealed class SkyBlue : CEGlowRarity
     {
-        public override Color RarityColor => Color.SkyBlue;
+        public static readonly Color Blue = new(84, 84, 255);
 
-        public override int GetPrefixedRarity(int offset, float valueMult) => Type;
+        protected override Color Glow => Blue;
     }
 }

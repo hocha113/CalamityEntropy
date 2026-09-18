@@ -20,7 +20,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Chainsaw
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 6;
             Item.value = 36;
-            Item.rare = CECal.RarityCosmicPurple(ModContent.RarityType<AbyssalBlue>());
+            Item.rare = ModContent.RarityType<AbyssalBlue>();
             Item.UseSound = SoundID.Item23;
             Item.channel = true;
             Item.noMelee = true;

@@ -2,7 +2,6 @@
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
-using CalamityEntropy.Core.CalamityRef;
 using InnoVault;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,7 +17,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     {
         public override void SetDefaults() {
             base.SetDefaults();
-            Item.rare = CECal.RarityCalamityRed(ModContent.RarityType<VoidPurple>());
+            Item.rare = ModContent.RarityType<VoidPurple>();
             Item.value = Item.buyPrice(platinum: 2, gold: 40);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("PactOfDecay");

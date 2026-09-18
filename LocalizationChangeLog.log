@@ -1251,3 +1251,5 @@
 [Mods.CalamityEntropy.Projectiles.NightWisp.DisplayName] - added
 [Mods.CalamityEntropy.Projectiles.NightfallStar.DisplayName] - added
 [Mods.CalamityEntropy.Projectiles.NightVeil.DisplayName] - added
+[Mods.CalamityEntropy.Configs.Config.RarityNameEffects.Label] - added // 客户端配置:稀有度名称特效总开关(默认开),关掉后本模组稀有度的物品名交回原版画普通描边字
+[Mods.CalamityEntropy.Configs.Config.RarityNameEffects.Tooltip] - added

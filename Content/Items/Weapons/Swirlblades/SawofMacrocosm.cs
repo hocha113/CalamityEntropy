@@ -39,7 +39,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Item.ArmorPenetration = 30;
             Item.UseSound = SoundID.Item1 with { Volume = 1.2f };
             Item.value = Item.buyPrice(platinum: 2);
-            Item.rare = CECal.RarityCosmicPurple(ModContent.RarityType<AbyssalBlue>());
+            Item.rare = ModContent.RarityType<AbyssalBlue>();
             Item.shoot = ModContent.ProjectileType<SawofMacrocosmProj>();
             Item.shootSpeed = 52f;
             Item.knockBack = 2f;

@@ -1,7 +1,6 @@
 ﻿using CalamityEntropy.Common;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Content.Rarities;
-using CalamityEntropy.Core.CalamityRef;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
@@ -12,7 +11,7 @@ namespace CalamityEntropy.Content.Items.Books.BookMarks
     {
         public override void SetDefaults() {
             base.SetDefaults();
-            Item.rare = CECal.RarityPureGreen(ModContent.RarityType<GlowGreen>());
+            Item.rare = ModContent.RarityType<GlowGreen>();
             Item.value = Item.buyPrice(platinum: 1, gold: 75);
         }
         public override Texture2D UITexture => BookMark.GetUITexture("Abyss");

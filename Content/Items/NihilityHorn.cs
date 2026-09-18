@@ -21,7 +21,7 @@ namespace CalamityEntropy.Content.Items
             Item.UseSound = CEUtils.GetSound("horn");
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.consumable = false;
-            Item.rare = CECal.RarityTurquoise(ModContent.RarityType<NihilityBlue>());
+            Item.rare = ModContent.RarityType<NihilityBlue>();
 
         }
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup) {

@@ -6,7 +6,6 @@ using CalamityEntropy.Content.Items.Weapons.Thalassian;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Rarities;
-using CalamityEntropy.Core.CalamityRef;
 using CalamityEntropy.Core.Graphics;
 using InnoVault.PRT;
 using Microsoft.Xna.Framework.Graphics;
@@ -33,7 +32,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Bait
             Item.shootSpeed = 44;
             Item.useAnimation = Item.useTime = 24;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
-            Item.rare = CECal.RarityTurquoise(ModContent.RarityType<NihilityBlue>());
+            Item.rare = ModContent.RarityType<NihilityBlue>();
             Item.width = 52;
             Item.height = 54;
             Item.autoReuse = false;

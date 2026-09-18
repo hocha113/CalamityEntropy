@@ -30,7 +30,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Amnesty
             Item.knockBack = 0;
             Item.maxStack = 1;
             Item.value = Item.buyPrice(2, 0);
-            Item.rare = CECal.RarityCosmicPurple(ModContent.RarityType<AbyssalBlue>());
+            Item.rare = ModContent.RarityType<AbyssalBlue>();
             Item.shoot = ModContent.ProjectileType<AmnestyHeld>();
             Item.shootSpeed = 16f;
             Item.mana = 4;

@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Content.Rarities;
-using CalamityEntropy.Core.CalamityRef;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,7 +17,7 @@ namespace CalamityEntropy.Content.Items
             Item.height = 60;
             Item.maxStack = 9999;
             Item.value = Item.sellPrice(gold: 70);
-            Item.rare = CECal.RarityHotPink(ModContent.RarityType<VoidPurple>());
+            Item.rare = ModContent.RarityType<VoidPurple>();
         }
     }
 }

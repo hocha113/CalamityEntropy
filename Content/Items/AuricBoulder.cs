@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Items
             Item.consumable = true;
             Item.maxStack = 9999;
             Item.value = Item.sellPrice(gold: 4);
-            Item.rare = CECal.RarityBurnishedAuric(ModContent.RarityType<Golden>());
+            Item.rare = ModContent.RarityType<Golden>();
             Item.DefaultToPlaceableTile(ModContent.TileType<AuricBoulderTile>(), 0);
             Item.width = 32;
             Item.height = 32;

@@ -29,7 +29,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Depletion
             Item.knockBack = 0;
             Item.maxStack = 1;
             Item.value = Item.buyPrice(2, 40);
-            Item.rare = CECal.RarityBurnishedAuric(ModContent.RarityType<Golden>());
+            Item.rare = ModContent.RarityType<Golden>();
             Item.shoot = ModContent.ProjectileType<DepletionHeld>();
             Item.shootSpeed = 16f;
             Item.mana = 5;

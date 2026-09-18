@@ -1,11 +1,10 @@
-﻿using Terraria.ModLoader;
-
-namespace CalamityEntropy.Content.Rarities
+﻿namespace CalamityEntropy.Content.Rarities
 {
-    public class GlowGreen : ModRarity
+    /// <summary>辉绿。主色同旧提示框字色 (80,255,80),拾取飘字与之对齐</summary>
+    public sealed class GlowGreen : CEGlowRarity
     {
-        public override Color RarityColor => new Color(60, 255, 60);
+        public static readonly Color Green = new(80, 255, 80);
 
-        public override int GetPrefixedRarity(int offset, float valueMult) => Type;
+        protected override Color Glow => Green;
     }
 }

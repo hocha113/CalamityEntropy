@@ -28,7 +28,7 @@ namespace CalamityEntropy.Content.Items.Books
             Item.crit = 10;
             Item.mana = 30;
             Item.shootSpeed = 45;
-            Item.rare = CECal.RarityExoticRainbow(ModContent.RarityType<Golden>());
+            Item.rare = ModContent.RarityType<Golden>();
             Item.value = Item.buyPrice(platinum: 2, gold: 40);
         }
         [VaultLoaden("CalamityEntropy/Content/UI/EntropyBookUI/BookMark7")]

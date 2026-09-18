@@ -31,7 +31,7 @@ namespace CalamityEntropy.Content.Items.Donator
             Item.width = 50;
             Item.height = 50;
             Item.value = Item.buyPrice(platinum: 2, gold: 80);
-            Item.rare = CECal.RarityBurnishedAuric(ModContent.RarityType<Golden>());
+            Item.rare = ModContent.RarityType<Golden>();
             Item.accessory = true;
         }
 
@@ -53,8 +53,8 @@ namespace CalamityEntropy.Content.Items.Donator
                     return true;
                 }
                 DrawableTooltipLine nLine = new DrawableTooltipLine(new(Mod, "-", line.Text.Replace("$", "")), line.Index, line.X, line.Y, line.Color);
-                // 鎏金描字：借用自有 ShiningViolet 通用描绘，配 Golden 稀有度同源金色
-                ShiningViolet.Draw(Item, nLine, new Color(246, 200, 0), new Color(255, 236, 130), new Color(255, 220, 80));
+                // 鎏金描字：借用稀有度框架的水晶字原语，配 Golden 稀有度同源金色
+                CERarityNameEffects.DrawCrystal(Item, nLine, new Color(246, 200, 0), new Color(255, 236, 130), new Color(255, 220, 80));
                 return false;
             }
             return true;

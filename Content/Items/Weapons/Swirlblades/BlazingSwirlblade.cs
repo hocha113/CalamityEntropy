@@ -36,7 +36,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Swirlblades
             Item.ArmorPenetration = 25;
             Item.UseSound = SoundID.Item1;
             Item.value = Item.buyPrice(platinum: 1, gold: 50);
-            Item.rare = CECal.RarityTurquoise(ModContent.RarityType<NihilityBlue>());
+            Item.rare = ModContent.RarityType<NihilityBlue>();
             Item.shoot = ModContent.ProjectileType<BlazingSwirlbladeProj>();
             Item.shootSpeed = 58f;
             Item.knockBack = 4f;

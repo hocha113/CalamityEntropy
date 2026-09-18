@@ -6698,6 +6698,11 @@ Configs: {
 			Tooltip: When enabled, special text in chat and dialogue (such as Cruiser speech) is drawn with dynamic effects; when disabled, it is drawn as plain text
 		}
 
+		RarityNameEffects: {
+			Label: Rarity Name Effects
+			Tooltip: When enabled, item names of this mod's rarities are drawn with animated effects in the tooltip; when disabled, they are drawn as plain colored outlined text, which suits low-end machines
+		}
+
 		ScreenShakePower: {
 			Label: Screen Shake Power
 			Tooltip: Overall intensity multiplier for this mod's screen shake effects; 0 disables them, 1 is default, 2 is maximum

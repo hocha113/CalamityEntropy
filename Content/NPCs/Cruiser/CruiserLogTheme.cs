@@ -7,7 +7,6 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
 {
     /// <summary>
     /// 巡游者的图鉴域主题:虚空雷暴。深紫罗兰封面配淡雷光封边、暗紫纸面;
-    /// 书后是巡游者天幕的紫灰虚空(两团星云背光 + 漂浮虚空尘),不时有一道雷电劈过整屏;
     /// 书脊上一条电弧抖动巡游,底封边散落雷火火花
     /// </summary>
     internal sealed class CruiserLogTheme : CEBossLogTheme
@@ -29,45 +28,6 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
         public override Color Rule => new(120, 105, 170);
         public override Color Accent => new(222, 214, 255);
         public override Color Muted => new(170, 160, 200);
-        public override Color Dim => new(6, 4, 14);
-        public override Color SkyTop => VoidBase;
-        public override Color SkyBottom => VoidAdd;
-
-        public override void DrawAmbienceDetail(SpriteBatch sb, Rectangle screen, Rectangle book, float time, float blend) {
-            if (CEPortraitDraw.Pixel == null) {
-                return;
-            }
-            //星云背光
-            CEPortraitDraw.Glow(sb, new Vector2(book.X - 120f, book.Y - 40f), 620f, VoidAdd * (0.5f * blend));
-            CEPortraitDraw.Glow(sb, new Vector2(book.Right + 160f, book.Bottom + 40f), 520f, new Color(90, 60, 150) * (0.35f * blend));
-
-            //虚空尘:淡紫小方块缓慢上浮
-            for (int i = 0; i < 60; i++) {
-                float hx = CEPortraitDraw.Hash01(i, 3.3f);
-                float hy = CEPortraitDraw.Hash01(i, 9.9f);
-                float rise = (time * (10f + hx * 14f) + hy * 900f) % (screen.Height + 40f);
-                Vector2 p = new(screen.X + hx * screen.Width + MathF.Sin(time * 0.4f + i) * 12f, screen.Bottom + 20f - rise);
-                if (book.Contains((int)p.X, (int)p.Y)) {
-                    continue;
-                }
-                float a = (0.18f + 0.22f * MathF.Sin(time * 1.3f + i * 2.1f)) * blend;
-                float s = 1.5f + hy * 2f;
-                CEPortraitDraw.Fill(sb, p, new Vector2(s, s), BoltHalo with { A = 0 } * a);
-            }
-
-            //整屏雷电:每 2.6 秒一桶,桶首 0.45 秒内闪过一道折线,亮度平方衰减;整屏随之微亮
-            const float Period = 2.6f;
-            int bucket = (int)(time / Period);
-            float local = time - bucket * Period;
-            if (local < 0.45f && CEPortraitDraw.Hash01(bucket, 4.4f) > 0.25f) {
-                float k = 1f - local / 0.45f;
-                float intensity = k * k * blend;
-                Vector2 origin = new(screen.X + CEPortraitDraw.Hash01(bucket, 1.1f) * screen.Width,
-                    screen.Y + CEPortraitDraw.Hash01(bucket, 2.2f) * screen.Height * 0.7f);
-                CEPortraitDraw.Fill(sb, new Vector2(screen.X, screen.Y), new Vector2(screen.Width, screen.Height), BoltHalo with { A = 0 } * (0.08f * intensity));
-                DrawBolt(sb, bucket, origin, 1f, intensity, 20);
-            }
-        }
 
         public override void DrawOrnament(SpriteBatch sb, Rectangle book, Rectangle spine, Rectangle bottom, float time, float blend) {
             if (CEPortraitDraw.Pixel == null) {

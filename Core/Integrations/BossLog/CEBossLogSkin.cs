@@ -57,9 +57,11 @@ namespace CalamityEntropy.Core.Integrations.BossLog
     }
 
     /// <summary>
-    /// 图鉴整本书的共享骨架渲染器:书后全屏氛围、书封 / 书脊 / 双页纸面、左页场景框与标题块。
+    /// 图鉴整本书的共享骨架渲染器:书封 / 书脊 / 双页纸面、左页场景框与标题块。
     /// 纯 CPU 层(magic-pixel 矢量 + 少量既有贴图),颜色全部来自 <see cref="CEBossLogTheme"/>;
-    /// 所有矩形都在 UI 空间(调用方批次已带 <c>Main.UIScaleMatrix</c>)
+    /// 所有矩形都在 UI 空间(调用方批次已带 <c>Main.UIScaleMatrix</c>)。
+    /// <b>绘制一律不越出书矩形</b>:图鉴是 BossChecklist 的界面,我们只换这本书的皮,
+    /// 不在书外铺整屏背景(2026-09-19 用户裁定:整屏氛围与其它模组条目风格割裂)
     /// </summary>
     internal static class CEBossLogSkin
     {
@@ -116,46 +118,10 @@ namespace CalamityEntropy.Core.Integrations.BossLog
             return new Rectangle(page.X + SceneInset, page.Y + band, page.Width - SceneInset * 2, page.Height - band - SceneInset);
         }
 
-        /// <summary>整屏矩形(UI 空间)</summary>
-        public static Rectangle ScreenRect() {
-            float ui = Main.UIScale > 0f ? Main.UIScale : 1f;
-            return new Rectangle(0, 0, (int)MathF.Ceiling(Main.screenWidth / ui) + 1,
-                (int)MathF.Ceiling(Main.screenHeight / ui) + 1);
-        }
-
         /// <summary>缓入缓出(smoothstep)</summary>
         public static float Ease(float t) {
             t = MathHelper.Clamp(t, 0f, 1f);
             return t * t * (3f - 2f * t);
-        }
-
-        //==================== 书后氛围 ====================
-
-        /// <summary>整屏压暗 + 天幕渐变 + 书后背光,然后交给主题补域细节</summary>
-        public static void DrawAmbience(SpriteBatch sb, CEBossLogTheme theme, Rectangle book, float time, float blend) {
-            Texture2D px = Pixel;
-            if (px == null || blend <= 0f) {
-                return;
-            }
-            float a = Ease(blend);
-            Rectangle screen = ScreenRect();
-
-            Fill(sb, screen, theme.Dim * (0.62f * a));
-
-            const int Bands = 16;
-            float bandH = screen.Height / (float)Bands;
-            for (int i = 0; i < Bands; i++) {
-                float t = i / (float)(Bands - 1);
-                Color c = Color.Lerp(theme.SkyTop, theme.SkyBottom, t) * (0.5f * a);
-                sb.Draw(px, new Vector2(screen.X, screen.Y + i * bandH), PixelSrc, c, 0f, Vector2.Zero,
-                    new Vector2(screen.Width, bandH + 1f), SpriteEffects.None, 0f);
-            }
-
-            //背光:把书从暗底上托起来
-            Glow(sb, book.Center.ToVector2(), new Vector2(book.Width * 1.45f, book.Height * 1.7f),
-                theme.Accent * (0.26f * a));
-
-            theme.DrawAmbienceDetail(sb, screen, book, time, a);
         }
 
         //==================== 书本体 ====================
@@ -353,25 +319,6 @@ namespace CalamityEntropy.Core.Integrations.BossLog
             }
             sb.Draw(Pixel, a, PixelSrc, c, d.ToRotation(), new Vector2(0f, 0.5f),
                 new Vector2(len, thick), SpriteEffects.None, 0f);
-        }
-
-        /// <summary>柔光圆点(Glow2),恒按 A=0 加色读数</summary>
-        internal static void Glow(SpriteBatch sb, Vector2 center, Vector2 size, Color c) {
-            Texture2D g = CEExtraAssets.Glow2;
-            if (g == null) {
-                return;
-            }
-            sb.Draw(g, center, null, c with { A = 0 }, 0f, g.Size() * 0.5f,
-                new Vector2(size.X / g.Width, size.Y / g.Height), SpriteEffects.None, 0f);
-        }
-
-        /// <summary>烟羽(Smoke 真 alpha),可直接染色,做雾团 / 星霭 / 余烬烟</summary>
-        internal static void Puff(SpriteBatch sb, Vector2 center, float size, Color c, float rot) {
-            Texture2D f = CEExtraAssets.Smoke;
-            if (f == null) {
-                return;
-            }
-            sb.Draw(f, center, null, c, rot, f.Size() * 0.5f, size / f.Width, SpriteEffects.None, 0f);
         }
 
         internal static Rectangle Inflate(Rectangle r, int d) => new(r.X - d, r.Y - d, r.Width + 2 * d, r.Height + 2 * d);

@@ -18,7 +18,7 @@ namespace CalamityEntropy.Core.Integrations.BossLog
     /// BossChecklist 图鉴整本书接管。<br/>
     /// 上游只暴露 <c>customPortrait</c> 一个绘制钩子(左页一块矩形,且画在左页按钮之后、标题之前),
     /// 这里经 <see cref="EModHooks"/> 钩两处方法把整本书的绘制权拿过来:<br/>
-    /// · <c>BossLogUI.Draw</c>:前置画书后全屏氛围,后置画书缘饰件;<br/>
+    /// · <c>BossLogUI.Draw</c>:后置画书缘饰件(书外不画任何东西,图鉴仍是 BossChecklist 的界面);<br/>
     /// · <c>LogPanel.Draw</c>:书封(Id 为空)与左页(PageOne)在选中本模组条目时跳过 orig 全权重绘
     /// (场景铺满整页 → 子元素按钮回到场景之上 → 我们的标题块),右页(PageTwo)原样放行,
     /// BossChecklist 的记录 / 召唤 / 掉落内容落在我们的纸面上。<br/>
@@ -33,10 +33,6 @@ namespace CalamityEntropy.Core.Integrations.BossLog
         /// <summary>钩子在位且未因异常停用</summary>
         public static bool Armed { get; private set; }
 
-        /// <summary>氛围缓入时长(秒)</summary>
-        private const float FadeIn = 0.35f;
-        /// <summary>氛围缓出时长(秒)</summary>
-        private const float FadeOut = 0.3f;
         /// <summary>翻到本模组页后皮的入场演出时长(秒)</summary>
         private const float SettleTime = 0.45f;
 
@@ -44,11 +40,8 @@ namespace CalamityEntropy.Core.Integrations.BossLog
 
         /// <summary>当前选中的本模组条目(null = 原版页 / 未开书)</summary>
         private static CEBossLogEntry active;
-        /// <summary>氛围层沿用的条目:翻走后淡出期仍保留</summary>
-        private static CEBossLogEntry ambient;
         /// <summary>当前页 EntryInfo 反射对象</summary>
         private static object activeEntry;
-        private static float blend;
         private static float settle;
         private static float time;
         private static long lastStamp;
@@ -82,9 +75,9 @@ namespace CalamityEntropy.Core.Integrations.BossLog
             Armed = false;
             CEBossLogReflect.Clear();
             CEBossLogRegistry.Clear();
-            active = ambient = null;
+            active = null;
             activeEntry = null;
-            blend = settle = time = 0f;
+            settle = time = 0f;
             lastStamp = 0;
         }
 
@@ -97,8 +90,7 @@ namespace CalamityEntropy.Core.Integrations.BossLog
         /// <summary>绘制期出错:记一次日志并停用接管,本帧余下交回 orig,下一帧起图鉴回到回退路径</summary>
         private static void Disarm(Exception e) {
             Armed = false;
-            active = ambient = null;
-            blend = 0f;
+            active = null;
             CalamityEntropy.Instance.Logger.Warn($"CEBossLogHook: 绘制异常,整本书接管停用: {e}");
         }
 
@@ -117,21 +109,13 @@ namespace CalamityEntropy.Core.Integrations.BossLog
                 return;
             }
 
-            if (ambient != null && blend > 0f) {
-                try {
-                    CEBossLogSkin.DrawAmbience(sb, ambient.Actor.Theme, bookRect, time, blend);
-                } catch (Exception e) {
-                    Disarm(e);
-                }
-            }
-
             orig(self, sb);
 
             if (Armed && active != null) {
                 try {
                     Rectangle spine = CEBossLogSkin.SpineOf(bookRect, leftRect, rightRect);
                     Rectangle bottom = CEBossLogSkin.BottomMarginOf(bookRect, leftRect, rightRect);
-                    active.Actor.Theme.DrawOrnament(sb, bookRect, spine, bottom, time, CEBossLogSkin.Ease(blend));
+                    active.Actor.Theme.DrawOrnament(sb, bookRect, spine, bottom, time, CEBossLogSkin.Ease(settle));
                 } catch (Exception e) {
                     Disarm(e);
                 }
@@ -164,20 +148,12 @@ namespace CalamityEntropy.Core.Integrations.BossLog
                 if (now != active) {
                     settle = 0f;
                 }
-                ambient = now;
-                blend = MathF.Min(1f, blend + dt / FadeIn);
                 settle = MathF.Min(1f, settle + dt / SettleTime);
-            }
-            else {
-                blend = MathF.Max(0f, blend - dt / FadeOut);
-                if (blend <= 0f) {
-                    ambient = null;
-                }
             }
             active = now;
             activeEntry = now != null ? entry : null;
 
-            if (now == null && ambient == null) {
+            if (now == null) {
                 return;
             }
             //书与页矩形:优先读上游字段,缺失时按上游版式常量从书矩形推算

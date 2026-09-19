@@ -229,11 +229,12 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
                 for (int c = 0; c < VDDirector.LatticeCols; c++) {
                     Vector2 p = GridPoint(r, c);
                     Vector2 from = VDDepth.Project(p, z);
+                    //传无人机的 Z:噪声向背景那端压缩、远端吃雾,几十根一起读成一片从深处打下来的射线
                     if (batched) {
-                        VDBeamDraw.TaperedQuad(from, p, 4f * hot, radius * 0.9f * hot, 1f);
+                        VDBeamDraw.TaperedQuad(from, p, 4f * hot, radius * 0.9f * hot, 1f, zStart: z, zEnd: 0f);
                     }
                     else {
-                        VDBeamDraw.DrawTapered(from, p, 4f * hot, radius * 0.9f * hot, VDSporeLaser.BeamColor, Color.White, 1f, hot, Projectile.whoAmI * 0.29f, endGlow: false);
+                        VDBeamDraw.DrawTapered(from, p, 4f * hot, radius * 0.9f * hot, VDSporeLaser.BeamColor, Color.White, 1f, hot, Projectile.whoAmI * 0.29f, endGlow: false, zStart: z, zEnd: 0f);
                     }
                 }
             }

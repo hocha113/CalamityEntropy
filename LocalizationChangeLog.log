@@ -1253,3 +1253,32 @@
 [Mods.CalamityEntropy.Projectiles.NightVeil.DisplayName] - added
 [Mods.CalamityEntropy.Configs.Config.RarityNameEffects.Label] - added // 客户端配置:稀有度名称特效总开关(默认开),关掉后本模组稀有度的物品名交回原版画普通描边字
 [Mods.CalamityEntropy.Configs.Config.RarityNameEffects.Tooltip] - added
+[Mods.CalamityEntropy.Items.VoidMK2.DisplayName] - added // 虚空驱逐舰掉落武器 虚空MK2(射手机枪,追踪无人机+虚空之火)
+[Mods.CalamityEntropy.Items.VoidMK2.Tooltip] - added
+[Mods.CalamityEntropy.Items.MatterDissociationSpear.DisplayName] - added // 虚空驱逐舰掉落武器 物质解离矛(近战,左键戳击/右键投掷)
+[Mods.CalamityEntropy.Items.MatterDissociationSpear.Tooltip] - added
+[Mods.CalamityEntropy.Items.VoidElectricField.DisplayName] - added // 虚空驱逐舰掉落武器 虚空电场(魔法,扇形激光+蓄力闪电球)
+[Mods.CalamityEntropy.Items.VoidElectricField.Tooltip] - added
+[Mods.CalamityEntropy.Items.VoidDroneRemote.DisplayName] - added // 虚空驱逐舰掉落武器 虚空无人机遥控器(召唤,3 栏位投影无人机)
+[Mods.CalamityEntropy.Items.VoidDroneRemote.Tooltip] - added
+[Mods.CalamityEntropy.Buffs.ProjectionDroneBuff.DisplayName] - added // 投影无人机召唤增益
+[Mods.CalamityEntropy.Buffs.ProjectionDroneBuff.Description] - added
+[Mods.CalamityEntropy.Projectiles.VoidMK2Bullet.DisplayName] - added // 以下 17 键为驱逐舰四件武器的弹幕名
+[Mods.CalamityEntropy.Projectiles.VoidMK2Drone.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VoidMK2Explosion.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.MatterDissociationSpearStab.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.MatterDissociationSpearThrow.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.MatterDissociationBolt.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.MatterDissociationBurst.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.MatterDissociationTrident.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VoidElectricFieldHoldout.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VoidElectricBall.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VoidElectricBurst.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.ProjectionDrone.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.ProjectionDroneShot.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.ProjectionTortoise.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.ProjectionRedDevil.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.ProjectionTrident.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.ProjectionWyvern.DisplayName] - added
+[Mods.CalamityEntropy.Configs.Config.BossLogTakeover.Label] - added // 客户端配置:BossChecklist 图鉴整本书接管开关(默认开),关掉后本模组条目只保留左页动态头像
+[Mods.CalamityEntropy.Configs.Config.BossLogTakeover.Tooltip] - added

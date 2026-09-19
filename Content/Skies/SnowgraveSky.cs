@@ -17,7 +17,7 @@ namespace CalamityEntropy.Content.Skies
         }
     }
 
-    /// <summary>雪葬白幕(基座迁移版):双层渐变罩,最远切片一次绘制。</summary>
+    /// <summary>雪葬白幕(基座迁移版):双层渐变罩,跨 0 切片一次绘制,连原版视差背景一起漂白。</summary>
     public class SnowgraveSky : CESkyBase
     {
         //整屏渐变贴图,加载期由 VaultLoaden 赋值,绘制里不再走 getExtraTex
@@ -33,7 +33,7 @@ namespace CalamityEntropy.Content.Skies
 
         public override float GetCloudAlpha() => (1f - opacity) * 0.5f + 0.5f;
 
-        protected override void DrawFar(SpriteBatch spriteBatch) {
+        protected override void DrawFront(SpriteBatch spriteBatch) {
             Texture2D tex = whiteFadeTex.Value;
             //旧实现无门控,每帧按切片数(约 4~13)叠加到近饱和;单次绘制按其观感上调透明度
             Color c1 = new Color(180, 200, 255, (int)(255 * opacity));

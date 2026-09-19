@@ -189,6 +189,10 @@ namespace CalamityEntropy.Assets.Register
         //虚空驱逐舰能量射线(轨道光柱/湮灭主炮/红射线):双向滚动噪声 + 白热核心 + 边缘辉光,噪声图绑 s1
         [VaultLoaden("CalamityEntropy/Assets/Effects/VDVoidBeam", AssetMode.Effects, "BeamPass")]
         public static Asset<Effect> VDVoidBeam;
+        //虚空驱逐舰透视射线(梯形光锥:红射线/主炮越肩锥/瞄准锥/点阵射线):顶点纹理坐标是像素单位的「沿轴 / 横向」仿射量,
+        //跨三角剖分精确插值,没有归一化 UV 梯形的中线折断;透视校正沿轴参数 + 两端雾化/变暗,噪声图绑 s1。消费口 VDBeamDraw.DrawTapered / TaperedQuad
+        [VaultLoaden("CalamityEntropy/Assets/Effects/VDBeamTapered", AssetMode.Effects, "TaperedPass")]
+        public static Asset<Effect> VDBeamTapered;
         //虚空驱逐舰全屏滤镜(引力透镜/空间裂隙/暗角/冲击帧),由 VDScreenShaderData 每帧喂参,键 CalamityEntropy:VoidDestroyer
         [VaultLoaden("CalamityEntropy/Assets/Effects/VDScreenFx", AssetMode.Effects, "ScreenFxPass")]
         public static Asset<Effect> VDScreenFx;
@@ -201,6 +205,10 @@ namespace CalamityEntropy.Assets.Register
         //虚空驱逐舰能量逸散描边(alpha 八邻内缘 + 噪声侵蚀 + 蓄力热色/出手爆闪),噪声图绑 s1;外扩光晕由 VoidDestroyer.Draw 多偏移叠画同一遍着色器
         [VaultLoaden("CalamityEntropy/Assets/Effects/VDRimLight", AssetMode.Effects, "RimPass")]
         public static Asset<Effect> VDRimLight;
+        //虚空驱逐舰描边光晕(实心剪影涂成描边色 + 与 VDRimLight 同名的噪声侵蚀/热色参数),噪声图绑 s1;
+        //VoidDestroyer.Draw 在屏幕空间偏移叠画多抽垫在本体之下,本体压住剪影内部,剩下的那圈就是外扩描边带
+        [VaultLoaden("CalamityEntropy/Assets/Effects/VDRimHalo", AssetMode.Effects, "HaloPass")]
+        public static Asset<Effect> VDRimHalo;
         //虚空驱逐舰纵深雾化(噪声热闪 + 菱形模糊 + 去饱和 + 雾色),远景层里的本体与深度弹幕贴图都经它;噪声图绑 s1,AlphaBlend 预乘输出。消费口 VDDepthDraw
         [VaultLoaden("CalamityEntropy/Assets/Effects/VDDepthFog", AssetMode.Effects, "DepthFogPass")]
         public static Asset<Effect> VDDepthFog;

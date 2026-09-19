@@ -341,9 +341,13 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         #endregion
 
         #region 描边
-        /// <summary>描边整体亮度:强度(受静默压暗)与爆闪(不受)相加再乘总亮度倍率(加法混合下可大于 1),随本体透明度、深度衰减与远端雾化衰减</summary>
+        /// <summary>
+        /// 描边整体亮度:强度(受静默压暗,但最多压掉 RimSuppressMax,常驻描边在任何拍子都不整圈熄灭)与爆闪(不受压)相加,
+        /// 再乘总亮度倍率(加法混合下可大于 1),随本体透明度、深度衰减与远端雾化衰减
+        /// </summary>
         private float RimOpacity() {
-            return (RimGlow * (1f - RimSuppress) + RimFlash) * VDDirector.RimBrightness * Alpha * VDDepth.Alpha(Depth) * (1f - VDDepth.FogAmount(Depth) * 0.5f);
+            float suppress = 1f - RimSuppress * VDDirector.RimSuppressMax;
+            return (RimGlow * suppress + RimFlash) * VDDirector.RimBrightness * Alpha * VDDepth.Alpha(Depth) * (1f - VDDepth.FogAmount(Depth) * 0.5f);
         }
 
         /// <summary>蓄力热度:活跃度(不含底噪)过阈值起线性升到 1,常态再亮也不会发红</summary>
@@ -351,12 +355,25 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             return MathHelper.Clamp((RimActive - VDDirector.RimHeatStart) / (1f - VDDirector.RimHeatStart), 0f, 1f);
         }
 
-        /// <summary>噪声侵蚀比例:常态留一半成丝、蓄力收成实心带,爆闪归零整圈实心;过热风格几乎不侵蚀</summary>
+        /// <summary>贴边亮线的噪声侵蚀比例:常态基本是一条实线只轻微闪动、蓄力收得更实,爆闪归零整圈实心;过热风格几乎不侵蚀</summary>
         private float RimErode(VDRimStyle style) {
             float erode = style == VDRimStyle.Overheat
                 ? VDDirector.RimErodeOverheat
                 : MathHelper.Lerp(VDDirector.RimErodeIdle, VDDirector.RimErodeCharge, RimActive);
             return erode * (1f - RimFlash);
+        }
+
+        /// <summary>
+        /// 光晕环的噪声侵蚀比例:外环碎成向外逸散的丝(能量感),内环实心贴身(常驻感);
+        /// 随活跃度按亮线同一条斜坡收实(蓄力时整圈凝聚),爆闪归零;过热风格几乎不侵蚀
+        /// </summary>
+        private float RimHaloErode(VDRimStyle style, bool inner) {
+            float erode = inner ? VDDirector.RimHaloErodeInner : VDDirector.RimHaloErodeOuter;
+            if (style == VDRimStyle.Overheat) {
+                erode = Math.Min(erode, VDDirector.RimErodeOverheat);
+            }
+            float shrink = MathHelper.Lerp(1f, VDDirector.RimErodeCharge / VDDirector.RimErodeIdle, RimActive);
+            return erode * shrink * (1f - RimFlash);
         }
 
         /// <summary>
@@ -383,26 +400,24 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         }
 
         /// <summary>
-        /// 叠画第 i 抽的屏幕偏移:绕圈匀布并随时间慢转,奇偶抽交替取全半径 / 半半径,让光晕由内向外有一层衰减;
+        /// 一环里第 i 抽(共 taps 抽)的屏幕偏移:绕圈匀布、随时间慢转,整环再转 phase(内外环抽位错开,多边形顶点不重合);
         /// 拖尾风格再把整圈沿速度反向抹开,抽序越靠后拖得越远,与高速残影叠成一条
         /// </summary>
-        private Vector2 RimTapOffset(VDRimStyle style, int i, float radius, float scale) {
-            float ang = Main.GlobalTimeWrappedHourly * VDDirector.RimSpin + MathHelper.TwoPi * i / VDDirector.RimTaps;
-            float rad = (i % 2 == 0) ? radius : radius * 0.55f;
-            Vector2 ofs = ang.ToRotationVector2() * rad;
+        private Vector2 RimTapOffset(VDRimStyle style, int i, int taps, float radius, float scale, float phase) {
+            float ang = Main.GlobalTimeWrappedHourly * VDDirector.RimSpin + MathHelper.TwoPi * i / taps + phase;
+            Vector2 ofs = ang.ToRotationVector2() * radius;
             float streak = RimStreakRatio(style);
             if (streak > 0f) {
                 Vector2 back = (-NPC.velocity).SafeNormalize(Vector2.Zero);
-                ofs += back * (VDDirector.RimStreakLength * streak * scale * (i + 0.5f) / VDDirector.RimTaps);
+                ofs += back * (VDDirector.RimStreakLength * streak * scale * (i + 0.5f) / taps);
             }
             return ofs;
         }
 
-        /// <summary>第 i 抽的亮度分摊:奇偶抽内外有别;拖尾时越靠后的抽越暗,尾巴是渐隐的</summary>
-        private float RimTapAlpha(VDRimStyle style, int i) {
-            float alpha = VDDirector.RimTapOpacity * ((i % 2 == 0) ? 0.8f : 1f);
+        /// <summary>一环里第 i 抽的亮度分摊:拖尾时越靠后的抽越暗,尾巴是渐隐的</summary>
+        private float RimTapAlpha(VDRimStyle style, int i, int taps, float tapOpacity) {
             float streak = RimStreakRatio(style);
-            return alpha * (1f - 0.6f * streak * (i + 0.5f) / VDDirector.RimTaps);
+            return tapOpacity * (1f - 0.6f * streak * (i + 0.5f) / taps);
         }
 
         /// <summary>过热风格出手前后的高频闪烁,其余风格恒 1</summary>
@@ -422,18 +437,21 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             return new Vector2(r.X + r.Width / 2f, r.Y + r.Height / 2f) / tex.Size();
         }
 
-        /// <summary>喂描边着色器的全部参数并 Apply;每抽换一个噪声相位,六份叠画不是六份复印</summary>
-        private void ApplyRimShader(Effect shader, Texture2D tex, Rectangle? frame, VDRimStyle style, int tap) {
+        /// <summary>
+        /// 喂描边着色器(VDRimLight 亮线与 VDRimHalo 光晕的参数同名)的全部参数并 Apply;每抽换一个噪声相位,叠画不是复印。
+        /// color 是这一遍的基色(进雾色),erode 是这一遍的侵蚀比例,opacityMult 乘在 uOpacity 上(顶点色是字节会被钳到 1,大于 1 的亮度只能走这里)
+        /// </summary>
+        private void ApplyRimShader(Effect shader, Texture2D tex, Rectangle? frame, VDRimStyle style, int tap, Color color, float erode, float opacityMult) {
             Color hot = Color.Lerp(RimHotColor, Color.White, RimFlash * VDDirector.RimFlashWhiten);
             Vector2 scroll = RimDirScroll + new Vector2(tap * 0.173f, tap * 0.291f);
             float radialMix = style == VDRimStyle.Streak ? VDDirector.RimRadialMixStreak : VDDirector.RimRadialMixDefault;
             shader.Parameters["uTime"]?.SetValue(Main.GlobalTimeWrappedHourly);
-            shader.Parameters["uOpacity"]?.SetValue(RimOpacity() * RimFlicker(style));
-            shader.Parameters["uColor"]?.SetValue(VDDepth.Fog(RimColor, Depth).ToVector3());
+            shader.Parameters["uOpacity"]?.SetValue(RimOpacity() * RimFlicker(style) * opacityMult);
+            shader.Parameters["uColor"]?.SetValue(VDDepth.Fog(color, Depth).ToVector3());
             shader.Parameters["uHotColor"]?.SetValue(hot.ToVector3());
             shader.Parameters["uHeat"]?.SetValue(RimHeat());
             shader.Parameters["uFlash"]?.SetValue(RimFlash);
-            shader.Parameters["uErode"]?.SetValue(RimErode(style));
+            shader.Parameters["uErode"]?.SetValue(erode);
             shader.Parameters["uNoiseScroll"]?.SetValue(scroll);
             shader.Parameters["uRadialScroll"]?.SetValue(RimRadialScroll + tap * 0.137f);
             shader.Parameters["uRadialMix"]?.SetValue(radialMix);
@@ -443,10 +461,13 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
         }
 
         /// <summary>
-        /// 外扩光晕(垫在本体之下):同一遍描边着色器在屏幕空间偏移叠画 RimTaps 次,每份只露出被本体挡不住的那一弯,
-        /// 合起来是一圈由内向外衰减、随噪声碎成丝的逸散光;过热风格再在 1.8 倍半径叠一环,成厚实的白炽电晕。
-        /// 本体贴图四边只有 2~4px 留白,着色器往外膨胀会被裁,所以外扩只能靠独立四边形往外挪
-        /// (Apsychos.DrawOutLine / AcropolisMachine.DrawHarpoonOutline 同款做法)。着色器缺失时退回 WhiteTrans 平色叠画,功能不丢
+        /// 外扩光晕环(垫在本体之下):VDRimHalo 把本体贴图整个涂成描边色的实心剪影,在屏幕空间绕圈偏移叠画,
+        /// 本体压在上面盖住剪影内部,剩下剪影之外那一圈就是宽 = 偏移半径的外扩描边带。
+        /// 外环 RimTaps 抽、半径 RimBaseRadius,噪声侵蚀成向外逸散的丝;内环 RimInnerTaps 抽、半径 × RimInnerRadiusMult,几乎不侵蚀,贴身实心亮带;
+        /// 过热风格再在 RimOverheatOuterMult 倍半径叠一环,成厚实的白炽电晕。
+        /// 本体贴图四边只有 2~4px 留白,任何在贴图内做膨胀的着色器都会被四边裁掉(旧做法用 VDRimLight 的 2 texel 缘带偏移 6 抽,每抽只露一弯月牙,肉眼看不见),
+        /// 独立四边形往外挪不吃留白,也不需要 RenderTarget(Apsychos.DrawOutLine / AcropolisMachine.DrawHarpoonOutline 同款做法)。
+        /// 着色器缺失时退回 WhiteTrans 平色叠画同样的两环,功能不丢
         /// </summary>
         private void DrawRimUnder(Texture2D tex, Rectangle? frame, Vector2 origin, float scale, Vector2 worldCenter, Vector2 screenPos) {
             float opacity = RimOpacity();
@@ -455,28 +476,23 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             }
             VDRimStyle style = VDDirector.RimStyleFor(CurrentStateIndex);
             float radius = RimRadius(style, scale);
+            float innerRadius = radius * VDDirector.RimInnerRadiusMult;
             Vector2 center = worldCenter - screenPos;
-            Effect shader = CEEffectAssets.VDRimLight?.Value;
+            Effect halo = CEEffectAssets.VDRimHalo?.Value;
 
-            if (shader != null) {
+            if (halo != null) {
                 Texture2D noise = CEExtraAssets.TurbulentNoise ?? CEUtils.getExtraTex("TurbulentNoise");
-                Main.spriteBatch.EnterShaderRegion(BlendState.Additive, shader);
+                Main.spriteBatch.EnterShaderRegion(BlendState.Additive, halo);
                 Main.instance.GraphicsDevice.Textures[1] = noise;
                 Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
-                for (int i = 0; i < VDDirector.RimTaps; i++) {
-                    ApplyRimShader(shader, tex, frame, style, i);
-                    //顶点色整体乘在着色器输出上:各抽的亮度分摊直接走它
-                    Main.spriteBatch.Draw(tex, center + RimTapOffset(style, i, radius, scale), frame, Color.White * RimTapAlpha(style, i), NPC.rotation, origin, scale, SpriteEffects.None, 0f);
-                }
+                int tapSeed = 0;
+                //外环:丝状逸散
+                DrawHaloRing(halo, tex, frame, origin, scale, center, style, VDDirector.RimTaps, radius, VDDirector.RimTapOpacity, RimHaloErode(style, inner: false), 0f, ref tapSeed);
+                //内环:实心贴身,抽位错开半格,与外环的多边形顶点不重合
+                DrawHaloRing(halo, tex, frame, origin, scale, center, style, VDDirector.RimInnerTaps, innerRadius, VDDirector.RimInnerTapOpacity, RimHaloErode(style, inner: true), MathHelper.Pi / VDDirector.RimInnerTaps, ref tapSeed);
                 if (style == VDRimStyle.Overheat) {
                     float outer = radius * VDDirector.RimOverheatOuterMult;
-                    for (int i = 0; i < VDDirector.RimTaps; i++) {
-                        ApplyRimShader(shader, tex, frame, style, i + VDDirector.RimTaps);
-                        float tapAlpha = RimTapAlpha(style, i) * VDDirector.RimOverheatOuterOpacity;
-                        //外环错半个抽位,与内环的多边形顶点不重合
-                        Vector2 ofs = RimTapOffset(style, i, outer, scale).RotatedBy(MathHelper.Pi / VDDirector.RimTaps);
-                        Main.spriteBatch.Draw(tex, center + ofs, frame, Color.White * tapAlpha, NPC.rotation, origin, scale, SpriteEffects.None, 0f);
-                    }
+                    DrawHaloRing(halo, tex, frame, origin, scale, center, style, VDDirector.RimTaps, outer, VDDirector.RimTapOpacity * VDDirector.RimOverheatOuterOpacity, RimHaloErode(style, inner: false), MathHelper.Pi / VDDirector.RimTaps, ref tapSeed);
                 }
                 Main.spriteBatch.ExitShaderRegion();
                 return;
@@ -489,14 +505,32 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             white.Parameters["strength"].SetValue(1f);
             Main.spriteBatch.EnterShaderRegion(BlendState.Additive, white);
             white.CurrentTechnique.Passes[0].Apply();
-            Color flat = Color.Lerp(RimColor, RimHotColor, RimHeat()) * (MathHelper.Clamp(opacity, 0f, 1f) * VDDirector.RimTapOpacity * (1f + RimFlash));
+            Color flat = Color.Lerp(RimColor, RimHotColor, RimHeat()) * (MathHelper.Clamp(opacity, 0f, 1f) * (1f + RimFlash));
             for (int i = 0; i < VDDirector.RimTaps; i++) {
-                Main.spriteBatch.Draw(tex, center + RimTapOffset(style, i, radius, scale), frame, flat, NPC.rotation, origin, scale, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(tex, center + RimTapOffset(style, i, VDDirector.RimTaps, radius, scale, 0f), frame, flat * VDDirector.RimTapOpacity, NPC.rotation, origin, scale, SpriteEffects.None, 0f);
+            }
+            for (int i = 0; i < VDDirector.RimInnerTaps; i++) {
+                Main.spriteBatch.Draw(tex, center + RimTapOffset(style, i, VDDirector.RimInnerTaps, innerRadius, scale, MathHelper.Pi / VDDirector.RimInnerTaps), frame, flat * VDDirector.RimInnerTapOpacity, NPC.rotation, origin, scale, SpriteEffects.None, 0f);
             }
             Main.spriteBatch.ExitShaderRegion();
         }
 
-        /// <summary>贴边内缘锐光(压在本体之上):零偏移画一遍描边着色器,光像是从机体表面漏出来。无着色器时不画(平色会盖住本体)</summary>
+        /// <summary>
+        /// 光晕着色器批次内画一环:taps 抽绕圈偏移 radius,每抽换噪声相位(tapSeed 逐抽递增,几环之间也不重相位),
+        /// 顶点色只承担各抽的亮度分摊(着色器输出整体乘顶点色)
+        /// </summary>
+        private void DrawHaloRing(Effect halo, Texture2D tex, Rectangle? frame, Vector2 origin, float scale, Vector2 center, VDRimStyle style, int taps, float radius, float tapOpacity, float erode, float phase, ref int tapSeed) {
+            for (int i = 0; i < taps; i++) {
+                ApplyRimShader(halo, tex, frame, style, tapSeed++, RimColor, erode, 1f);
+                Vector2 ofs = RimTapOffset(style, i, taps, radius, scale, phase);
+                Main.spriteBatch.Draw(tex, center + ofs, frame, Color.White * RimTapAlpha(style, i, taps, tapOpacity), NPC.rotation, origin, scale, SpriteEffects.None, 0f);
+            }
+        }
+
+        /// <summary>
+        /// 贴边亮线(压在本体之上):零偏移画一遍 VDRimLight 缘带着色器,光像是从机体表面漏出来。
+        /// 颜色向 VoidWhite 偏 RimEdgeWhiten(紫线压紫机体读不出来),亮度 RimEdgeOpacity 走 uOpacity(可大于 1)。无着色器时不画(平色会盖住本体)
+        /// </summary>
         private void DrawRimOver(Texture2D tex, Rectangle? frame, Vector2 origin, float scale, Vector2 worldCenter, Vector2 screenPos) {
             if (RimOpacity() <= 0.01f) {
                 return;
@@ -510,8 +544,9 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             Main.spriteBatch.EnterShaderRegion(BlendState.Additive, shader);
             Main.instance.GraphicsDevice.Textures[1] = noise;
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
-            ApplyRimShader(shader, tex, frame, style, VDDirector.RimTaps * 2);
-            Main.spriteBatch.Draw(tex, worldCenter - screenPos, frame, Color.White * VDDirector.RimEdgeOpacity, NPC.rotation, origin, scale, SpriteEffects.None, 0f);
+            Color edge = Color.Lerp(RimColor, VDVfx.VoidWhite, VDDirector.RimEdgeWhiten);
+            ApplyRimShader(shader, tex, frame, style, VDDirector.RimTaps * 2 + VDDirector.RimInnerTaps, edge, RimErode(style), VDDirector.RimEdgeOpacity);
+            Main.spriteBatch.Draw(tex, worldCenter - screenPos, frame, Color.White, NPC.rotation, origin, scale, SpriteEffects.None, 0f);
             Main.spriteBatch.ExitShaderRegion();
         }
         #endregion
@@ -535,7 +570,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
             float lineAlpha = Depth < -0.05f ? 1f : alpha;
             Color c = Context.AimLineColor * ((0.25f + 0.65f * s) * flicker * lineAlpha);
             if (pivot != core) {
-                VDBeamDraw.DrawTapered(core, pivot, (6f + 14f * s) * scale, 4f + 10f * s, Context.AimLineColor, Color.White, 1f, (0.3f + 0.6f * s) * flicker, 0.61f, endGlow: false);
+                //传本体的 Z(镜头前,近端不衰减),枢端端帽 0 直接接上平面导引线
+                VDBeamDraw.DrawTapered(core, pivot, (6f + 14f * s) * scale, 4f + 10f * s, Context.AimLineColor, Color.White, 1f, (0.3f + 0.6f * s) * flicker, 0.61f, endGlow: false, zStart: Depth, zEnd: 0f, capEnd: 0f);
             }
             Main.spriteBatch.UseAdditive();
             CEUtils.drawLineBetter(pivot, end, c, 4f + 10f * s);

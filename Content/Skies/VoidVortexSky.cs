@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Skies
     /// <summary>
     /// 虚空漩涡天空(基座迁移版;VortexSky 字段唯一的写入者是 Content/Events/VoidInvasion 空壳,而该事件从未被激活,实际处于休眠)。
     /// 迁移只修正确性:旧实现用 UIScaleMatrix 画天空(错误空间,随 UI 缩放漂移)且七层加法无切片门控;
-    /// 现为原始像素空间 + 最远切片一次,漩涡尺寸随屏高归一。
+    /// 现为原始像素空间 + 跨 0 切片一次(盖掉原版视差背景),漩涡尺寸随屏高归一。
     /// </summary>
     public class VoidVortexSky : CESkyBase
     {
@@ -68,7 +68,7 @@ namespace CalamityEntropy.Content.Skies
             }
         }
 
-        protected override void DrawFar(SpriteBatch spriteBatch) {
+        protected override void DrawFront(SpriteBatch spriteBatch) {
             Texture2D l1 = vortexTex.Value;
 
             //底色罩:留在调用方批次,矩形恰好铺满

@@ -99,10 +99,14 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             VoidDestroyerNPC boss = OwnerBoss;
             if (boss != null && boss.Depth > 0.5f && Age < LanceFrames) {
                 float t = Age / (float)LanceFrames;
+                float tA = Math.Max(0f, t - 0.25f);
                 Vector2 from = boss.ProjectedCorePos;
-                Vector2 a = Vector2.Lerp(from, Projectile.Center, Math.Max(0f, t - 0.25f));
+                Vector2 a = Vector2.Lerp(from, Projectile.Center, tA);
                 Vector2 b = Vector2.Lerp(from, Projectile.Center, t);
-                VDBeamDraw.DrawTapered(a, b, 3f, Width * 0.45f * (0.4f + 0.6f * t), VDVfx.VoidPurple, VDVfx.CannonCore, 1f, 1f, Projectile.whoAmI * 0.53f, endGlow: false);
+                //子段两端的 Z 按屏幕分数反算(远端那半屏幕塞着更多世界长度),脉冲一路上噪声与雾色都接得上整根射线
+                float zA = VDDepth.ZAtScreenFraction(boss.Depth, 0f, tA);
+                float zB = VDDepth.ZAtScreenFraction(boss.Depth, 0f, t);
+                VDBeamDraw.DrawTapered(a, b, 3f, Width * 0.45f * (0.4f + 0.6f * t), VDVfx.VoidPurple, VDVfx.CannonCore, 1f, 1f, Projectile.whoAmI * 0.53f, endGlow: false, zStart: zA, zEnd: zB);
             }
             return false;
         }

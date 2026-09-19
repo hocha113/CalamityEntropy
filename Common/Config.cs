@@ -32,6 +32,10 @@ namespace CalamityEntropy.Common
         [DefaultValue(true)]
         public bool RarityNameEffects { get; set; }
 
+        /// <summary>BossChecklist 图鉴整本书接管开关:关掉后本模组条目只保留左页的动态头像,书皮与氛围交回 BossChecklist 原样。CEBossLogHook 每帧读取。</summary>
+        [DefaultValue(true)]
+        public bool BossLogTakeover { get; set; }
+
         [DefaultValue(true)]
         public bool ScreenWarpEffects { get; set; }
 

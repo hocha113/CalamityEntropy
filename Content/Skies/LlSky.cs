@@ -4,7 +4,7 @@ using Terraria;
 
 namespace CalamityEntropy.Content.Skies
 {
-    /// <summary>次元透镜彩蛋天空(基座迁移版):把桌面壁纸等比铺满天幕,最远切片一次绘制。</summary>
+    /// <summary>次元透镜彩蛋天空(基座迁移版):把桌面壁纸等比铺满天幕,跨 0 切片一次绘制,盖掉原版视差背景。</summary>
     public class LlSky : CESkyBase
     {
         protected override float FadeInStep => 0.025f;
@@ -15,7 +15,7 @@ namespace CalamityEntropy.Content.Skies
 
         public override float GetCloudAlpha() => 1f - opacity;
 
-        protected override void DrawFar(SpriteBatch spriteBatch) {
+        protected override void DrawFront(SpriteBatch spriteBatch) {
             Texture2D txd = WallpaperHelper.getWallpaper();
             //cover 等比:先满宽,高度不够再放大到满高(调用方空间,任意分辨率恰好铺满)
             float scale = Main.screenWidth / (float)txd.Width;

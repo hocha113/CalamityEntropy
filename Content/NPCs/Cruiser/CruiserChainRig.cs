@@ -84,7 +84,58 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                 return;
             }
             int n = length + 1;
-            bool zenith = Main.zenithWorld;
+            Rig2DDefinition def = BuildChainDefinition(n, Main.zenithWorld, out int bd);
+            if (def == null) {
+                return;
+            }
+            rigAsset = Vault2DRig.FromDefinition(Mod, def);
+            rig = rigAsset.CreateInstance(NPC.whoAmI);
+            //图鉴 / 舞台实例才需要关调试;战斗实例保持可见,/vaultdebug 能看到整条链
+            chainSolver = rig.Solver<ChainFollowSolver>("chain");
+
+            segBones = new int[n];
+            segPieces = new int[n];
+            for (int i = 0; i < n; i++) {
+                segBones[i] = rig.Bone($"seg{i}");
+                segPieces[i] = rig.Piece($"seg{i}");
+            }
+            List<int> p2 = [];
+            for (int k = 1; k <= bd; k++) {
+                p2.Add(rig.Piece($"p2b{k}"));
+            }
+            p2Pieces = p2.ToArray();
+            flagABones.Clear();
+            flagBBones.Clear();
+            flagPieces.Clear();
+            for (int i = 0; i < n; i++) {
+                int fa = rig.Bone($"flagA{i}");
+                if (fa < 0) {
+                    continue;
+                }
+                flagABones.Add(fa);
+                flagBBones.Add(rig.Bone($"flagB{i}"));
+                flagPieces.Add(rig.Piece($"flagA{i}"));
+                flagPieces.Add(rig.Piece($"flagB{i}"));
+            }
+            jawDownP1Bone = rig.Bone("jawDownP1");
+            jawUpP1Bone = rig.Bone("jawUpP1");
+            jawDownP2Bone = rig.Bone("jawDownP2");
+            jawUpP2Bone = rig.Bone("jawUpP2");
+            headP1Piece = rig.Piece("headP1");
+            headP2Piece = rig.Piece("headP2");
+            jawDownP1Piece = rig.Piece("jawDownP1");
+            jawUpP1Piece = rig.Piece("jawUpP1");
+            jawDownP2Piece = rig.Piece("jawDownP2");
+            jawUpP2Piece = rig.Piece("jawUpP2");
+            rigVisibilityInited = false;
+        }
+
+        /// <summary>
+        /// 整链骨架定义:头为根,<paramref name="n"/> 节链骨(末节挂尾巴)+ 颌骨 + 鞭毛 + 两阶段件 + ChainFollow 求解器。
+        /// 战斗端按难度链长调用,图鉴沙盒(<see cref="CruiserPortraitActor"/>)按短链调用;
+        /// <paramref name="p2PieceCount"/> 返回二阶段专用帧图件数(件名 <c>p2b1..p2bN</c>)。定义构建失败返回 null
+        /// </summary>
+        internal static Rig2DDefinition BuildChainDefinition(int n, bool zenith, out int p2PieceCount) {
             Rig2DBuilder b = new Rig2DBuilder("Cruiser").SnapDistance(CruiserDirector.RigSnapDistance);
             b.Bone("head");
             for (int i = 0; i < n; i++) {
@@ -142,50 +193,8 @@ namespace CalamityEntropy.Content.NPCs.Cruiser
                 .Param("maxBend", MathHelper.Pi)
                 .Param("turnRate", 1f);
 
-            Rig2DDefinition def = b.TryBuild();
-            if (def == null) {
-                return;
-            }
-            rigAsset = Vault2DRig.FromDefinition(Mod, def);
-            rig = rigAsset.CreateInstance(NPC.whoAmI);
-            //图鉴 / 舞台实例才需要关调试;战斗实例保持可见,/vaultdebug 能看到整条链
-            chainSolver = rig.Solver<ChainFollowSolver>("chain");
-
-            segBones = new int[n];
-            segPieces = new int[n];
-            for (int i = 0; i < n; i++) {
-                segBones[i] = rig.Bone($"seg{i}");
-                segPieces[i] = rig.Piece($"seg{i}");
-            }
-            List<int> p2 = [];
-            for (int k = 1; k <= bd; k++) {
-                p2.Add(rig.Piece($"p2b{k}"));
-            }
-            p2Pieces = p2.ToArray();
-            flagABones.Clear();
-            flagBBones.Clear();
-            flagPieces.Clear();
-            for (int i = 0; i < n; i++) {
-                int fa = rig.Bone($"flagA{i}");
-                if (fa < 0) {
-                    continue;
-                }
-                flagABones.Add(fa);
-                flagBBones.Add(rig.Bone($"flagB{i}"));
-                flagPieces.Add(rig.Piece($"flagA{i}"));
-                flagPieces.Add(rig.Piece($"flagB{i}"));
-            }
-            jawDownP1Bone = rig.Bone("jawDownP1");
-            jawUpP1Bone = rig.Bone("jawUpP1");
-            jawDownP2Bone = rig.Bone("jawDownP2");
-            jawUpP2Bone = rig.Bone("jawUpP2");
-            headP1Piece = rig.Piece("headP1");
-            headP2Piece = rig.Piece("headP2");
-            jawDownP1Piece = rig.Piece("jawDownP1");
-            jawUpP1Piece = rig.Piece("jawUpP1");
-            jawDownP2Piece = rig.Piece("jawDownP2");
-            jawUpP2Piece = rig.Piece("jawUpP2");
-            rigVisibilityInited = false;
+            p2PieceCount = bd;
+            return b.TryBuild();
         }
 
         /// <summary>

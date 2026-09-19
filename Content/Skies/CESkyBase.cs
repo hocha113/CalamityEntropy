@@ -83,9 +83,12 @@ namespace CalamityEntropy.Content.Skies
 
     /// <summary>
     /// 天空基座:统一淡入淡出生命周期、深度切片门控、帧戳去重与相机捕捉守卫。
-    /// 载荷写进 <see cref="DrawFar"/>(最远切片,画在一切视差背景层后面)或
-    /// <see cref="DrawFront"/>(跨 0 切片,画在视差背景层前面、游戏世界后面),
+    /// 载荷写进 <see cref="DrawFront"/>(跨 0 切片,盖住原版全部视差背景层)或
+    /// <see cref="DrawFar"/>(最远切片,反过来躲在视差层后面),
     /// 两者每渲染帧各至多执行一次;自开批次必须以 <see cref="CESkyDrawing.RestoreCallerBatch"/> 收尾。
+    /// 「整片天空被换掉」这类天幕一律选跨 0 切片:原版在 DrawSurfaceBG 之前画星空日月、
+    /// 在其中画视差背景与大气雾,而 DrawRemainingDepth 是 DrawSurfaceBG 的最后一句,
+    /// 落在最远切片的载荷会被原版山峦树影整片压住。
     /// 状态推进(计数器、粒子生灭、音效)一律放 <see cref="UpdatePayload"/>,Draw 只读。
     /// </summary>
     public abstract class CESkyBase : CustomSky
@@ -145,6 +148,10 @@ namespace CalamityEntropy.Content.Skies
             if (Main.mapFullscreen || CaptureManager.Instance.IsCapturing)
                 return;
 
+            //整帧一次 DrawToDepth 都没发生:玩家关掉背景、镜头沉到地表以下、重混/醉酒世界都会走到这里。
+            //此时 DrawRemainingDepth 退化成唯一一次全区间回调,跨 0 切片根本不存在,前景载荷得并进来一起画
+            bool wholeRange = minDepth <= float.MinValue && maxDepth >= float.MaxValue;
+
             //最远切片:ResetDepthTracker 后的首个 DrawToDepth,maxDepth 为 float.MaxValue
             if (maxDepth >= float.MaxValue && minDepth < float.MaxValue && lastFarStamp != CESkyFrameStamp.Current) {
                 lastFarStamp = CESkyFrameStamp.Current;
@@ -152,16 +159,20 @@ namespace CalamityEntropy.Content.Skies
             }
 
             //跨 0 切片:DrawRemainingDepth 的 (float.MinValue, ≥0) 调用
-            if (minDepth < 0f && maxDepth >= 0f && maxDepth < float.MaxValue && lastFrontStamp != CESkyFrameStamp.Current) {
+            bool frontSlice = minDepth < 0f && maxDepth >= 0f && maxDepth < float.MaxValue;
+            if ((frontSlice || wholeRange) && lastFrontStamp != CESkyFrameStamp.Current) {
                 lastFrontStamp = CESkyFrameStamp.Current;
                 DrawFront(spriteBatch);
             }
         }
 
-        /// <summary>最远切片载荷:画在一切视差背景层后面。</summary>
+        /// <summary>最远切片载荷:画在一切视差背景层后面,会被原版山峦树影压住,只给刻意要躲在背景后的东西用。</summary>
         protected virtual void DrawFar(SpriteBatch spriteBatch) { }
 
-        /// <summary>跨 0 切片载荷:画在视差背景层前面、游戏世界后面。</summary>
+        /// <summary>
+        /// 跨 0 切片载荷:画在原版视差背景层、星空日月与大气雾之前,游戏世界之后。天幕效果的默认落点。
+        /// 原版整帧没产生切片时由基座并到那唯一一次全区间回调上,不必自己写兜底。
+        /// </summary>
         protected virtual void DrawFront(SpriteBatch spriteBatch) { }
     }
 }

@@ -169,6 +169,13 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// <summary>远端本体经雾化着色器的模糊半径(px,按缩放后尺寸)与热闪幅度</summary>
         public const float DepthFogBlur = 1.5f;
         public const float DepthFogShimmer = 0.006f;
+        /// <summary>
+        /// 透视射线(VDBeamDraw.DrawTapered)两端吃雾的比例:射线是自发光,与全息体一样只吃三成多雾,
+        /// 远端变冷变暗读得出纵深,又不至于红射线的远端整段变成蓝灰
+        /// </summary>
+        public const float BeamFogMult = 0.4f;
+        /// <summary>透视射线退化路径(着色器缺失)的沿轴分段数:16 段让每段宽度台阶只有总差的 1/16,肉眼是连续的锥</summary>
+        public const int BeamFallbackSegments = 16;
 
         //==================== 通用弹幕(大师显示值)====================
 
@@ -456,6 +463,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public const float RedRaySpotRadius = 90f;
         public const float RedRayWarnTrack = 0.25f;
         public const float RedRaySpotTrackSpeed = 4f;
+        /// <summary>红射线源光的平面缩放(Glow 256px 贴图):乘红魔深度缩放 0.29 后约 100px,盖在表观 2.3 倍红魔的胸口,射线看得出是从它身上发出的</summary>
+        public const float RedRaySourceGlow = 1.4f;
         /// <summary>三叉戟从红魔处 45 帧收敛到平面(标记提前 30 帧亮),落点排在以玩家为心、半径 150 的弧上</summary>
         public const int RedHellTridentFrames = 45;
         public const float RedHellLandRadius = 150f;
@@ -719,22 +728,38 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public const float CannonOverheatDrop = 60f;
         public const float CannonVignette = 0.55f;
         public const int CannonTail = 10;
+        /// <summary>
+        /// 枢节点(整个扫射期常驻):亮核直径 = 射线宽 × 2.2、光环直径 = 射线宽 × 1.6、8% 脉动。
+        /// 越肩锥 → 枢 → 平面扫射线在枢处必然拐一个角,还有直射线 4% 起帽(4000px 上是 160px)的渐入,
+        /// 节点得大到把这两样都盖住,拐点才读成「炮打进画面的着点」而不是两根线拼接
+        /// </summary>
+        public const float CannonHubGlowMult = 2.2f;
+        public const float CannonHubRingMult = 1.6f;
+        public const float CannonHubPulse = 0.08f;
 
-        //==================== 描边(能量逸散:常态底噪 / 蓄力涨起 / 出手爆闪;着色器 VDRimLight,绘制在 VoidDestroyer.Draw)====================
+        //==================== 描边(能量逸散:常态底噪 / 蓄力涨起 / 出手爆闪;着色器 VDRimHalo 外扩光晕环 + VDRimLight 贴边亮线,绘制在 VoidDestroyer.Draw)====================
+        //
+        // 结构(2026-09-19 重做,此前「6 抽 × 4px 偏移叠画 2 texel 缘带」每抽只露一弯 alpha 0.17 的月牙,常态再被侵蚀 0.55 打碎、静默拍压到 0,肉眼几乎看不见):
+        //   外环:VDRimHalo 实心剪影 12 抽绕圈偏移 RimBaseRadius,垫在本体之下,本体压住剪影内部,剩下宽 = 半径的外扩描边带,噪声侵蚀成向外逸散的丝;
+        //   内环:同一着色器 8 抽、半径 × RimInnerRadiusMult、几乎不侵蚀,贴身实心的亮带;
+        //   亮线:VDRimLight 零偏移压在本体之上,颜色向白偏,机体表面漏光的锐边。
+        // 常驻:静默拍只压到 RimSuppressMax,永不归零。
 
         /// <summary>
-        /// 常态底噪:平时就是一圈清楚可见的能量缘光(反馈 2026-09-18:0.1 档几乎看不见),随阶段升级抬高。
+        /// 常态底噪:平时就是一圈清楚可见的能量缘光(反馈 2026-09-18:0.1 档几乎看不见;2026-09-19 再抬 0.15,配合实心光晕环才是「常驻描边」),随阶段升级抬高。
         /// 底噪只管亮度,不进热色与侵蚀的判定,那两样看活跃度(蓄力 / CoreGlow 折算,见 <see cref="VoidDestroyer.UpdateVisualState"/>)
         /// </summary>
         public static float RimIdle(int phase) => phase >= 3 ? RimIdleP3 : phase >= 2 ? RimIdleP2 : RimIdleP1;
-        public const float RimIdleP1 = 0.40f;
-        public const float RimIdleP2 = 0.50f;
-        public const float RimIdleP3 = 0.60f;
+        public const float RimIdleP1 = 0.55f;
+        public const float RimIdleP2 = 0.65f;
+        public const float RimIdleP3 = 0.75f;
         /// <summary>常态呼吸:底噪上叠 ±25% 的慢起伏,角速度 2.2 rad/s 约 2.9 秒一个来回</summary>
         public const float RimBreathAmp = 0.25f;
         public const float RimBreathSpeed = 2.2f;
         /// <summary>描边整体亮度倍率(加法混合下允许大于 1),常态与蓄力一起抬;爆闪在着色器里另乘 (1 + flash)</summary>
-        public const float RimBrightness = 1.35f;
+        public const float RimBrightness = 1.5f;
+        /// <summary>静默拍最多压掉多少描边:压到 40% 留着,「常驻」意味着任何拍子都不许整圈熄灭;爆闪不受压</summary>
+        public const float RimSuppressMax = 0.6f;
         /// <summary>CoreGlow 折算成描边活跃度的系数:20 招的起势/蓄力/出手都在推 CoreGlow,这一个系数就是全招免费覆盖的总闸</summary>
         public const float RimFromCoreGlow = 0.9f;
         /// <summary>强度追踪步长:约 6 帧追上目标,蓄力斜坡不被抹平,状态停止声明时也不闪断</summary>
@@ -752,18 +777,26 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// <summary>默认蓄力热色:烧红的危险色</summary>
         public static readonly Color RimHeatRed = new Color(255, 110, 80);
 
-        /// <summary>外扩叠画抽数:6 抽绕圈,再多 GPU 白花,再少能看出多边形</summary>
-        public const int RimTaps = 6;
-        /// <summary>外扩基础半径(px,乘绘制缩放):常态一圈 4px 的晕,轮廓外侧要能读出来</summary>
-        public const float RimBaseRadius = 4f;
+        /// <summary>外环叠画抽数:12 抽绕圈(30° 一抽),10px 半径下外沿的多边形棱看不出来;再多 GPU 白花</summary>
+        public const int RimTaps = 12;
+        /// <summary>内环叠画抽数:8 抽,半径小、相互重叠多,不需要更密</summary>
+        public const int RimInnerTaps = 8;
+        /// <summary>外环基础半径(px,乘绘制缩放):常态一圈 10px 的外扩描边带。本体 180×122,10px 是能一眼读出「有描边」又不吞掉机体细节的宽度</summary>
+        public const float RimBaseRadius = 10f;
+        /// <summary>内环半径 = 外环半径 × 0.45:贴身那圈实心亮带,与外环的丝之间有一层由亮到暗的落差</summary>
+        public const float RimInnerRadiusMult = 0.45f;
         /// <summary>蓄力满时的外扩半径增量:能量逸散得更远</summary>
-        public const float RimChargeRadius = 7f;
+        public const float RimChargeRadius = 8f;
         /// <summary>爆闪瞬间的外扩半径增量:整圈猛地炸开一下</summary>
-        public const float RimFlashRadius = 12f;
-        /// <summary>叠画各抽的亮度分摊:6 抽合成后约 2 倍单抽亮度</summary>
-        public const float RimTapOpacity = 0.32f;
-        /// <summary>内缘锐光(压在本体之上那一遍)的亮度</summary>
-        public const float RimEdgeOpacity = 1f;
+        public const float RimFlashRadius = 14f;
+        /// <summary>外环各抽的亮度分摊:外沿只有 1~2 抽重叠,单抽 0.18 合成后 0.2~0.35,是一圈软光而不是实色块</summary>
+        public const float RimTapOpacity = 0.18f;
+        /// <summary>内环各抽的亮度分摊:8 抽在贴身处重叠 3~4 层,合成后 ≈ 1,实心亮带</summary>
+        public const float RimInnerTapOpacity = 0.30f;
+        /// <summary>贴边亮线(压在本体之上那一遍)的亮度:2 texel 宽的线要压过机体自身颜色,加法下给到 1.6</summary>
+        public const float RimEdgeOpacity = 1.6f;
+        /// <summary>贴边亮线的颜色向 VoidWhite 偏这么多:紫线压紫机体读不出来,偏白的能量边才是「描边」</summary>
+        public const float RimEdgeWhiten = 0.45f;
         /// <summary>叠画偏移绕圈的角速度(rad/s):逸散的丝在慢慢转</summary>
         public const float RimSpin = 1.6f;
 
@@ -792,10 +825,16 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public const float RimOverheatFlickerSpeed = 38f;
         public const float RimOverheatFlickerAmp = 0.22f;
 
-        /// <summary>噪声侵蚀比例:常态留一半成丝,蓄力收成实心带,爆闪时归 0 整圈实心;过热风格几乎不侵蚀</summary>
-        public const float RimErodeIdle = 0.55f;
-        public const float RimErodeCharge = 0.2f;
+        /// <summary>
+        /// 贴边亮线的噪声侵蚀比例:常态 0.25 基本是一条实线、只轻微闪动(旧值 0.55 把线打成碎丝,常驻感就没了),
+        /// 蓄力再收实,爆闪时归 0 整圈实心;过热风格几乎不侵蚀
+        /// </summary>
+        public const float RimErodeIdle = 0.25f;
+        public const float RimErodeCharge = 0.1f;
         public const float RimErodeOverheat = 0.05f;
+        /// <summary>光晕环的侵蚀比例:外环 0.6 碎成向外逸散的丝(能量感),内环 0.15 实心贴身(常驻感);两值再各乘亮线那套的活跃度收缩</summary>
+        public const float RimHaloErodeOuter = 0.6f;
+        public const float RimHaloErodeInner = 0.15f;
         /// <summary>直角噪声层的常态漂移(噪声 UV/s,图样朝这个方向流):x 慢横流,y 负值向上逸散</summary>
         public static readonly Vector2 RimNoiseScroll = new Vector2(0.05f, -0.22f);
 

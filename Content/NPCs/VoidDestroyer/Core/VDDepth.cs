@@ -39,6 +39,24 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         /// <summary>服务端摆位:以代理相机(目标玩家中心)为准,把「表观偏移 + Z」换成世界坐标</summary>
         public static Vector2 WorldFromApparent(Vector2 proxyCamera, Vector2 apparentOffset, float z) => proxyCamera + WorldOffset(apparentOffset, z);
 
+        /// <summary>透视权重 w = 1 / Scale(Z):平面为 1,越远越大,镜头前小于 1;1/w 在屏幕上线性插值,是透视校正的基础量</summary>
+        public static float W(float z) => 1f / Scale(z);
+
+        /// <summary>
+        /// 屏幕分数 → 世界分数:一根从 Z=z0 到 Z=z1 的直线段,在两投影端点之间屏幕位置占 t 的那个点,对应世界长度的分数 f。
+        /// 远端那一半屏幕长度里塞着更多世界长度(z0 = 2.5、z1 = 0 时 t = 0.5 处 f ≈ 0.78),噪声按 f 铺就是「远端压缩」的纵深线索
+        /// </summary>
+        public static float ScreenToWorldFraction(float z0, float z1, float t) {
+            t = MathHelper.Clamp(t, 0f, 1f);
+            float w0 = W(z0);
+            float w1 = W(z1);
+            float denom = (1f - t) * w1 + t * w0;
+            return denom <= 0.0001f ? t : t * w0 / denom;
+        }
+
+        /// <summary>直线段上屏幕分数 t 处的 Z(Z 沿世界分数线性,所以先把 t 换成 f 再插);子段射线求两端 Z 用</summary>
+        public static float ZAtScreenFraction(float z0, float z1, float t) => MathHelper.Lerp(z0, z1, ScreenToWorldFraction(z0, z1, t));
+
         /// <summary>判定带半宽:按 Z 速度放宽,快弹穿越平面也留得住 3 帧碰撞</summary>
         public static float HitBand(float zVel) => Math.Max(VDDirector.DepthHitBandMin, VDDirector.DepthHitBandVelMult * Math.Abs(zVel));
 

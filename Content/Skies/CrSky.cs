@@ -15,7 +15,7 @@ using Terraria.ModLoader;
 namespace CalamityEntropy.Content.Skies
 {
     /// <summary>
-    /// 巡游者虚空天幕(基座重写版):最远切片画三层滚动虚空纹理,
+    /// 巡游者虚空天幕(基座重写版):跨 0 切片画三层滚动虚空纹理,盖住原版视差背景与星空日月,
     /// 视觉强度 = 存在包络 opacity(基座管理)× 演出强度 <see cref="CruiserSkyDrive.Intensity"/>。
     /// 闪电由 Update 生灭、Draw 只渲染;全屏扭曲已迁往滤镜(CrScreenShaderData),
     /// 本类不再切 RenderTarget,也不再依赖切片回调次数。
@@ -93,7 +93,7 @@ namespace CalamityEntropy.Content.Skies
             SoundEngine.PlaySound(s);
         }
 
-        protected override void DrawFar(SpriteBatch spriteBatch) {
+        protected override void DrawFront(SpriteBatch spriteBatch) {
             Texture2D tex = crSkyTex.Value;
             float intensity = CruiserSkyDrive.Intensity;
 

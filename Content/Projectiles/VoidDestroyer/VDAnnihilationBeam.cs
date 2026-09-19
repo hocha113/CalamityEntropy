@@ -111,20 +111,40 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
         public override bool PreDraw(ref Color lightColor) {
             float env = Envelope();
             VoidDestroyerNPC boss = Owner;
-            //越肩段:从镜头后巨影的投影核心到平面枢的光锥,近端(巨影处)粗、枢处收到射线宽度
-            if (boss != null && boss.Depth < -0.05f) {
+            bool overShoulder = boss != null && boss.Depth < -0.05f;
+            //越肩段:从镜头后巨影的投影核心到平面枢的光锥,近端(巨影处)粗、枢处收到射线宽度。
+            //传两端 Z:噪声按透视铺、近端不衰减;枢端端帽传 0,锥直接顶进枢节点,拐点由节点盖住
+            if (overShoulder) {
                 Vector2 from = boss.ProjectedCorePos;
                 float nearWidth = Width * VDDepth.Scale(boss.Depth);
-                VDBeamDraw.DrawTapered(from, Projectile.Center, nearWidth * env, Width * env, VDVfx.VoidPurple, VDVfx.CannonCore, 1f, 1f, 0.77f, endGlow: false);
+                VDBeamDraw.DrawTapered(from, Projectile.Center, nearWidth * env, Width * env, VDVfx.VoidPurple, VDVfx.CannonCore, 1f, 1f, 0.77f, endGlow: false, zStart: boss.Depth, zEnd: 0f, capEnd: 0f);
             }
             VDBeamDraw.Draw(Projectile.Center, Dir, VDDirector.CannonBeamLength, Width, VDVfx.VoidPurple, VDVfx.CannonCore, env, 1f, 0.77f);
-            //枢的爆闪:出手前 6 帧最亮
-            Main.spriteBatch.UseAdditive();
-            Texture2D glow = CEUtils.getExtraTex("Glow");
-            float flash = MathHelper.Clamp(1f - Age / 6f, 0f, 1f);
-            Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition, null, Color.White * (0.9f * flash), 0f, glow.Size() / 2f, 2.5f * flash + 0.6f * env, SpriteEffects.None, 0f);
-            CEUtils.ReSetToEndShader();
+            DrawHub(env, overShoulder);
             return false;
+        }
+
+        /// <summary>
+        /// 枢节点:整个扫射期常驻的亮核 + 一对反向慢转的光环,盖住越肩锥 → 枢 → 扫射线的拐点与直射线起点的渐入;
+        /// 出手前 6 帧再叠一记白闪(原先只有这记白闪,6 帧后拐点就裸露)。越肩时枢是「炮打进画面的着点」,节点放大一档
+        /// </summary>
+        private void DrawHub(float env, bool overShoulder) {
+            Texture2D glow = CEUtils.getExtraTex("Glow");
+            Texture2D ring = CEUtils.getExtraTex("BloomRing");
+            Vector2 pos = Projectile.Center - Main.screenPosition;
+            float pulse = 1f + VDDirector.CannonHubPulse * MathF.Sin(Main.GlobalTimeWrappedHourly * 9f + Projectile.whoAmI);
+            float size = Width * env * (overShoulder ? 1.25f : 1f);
+            float glowScale = size * VDDirector.CannonHubGlowMult / glow.Width * pulse;
+            float ringScale = size * VDDirector.CannonHubRingMult / ring.Width;
+            float flash = MathHelper.Clamp(1f - Age / 6f, 0f, 1f);
+            Main.spriteBatch.UseAdditive();
+            Main.spriteBatch.Draw(glow, pos, null, VDVfx.VoidPurple * (0.75f * env), 0f, glow.Size() / 2f, glowScale, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(glow, pos, null, VDVfx.CannonCore * (0.6f * env), 0f, glow.Size() / 2f, glowScale * 0.5f, SpriteEffects.None, 0f);
+            //环贴图只许等比缩放
+            Main.spriteBatch.Draw(ring, pos, null, VDVfx.VoidPurple * (0.55f * env), Age * 0.04f, ring.Size() / 2f, ringScale, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(ring, pos, null, VDVfx.CannonCore * (0.35f * env), -Age * 0.06f, ring.Size() / 2f, ringScale * 0.7f, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(glow, pos, null, Color.White * (0.9f * flash), 0f, glow.Size() / 2f, 2.5f * flash + 0.6f * env, SpriteEffects.None, 0f);
+            CEUtils.ReSetToEndShader();
         }
     }
 }

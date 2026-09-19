@@ -3,6 +3,7 @@ using CalamityEntropy.Content.Biomes;
 using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Potions;
+using CalamityEntropy.Content.Items.Weapons.VoidDestroyer;
 using CalamityEntropy.Content.NPCs.VoidDestroyer.Core;
 using CalamityEntropy.Content.NPCs.VoidDestroyer.States;
 using CalamityEntropy.Core.AI;
@@ -236,6 +237,11 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer
 
             LeadingConditionRule normalOnly = new LeadingConditionRule(new Conditions.NotExpert());
             normalOnly.OnSuccess(ItemDropRule.Common(ModContent.ItemType<DimBearing>(), 1, 15, 25));
+            //四件武器各 80%,沿用虚无双子的普通模式掉率写法
+            normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<VoidMK2>(), 5, 1, 1, 4));
+            normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<MatterDissociationSpear>(), 5, 1, 1, 4));
+            normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<VoidElectricField>(), 5, 1, 1, 4));
+            normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<VoidDroneRemote>(), 5, 1, 1, 4));
             npcLoot.Add(normalOnly);
 
             npcLoot.Add(ItemDropRule.ByCondition(new Conditions.IsMasterMode(), ModContent.ItemType<VoidDestroyerRelic>()));

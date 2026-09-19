@@ -83,11 +83,11 @@ namespace CalamityEntropy.Content.Projectiles.VoidDestroyer
             Main.spriteBatch.Draw(glow, pos, null, c * (0.5f + 0.5f * p), 0f, glow.Size() / 2f, 0.25f + 0.25f * p, SpriteEffects.None, 0f);
             CEUtils.ReSetToEndShader();
 
-            //透视瞄准线:背景里那艘船 → 落点,随标记成熟由发丝变粗,末段闪白
+            //透视瞄准线:背景里那艘船 → 落点,随标记成熟由发丝变粗,末段闪白;传船的 Z,噪声向船那端压缩、远端吃雾
             VoidDestroyerNPC boss = OwnerBoss;
             if (boss != null && boss.Depth > 0.5f) {
                 float w = 2f + 12f * p;
-                VDBeamDraw.DrawTapered(boss.ProjectedCorePos, Projectile.Center, w * 0.25f, w, VDVfx.VoidPurple, c, 1f, (0.3f + 0.5f * p) * flicker, Projectile.whoAmI * 0.37f, endGlow: false);
+                VDBeamDraw.DrawTapered(boss.ProjectedCorePos, Projectile.Center, w * 0.25f, w, VDVfx.VoidPurple, c, 1f, (0.3f + 0.5f * p) * flicker, Projectile.whoAmI * 0.37f, endGlow: false, zStart: boss.Depth, zEnd: 0f);
             }
             return false;
         }

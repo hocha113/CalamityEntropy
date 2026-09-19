@@ -1,4 +1,5 @@
-﻿using CalamityEntropy.Content.NPCs.VoidDestroyer;
+﻿using CalamityEntropy.Content.Items.Weapons.VoidDestroyer;
+using CalamityEntropy.Content.NPCs.VoidDestroyer;
 using CalamityEntropy.Content.Rarities;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -8,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityEntropy.Content.Items
 {
-    // 宝藏袋(虚空驱逐舰):本期只装材料与钱币,武器待策划补齐后再挂
+    // 宝藏袋(虚空驱逐舰):材料、钱币与四件驱逐舰武器(各 60%,沿用虚无双子宝袋写法)
     public class VoidDestroyerBag : ModItem
     {
         public override void SetStaticDefaults() {
@@ -45,6 +46,10 @@ namespace CalamityEntropy.Content.Items
         public override void ModifyItemLoot(ItemLoot itemLoot) {
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<VoidDestroyer>()));
             itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<DimBearing>(), 1, 20, 30));
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<VoidMK2>(), 5, 1, 1, 3));
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<MatterDissociationSpear>(), 5, 1, 1, 3));
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<VoidElectricField>(), 5, 1, 1, 3));
+            itemLoot.Add(new CommonDrop(ModContent.ItemType<VoidDroneRemote>(), 5, 1, 1, 3));
         }
     }
 }

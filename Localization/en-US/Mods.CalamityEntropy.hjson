@@ -284,6 +284,52 @@ Items: {
 		Tooltip: A drive component salvaged from the Void Destroyer. Its surface lost its luster long ago
 	}
 
+	VoidMK2: {
+		DisplayName: Void MK2
+		Tooltip:
+			'''
+			Rapidly fires void rounds, 50% chance to not consume ammo
+			Every second of sustained fire launches a homing drone
+			The drone explodes on impact and inflicts Void Fire for 3 seconds
+			'''
+	}
+
+	MatterDissociationSpear: {
+		DisplayName: Matter Dissociation Spear
+		Tooltip:
+			'''
+			Left click to stab. Hitting a target sets off a shadow burst and releases 3 slow homing void bolts
+			Right click to throw the spear, leaving up to 7 homing void bolts evenly along its path
+			When the thrown spear hits a target, 4 projected tridents instantly fire at it from below at extreme speed
+			Void bolts start homing 0.5 seconds after they appear
+			'''
+	}
+
+	VoidElectricField: {
+		DisplayName: Void Electric Field
+		Tooltip:
+			'''
+			Hold left click to keep firing 5 rotating fanned lasers forward
+			While the lasers fire, a growing lightning ball builds up at the staff tip, up to 3 seconds
+			Release left click to hurl the lightning ball. The longer the charge, the higher its damage
+			The lightning ball explodes on impact and electrifies enemies
+			'''
+	}
+
+	VoidDroneRemote: {
+		DisplayName: Void Drone Remote
+		Tooltip:
+			'''
+			Uses 3 minion slots
+			Summons a projection drone that hovers overhead and shoots at enemies
+			The drone keeps projecting holographic beasts at its target:
+			Every 0.5 seconds a giant tortoise blinks above the target's head and bounces on it 5 times
+			Every second a red devil flies to the target's side and rapidly hurls holographic tridents, vanishing after 4 seconds
+			Every 2 seconds a wyvern rams back and forth through the target, vanishing after 5 seconds
+			Using the remote again while the drone is out takes 1 more minion slot and increases its damage by 33%
+			'''
+	}
+
 	CruiserRelic: {
 		DisplayName: Cruiser Relic
 		Tooltip: ""
@@ -5042,6 +5088,23 @@ Projectiles: {
 	VDHoloTortoise.DisplayName: Holographic Giant Tortoise
 	VDHoloStinger.DisplayName: Holographic Stinger
 	VDHoloWyvern.DisplayName: Holographic Wyvern
+	VoidMK2Bullet.DisplayName: Void Round
+	VoidMK2Drone.DisplayName: Homing Drone
+	VoidMK2Explosion.DisplayName: Drone Explosion
+	MatterDissociationSpearStab.DisplayName: Matter Dissociation Spear
+	MatterDissociationSpearThrow.DisplayName: Matter Dissociation Spear
+	MatterDissociationBolt.DisplayName: Void Bolt
+	MatterDissociationBurst.DisplayName: Shadow Burst
+	MatterDissociationTrident.DisplayName: Projected Trident
+	VoidElectricFieldHoldout.DisplayName: Void Electric Field
+	VoidElectricBall.DisplayName: Lightning Ball
+	VoidElectricBurst.DisplayName: Lightning Burst
+	ProjectionDrone.DisplayName: Projection Drone
+	ProjectionDroneShot.DisplayName: Drone Round
+	ProjectionTortoise.DisplayName: Holographic Giant Tortoise
+	ProjectionRedDevil.DisplayName: Holographic Red Devil
+	ProjectionTrident.DisplayName: Holographic Trident
+	ProjectionWyvern.DisplayName: Holographic Wyvern
 	BrokenChainsaw0.DisplayName: Broken Chainsaw
 	MechanicalChainsaw0.DisplayName: Mechanical Chainsaw
 	EnslavedStar0.DisplayName: Enslaved Star
@@ -5793,6 +5856,11 @@ Buffs: {
 	VoidFire: {
 		DisplayName: Void Fire
 		Description: Life regeneration is disabled, losing 20 life per second
+	}
+
+	ProjectionDroneBuff: {
+		DisplayName: Projection Drone
+		Description: The projection drone will fight for you
 	}
 
 	WyrmChanBuff: {
@@ -6701,6 +6769,11 @@ Configs: {
 		RarityNameEffects: {
 			Label: Rarity Name Effects
 			Tooltip: When enabled, item names of this mod's rarities are drawn with animated effects in the tooltip; when disabled, they are drawn as plain colored outlined text, which suits low-end machines
+		}
+
+		BossLogTakeover: {
+			Label: Boss Log Themed Book
+			Tooltip: When enabled, turning to one of this mod's bosses in the Boss Log (BossChecklist) reskins the whole book with that boss's theme and ambience; when disabled, only the animated portrait on the left page remains
 		}
 
 		ScreenShakePower: {

@@ -17,7 +17,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
     public class WelkinFractal : ModItem
     {
         public override void SetDefaults() {
-            Item.damage = 38;
+            Item.damage = 34;
             Item.DamageType = DamageClass.Melee;
             Item.width = 48;
             Item.height = 60;
@@ -118,8 +118,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
                 if (shoot) {
                     shoot = false;
                     if (Main.myPlayer == Projectile.owner) {
-                        //持有弹伤害为面板一半,射线取面板150%
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.normalize() * 10, ModContent.ProjectileType<FractalBeam>(), Projectile.damage * 3, Projectile.knockBack, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.normalize() * 10, ModContent.ProjectileType<FractalBeam>(), Projectile.damage * 2, Projectile.knockBack, Projectile.owner);
                     }
                     CEUtils.PlaySound("sf_shoot", 1, Projectile.Center, volume: CEUtils.WeapSound);
                 }

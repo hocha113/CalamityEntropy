@@ -1,5 +1,4 @@
-﻿using CalamityEntropy.Content.Buffs.PortsDoT;
-using CalamityEntropy.Content.Particles;
+﻿using CalamityEntropy.Content.Particles;
 using InnoVault.PRT;
 using Terraria;
 using Terraria.ModLoader;
@@ -49,7 +48,6 @@ namespace CalamityEntropy.Content.Projectiles
             }
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
-            target.AddBuff(ModContent.BuffType<CrushDepth>(), 300);
             for (int i = 0; i < 16; i++) {
                 //vd/ad直赋对齐旧AbyssalParticles,Configure签名跟EParticle系不一样
                 var p = PRTLoader.NewParticle<PRT_Abyssal>(Projectile.Center, CEUtils.randomPointInCircle(6), Color.White, 1f);

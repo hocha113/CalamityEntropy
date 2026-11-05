@@ -27,7 +27,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Illusory
             ItemID.Sets.StaffMinionSlotsRequired[Item.type] = 2;
         }
         public override void SetDefaults() {
-            Item.damage = 175;
+            Item.damage = 200;
             Item.DamageType = DamageClass.Summon;
             Item.width = 36;
             Item.height = 50;
@@ -37,13 +37,12 @@ namespace CalamityEntropy.Content.Items.Weapons.Illusory
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.shoot = ModContent.ProjectileType<IllusoryBladeMinion>();
             Item.shootSpeed = 2f;
-            Item.value = Item.buyPrice(platinum: 2, gold: 40);
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item4;
             Item.noMelee = true;
             Item.buffType = ModContent.BuffType<IllusoryBlade>();
             Item.rare = ModContent.RarityType<VoidPurple>();
-            Item.value = Item.buyPrice(platinum: 2, gold: 40);
+            Item.value = Item.buyPrice(gold: 48);
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) {
             player.AddBuff(Item.buffType, 5);
@@ -97,7 +96,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Illusory
         public int Counter = 0;
         public float WhiteAlpha = 0;
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
-            modifiers.ArmorPenetration += 64;
+            modifiers.ArmorPenetration += 60;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             CEUtils.PlaySound("slice", Main.rand.NextFloat(1, 1.4f), target.Center);

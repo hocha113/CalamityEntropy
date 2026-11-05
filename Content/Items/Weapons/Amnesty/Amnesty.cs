@@ -23,7 +23,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Amnesty
         public override void SetDefaults() {
             Item.width = 62;
             Item.height = 62;
-            Item.damage = 71;
+            Item.damage = 72;
             Item.noMelee = true;
             Item.useAnimation = Item.useTime = 4;
             Item.useStyle = ItemUseStyleID.Shoot;

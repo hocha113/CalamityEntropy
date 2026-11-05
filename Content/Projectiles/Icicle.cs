@@ -1,5 +1,4 @@
-﻿using CalamityEntropy.Content.Buffs.PortsDoT;
-using CalamityEntropy.Content.Dusts;
+﻿using CalamityEntropy.Content.Dusts;
 using InnoVault;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -130,15 +129,11 @@ namespace CalamityEntropy.Content.Projectiles
             if (ycount < mct) {
                 return;
             }
-            if (Projectile.ai[2] == 1) {
-                target.AddBuff(ModContent.BuffType<MarkedforDeath>(), 480);
-            }
             target.immune[Projectile.owner] = 0;
             for (int i = 0; i < 20; i++) {
                 Dust.NewDust(Projectile.Center, 12, 12, ModContent.DustType<IcePiece1>());
             }
             target.AddBuff(BuffID.Frostburn, 1080);
-            Main.player[Projectile.owner].AddBuff(ModContent.BuffType<CosmicFreeze>(), 600);
             var r = Main.rand;
             for (int i = 0; i < 6; i++) {
                 Projectile.NewProjectile(Main.player[Projectile.owner].GetSource_FromAI(), Projectile.Center, new Vector2(r.Next(0, 16) - 8, r.Next(0, 16) - 8), ModContent.ProjectileType<IceSpikeSmall>(), (int)(Projectile.damage * 0.3f), 1);

@@ -17,7 +17,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
     public class SpiritFractal : ModItem
     {
         public override void SetDefaults() {
-            Item.damage = 280;
+            Item.damage = 290;
             Item.DamageType = DamageClass.Melee;
             Item.width = 48;
             Item.height = 60;

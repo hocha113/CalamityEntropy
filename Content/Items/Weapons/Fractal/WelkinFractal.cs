@@ -17,7 +17,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
     public class WelkinFractal : ModItem
     {
         public override void SetDefaults() {
-            Item.damage = 34;
+            Item.damage = 38;
             Item.DamageType = DamageClass.Melee;
             Item.width = 48;
             Item.height = 60;

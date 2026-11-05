@@ -31,9 +31,6 @@ namespace CalamityEntropy.Content.Projectiles
         public override bool? CanHitNPC(NPC target) {
             return false;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
-            target.AddBuff(ModContent.BuffType<SoulDisorder>(), 300);
-        }
         public override void AI() {
             Player player = Main.player[Projectile.owner];
             Projectile.frameCounter++;

@@ -120,7 +120,7 @@ namespace CalamityEntropy.Common
             if (npc.HasBuff<Koishi>())
                 mult -= 0.2f;
             if (npc.HasBuff<VoidVirus>())
-                mult -= 0.08f;
+                mult -= 0.1f;
             if (npc.Entropy().Decrease20DR > 0)
                 mult -= 0.2f;
 

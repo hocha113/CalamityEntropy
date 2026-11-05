@@ -22,7 +22,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Depletion
         public override void SetDefaults() {
             Item.width = 62;
             Item.height = 62;
-            Item.damage = 20;
+            Item.damage = 18;
             Item.noMelee = true;
             Item.useAnimation = Item.useTime = 4;
             Item.useStyle = ItemUseStyleID.Shoot;

@@ -20,7 +20,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
             ItemID.Sets.StaffMinionSlotsRequired[Item.type] = 2;
         }
         public override void SetDefaults() {
-            Item.damage = 11;
+            Item.damage = 9;
             Item.DamageType = DamageClass.Summon;
             Item.width = 46;
             Item.height = 46;
@@ -159,7 +159,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Summon;
             Projectile.penetrate = 4;
-            Projectile.ArmorPenetration = 16;
+            Projectile.ArmorPenetration = 8;
             Projectile.MaxUpdates = 3;
             Projectile.timeLeft = Lifetime;
             Projectile.usesLocalNPCImmunity = true;

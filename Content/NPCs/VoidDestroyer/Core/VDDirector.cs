@@ -10,11 +10,11 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
     {
         //==================== 基础数值 ====================
 
-        /// <summary>血量普通 / 专家 / 大师 = 248000 / 496000 / 744000</summary>
-        public const int BaseLife = 248000;
+        /// <summary>血量普通 / 专家 / 大师 = 218000 / 436000 / 654000</summary>
+        public const int BaseLife = 218000;
         /// <summary>接触伤害普通 / 专家 / 大师 = 126 / 252 / 378</summary>
         public const int BaseDamage = 126;
-        public const int BaseDefense = 80;
+        public const int BaseDefense = 70;
         public const float DRPhase12 = 0.12f;
         public const float DRPhase3 = 0.25f;
         /// <summary>75%:变形展翼</summary>
@@ -533,8 +533,8 @@ namespace CalamityEntropy.Content.NPCs.VoidDestroyer.Core
         public const int GateWindup = WindupBarrage;
         /// <summary>环数 P1 4 / P2 5 / P3 6</summary>
         public static int GateRings(int phase) => phase >= 3 ? 6 : phase >= 2 ? 5 : 4;
-        /// <summary>环与环间隔 40 帧(原 32):同屏约三个半环,P3 六环整招约 395 帧,在单招上限内</summary>
-        public const int GateInterval = 40;
+        /// <summary>环与环间隔 50 帧(原 32):同屏约三个半环,P3 六环整招约 395 帧,在单招上限内</summary>
+        public const int GateInterval = 50;
         /// <summary>环出现先在起始半径停 12 帧亮出缺口(预告),再用 132 帧从 640 收到 24 后消散,约 4.7px/帧</summary>
         public const int GatePreviewFrames = 12;
         public const int GateCloseFrames = 132;

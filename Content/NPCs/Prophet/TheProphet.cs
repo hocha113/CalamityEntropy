@@ -106,9 +106,9 @@ namespace CalamityEntropy.Content.NPCs.Prophet
             NPC.aiStyle = -1;
             NPC.width = 80;
             NPC.height = 80;
-            NPC.damage = 75;
+            NPC.damage = 80;
             DamageReduction = ProphetDirector.BaseDamageReduction;
-            NPC.lifeMax = 55000;
+            NPC.lifeMax = 58000;
             NPC.defense = ProphetDirector.Defense;
             var snd = CEUtils.GetSound("prophet_hurt", maxIns: 1);
             var snd2 = CEUtils.GetSound("prophet_death");

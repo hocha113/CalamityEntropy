@@ -49,8 +49,6 @@ namespace CalamityEntropy.Content.Items
 
         public override void ModifyItemLoot(ItemLoot itemLoot) {
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<TheProphet>()));
-
-            //脱离灾厄:原灾厄DropHelper.Add扩展换原版规则,分数概率按CommonDrop(物品,分母,最少,最多,分子)对位
             itemLoot.Add(new CommonDrop(ModContent.ItemType<RuneSong>(), 5, 1, 1, 3));
             itemLoot.Add(new CommonDrop(ModContent.ItemType<UrnOfSouls>(), 5, 1, 1, 3));
             itemLoot.Add(new CommonDrop(ModContent.ItemType<SpiritBanner>(), 5, 1, 1, 3));
@@ -65,4 +63,3 @@ namespace CalamityEntropy.Content.Items
             }
         }
     }
-}

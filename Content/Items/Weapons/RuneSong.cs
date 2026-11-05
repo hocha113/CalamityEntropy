@@ -19,7 +19,7 @@ namespace CalamityEntropy.Content.Items.Weapons
     public class RuneSong : ModItem
     {
         public override void SetDefaults() {
-            Item.damage = 300;
+            Item.damage = 320;
             Item.DamageType = DamageClass.Melee;
             Item.width = 56;
             Item.noUseGraphic = true;

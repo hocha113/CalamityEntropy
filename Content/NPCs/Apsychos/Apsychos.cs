@@ -82,7 +82,7 @@ namespace CalamityEntropy.Content.NPCs.Apsychos
             NPC.height = 156;
             NPC.damage = 45;
             NPC.defense = 16;
-            NPC.lifeMax = 8200;
+            NPC.lifeMax = 7800;
             NPC.HitSound = null;
             NPC.DeathSound = SoundID.NPCDeath25;
             NPC.value = 1000f;

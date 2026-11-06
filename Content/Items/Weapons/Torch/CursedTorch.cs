@@ -20,7 +20,7 @@ namespace CalamityEntropy.Content.Items.Weapons.Torch
             ItemID.Sets.StaffMinionSlotsRequired[Item.type] = 2;
         }
         public override void SetDefaults() {
-            Item.damage = 9;
+            Item.damage = 10;
             Item.DamageType = DamageClass.Summon;
             Item.width = 46;
             Item.height = 46;

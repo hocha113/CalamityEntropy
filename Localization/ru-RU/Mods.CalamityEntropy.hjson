@@ -268,6 +268,36 @@ Items: {
 		Tooltip: Деталь привода, снятая с Эсминца Пустоты. Её поверхность давно потускнела
 	}
 
+	SolunarRune: {
+		// DisplayName: Solunar Rune
+		/* Tooltip:
+			'''
+			A rune engraved with a sundial and the phases of the moon. Holding it, you can feel time flowing
+			Summons the Sun Goddess when used during the day, and the Starmoon Sage when used at night
+			Not consumable
+			''' */
+	}
+
+	PowerOfSunlight: {
+		// DisplayName: Power of Sunlight
+		/* Tooltip:
+			'''
+			Permanently increases maximum life by 25 and maximum mana by 25
+			During the day, increases defense by 5 and critical strike chance by 5%
+			Can only be used once
+			''' */
+	}
+
+	PowerOfStarmoon: {
+		// DisplayName: Power of Starmoon
+		/* Tooltip:
+			'''
+			Permanently increases maximum life by 25 and maximum mana by 25
+			At night, increases all damage by 5% and movement speed by 5%
+			Can only be used once
+			''' */
+	}
+
 	VoidMK2: {
 		// DisplayName: Void MK2
 		/* Tooltip:
@@ -4697,6 +4727,956 @@ Items: {
 		DisplayName: Искатель пустоты
 		Tooltip: Скрытый удар телепортирует вас к курсору и нанесет значительный урон.
 	}
+
+	AzafureBathtub: {
+		DisplayName: Адско-промышленная ванна
+		Tooltip: ""
+	}
+
+	AzafureBed: {
+		DisplayName: Адско-промышленная кровать
+		Tooltip: ""
+	}
+
+	AzafureBookcase: {
+		DisplayName: Адско-промышленный книжный шкаф
+		Tooltip: ""
+	}
+
+	AzafureCandelabra: {
+		DisplayName: Адско-промышленный канделябр
+		Tooltip: ""
+	}
+
+	AzafureCandle: {
+		DisplayName: Адско-промышленная свеча
+		Tooltip: ""
+	}
+
+	AzafureChair: {
+		DisplayName: Адско-промышленный стул
+		Tooltip: ""
+	}
+
+	AzafureChandelier: {
+		DisplayName: Адско-промышленная люстра
+		Tooltip: ""
+	}
+
+	AzafureChest: {
+		DisplayName: Адско-промышленный сундук
+		Tooltip: ""
+	}
+
+	AzafureClock: {
+		DisplayName: Адско-промышленные часы
+		Tooltip: ""
+	}
+
+	AzafureDoor: {
+		DisplayName: Адско-промышленная дверь
+		Tooltip: ""
+	}
+
+	AzafureDresser: {
+		DisplayName: Адско-промышленный комод
+		Tooltip: ""
+	}
+
+	AzafureLamp: {
+		DisplayName: Адско-промышленная лампа
+		Tooltip: ""
+	}
+
+	AzafureLantern: {
+		DisplayName: Адско-промышленный фонарь
+		Tooltip: ""
+	}
+
+	AzafurePiano: {
+		DisplayName: Адско-промышленное пианино
+		Tooltip: ""
+	}
+
+	AzafurePlatform: {
+		DisplayName: Адско-промышленная платформа
+		Tooltip: ""
+	}
+
+	AzafureSink: {
+		DisplayName: Адско-промышленная раковина
+		Tooltip: ""
+	}
+
+	AzafureSofa: {
+		DisplayName: Адско-промышленный диван
+		Tooltip: ""
+	}
+
+	AzafureTable: {
+		DisplayName: Адско-промышленный стол
+		Tooltip: ""
+	}
+
+	AzafureWorkBench: {
+		DisplayName: Адско-промышленный верстак
+		Tooltip: ""
+	}
+
+	TectonicBathtub: {
+		DisplayName: Тектоническая ванна
+		Tooltip: ""
+	}
+
+	TectonicBed: {
+		DisplayName: Тектоническая кровать
+		Tooltip: ""
+	}
+
+	TectonicBookcase: {
+		DisplayName: Тектонический книжный шкаф
+		Tooltip: ""
+	}
+
+	TectonicCandelabra: {
+		DisplayName: Тектонический канделябр
+		Tooltip: ""
+	}
+
+	TectonicCandle: {
+		DisplayName: Тектоническая свеча
+		Tooltip: ""
+	}
+
+	TectonicChair: {
+		DisplayName: Тектонический стул
+		Tooltip: ""
+	}
+
+	TectonicChandelier: {
+		DisplayName: Тектоническая люстра
+		Tooltip: ""
+	}
+
+	TectonicChest: {
+		DisplayName: Тектонический сундук
+		Tooltip: ""
+	}
+
+	TectonicClock: {
+		DisplayName: Тектонические часы
+		Tooltip: ""
+	}
+
+	TectonicDoor: {
+		DisplayName: Тектоническая дверь
+		Tooltip: ""
+	}
+
+	TectonicDresser: {
+		DisplayName: Тектонический комод
+		Tooltip: ""
+	}
+
+	TectonicLamp: {
+		DisplayName: Тектоническая лампа
+		Tooltip: ""
+	}
+
+	TectonicLantern: {
+		DisplayName: Тектонический фонарь
+		Tooltip: ""
+	}
+
+	TectonicPiano: {
+		DisplayName: Тектоническое пианино
+		Tooltip: ""
+	}
+
+	TectonicPlatform: {
+		DisplayName: Тектоническая платформа
+		Tooltip: ""
+	}
+
+	TectonicSink: {
+		DisplayName: Тектоническая лавовая раковина
+		Tooltip: Считается источником лавы при создании предметов
+	}
+
+	TectonicSofa: {
+		DisplayName: Тектонический диван
+		Tooltip: ""
+	}
+
+	TectonicTable: {
+		DisplayName: Тектонический стол
+		Tooltip: ""
+	}
+
+	TectonicWorkBench: {
+		DisplayName: Тектонический верстак
+		Tooltip: ""
+	}
+
+	StarlitBathtub: {
+		DisplayName: Звёздно-сияющая ванна
+		Tooltip: ""
+	}
+
+	StarlitBed: {
+		DisplayName: Звёздно-сияющая кровать
+		Tooltip: ""
+	}
+
+	StarlitBookcase: {
+		DisplayName: Звёздно-сияющий книжный шкаф
+		Tooltip: ""
+	}
+
+	StarlitCandelabra: {
+		DisplayName: Звёздно-сияющий канделябр
+		Tooltip: ""
+	}
+
+	StarlitCandle: {
+		DisplayName: Звёздно-сияющая свеча
+		Tooltip: ""
+	}
+
+	StarlitChair: {
+		DisplayName: Звёздно-сияющий стул
+		Tooltip: ""
+	}
+
+	StarlitChandelier: {
+		DisplayName: Звёздно-сияющая люстра
+		Tooltip: ""
+	}
+
+	StarlitChest: {
+		DisplayName: Звёздно-сияющий сундук
+		Tooltip: ""
+	}
+
+	StarlitClock: {
+		DisplayName: Звёздно-сияющие часы
+		Tooltip: ""
+	}
+
+	StarlitDoor: {
+		DisplayName: Звёздно-сияющая дверь
+		Tooltip: ""
+	}
+
+	StarlitDresser: {
+		DisplayName: Звёздно-сияющий комод
+		Tooltip: ""
+	}
+
+	StarlitLamp: {
+		DisplayName: Звёздно-сияющая лампа
+		Tooltip: ""
+	}
+
+	StarlitLantern: {
+		DisplayName: Звёздно-сияющий фонарь
+		Tooltip: ""
+	}
+
+	StarlitPiano: {
+		DisplayName: Звёздно-сияющее пианино
+		Tooltip: ""
+	}
+
+	StarlitPlatform: {
+		DisplayName: Звёздно-сияющая платформа
+		Tooltip: ""
+	}
+
+	StarlitSink: {
+		DisplayName: Звёздно-сияющая раковина
+		Tooltip: ""
+	}
+
+	StarlitSofa: {
+		DisplayName: Звёздно-сияющий диван
+		Tooltip: ""
+	}
+
+	StarlitTable: {
+		DisplayName: Звёздно-сияющий стол
+		Tooltip: ""
+	}
+
+	StarlitWorkBench: {
+		DisplayName: Звёздно-сияющий верстак
+		Tooltip: ""
+	}
+
+	NihilityBathtub: {
+		DisplayName: Ванна небытия
+		Tooltip: ""
+	}
+
+	NihilityBed: {
+		DisplayName: Кровать небытия
+		Tooltip: ""
+	}
+
+	NihilityBookcase: {
+		DisplayName: Книжный шкаф небытия
+		Tooltip: ""
+	}
+
+	NihilityCandelabra: {
+		DisplayName: Канделябр небытия
+		Tooltip: ""
+	}
+
+	NihilityCandle: {
+		DisplayName: Свеча небытия
+		Tooltip: ""
+	}
+
+	NihilityChair: {
+		DisplayName: Стул небытия
+		Tooltip: ""
+	}
+
+	NihilityChandelier: {
+		DisplayName: Люстра небытия
+		Tooltip: ""
+	}
+
+	NihilityChest: {
+		DisplayName: Сундук небытия
+		Tooltip: ""
+	}
+
+	NihilityClock: {
+		DisplayName: Часы небытия
+		Tooltip: ""
+	}
+
+	NihilityDoor: {
+		DisplayName: Дверь небытия
+		Tooltip: ""
+	}
+
+	NihilityDresser: {
+		DisplayName: Комод небытия
+		Tooltip: ""
+	}
+
+	NihilityLamp: {
+		DisplayName: Лампа небытия
+		Tooltip: ""
+	}
+
+	NihilityLantern: {
+		DisplayName: Фонарь небытия
+		Tooltip: ""
+	}
+
+	NihilityPiano: {
+		DisplayName: Пианино небытия
+		Tooltip: ""
+	}
+
+	NihilityPlatform: {
+		DisplayName: Платформа небытия
+		Tooltip: ""
+	}
+
+	NihilitySink: {
+		DisplayName: Раковина небытия
+		Tooltip: ""
+	}
+
+	NihilitySofa: {
+		DisplayName: Диван небытия
+		Tooltip: ""
+	}
+
+	NihilityTable: {
+		DisplayName: Стол небытия
+		Tooltip: ""
+	}
+
+	NihilityWorkBench: {
+		DisplayName: Верстак небытия
+		Tooltip: ""
+	}
+
+	ChaoticBathtub: {
+		DisplayName: Ванна хаоса
+		Tooltip: ""
+	}
+
+	ChaoticBed: {
+		DisplayName: Кровать хаоса
+		Tooltip: ""
+	}
+
+	ChaoticBookcase: {
+		DisplayName: Книжный шкаф хаоса
+		Tooltip: ""
+	}
+
+	ChaoticCandelabra: {
+		DisplayName: Канделябр хаоса
+		Tooltip: ""
+	}
+
+	ChaoticCandle: {
+		DisplayName: Свеча хаоса
+		Tooltip: ""
+	}
+
+	ChaoticChair: {
+		DisplayName: Стул хаоса
+		Tooltip: ""
+	}
+
+	ChaoticChandelier: {
+		DisplayName: Люстра хаоса
+		Tooltip: ""
+	}
+
+	ChaoticChest: {
+		DisplayName: Сундук хаоса
+		Tooltip: ""
+	}
+
+	ChaoticClock: {
+		DisplayName: Часы хаоса
+		Tooltip: ""
+	}
+
+	ChaoticDoor: {
+		DisplayName: Дверь хаоса
+		Tooltip: ""
+	}
+
+	ChaoticDresser: {
+		DisplayName: Комод хаоса
+		Tooltip: ""
+	}
+
+	ChaoticLamp: {
+		DisplayName: Лампа хаоса
+		Tooltip: ""
+	}
+
+	ChaoticLantern: {
+		DisplayName: Фонарь хаоса
+		Tooltip: ""
+	}
+
+	ChaoticPiano: {
+		DisplayName: Пианино хаоса
+		Tooltip: ""
+	}
+
+	ChaoticPlatform: {
+		DisplayName: Платформа хаоса
+		Tooltip: ""
+	}
+
+	ChaoticSink: {
+		DisplayName: Раковина хаоса
+		Tooltip: ""
+	}
+
+	ChaoticSofa: {
+		DisplayName: Диван хаоса
+		Tooltip: ""
+	}
+
+	ChaoticTable: {
+		DisplayName: Стол хаоса
+		Tooltip: ""
+	}
+
+	ChaoticWorkBench: {
+		DisplayName: Верстак хаоса
+		Tooltip: ""
+	}
+
+	StarclusterBathtub: {
+		DisplayName: Ванна звёздного скопления
+		Tooltip: ""
+	}
+
+	StarclusterBed: {
+		DisplayName: Кровать звёздного скопления
+		Tooltip: ""
+	}
+
+	StarclusterBookcase: {
+		DisplayName: Книжный шкаф звёздного скопления
+		Tooltip: ""
+	}
+
+	StarclusterCandelabra: {
+		DisplayName: Канделябр звёздного скопления
+		Tooltip: ""
+	}
+
+	StarclusterCandle: {
+		DisplayName: Свеча звёздного скопления
+		Tooltip: ""
+	}
+
+	StarclusterChair: {
+		DisplayName: Стул звёздного скопления
+		Tooltip: ""
+	}
+
+	StarclusterChandelier: {
+		DisplayName: Люстра звёздного скопления
+		Tooltip: ""
+	}
+
+	StarclusterChest: {
+		DisplayName: Сундук звёздного скопления
+		Tooltip: ""
+	}
+
+	StarclusterClock: {
+		DisplayName: Часы звёздного скопления
+		Tooltip: ""
+	}
+
+	StarclusterDoor: {
+		DisplayName: Дверь звёздного скопления
+		Tooltip: ""
+	}
+
+	StarclusterDresser: {
+		DisplayName: Комод звёздного скопления
+		Tooltip: ""
+	}
+
+	StarclusterLamp: {
+		DisplayName: Лампа звёздного скопления
+		Tooltip: ""
+	}
+
+	StarclusterLantern: {
+		DisplayName: Фонарь звёздного скопления
+		Tooltip: ""
+	}
+
+	StarclusterPiano: {
+		DisplayName: Пианино звёздного скопления
+		Tooltip: ""
+	}
+
+	StarclusterPlatform: {
+		DisplayName: Платформа звёздного скопления
+		Tooltip: ""
+	}
+
+	StarclusterSink: {
+		DisplayName: Раковина звёздного скопления
+		Tooltip: ""
+	}
+
+	StarclusterSofa: {
+		DisplayName: Диван звёздного скопления
+		Tooltip: ""
+	}
+
+	StarclusterTable: {
+		DisplayName: Стол звёздного скопления
+		Tooltip: ""
+	}
+
+	StarclusterWorkBench: {
+		DisplayName: Верстак звёздного скопления
+		Tooltip: ""
+	}
+
+	SunblazeBathtub: {
+		DisplayName: Ванна палящего солнца
+		Tooltip: ""
+	}
+
+	SunblazeBed: {
+		DisplayName: Кровать палящего солнца
+		Tooltip: ""
+	}
+
+	SunblazeBookcase: {
+		DisplayName: Книжный шкаф палящего солнца
+		Tooltip: ""
+	}
+
+	SunblazeCandelabra: {
+		DisplayName: Канделябр палящего солнца
+		Tooltip: ""
+	}
+
+	SunblazeCandle: {
+		DisplayName: Свеча палящего солнца
+		Tooltip: ""
+	}
+
+	SunblazeChair: {
+		DisplayName: Стул палящего солнца
+		Tooltip: ""
+	}
+
+	SunblazeChandelier: {
+		DisplayName: Люстра палящего солнца
+		Tooltip: ""
+	}
+
+	SunblazeChest: {
+		DisplayName: Сундук палящего солнца
+		Tooltip: ""
+	}
+
+	SunblazeClock: {
+		DisplayName: Часы палящего солнца
+		Tooltip: ""
+	}
+
+	SunblazeDoor: {
+		DisplayName: Дверь палящего солнца
+		Tooltip: ""
+	}
+
+	SunblazeDresser: {
+		DisplayName: Комод палящего солнца
+		Tooltip: ""
+	}
+
+	SunblazeLamp: {
+		DisplayName: Лампа палящего солнца
+		Tooltip: ""
+	}
+
+	SunblazeLantern: {
+		DisplayName: Фонарь палящего солнца
+		Tooltip: ""
+	}
+
+	SunblazePiano: {
+		DisplayName: Пианино палящего солнца
+		Tooltip: ""
+	}
+
+	SunblazePlatform: {
+		DisplayName: Платформа палящего солнца
+		Tooltip: ""
+	}
+
+	SunblazeSink: {
+		DisplayName: Раковина палящего солнца
+		Tooltip: ""
+	}
+
+	SunblazeSofa: {
+		DisplayName: Диван палящего солнца
+		Tooltip: ""
+	}
+
+	SunblazeTable: {
+		DisplayName: Стол палящего солнца
+		Tooltip: ""
+	}
+
+	SunblazeWorkBench: {
+		DisplayName: Верстак палящего солнца
+		Tooltip: ""
+	}
+
+	DimBearingBathtub: {
+		DisplayName: Тусклая ванна
+		Tooltip: ""
+	}
+
+	DimBearingBed: {
+		DisplayName: Тусклая кровать
+		Tooltip: ""
+	}
+
+	DimBearingBookcase: {
+		DisplayName: Тусклый книжный шкаф
+		Tooltip: ""
+	}
+
+	DimBearingCandelabra: {
+		DisplayName: Тусклый канделябр
+		Tooltip: ""
+	}
+
+	DimBearingCandle: {
+		DisplayName: Тусклая свеча
+		Tooltip: ""
+	}
+
+	DimBearingChair: {
+		DisplayName: Тусклый стул
+		Tooltip: ""
+	}
+
+	DimBearingChandelier: {
+		DisplayName: Тусклая люстра
+		Tooltip: ""
+	}
+
+	DimBearingChest: {
+		DisplayName: Тусклый сундук
+		Tooltip: ""
+	}
+
+	DimBearingClock: {
+		DisplayName: Тусклые часы
+		Tooltip: ""
+	}
+
+	DimBearingDoor: {
+		DisplayName: Тусклая дверь
+		Tooltip: ""
+	}
+
+	DimBearingDresser: {
+		DisplayName: Тусклый комод
+		Tooltip: ""
+	}
+
+	DimBearingLamp: {
+		DisplayName: Тусклая лампа
+		Tooltip: ""
+	}
+
+	DimBearingLantern: {
+		DisplayName: Тусклый фонарь
+		Tooltip: ""
+	}
+
+	DimBearingPiano: {
+		DisplayName: Тусклое пианино
+		Tooltip: ""
+	}
+
+	DimBearingPlatform: {
+		DisplayName: Тусклая платформа
+		Tooltip: ""
+	}
+
+	DimBearingSink: {
+		DisplayName: Тусклая раковина
+		Tooltip: ""
+	}
+
+	DimBearingSofa: {
+		DisplayName: Тусклый диван
+		Tooltip: ""
+	}
+
+	DimBearingTable: {
+		DisplayName: Тусклый стол
+		Tooltip: ""
+	}
+
+	DimBearingWorkBench: {
+		DisplayName: Тусклый верстак
+		Tooltip: ""
+	}
+
+	VoidforgedBathtub: {
+		DisplayName: Пустотная ванна
+		Tooltip: ""
+	}
+
+	VoidforgedBed: {
+		DisplayName: Пустотная кровать
+		Tooltip: ""
+	}
+
+	VoidforgedBookcase: {
+		DisplayName: Пустотный книжный шкаф
+		Tooltip: ""
+	}
+
+	VoidforgedCandelabra: {
+		DisplayName: Пустотный канделябр
+		Tooltip: ""
+	}
+
+	VoidforgedCandle: {
+		DisplayName: Пустотная свеча
+		Tooltip: ""
+	}
+
+	VoidforgedChair: {
+		DisplayName: Пустотный стул
+		Tooltip: ""
+	}
+
+	VoidforgedChandelier: {
+		DisplayName: Пустотная люстра
+		Tooltip: ""
+	}
+
+	VoidforgedChest: {
+		DisplayName: Пустотный сундук
+		Tooltip: ""
+	}
+
+	VoidforgedClock: {
+		DisplayName: Пустотные часы
+		Tooltip: ""
+	}
+
+	VoidforgedDoor: {
+		DisplayName: Пустотная дверь
+		Tooltip: ""
+	}
+
+	VoidforgedDresser: {
+		DisplayName: Пустотный комод
+		Tooltip: ""
+	}
+
+	VoidforgedLamp: {
+		DisplayName: Пустотная лампа
+		Tooltip: ""
+	}
+
+	VoidforgedLantern: {
+		DisplayName: Пустотный фонарь
+		Tooltip: ""
+	}
+
+	VoidforgedPiano: {
+		DisplayName: Пустотное пианино
+		Tooltip: ""
+	}
+
+	VoidforgedPlatform: {
+		DisplayName: Пустотная платформа
+		Tooltip: ""
+	}
+
+	VoidforgedSink: {
+		DisplayName: Пустотная раковина
+		Tooltip: ""
+	}
+
+	VoidforgedSofa: {
+		DisplayName: Пустотный диван
+		Tooltip: ""
+	}
+
+	VoidforgedTable: {
+		DisplayName: Пустотный стол
+		Tooltip: ""
+	}
+
+	VoidforgedWorkBench: {
+		DisplayName: Пустотный верстак
+		Tooltip: ""
+	}
+
+	WyrmtoothBathtub: {
+		DisplayName: Ванна из зуба змея
+		Tooltip: ""
+	}
+
+	WyrmtoothBed: {
+		DisplayName: Кровать из зуба змея
+		Tooltip: ""
+	}
+
+	WyrmtoothBookcase: {
+		DisplayName: Книжный шкаф из зуба змея
+		Tooltip: ""
+	}
+
+	WyrmtoothCandelabra: {
+		DisplayName: Канделябр из зуба змея
+		Tooltip: ""
+	}
+
+	WyrmtoothCandle: {
+		DisplayName: Свеча из зуба змея
+		Tooltip: ""
+	}
+
+	WyrmtoothChair: {
+		DisplayName: Стул из зуба змея
+		Tooltip: ""
+	}
+
+	WyrmtoothChandelier: {
+		DisplayName: Люстра из зуба змея
+		Tooltip: ""
+	}
+
+	WyrmtoothChest: {
+		DisplayName: Сундук из зуба змея
+		Tooltip: ""
+	}
+
+	WyrmtoothClock: {
+		DisplayName: Часы из зуба змея
+		Tooltip: ""
+	}
+
+	WyrmtoothDoor: {
+		DisplayName: Дверь из зуба змея
+		Tooltip: ""
+	}
+
+	WyrmtoothDresser: {
+		DisplayName: Комод из зуба змея
+		Tooltip: ""
+	}
+
+	WyrmtoothLamp: {
+		DisplayName: Лампа из зуба змея
+		Tooltip: ""
+	}
+
+	WyrmtoothLantern: {
+		DisplayName: Фонарь из зуба змея
+		Tooltip: ""
+	}
+
+	WyrmtoothPiano: {
+		DisplayName: Пианино из зуба змея
+		Tooltip: ""
+	}
+
+	WyrmtoothPlatform: {
+		DisplayName: Платформа из зуба змея
+		Tooltip: ""
+	}
+
+	WyrmtoothSink: {
+		DisplayName: Раковина из зуба змея
+		Tooltip: ""
+	}
+
+	WyrmtoothSofa: {
+		DisplayName: Диван из зуба змея
+		Tooltip: ""
+	}
+
+	WyrmtoothTable: {
+		DisplayName: Стол из зуба змея
+		Tooltip: ""
+	}
+
+	WyrmtoothWorkBench: {
+		DisplayName: Верстак из зуба змея
+		Tooltip: ""
+	}
 }
 
 // BaitCommonTooltip1: Charge when held. Usable when fully charged
@@ -4828,6 +5808,18 @@ Projectiles: {
 	SunbirdTotem.DisplayName: Тотем Золотого ворона
 	Sunbird.DisplayName: Солнечная птица
 	StarCrossBurst.DisplayName: Звёздный крестовый взрыв
+	// SunGoddessBird.DisplayName: Blazing Sunbird
+	// SunFlareBolt.DisplayName: Flare Feather
+	// SunLance.DisplayName: Sun Lance
+	// SunCoronaRay.DisplayName: Corona Ray
+	// SunFlarePetal.DisplayName: Solar Prominence
+	// SunfallOrb.DisplayName: Falling Sun
+	// SageStarWisp.DisplayName: Star Wisp
+	// SageStarRune.DisplayName: Star Rune
+	// SageCrossBurst.DisplayName: Star Cross Burst
+	// SageCrescent.DisplayName: Crescent Blade
+	// SageMeteor.DisplayName: Meteor
+	// SageMoonBeam.DisplayName: Full Moon Beam
 	// LDDaggerHeld.DisplayName: Light-Dark Dragon Dagger
 	// LDKnifeLight.DisplayName: Radiant Blade
 	// LDKnifeDark.DisplayName: Umbral Blade
@@ -6343,6 +7335,26 @@ NPCs: {
 		}
 	}
 
+	SunGoddess: {
+		// DisplayName: Sun Goddess
+
+		BossChecklistIntegration: {
+			// EntryName: Sun Goddess
+			// SpawnInfo: Use [i:CalamityEntropy/SolunarRune] during the day to summon
+			// DespawnMessage: ""
+		}
+	}
+
+	StarmoonSage: {
+		// DisplayName: Starmoon Sage
+
+		BossChecklistIntegration: {
+			// EntryName: Starmoon Sage
+			// SpawnInfo: Use [i:CalamityEntropy/SolunarRune] at night to summon
+			// DespawnMessage: ""
+		}
+	}
+
 	VoidVanguardCultist.DisplayName: Культист-авангард Пустоты
 	CruiserBody.DisplayName: Крейсер
 	VoidCultistAssassin.DisplayName: Ассассин культистов Пустоты
@@ -6567,6 +7579,16 @@ ProphetBestiary:
 	Связанная древними текстами, она бесконечно повторяет бессмысленные крики и шепоты, отчаянно — но тщетно — пытаясь передать увиденное.
 	'''
 LuminarisBestiary: Гигантское насекомое, скрывающееся в ночном небе. Оно накапливает звёздный свет в своём теле и использует его для атак. Особенно любит сладкую росу со вкусом звёзд.
+/* SunGoddessBestiary:
+	'''
+	An avatar of the blazing sun that wears the shape of the Empress of Light. A sun wheel hangs behind her, and every feather shed from her wings is a shard of noon.
+	Only the rune of daytime can call her.
+	''' */
+/* StarmoonSageBestiary:
+	'''
+	The being the Prophet once glimpsed in its visions: a sage that swims through the sea of stars, the moon waxing and waning with its breath.
+	Only the rune of night can call it.
+	''' */
 ApsychosBestiary:
 	'''
 	Живые существа, блуждающие глубоко в магме, имеют раковины, состоящие из пород земной коры.

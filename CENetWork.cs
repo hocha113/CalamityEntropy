@@ -39,6 +39,8 @@ namespace CalamityEntropy
         SyncDRShadowCrystal,
         SyncMouseWorld,
         SyncCooldowns,
+        /// <summary>日光之力与星月之力的使用旗标:whoAmI(byte)、位旗(byte)</summary>
+        SyncSunMoonPower,
         SyncPlayer = 255
     }
 
@@ -375,6 +377,9 @@ namespace CalamityEntropy
                     Main.player[whoAmI].GetModPlayer<Core.Cooldowns.CECooldownPlayer>().WriteAllCooldowns(packet);
                     packet.Send(-1, whoAmI);
                 }
+            }
+            else if (messageType == CEMessageType.SyncSunMoonPower) {
+                Content.Items.SunMoonGods.SunMoonPowerPlayer.Receive(reader, whoAmI);
             }
             else if (messageType == CEMessageType.SyncPlayer) {
                 int wai = reader.ReadInt32();

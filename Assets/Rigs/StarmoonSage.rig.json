@@ -1,0 +1,48 @@
+{
+  "name": "StarmoonSage",
+  "snapDistance": 1200,
+  "vars": { "tailSeg": 28 },
+
+  "bones": [
+    { "name": "body" },
+
+    { "name": "wingLowL", "parent": "body", "offset": [-35, -33] },
+    { "name": "wingLowR", "parent": "body", "offset": [-35, 33] },
+    { "name": "wingUpL", "parent": "body", "offset": [-12, -38] },
+    { "name": "wingUpR", "parent": "body", "offset": [-12, 38] },
+
+    { "name": "tailAnchor", "parent": "body", "offset": [0, 0] },
+    { "name": "tail1", "parent": "tailAnchor", "rotationDeg": 180, "length": "{tailSeg}" },
+    { "repeat": 9, "var": "i", "start": 2, "items": [
+      { "name": "tail{i}", "parent": "tail{i-1}", "atTip": true, "length": "{tailSeg}" }
+    ] },
+    { "name": "tailTip", "parent": "tail10", "atTip": true },
+
+    { "name": "tipA", "parent": "tail8", "atTip": true, "length": "{tailSeg}" },
+    { "name": "tipB", "parent": "tipA", "atTip": true, "length": "{tailSeg}" },
+    { "name": "tipEnd", "parent": "tipB", "atTip": true }
+  ],
+
+  "pieces": [
+    { "name": "wingLowL", "bone": "wingLowL", "texture": "Content/NPCs/SunMoonGods/Sage/WingLow", "proximal": [105, 200], "axisDeg": 90, "mirror": true, "layer": 1, "unlit": true },
+    { "name": "wingLowR", "bone": "wingLowR", "texture": "Content/NPCs/SunMoonGods/Sage/WingLow", "proximal": [105, 200], "axisDeg": 90, "layer": 2, "unlit": true },
+
+    { "name": "ring", "bone": "tail6", "texture": "Content/NPCs/SunMoonGods/Sage/Ring", "proximalNormalized": true, "proximal": [0.5, 0.5], "axisDeg": -90, "layer": 3, "unlit": true },
+
+    { "name": "wingUpL", "bone": "wingUpL", "texture": "Content/NPCs/SunMoonGods/Sage/WingUp", "proximal": [146, 104], "axisDeg": 90, "mirror": true, "layer": 4, "unlit": true },
+    { "name": "wingUpR", "bone": "wingUpR", "texture": "Content/NPCs/SunMoonGods/Sage/WingUp", "proximal": [146, 104], "axisDeg": 90, "layer": 5, "unlit": true },
+
+    { "name": "body", "bone": "body", "texture": "Content/NPCs/SunMoonGods/Sage/StarmoonSage", "proximalNormalized": true, "proximal": [0.5, 0.5], "axisDeg": 90, "layer": 6, "unlit": true }
+  ],
+
+  "ribbons": [
+    { "name": "tail", "bones": ["tipEnd", "tipB", "tipA", { "repeat": 8, "var": "i", "start": 1, "items": ["tail{9-i}"] }],
+      "texture": "Content/NPCs/SunMoonGods/Sage/Tail", "width": 134, "uv": "stretch", "includeTip": false, "layer": 0, "unlit": true }
+  ],
+
+  "solvers": [
+    { "name": "tail", "type": "VerletStrand", "bones": ["tail1", { "repeat": 9, "var": "i", "start": 2, "items": ["tail{i}"] }],
+      "gravity": 0, "damping": 0.88, "iterations": 8, "restForce": 6.0,
+      "sway": 0.02, "swayFreq": [4.0, 1.7], "swayStep": [-0.22, -0.09], "swaySecond": 0.4, "substeps": 4 }
+  ]
+}

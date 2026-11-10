@@ -19,6 +19,9 @@ namespace CalamityEntropy.Common
         public static bool downedPrimordialWyrm = false;
         //虚空驱逐舰(月后 T2)
         public static bool downedVoidDestroyer = false;
+        //日月双神(驱逐舰后)
+        public static bool downedSunGoddess = false;
+        public static bool downedStarmoonSage = false;
         public static Point ForbiddenArchiveCenter = new Point(-1, -1);
         public override void ClearWorld() {
             EntropyMode = false;
@@ -31,6 +34,8 @@ namespace CalamityEntropy.Common
             ForbiddenArchiveCenter = new Point(-1, -1);
             downedPrimordialWyrm = false;
             downedVoidDestroyer = false;
+            downedSunGoddess = false;
+            downedStarmoonSage = false;
         }
 
         public override void SaveWorldData(TagCompound tag) {
@@ -64,6 +69,12 @@ namespace CalamityEntropy.Common
             if (downedVoidDestroyer) {
                 tag["downedVoidDestroyer"] = true;
             }
+            if (downedSunGoddess) {
+                tag["downedSunGoddess"] = true;
+            }
+            if (downedStarmoonSage) {
+                tag["downedStarmoonSage"] = true;
+            }
             tag["DungeonArchiveCenterX"] = ForbiddenArchiveCenter.X;
             tag["DungeonArchiveCenterY"] = ForbiddenArchiveCenter.Y;
         }
@@ -81,6 +92,8 @@ namespace CalamityEntropy.Common
             downedApsychos = tag.ContainsKey("downedApsychos");
             downedPrimordialWyrm = tag.ContainsKey("downedPrimordialWyrm");
             downedVoidDestroyer = tag.ContainsKey("downedVoidDestroyer");
+            downedSunGoddess = tag.ContainsKey("downedSunGoddess");
+            downedStarmoonSage = tag.ContainsKey("downedStarmoonSage");
             TDR = tag.ContainsKey("TDR");
             if (tag.ContainsKey("DungeonArchiveCenterX") && tag.ContainsKey("DungeonArchiveCenterY")) {
                 ForbiddenArchiveCenter = new(tag.GetInt("DungeonArchiveCenterX"), tag.GetInt("DungeonArchiveCenterY"));
@@ -104,6 +117,8 @@ namespace CalamityEntropy.Common
             flags2[0] = EntropyMode;
             flags2[1] = TDR;
             flags2[2] = downedApsychos;
+            flags2[3] = downedSunGoddess;
+            flags2[4] = downedStarmoonSage;
 
             writer.Write(flags);
             writer.Write(flags2);
@@ -125,6 +140,8 @@ namespace CalamityEntropy.Common
             EntropyMode = flags2[0];
             TDR = flags2[1];
             downedApsychos = flags2[2];
+            downedSunGoddess = flags2[3];
+            downedStarmoonSage = flags2[4];
             ForbiddenArchiveCenter = new Point(reader.ReadInt32(), reader.ReadInt32());
         }
     }

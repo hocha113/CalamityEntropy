@@ -87,7 +87,7 @@ internal static class FurnitureCommon
             localPlayer.noThrow = 2;
             localPlayer.cursorItemIconEnabled = true;
             localPlayer.cursorItemIconID = itemID;
-            if (fat ? (Main.tile[i, j].TileFrameX <= 35) : (Main.tile[i, j].TileFrameX / 18 < 0)) {
+            if (fat ? (Main.tile[i, j].TileFrameX <= 35) : (Main.tile[i, j].TileFrameX / 18 < 1)) {
                 localPlayer.cursorItemIconReversed = true;
             }
         }

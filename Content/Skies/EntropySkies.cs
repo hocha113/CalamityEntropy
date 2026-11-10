@@ -23,6 +23,11 @@ namespace CalamityEntropy.Content.Skies
             //虚空驱逐舰「轨道封锁」天幕:独立键(现有 CalamityEntropy:VoidDestroyer 滤镜由 VDScreenFx 手动开关,不能共键),滤镜对惰性只为 ManageSpecialBiomeVisuals 不空引用
             Terraria.Graphics.Effects.Filters.Scene[VDSky.Key] = new Filter(new TransScreenShaderData("FilterMiniTower").UseColor(Color.Transparent).UseOpacity(0f), EffectPriority.VeryHigh);
             SkyManager.Instance[VDSky.Key] = new VDSky();
+            //日月双神的天幕,滤镜对同样是惰性的
+            Terraria.Graphics.Effects.Filters.Scene[SunGoddessSky.Key] = new Filter(new TransScreenShaderData("FilterMiniTower").UseColor(Color.Transparent).UseOpacity(0f), EffectPriority.VeryHigh);
+            SkyManager.Instance[SunGoddessSky.Key] = new SunGoddessSky();
+            Terraria.Graphics.Effects.Filters.Scene[StarmoonSky.Key] = new Filter(new TransScreenShaderData("FilterMiniTower").UseColor(Color.Transparent).UseOpacity(0f), EffectPriority.VeryHigh);
+            SkyManager.Instance[StarmoonSky.Key] = new StarmoonSky();
         }
 
         /// <summary>

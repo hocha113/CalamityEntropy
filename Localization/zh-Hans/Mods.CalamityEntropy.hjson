@@ -265,6 +265,36 @@ Items: {
 		Tooltip: 从虚空驱逐舰上拆下的传动部件，表面的光泽早已黯淡
 	}
 
+	SolunarRune: {
+		DisplayName: 光阴符文
+		Tooltip:
+			'''
+			刻着日晷与月相的符文，握在手里能感到时间在流动
+			白天使用召唤太阳女神，夜晚使用召唤星月贤者
+			不会被消耗
+			'''
+	}
+
+	PowerOfSunlight: {
+		DisplayName: 日光之力
+		Tooltip:
+			'''
+			永久增加25点生命上限和25点魔力上限
+			在白天，防御力增加5，暴击率增加5%
+			只能使用一次
+			'''
+	}
+
+	PowerOfStarmoon: {
+		DisplayName: 星月之力
+		Tooltip:
+			'''
+			永久增加25点生命上限和25点魔力上限
+			在夜晚，所有伤害增加5%，移动速度增加5%
+			只能使用一次
+			'''
+	}
+
 	VoidMK2: {
 		DisplayName: 虚空MK2
 		Tooltip:
@@ -5094,6 +5124,956 @@ Items: {
 			大招：射出强化虚空弹，伤害翻倍
 			'''
 	}
+
+	AzafureBathtub: {
+		DisplayName: 地狱工业浴缸
+		Tooltip: ""
+	}
+
+	AzafureBed: {
+		DisplayName: 地狱工业床
+		Tooltip: ""
+	}
+
+	AzafureBookcase: {
+		DisplayName: 地狱工业书架
+		Tooltip: ""
+	}
+
+	AzafureCandelabra: {
+		DisplayName: 地狱工业烛台
+		Tooltip: ""
+	}
+
+	AzafureCandle: {
+		DisplayName: 地狱工业蜡烛
+		Tooltip: ""
+	}
+
+	AzafureChair: {
+		DisplayName: 地狱工业椅
+		Tooltip: ""
+	}
+
+	AzafureChandelier: {
+		DisplayName: 地狱工业吊灯
+		Tooltip: ""
+	}
+
+	AzafureChest: {
+		DisplayName: 地狱工业箱
+		Tooltip: ""
+	}
+
+	AzafureClock: {
+		DisplayName: 地狱工业时钟
+		Tooltip: ""
+	}
+
+	AzafureDoor: {
+		DisplayName: 地狱工业门
+		Tooltip: ""
+	}
+
+	AzafureDresser: {
+		DisplayName: 地狱工业梳妆台
+		Tooltip: ""
+	}
+
+	AzafureLamp: {
+		DisplayName: 地狱工业灯
+		Tooltip: ""
+	}
+
+	AzafureLantern: {
+		DisplayName: 地狱工业灯笼
+		Tooltip: ""
+	}
+
+	AzafurePiano: {
+		DisplayName: 地狱工业钢琴
+		Tooltip: ""
+	}
+
+	AzafurePlatform: {
+		DisplayName: 地狱工业平台
+		Tooltip: ""
+	}
+
+	AzafureSink: {
+		DisplayName: 地狱工业水槽
+		Tooltip: ""
+	}
+
+	AzafureSofa: {
+		DisplayName: 地狱工业沙发
+		Tooltip: ""
+	}
+
+	AzafureTable: {
+		DisplayName: 地狱工业桌
+		Tooltip: ""
+	}
+
+	AzafureWorkBench: {
+		DisplayName: 地狱工业工作台
+		Tooltip: ""
+	}
+
+	TectonicBathtub: {
+		DisplayName: 板块浴缸
+		Tooltip: ""
+	}
+
+	TectonicBed: {
+		DisplayName: 板块床
+		Tooltip: ""
+	}
+
+	TectonicBookcase: {
+		DisplayName: 板块书架
+		Tooltip: ""
+	}
+
+	TectonicCandelabra: {
+		DisplayName: 板块烛台
+		Tooltip: ""
+	}
+
+	TectonicCandle: {
+		DisplayName: 板块蜡烛
+		Tooltip: ""
+	}
+
+	TectonicChair: {
+		DisplayName: 板块椅
+		Tooltip: ""
+	}
+
+	TectonicChandelier: {
+		DisplayName: 板块吊灯
+		Tooltip: ""
+	}
+
+	TectonicChest: {
+		DisplayName: 板块箱
+		Tooltip: ""
+	}
+
+	TectonicClock: {
+		DisplayName: 板块时钟
+		Tooltip: ""
+	}
+
+	TectonicDoor: {
+		DisplayName: 板块门
+		Tooltip: ""
+	}
+
+	TectonicDresser: {
+		DisplayName: 板块梳妆台
+		Tooltip: ""
+	}
+
+	TectonicLamp: {
+		DisplayName: 板块灯
+		Tooltip: ""
+	}
+
+	TectonicLantern: {
+		DisplayName: 板块灯笼
+		Tooltip: ""
+	}
+
+	TectonicPiano: {
+		DisplayName: 板块钢琴
+		Tooltip: ""
+	}
+
+	TectonicPlatform: {
+		DisplayName: 板块平台
+		Tooltip: ""
+	}
+
+	TectonicSink: {
+		DisplayName: 板块熔岩槽
+		Tooltip: 合成时可当作熔岩源
+	}
+
+	TectonicSofa: {
+		DisplayName: 板块沙发
+		Tooltip: ""
+	}
+
+	TectonicTable: {
+		DisplayName: 板块桌
+		Tooltip: ""
+	}
+
+	TectonicWorkBench: {
+		DisplayName: 板块工作台
+		Tooltip: ""
+	}
+
+	StarlitBathtub: {
+		DisplayName: 星辉浴缸
+		Tooltip: ""
+	}
+
+	StarlitBed: {
+		DisplayName: 星辉床
+		Tooltip: ""
+	}
+
+	StarlitBookcase: {
+		DisplayName: 星辉书架
+		Tooltip: ""
+	}
+
+	StarlitCandelabra: {
+		DisplayName: 星辉烛台
+		Tooltip: ""
+	}
+
+	StarlitCandle: {
+		DisplayName: 星辉蜡烛
+		Tooltip: ""
+	}
+
+	StarlitChair: {
+		DisplayName: 星辉椅
+		Tooltip: ""
+	}
+
+	StarlitChandelier: {
+		DisplayName: 星辉吊灯
+		Tooltip: ""
+	}
+
+	StarlitChest: {
+		DisplayName: 星辉箱
+		Tooltip: ""
+	}
+
+	StarlitClock: {
+		DisplayName: 星辉时钟
+		Tooltip: ""
+	}
+
+	StarlitDoor: {
+		DisplayName: 星辉门
+		Tooltip: ""
+	}
+
+	StarlitDresser: {
+		DisplayName: 星辉梳妆台
+		Tooltip: ""
+	}
+
+	StarlitLamp: {
+		DisplayName: 星辉灯
+		Tooltip: ""
+	}
+
+	StarlitLantern: {
+		DisplayName: 星辉灯笼
+		Tooltip: ""
+	}
+
+	StarlitPiano: {
+		DisplayName: 星辉钢琴
+		Tooltip: ""
+	}
+
+	StarlitPlatform: {
+		DisplayName: 星辉平台
+		Tooltip: ""
+	}
+
+	StarlitSink: {
+		DisplayName: 星辉水槽
+		Tooltip: ""
+	}
+
+	StarlitSofa: {
+		DisplayName: 星辉沙发
+		Tooltip: ""
+	}
+
+	StarlitTable: {
+		DisplayName: 星辉桌
+		Tooltip: ""
+	}
+
+	StarlitWorkBench: {
+		DisplayName: 星辉工作台
+		Tooltip: ""
+	}
+
+	NihilityBathtub: {
+		DisplayName: 虚无浴缸
+		Tooltip: ""
+	}
+
+	NihilityBed: {
+		DisplayName: 虚无床
+		Tooltip: ""
+	}
+
+	NihilityBookcase: {
+		DisplayName: 虚无书架
+		Tooltip: ""
+	}
+
+	NihilityCandelabra: {
+		DisplayName: 虚无烛台
+		Tooltip: ""
+	}
+
+	NihilityCandle: {
+		DisplayName: 虚无蜡烛
+		Tooltip: ""
+	}
+
+	NihilityChair: {
+		DisplayName: 虚无椅
+		Tooltip: ""
+	}
+
+	NihilityChandelier: {
+		DisplayName: 虚无吊灯
+		Tooltip: ""
+	}
+
+	NihilityChest: {
+		DisplayName: 虚无箱
+		Tooltip: ""
+	}
+
+	NihilityClock: {
+		DisplayName: 虚无时钟
+		Tooltip: ""
+	}
+
+	NihilityDoor: {
+		DisplayName: 虚无门
+		Tooltip: ""
+	}
+
+	NihilityDresser: {
+		DisplayName: 虚无梳妆台
+		Tooltip: ""
+	}
+
+	NihilityLamp: {
+		DisplayName: 虚无灯
+		Tooltip: ""
+	}
+
+	NihilityLantern: {
+		DisplayName: 虚无灯笼
+		Tooltip: ""
+	}
+
+	NihilityPiano: {
+		DisplayName: 虚无钢琴
+		Tooltip: ""
+	}
+
+	NihilityPlatform: {
+		DisplayName: 虚无平台
+		Tooltip: ""
+	}
+
+	NihilitySink: {
+		DisplayName: 虚无水槽
+		Tooltip: ""
+	}
+
+	NihilitySofa: {
+		DisplayName: 虚无沙发
+		Tooltip: ""
+	}
+
+	NihilityTable: {
+		DisplayName: 虚无桌
+		Tooltip: ""
+	}
+
+	NihilityWorkBench: {
+		DisplayName: 虚无工作台
+		Tooltip: ""
+	}
+
+	ChaoticBathtub: {
+		DisplayName: 混沌浴缸
+		Tooltip: ""
+	}
+
+	ChaoticBed: {
+		DisplayName: 混沌床
+		Tooltip: ""
+	}
+
+	ChaoticBookcase: {
+		DisplayName: 混沌书架
+		Tooltip: ""
+	}
+
+	ChaoticCandelabra: {
+		DisplayName: 混沌烛台
+		Tooltip: ""
+	}
+
+	ChaoticCandle: {
+		DisplayName: 混沌蜡烛
+		Tooltip: ""
+	}
+
+	ChaoticChair: {
+		DisplayName: 混沌椅
+		Tooltip: ""
+	}
+
+	ChaoticChandelier: {
+		DisplayName: 混沌吊灯
+		Tooltip: ""
+	}
+
+	ChaoticChest: {
+		DisplayName: 混沌箱
+		Tooltip: ""
+	}
+
+	ChaoticClock: {
+		DisplayName: 混沌时钟
+		Tooltip: ""
+	}
+
+	ChaoticDoor: {
+		DisplayName: 混沌门
+		Tooltip: ""
+	}
+
+	ChaoticDresser: {
+		DisplayName: 混沌梳妆台
+		Tooltip: ""
+	}
+
+	ChaoticLamp: {
+		DisplayName: 混沌灯
+		Tooltip: ""
+	}
+
+	ChaoticLantern: {
+		DisplayName: 混沌灯笼
+		Tooltip: ""
+	}
+
+	ChaoticPiano: {
+		DisplayName: 混沌钢琴
+		Tooltip: ""
+	}
+
+	ChaoticPlatform: {
+		DisplayName: 混沌平台
+		Tooltip: ""
+	}
+
+	ChaoticSink: {
+		DisplayName: 混沌水槽
+		Tooltip: ""
+	}
+
+	ChaoticSofa: {
+		DisplayName: 混沌沙发
+		Tooltip: ""
+	}
+
+	ChaoticTable: {
+		DisplayName: 混沌桌
+		Tooltip: ""
+	}
+
+	ChaoticWorkBench: {
+		DisplayName: 混沌工作台
+		Tooltip: ""
+	}
+
+	StarclusterBathtub: {
+		DisplayName: 聚星浴缸
+		Tooltip: ""
+	}
+
+	StarclusterBed: {
+		DisplayName: 聚星床
+		Tooltip: ""
+	}
+
+	StarclusterBookcase: {
+		DisplayName: 聚星书架
+		Tooltip: ""
+	}
+
+	StarclusterCandelabra: {
+		DisplayName: 聚星烛台
+		Tooltip: ""
+	}
+
+	StarclusterCandle: {
+		DisplayName: 聚星蜡烛
+		Tooltip: ""
+	}
+
+	StarclusterChair: {
+		DisplayName: 聚星椅
+		Tooltip: ""
+	}
+
+	StarclusterChandelier: {
+		DisplayName: 聚星吊灯
+		Tooltip: ""
+	}
+
+	StarclusterChest: {
+		DisplayName: 聚星箱
+		Tooltip: ""
+	}
+
+	StarclusterClock: {
+		DisplayName: 聚星时钟
+		Tooltip: ""
+	}
+
+	StarclusterDoor: {
+		DisplayName: 聚星门
+		Tooltip: ""
+	}
+
+	StarclusterDresser: {
+		DisplayName: 聚星梳妆台
+		Tooltip: ""
+	}
+
+	StarclusterLamp: {
+		DisplayName: 聚星灯
+		Tooltip: ""
+	}
+
+	StarclusterLantern: {
+		DisplayName: 聚星灯笼
+		Tooltip: ""
+	}
+
+	StarclusterPiano: {
+		DisplayName: 聚星钢琴
+		Tooltip: ""
+	}
+
+	StarclusterPlatform: {
+		DisplayName: 聚星平台
+		Tooltip: ""
+	}
+
+	StarclusterSink: {
+		DisplayName: 聚星水槽
+		Tooltip: ""
+	}
+
+	StarclusterSofa: {
+		DisplayName: 聚星沙发
+		Tooltip: ""
+	}
+
+	StarclusterTable: {
+		DisplayName: 聚星桌
+		Tooltip: ""
+	}
+
+	StarclusterWorkBench: {
+		DisplayName: 聚星工作台
+		Tooltip: ""
+	}
+
+	SunblazeBathtub: {
+		DisplayName: 烈阳浴缸
+		Tooltip: ""
+	}
+
+	SunblazeBed: {
+		DisplayName: 烈阳床
+		Tooltip: ""
+	}
+
+	SunblazeBookcase: {
+		DisplayName: 烈阳书架
+		Tooltip: ""
+	}
+
+	SunblazeCandelabra: {
+		DisplayName: 烈阳烛台
+		Tooltip: ""
+	}
+
+	SunblazeCandle: {
+		DisplayName: 烈阳蜡烛
+		Tooltip: ""
+	}
+
+	SunblazeChair: {
+		DisplayName: 烈阳椅
+		Tooltip: ""
+	}
+
+	SunblazeChandelier: {
+		DisplayName: 烈阳吊灯
+		Tooltip: ""
+	}
+
+	SunblazeChest: {
+		DisplayName: 烈阳箱
+		Tooltip: ""
+	}
+
+	SunblazeClock: {
+		DisplayName: 烈阳时钟
+		Tooltip: ""
+	}
+
+	SunblazeDoor: {
+		DisplayName: 烈阳门
+		Tooltip: ""
+	}
+
+	SunblazeDresser: {
+		DisplayName: 烈阳梳妆台
+		Tooltip: ""
+	}
+
+	SunblazeLamp: {
+		DisplayName: 烈阳灯
+		Tooltip: ""
+	}
+
+	SunblazeLantern: {
+		DisplayName: 烈阳灯笼
+		Tooltip: ""
+	}
+
+	SunblazePiano: {
+		DisplayName: 烈阳钢琴
+		Tooltip: ""
+	}
+
+	SunblazePlatform: {
+		DisplayName: 烈阳平台
+		Tooltip: ""
+	}
+
+	SunblazeSink: {
+		DisplayName: 烈阳水槽
+		Tooltip: ""
+	}
+
+	SunblazeSofa: {
+		DisplayName: 烈阳沙发
+		Tooltip: ""
+	}
+
+	SunblazeTable: {
+		DisplayName: 烈阳桌
+		Tooltip: ""
+	}
+
+	SunblazeWorkBench: {
+		DisplayName: 烈阳工作台
+		Tooltip: ""
+	}
+
+	DimBearingBathtub: {
+		DisplayName: 黯淡浴缸
+		Tooltip: ""
+	}
+
+	DimBearingBed: {
+		DisplayName: 黯淡床
+		Tooltip: ""
+	}
+
+	DimBearingBookcase: {
+		DisplayName: 黯淡书架
+		Tooltip: ""
+	}
+
+	DimBearingCandelabra: {
+		DisplayName: 黯淡烛台
+		Tooltip: ""
+	}
+
+	DimBearingCandle: {
+		DisplayName: 黯淡蜡烛
+		Tooltip: ""
+	}
+
+	DimBearingChair: {
+		DisplayName: 黯淡椅
+		Tooltip: ""
+	}
+
+	DimBearingChandelier: {
+		DisplayName: 黯淡吊灯
+		Tooltip: ""
+	}
+
+	DimBearingChest: {
+		DisplayName: 黯淡箱
+		Tooltip: ""
+	}
+
+	DimBearingClock: {
+		DisplayName: 黯淡时钟
+		Tooltip: ""
+	}
+
+	DimBearingDoor: {
+		DisplayName: 黯淡门
+		Tooltip: ""
+	}
+
+	DimBearingDresser: {
+		DisplayName: 黯淡梳妆台
+		Tooltip: ""
+	}
+
+	DimBearingLamp: {
+		DisplayName: 黯淡灯
+		Tooltip: ""
+	}
+
+	DimBearingLantern: {
+		DisplayName: 黯淡灯笼
+		Tooltip: ""
+	}
+
+	DimBearingPiano: {
+		DisplayName: 黯淡钢琴
+		Tooltip: ""
+	}
+
+	DimBearingPlatform: {
+		DisplayName: 黯淡平台
+		Tooltip: ""
+	}
+
+	DimBearingSink: {
+		DisplayName: 黯淡水槽
+		Tooltip: ""
+	}
+
+	DimBearingSofa: {
+		DisplayName: 黯淡沙发
+		Tooltip: ""
+	}
+
+	DimBearingTable: {
+		DisplayName: 黯淡桌
+		Tooltip: ""
+	}
+
+	DimBearingWorkBench: {
+		DisplayName: 黯淡工作台
+		Tooltip: ""
+	}
+
+	VoidforgedBathtub: {
+		DisplayName: 虚渺浴缸
+		Tooltip: ""
+	}
+
+	VoidforgedBed: {
+		DisplayName: 虚渺床
+		Tooltip: ""
+	}
+
+	VoidforgedBookcase: {
+		DisplayName: 虚渺书架
+		Tooltip: ""
+	}
+
+	VoidforgedCandelabra: {
+		DisplayName: 虚渺烛台
+		Tooltip: ""
+	}
+
+	VoidforgedCandle: {
+		DisplayName: 虚渺蜡烛
+		Tooltip: ""
+	}
+
+	VoidforgedChair: {
+		DisplayName: 虚渺椅
+		Tooltip: ""
+	}
+
+	VoidforgedChandelier: {
+		DisplayName: 虚渺吊灯
+		Tooltip: ""
+	}
+
+	VoidforgedChest: {
+		DisplayName: 虚渺箱
+		Tooltip: ""
+	}
+
+	VoidforgedClock: {
+		DisplayName: 虚渺时钟
+		Tooltip: ""
+	}
+
+	VoidforgedDoor: {
+		DisplayName: 虚渺门
+		Tooltip: ""
+	}
+
+	VoidforgedDresser: {
+		DisplayName: 虚渺梳妆台
+		Tooltip: ""
+	}
+
+	VoidforgedLamp: {
+		DisplayName: 虚渺灯
+		Tooltip: ""
+	}
+
+	VoidforgedLantern: {
+		DisplayName: 虚渺灯笼
+		Tooltip: ""
+	}
+
+	VoidforgedPiano: {
+		DisplayName: 虚渺钢琴
+		Tooltip: ""
+	}
+
+	VoidforgedPlatform: {
+		DisplayName: 虚渺平台
+		Tooltip: ""
+	}
+
+	VoidforgedSink: {
+		DisplayName: 虚渺水槽
+		Tooltip: ""
+	}
+
+	VoidforgedSofa: {
+		DisplayName: 虚渺沙发
+		Tooltip: ""
+	}
+
+	VoidforgedTable: {
+		DisplayName: 虚渺桌
+		Tooltip: ""
+	}
+
+	VoidforgedWorkBench: {
+		DisplayName: 虚渺工作台
+		Tooltip: ""
+	}
+
+	WyrmtoothBathtub: {
+		DisplayName: 龙牙浴缸
+		Tooltip: ""
+	}
+
+	WyrmtoothBed: {
+		DisplayName: 龙牙床
+		Tooltip: ""
+	}
+
+	WyrmtoothBookcase: {
+		DisplayName: 龙牙书架
+		Tooltip: ""
+	}
+
+	WyrmtoothCandelabra: {
+		DisplayName: 龙牙烛台
+		Tooltip: ""
+	}
+
+	WyrmtoothCandle: {
+		DisplayName: 龙牙蜡烛
+		Tooltip: ""
+	}
+
+	WyrmtoothChair: {
+		DisplayName: 龙牙椅
+		Tooltip: ""
+	}
+
+	WyrmtoothChandelier: {
+		DisplayName: 龙牙吊灯
+		Tooltip: ""
+	}
+
+	WyrmtoothChest: {
+		DisplayName: 龙牙箱
+		Tooltip: ""
+	}
+
+	WyrmtoothClock: {
+		DisplayName: 龙牙时钟
+		Tooltip: ""
+	}
+
+	WyrmtoothDoor: {
+		DisplayName: 龙牙门
+		Tooltip: ""
+	}
+
+	WyrmtoothDresser: {
+		DisplayName: 龙牙梳妆台
+		Tooltip: ""
+	}
+
+	WyrmtoothLamp: {
+		DisplayName: 龙牙灯
+		Tooltip: ""
+	}
+
+	WyrmtoothLantern: {
+		DisplayName: 龙牙灯笼
+		Tooltip: ""
+	}
+
+	WyrmtoothPiano: {
+		DisplayName: 龙牙钢琴
+		Tooltip: ""
+	}
+
+	WyrmtoothPlatform: {
+		DisplayName: 龙牙平台
+		Tooltip: ""
+	}
+
+	WyrmtoothSink: {
+		DisplayName: 龙牙水槽
+		Tooltip: ""
+	}
+
+	WyrmtoothSofa: {
+		DisplayName: 龙牙沙发
+		Tooltip: ""
+	}
+
+	WyrmtoothTable: {
+		DisplayName: 龙牙桌
+		Tooltip: ""
+	}
+
+	WyrmtoothWorkBench: {
+		DisplayName: 龙牙工作台
+		Tooltip: ""
+	}
 }
 
 BaitCommonTooltip1: 手持时充能，只能在充能完成时丢出
@@ -5221,6 +6201,18 @@ Projectiles: {
 	SunbirdTotem.DisplayName: 金乌图腾
 	Sunbird.DisplayName: 太阳神鸟
 	StarCrossBurst.DisplayName: 十字星爆
+	SunGoddessBird.DisplayName: 烈阳神鸟
+	SunFlareBolt.DisplayName: 火羽
+	SunLance.DisplayName: 日矛
+	SunCoronaRay.DisplayName: 日冕光芒
+	SunFlarePetal.DisplayName: 日珥
+	SunfallOrb.DisplayName: 坠日
+	SageStarWisp.DisplayName: 星魂
+	SageStarRune.DisplayName: 星符
+	SageCrossBurst.DisplayName: 十字星爆
+	SageCrescent.DisplayName: 月刃
+	SageMeteor.DisplayName: 流星
+	SageMoonBeam.DisplayName: 满月光炮
 	LDDaggerHeld.DisplayName: 光暗龙匕
 	LDKnifeLight.DisplayName: 耀光飞刃
 	LDKnifeDark.DisplayName: 黯影飞刃
@@ -6730,6 +7722,26 @@ NPCs: {
 		}
 	}
 
+	SunGoddess: {
+		DisplayName: 太阳女神
+
+		BossChecklistIntegration: {
+			EntryName: 太阳女神
+			SpawnInfo: 白天使用[i:CalamityEntropy/SolunarRune]召唤
+			DespawnMessage: ""
+		}
+	}
+
+	StarmoonSage: {
+		DisplayName: 星月贤者
+
+		BossChecklistIntegration: {
+			EntryName: 星月贤者
+			SpawnInfo: 夜晚使用[i:CalamityEntropy/SolunarRune]召唤
+			DespawnMessage: ""
+		}
+	}
+
 	VoidVanguardCultist.DisplayName: 虚空前卫教徒
 	CruiserBody.DisplayName: 巡游者
 	VoidCultistAssassin.DisplayName: 虚空邪教徒
@@ -6951,6 +7963,16 @@ ProphetBestiary:
 	被束缚于典籍的它一遍遍重复着无意义的嘶吼与低语，绝望且徒劳的向它人传达着它所见之物。
 	'''
 LuminarisBestiary: 一种隐匿于夜空中的巨型昆虫，将星光储存在身体内用于发起攻击。它格外喜欢星星口味的蜜露。
+SunGoddessBestiary:
+	'''
+	借走光之女皇形貌的烈阳化身，日轮悬在她的身后，羽翼间落下的每一片火羽都是正午的日光。
+	只有白昼的符文才唤得动她。
+	'''
+StarmoonSageBestiary:
+	'''
+	先知曾在预言里窥见的存在，一位游弋在星海里的贤者，月相随它的呼吸盈亏。
+	只有夜晚的符文才唤得动它。
+	'''
 ApsychosBestiary:
 	'''
 	在岩浆深处游荡的生物，身上的甲壳由地壳岩石构成。

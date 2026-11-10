@@ -37,5 +37,9 @@ namespace CalamityEntropy.Assets.Register
         /// <summary>先知骨架有四片翅骨、10 节尾带和尾环</summary>
         [VaultLoaden("CalamityEntropy/Assets/Rigs/Prophet")]
         public static Vault2DRig Prophet;
+
+        /// <summary>星月贤者骨架有头、上下两对翼骨、10 节尾带和尾环,贴图朝下</summary>
+        [VaultLoaden("CalamityEntropy/Assets/Rigs/StarmoonSage")]
+        public static Vault2DRig StarmoonSage;
     }
 }

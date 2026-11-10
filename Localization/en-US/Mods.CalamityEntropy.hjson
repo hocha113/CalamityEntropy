@@ -285,6 +285,36 @@ Items: {
 		Tooltip: A drive component salvaged from the Void Destroyer. Its surface lost its luster long ago
 	}
 
+	SolunarRune: {
+		DisplayName: Solunar Rune
+		Tooltip:
+			'''
+			A rune engraved with a sundial and the phases of the moon. Holding it, you can feel time flowing
+			Summons the Sun Goddess when used during the day, and the Starmoon Sage when used at night
+			Not consumable
+			'''
+	}
+
+	PowerOfSunlight: {
+		DisplayName: Power of Sunlight
+		Tooltip:
+			'''
+			Permanently increases maximum life by 25 and maximum mana by 25
+			During the day, increases defense by 5 and critical strike chance by 5%
+			Can only be used once
+			'''
+	}
+
+	PowerOfStarmoon: {
+		DisplayName: Power of Starmoon
+		Tooltip:
+			'''
+			Permanently increases maximum life by 25 and maximum mana by 25
+			At night, increases all damage by 5% and movement speed by 5%
+			Can only be used once
+			'''
+	}
+
 	VoidMK2: {
 		DisplayName: Void MK2
 		Tooltip:
@@ -5044,6 +5074,956 @@ Items: {
 			Ultimate: fires an empowered void bolt dealing double damage
 			'''
 	}
+
+	AzafureBathtub: {
+		DisplayName: Hell Industrial Bathtub
+		Tooltip: ""
+	}
+
+	AzafureBed: {
+		DisplayName: Hell Industrial Bed
+		Tooltip: ""
+	}
+
+	AzafureBookcase: {
+		DisplayName: Hell Industrial Bookcase
+		Tooltip: ""
+	}
+
+	AzafureCandelabra: {
+		DisplayName: Hell Industrial Candelabra
+		Tooltip: ""
+	}
+
+	AzafureCandle: {
+		DisplayName: Hell Industrial Candle
+		Tooltip: ""
+	}
+
+	AzafureChair: {
+		DisplayName: Hell Industrial Chair
+		Tooltip: ""
+	}
+
+	AzafureChandelier: {
+		DisplayName: Hell Industrial Chandelier
+		Tooltip: ""
+	}
+
+	AzafureChest: {
+		DisplayName: Hell Industrial Chest
+		Tooltip: ""
+	}
+
+	AzafureClock: {
+		DisplayName: Hell Industrial Clock
+		Tooltip: ""
+	}
+
+	AzafureDoor: {
+		DisplayName: Hell Industrial Door
+		Tooltip: ""
+	}
+
+	AzafureDresser: {
+		DisplayName: Hell Industrial Dresser
+		Tooltip: ""
+	}
+
+	AzafureLamp: {
+		DisplayName: Hell Industrial Lamp
+		Tooltip: ""
+	}
+
+	AzafureLantern: {
+		DisplayName: Hell Industrial Lantern
+		Tooltip: ""
+	}
+
+	AzafurePiano: {
+		DisplayName: Hell Industrial Piano
+		Tooltip: ""
+	}
+
+	AzafurePlatform: {
+		DisplayName: Hell Industrial Platform
+		Tooltip: ""
+	}
+
+	AzafureSink: {
+		DisplayName: Hell Industrial Sink
+		Tooltip: ""
+	}
+
+	AzafureSofa: {
+		DisplayName: Hell Industrial Sofa
+		Tooltip: ""
+	}
+
+	AzafureTable: {
+		DisplayName: Hell Industrial Table
+		Tooltip: ""
+	}
+
+	AzafureWorkBench: {
+		DisplayName: Hell Industrial Work Bench
+		Tooltip: ""
+	}
+
+	TectonicBathtub: {
+		DisplayName: Tectonic Bathtub
+		Tooltip: ""
+	}
+
+	TectonicBed: {
+		DisplayName: Tectonic Bed
+		Tooltip: ""
+	}
+
+	TectonicBookcase: {
+		DisplayName: Tectonic Bookcase
+		Tooltip: ""
+	}
+
+	TectonicCandelabra: {
+		DisplayName: Tectonic Candelabra
+		Tooltip: ""
+	}
+
+	TectonicCandle: {
+		DisplayName: Tectonic Candle
+		Tooltip: ""
+	}
+
+	TectonicChair: {
+		DisplayName: Tectonic Chair
+		Tooltip: ""
+	}
+
+	TectonicChandelier: {
+		DisplayName: Tectonic Chandelier
+		Tooltip: ""
+	}
+
+	TectonicChest: {
+		DisplayName: Tectonic Chest
+		Tooltip: ""
+	}
+
+	TectonicClock: {
+		DisplayName: Tectonic Clock
+		Tooltip: ""
+	}
+
+	TectonicDoor: {
+		DisplayName: Tectonic Door
+		Tooltip: ""
+	}
+
+	TectonicDresser: {
+		DisplayName: Tectonic Dresser
+		Tooltip: ""
+	}
+
+	TectonicLamp: {
+		DisplayName: Tectonic Lamp
+		Tooltip: ""
+	}
+
+	TectonicLantern: {
+		DisplayName: Tectonic Lantern
+		Tooltip: ""
+	}
+
+	TectonicPiano: {
+		DisplayName: Tectonic Piano
+		Tooltip: ""
+	}
+
+	TectonicPlatform: {
+		DisplayName: Tectonic Platform
+		Tooltip: ""
+	}
+
+	TectonicSink: {
+		DisplayName: Tectonic Lava Sink
+		Tooltip: Counts as a lava source for crafting
+	}
+
+	TectonicSofa: {
+		DisplayName: Tectonic Sofa
+		Tooltip: ""
+	}
+
+	TectonicTable: {
+		DisplayName: Tectonic Table
+		Tooltip: ""
+	}
+
+	TectonicWorkBench: {
+		DisplayName: Tectonic Work Bench
+		Tooltip: ""
+	}
+
+	StarlitBathtub: {
+		DisplayName: Starlit Bathtub
+		Tooltip: ""
+	}
+
+	StarlitBed: {
+		DisplayName: Starlit Bed
+		Tooltip: ""
+	}
+
+	StarlitBookcase: {
+		DisplayName: Starlit Bookcase
+		Tooltip: ""
+	}
+
+	StarlitCandelabra: {
+		DisplayName: Starlit Candelabra
+		Tooltip: ""
+	}
+
+	StarlitCandle: {
+		DisplayName: Starlit Candle
+		Tooltip: ""
+	}
+
+	StarlitChair: {
+		DisplayName: Starlit Chair
+		Tooltip: ""
+	}
+
+	StarlitChandelier: {
+		DisplayName: Starlit Chandelier
+		Tooltip: ""
+	}
+
+	StarlitChest: {
+		DisplayName: Starlit Chest
+		Tooltip: ""
+	}
+
+	StarlitClock: {
+		DisplayName: Starlit Clock
+		Tooltip: ""
+	}
+
+	StarlitDoor: {
+		DisplayName: Starlit Door
+		Tooltip: ""
+	}
+
+	StarlitDresser: {
+		DisplayName: Starlit Dresser
+		Tooltip: ""
+	}
+
+	StarlitLamp: {
+		DisplayName: Starlit Lamp
+		Tooltip: ""
+	}
+
+	StarlitLantern: {
+		DisplayName: Starlit Lantern
+		Tooltip: ""
+	}
+
+	StarlitPiano: {
+		DisplayName: Starlit Piano
+		Tooltip: ""
+	}
+
+	StarlitPlatform: {
+		DisplayName: Starlit Platform
+		Tooltip: ""
+	}
+
+	StarlitSink: {
+		DisplayName: Starlit Sink
+		Tooltip: ""
+	}
+
+	StarlitSofa: {
+		DisplayName: Starlit Sofa
+		Tooltip: ""
+	}
+
+	StarlitTable: {
+		DisplayName: Starlit Table
+		Tooltip: ""
+	}
+
+	StarlitWorkBench: {
+		DisplayName: Starlit Work Bench
+		Tooltip: ""
+	}
+
+	NihilityBathtub: {
+		DisplayName: Nihility Bathtub
+		Tooltip: ""
+	}
+
+	NihilityBed: {
+		DisplayName: Nihility Bed
+		Tooltip: ""
+	}
+
+	NihilityBookcase: {
+		DisplayName: Nihility Bookcase
+		Tooltip: ""
+	}
+
+	NihilityCandelabra: {
+		DisplayName: Nihility Candelabra
+		Tooltip: ""
+	}
+
+	NihilityCandle: {
+		DisplayName: Nihility Candle
+		Tooltip: ""
+	}
+
+	NihilityChair: {
+		DisplayName: Nihility Chair
+		Tooltip: ""
+	}
+
+	NihilityChandelier: {
+		DisplayName: Nihility Chandelier
+		Tooltip: ""
+	}
+
+	NihilityChest: {
+		DisplayName: Nihility Chest
+		Tooltip: ""
+	}
+
+	NihilityClock: {
+		DisplayName: Nihility Clock
+		Tooltip: ""
+	}
+
+	NihilityDoor: {
+		DisplayName: Nihility Door
+		Tooltip: ""
+	}
+
+	NihilityDresser: {
+		DisplayName: Nihility Dresser
+		Tooltip: ""
+	}
+
+	NihilityLamp: {
+		DisplayName: Nihility Lamp
+		Tooltip: ""
+	}
+
+	NihilityLantern: {
+		DisplayName: Nihility Lantern
+		Tooltip: ""
+	}
+
+	NihilityPiano: {
+		DisplayName: Nihility Piano
+		Tooltip: ""
+	}
+
+	NihilityPlatform: {
+		DisplayName: Nihility Platform
+		Tooltip: ""
+	}
+
+	NihilitySink: {
+		DisplayName: Nihility Sink
+		Tooltip: ""
+	}
+
+	NihilitySofa: {
+		DisplayName: Nihility Sofa
+		Tooltip: ""
+	}
+
+	NihilityTable: {
+		DisplayName: Nihility Table
+		Tooltip: ""
+	}
+
+	NihilityWorkBench: {
+		DisplayName: Nihility Work Bench
+		Tooltip: ""
+	}
+
+	ChaoticBathtub: {
+		DisplayName: Chaotic Bathtub
+		Tooltip: ""
+	}
+
+	ChaoticBed: {
+		DisplayName: Chaotic Bed
+		Tooltip: ""
+	}
+
+	ChaoticBookcase: {
+		DisplayName: Chaotic Bookcase
+		Tooltip: ""
+	}
+
+	ChaoticCandelabra: {
+		DisplayName: Chaotic Candelabra
+		Tooltip: ""
+	}
+
+	ChaoticCandle: {
+		DisplayName: Chaotic Candle
+		Tooltip: ""
+	}
+
+	ChaoticChair: {
+		DisplayName: Chaotic Chair
+		Tooltip: ""
+	}
+
+	ChaoticChandelier: {
+		DisplayName: Chaotic Chandelier
+		Tooltip: ""
+	}
+
+	ChaoticChest: {
+		DisplayName: Chaotic Chest
+		Tooltip: ""
+	}
+
+	ChaoticClock: {
+		DisplayName: Chaotic Clock
+		Tooltip: ""
+	}
+
+	ChaoticDoor: {
+		DisplayName: Chaotic Door
+		Tooltip: ""
+	}
+
+	ChaoticDresser: {
+		DisplayName: Chaotic Dresser
+		Tooltip: ""
+	}
+
+	ChaoticLamp: {
+		DisplayName: Chaotic Lamp
+		Tooltip: ""
+	}
+
+	ChaoticLantern: {
+		DisplayName: Chaotic Lantern
+		Tooltip: ""
+	}
+
+	ChaoticPiano: {
+		DisplayName: Chaotic Piano
+		Tooltip: ""
+	}
+
+	ChaoticPlatform: {
+		DisplayName: Chaotic Platform
+		Tooltip: ""
+	}
+
+	ChaoticSink: {
+		DisplayName: Chaotic Sink
+		Tooltip: ""
+	}
+
+	ChaoticSofa: {
+		DisplayName: Chaotic Sofa
+		Tooltip: ""
+	}
+
+	ChaoticTable: {
+		DisplayName: Chaotic Table
+		Tooltip: ""
+	}
+
+	ChaoticWorkBench: {
+		DisplayName: Chaotic Work Bench
+		Tooltip: ""
+	}
+
+	StarclusterBathtub: {
+		DisplayName: Starcluster Bathtub
+		Tooltip: ""
+	}
+
+	StarclusterBed: {
+		DisplayName: Starcluster Bed
+		Tooltip: ""
+	}
+
+	StarclusterBookcase: {
+		DisplayName: Starcluster Bookcase
+		Tooltip: ""
+	}
+
+	StarclusterCandelabra: {
+		DisplayName: Starcluster Candelabra
+		Tooltip: ""
+	}
+
+	StarclusterCandle: {
+		DisplayName: Starcluster Candle
+		Tooltip: ""
+	}
+
+	StarclusterChair: {
+		DisplayName: Starcluster Chair
+		Tooltip: ""
+	}
+
+	StarclusterChandelier: {
+		DisplayName: Starcluster Chandelier
+		Tooltip: ""
+	}
+
+	StarclusterChest: {
+		DisplayName: Starcluster Chest
+		Tooltip: ""
+	}
+
+	StarclusterClock: {
+		DisplayName: Starcluster Clock
+		Tooltip: ""
+	}
+
+	StarclusterDoor: {
+		DisplayName: Starcluster Door
+		Tooltip: ""
+	}
+
+	StarclusterDresser: {
+		DisplayName: Starcluster Dresser
+		Tooltip: ""
+	}
+
+	StarclusterLamp: {
+		DisplayName: Starcluster Lamp
+		Tooltip: ""
+	}
+
+	StarclusterLantern: {
+		DisplayName: Starcluster Lantern
+		Tooltip: ""
+	}
+
+	StarclusterPiano: {
+		DisplayName: Starcluster Piano
+		Tooltip: ""
+	}
+
+	StarclusterPlatform: {
+		DisplayName: Starcluster Platform
+		Tooltip: ""
+	}
+
+	StarclusterSink: {
+		DisplayName: Starcluster Sink
+		Tooltip: ""
+	}
+
+	StarclusterSofa: {
+		DisplayName: Starcluster Sofa
+		Tooltip: ""
+	}
+
+	StarclusterTable: {
+		DisplayName: Starcluster Table
+		Tooltip: ""
+	}
+
+	StarclusterWorkBench: {
+		DisplayName: Starcluster Work Bench
+		Tooltip: ""
+	}
+
+	SunblazeBathtub: {
+		DisplayName: Sunblaze Bathtub
+		Tooltip: ""
+	}
+
+	SunblazeBed: {
+		DisplayName: Sunblaze Bed
+		Tooltip: ""
+	}
+
+	SunblazeBookcase: {
+		DisplayName: Sunblaze Bookcase
+		Tooltip: ""
+	}
+
+	SunblazeCandelabra: {
+		DisplayName: Sunblaze Candelabra
+		Tooltip: ""
+	}
+
+	SunblazeCandle: {
+		DisplayName: Sunblaze Candle
+		Tooltip: ""
+	}
+
+	SunblazeChair: {
+		DisplayName: Sunblaze Chair
+		Tooltip: ""
+	}
+
+	SunblazeChandelier: {
+		DisplayName: Sunblaze Chandelier
+		Tooltip: ""
+	}
+
+	SunblazeChest: {
+		DisplayName: Sunblaze Chest
+		Tooltip: ""
+	}
+
+	SunblazeClock: {
+		DisplayName: Sunblaze Clock
+		Tooltip: ""
+	}
+
+	SunblazeDoor: {
+		DisplayName: Sunblaze Door
+		Tooltip: ""
+	}
+
+	SunblazeDresser: {
+		DisplayName: Sunblaze Dresser
+		Tooltip: ""
+	}
+
+	SunblazeLamp: {
+		DisplayName: Sunblaze Lamp
+		Tooltip: ""
+	}
+
+	SunblazeLantern: {
+		DisplayName: Sunblaze Lantern
+		Tooltip: ""
+	}
+
+	SunblazePiano: {
+		DisplayName: Sunblaze Piano
+		Tooltip: ""
+	}
+
+	SunblazePlatform: {
+		DisplayName: Sunblaze Platform
+		Tooltip: ""
+	}
+
+	SunblazeSink: {
+		DisplayName: Sunblaze Sink
+		Tooltip: ""
+	}
+
+	SunblazeSofa: {
+		DisplayName: Sunblaze Sofa
+		Tooltip: ""
+	}
+
+	SunblazeTable: {
+		DisplayName: Sunblaze Table
+		Tooltip: ""
+	}
+
+	SunblazeWorkBench: {
+		DisplayName: Sunblaze Work Bench
+		Tooltip: ""
+	}
+
+	DimBearingBathtub: {
+		DisplayName: Dim Bathtub
+		Tooltip: ""
+	}
+
+	DimBearingBed: {
+		DisplayName: Dim Bed
+		Tooltip: ""
+	}
+
+	DimBearingBookcase: {
+		DisplayName: Dim Bookcase
+		Tooltip: ""
+	}
+
+	DimBearingCandelabra: {
+		DisplayName: Dim Candelabra
+		Tooltip: ""
+	}
+
+	DimBearingCandle: {
+		DisplayName: Dim Candle
+		Tooltip: ""
+	}
+
+	DimBearingChair: {
+		DisplayName: Dim Chair
+		Tooltip: ""
+	}
+
+	DimBearingChandelier: {
+		DisplayName: Dim Chandelier
+		Tooltip: ""
+	}
+
+	DimBearingChest: {
+		DisplayName: Dim Chest
+		Tooltip: ""
+	}
+
+	DimBearingClock: {
+		DisplayName: Dim Clock
+		Tooltip: ""
+	}
+
+	DimBearingDoor: {
+		DisplayName: Dim Door
+		Tooltip: ""
+	}
+
+	DimBearingDresser: {
+		DisplayName: Dim Dresser
+		Tooltip: ""
+	}
+
+	DimBearingLamp: {
+		DisplayName: Dim Lamp
+		Tooltip: ""
+	}
+
+	DimBearingLantern: {
+		DisplayName: Dim Lantern
+		Tooltip: ""
+	}
+
+	DimBearingPiano: {
+		DisplayName: Dim Piano
+		Tooltip: ""
+	}
+
+	DimBearingPlatform: {
+		DisplayName: Dim Platform
+		Tooltip: ""
+	}
+
+	DimBearingSink: {
+		DisplayName: Dim Sink
+		Tooltip: ""
+	}
+
+	DimBearingSofa: {
+		DisplayName: Dim Sofa
+		Tooltip: ""
+	}
+
+	DimBearingTable: {
+		DisplayName: Dim Table
+		Tooltip: ""
+	}
+
+	DimBearingWorkBench: {
+		DisplayName: Dim Work Bench
+		Tooltip: ""
+	}
+
+	VoidforgedBathtub: {
+		DisplayName: Voidforged Bathtub
+		Tooltip: ""
+	}
+
+	VoidforgedBed: {
+		DisplayName: Voidforged Bed
+		Tooltip: ""
+	}
+
+	VoidforgedBookcase: {
+		DisplayName: Voidforged Bookcase
+		Tooltip: ""
+	}
+
+	VoidforgedCandelabra: {
+		DisplayName: Voidforged Candelabra
+		Tooltip: ""
+	}
+
+	VoidforgedCandle: {
+		DisplayName: Voidforged Candle
+		Tooltip: ""
+	}
+
+	VoidforgedChair: {
+		DisplayName: Voidforged Chair
+		Tooltip: ""
+	}
+
+	VoidforgedChandelier: {
+		DisplayName: Voidforged Chandelier
+		Tooltip: ""
+	}
+
+	VoidforgedChest: {
+		DisplayName: Voidforged Chest
+		Tooltip: ""
+	}
+
+	VoidforgedClock: {
+		DisplayName: Voidforged Clock
+		Tooltip: ""
+	}
+
+	VoidforgedDoor: {
+		DisplayName: Voidforged Door
+		Tooltip: ""
+	}
+
+	VoidforgedDresser: {
+		DisplayName: Voidforged Dresser
+		Tooltip: ""
+	}
+
+	VoidforgedLamp: {
+		DisplayName: Voidforged Lamp
+		Tooltip: ""
+	}
+
+	VoidforgedLantern: {
+		DisplayName: Voidforged Lantern
+		Tooltip: ""
+	}
+
+	VoidforgedPiano: {
+		DisplayName: Voidforged Piano
+		Tooltip: ""
+	}
+
+	VoidforgedPlatform: {
+		DisplayName: Voidforged Platform
+		Tooltip: ""
+	}
+
+	VoidforgedSink: {
+		DisplayName: Voidforged Sink
+		Tooltip: ""
+	}
+
+	VoidforgedSofa: {
+		DisplayName: Voidforged Sofa
+		Tooltip: ""
+	}
+
+	VoidforgedTable: {
+		DisplayName: Voidforged Table
+		Tooltip: ""
+	}
+
+	VoidforgedWorkBench: {
+		DisplayName: Voidforged Work Bench
+		Tooltip: ""
+	}
+
+	WyrmtoothBathtub: {
+		DisplayName: Wyrmtooth Bathtub
+		Tooltip: ""
+	}
+
+	WyrmtoothBed: {
+		DisplayName: Wyrmtooth Bed
+		Tooltip: ""
+	}
+
+	WyrmtoothBookcase: {
+		DisplayName: Wyrmtooth Bookcase
+		Tooltip: ""
+	}
+
+	WyrmtoothCandelabra: {
+		DisplayName: Wyrmtooth Candelabra
+		Tooltip: ""
+	}
+
+	WyrmtoothCandle: {
+		DisplayName: Wyrmtooth Candle
+		Tooltip: ""
+	}
+
+	WyrmtoothChair: {
+		DisplayName: Wyrmtooth Chair
+		Tooltip: ""
+	}
+
+	WyrmtoothChandelier: {
+		DisplayName: Wyrmtooth Chandelier
+		Tooltip: ""
+	}
+
+	WyrmtoothChest: {
+		DisplayName: Wyrmtooth Chest
+		Tooltip: ""
+	}
+
+	WyrmtoothClock: {
+		DisplayName: Wyrmtooth Clock
+		Tooltip: ""
+	}
+
+	WyrmtoothDoor: {
+		DisplayName: Wyrmtooth Door
+		Tooltip: ""
+	}
+
+	WyrmtoothDresser: {
+		DisplayName: Wyrmtooth Dresser
+		Tooltip: ""
+	}
+
+	WyrmtoothLamp: {
+		DisplayName: Wyrmtooth Lamp
+		Tooltip: ""
+	}
+
+	WyrmtoothLantern: {
+		DisplayName: Wyrmtooth Lantern
+		Tooltip: ""
+	}
+
+	WyrmtoothPiano: {
+		DisplayName: Wyrmtooth Piano
+		Tooltip: ""
+	}
+
+	WyrmtoothPlatform: {
+		DisplayName: Wyrmtooth Platform
+		Tooltip: ""
+	}
+
+	WyrmtoothSink: {
+		DisplayName: Wyrmtooth Sink
+		Tooltip: ""
+	}
+
+	WyrmtoothSofa: {
+		DisplayName: Wyrmtooth Sofa
+		Tooltip: ""
+	}
+
+	WyrmtoothTable: {
+		DisplayName: Wyrmtooth Table
+		Tooltip: ""
+	}
+
+	WyrmtoothWorkBench: {
+		DisplayName: Wyrmtooth Work Bench
+		Tooltip: ""
+	}
 }
 
 BaitCommonTooltip1: Charge when held. Usable when fully charged
@@ -5179,6 +6159,18 @@ Projectiles: {
 	SunbirdTotem.DisplayName: Golden Crow Totem
 	Sunbird.DisplayName: Sunbird
 	StarCrossBurst.DisplayName: Star Cross Burst
+	SunGoddessBird.DisplayName: Blazing Sunbird
+	SunFlareBolt.DisplayName: Flare Feather
+	SunLance.DisplayName: Sun Lance
+	SunCoronaRay.DisplayName: Corona Ray
+	SunFlarePetal.DisplayName: Solar Prominence
+	SunfallOrb.DisplayName: Falling Sun
+	SageStarWisp.DisplayName: Star Wisp
+	SageStarRune.DisplayName: Star Rune
+	SageCrossBurst.DisplayName: Star Cross Burst
+	SageCrescent.DisplayName: Crescent Blade
+	SageMeteor.DisplayName: Meteor
+	SageMoonBeam.DisplayName: Full Moon Beam
 	LDDaggerHeld.DisplayName: Light-Dark Dragon Dagger
 	LDKnifeLight.DisplayName: Radiant Blade
 	LDKnifeDark.DisplayName: Umbral Blade
@@ -6694,6 +7686,26 @@ NPCs: {
 		}
 	}
 
+	SunGoddess: {
+		DisplayName: Sun Goddess
+
+		BossChecklistIntegration: {
+			EntryName: Sun Goddess
+			SpawnInfo: Use [i:CalamityEntropy/SolunarRune] during the day to summon
+			DespawnMessage: ""
+		}
+	}
+
+	StarmoonSage: {
+		DisplayName: Starmoon Sage
+
+		BossChecklistIntegration: {
+			EntryName: Starmoon Sage
+			SpawnInfo: Use [i:CalamityEntropy/SolunarRune] at night to summon
+			DespawnMessage: ""
+		}
+	}
+
 	VoidVanguardCultist.DisplayName: Void Vanguard Cultist
 	CruiserBody.DisplayName: Cruiser
 	VoidCultistAssassin.DisplayName: Void Cultist Assassin
@@ -6874,6 +7886,16 @@ ProphetBestiary:
 	Bound to ancient texts, it endlessly repeats mindless screams and whispers, desperately—yet futilely—trying to convey what it has witnessed.
 	'''
 LuminarisBestiary: A giant insect that hides in the night sky and stores starlight in its body to fuel its attacks. It is especially fond of star-flavored honeydew.
+SunGoddessBestiary:
+	'''
+	An avatar of the blazing sun that wears the shape of the Empress of Light. A sun wheel hangs behind her, and every feather shed from her wings is a shard of noon.
+	Only the rune of daytime can call her.
+	'''
+StarmoonSageBestiary:
+	'''
+	The being the Prophet once glimpsed in its visions: a sage that swims through the sea of stars, the moon waxing and waning with its breath.
+	Only the rune of night can call it.
+	'''
 ApsychosBestiary:
 	'''
 	The creature wandering in the depths of lava has a carapace made of crustal rocks.

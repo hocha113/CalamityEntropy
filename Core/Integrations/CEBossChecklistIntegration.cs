@@ -4,6 +4,7 @@ using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Books.BookMarks;
 using CalamityEntropy.Content.Items.Pets;
+using CalamityEntropy.Content.Items.SunMoonGods;
 using CalamityEntropy.Content.Items.Vanity;
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Items.Weapons.Whips;
@@ -14,6 +15,8 @@ using CalamityEntropy.Content.NPCs.Cruiser;
 using CalamityEntropy.Content.NPCs.LuminarisMoth;
 using CalamityEntropy.Content.NPCs.NihilityTwin;
 using CalamityEntropy.Content.NPCs.Prophet;
+using CalamityEntropy.Content.NPCs.SunMoonGods.Goddess;
+using CalamityEntropy.Content.NPCs.SunMoonGods.Sage;
 using CalamityEntropy.Content.NPCs.VoidDestroyer;
 using CalamityEntropy.Core.Integrations.BossLog;
 using Microsoft.Xna.Framework.Graphics;
@@ -165,7 +168,22 @@ namespace CalamityEntropy.Core.Integrations
                         ModContent.ItemType<VoidDestroyerRelic>(), ModContent.ItemType<DimBearing>()
                     },
                     "CalamityEntropy/Content/NPCs/VoidDestroyer/VoidDestroyerP2", 1f,
-                    Actor: VoidDestroyerPortraitActor.Instance)
+                    Actor: VoidDestroyerPortraitActor.Instance),
+
+                //日月双神:召唤物要驱逐舰掉的黯淡轴承,排在驱逐舰 18.65 之后、虚无双子 19.3 之前;没有演员,左页用拼好的立绘
+                new BossEntry("SunGoddess", "SunGoddess", 18.8f,
+                    () => EDownedBosses.downedSunGoddess,
+                    ModContent.NPCType<SunGoddess>(),
+                    ModContent.ItemType<SolunarRune>(),
+                    new List<int>() { ModContent.ItemType<BlazingSunlight>(), ModContent.ItemType<PowerOfSunlight>() },
+                    "CalamityEntropy/Assets/BCL/SunGoddess", 1f),
+
+                new BossEntry("StarmoonSage", "StarmoonSage", 18.85f,
+                    () => EDownedBosses.downedStarmoonSage,
+                    ModContent.NPCType<StarmoonSage>(),
+                    ModContent.ItemType<SolunarRune>(),
+                    new List<int>() { ModContent.ItemType<WraithSoulEssence>(), ModContent.ItemType<PowerOfStarmoon>() },
+                    "CalamityEntropy/Assets/BCL/StarmoonSage", 0.8f)
             };
         }
     }

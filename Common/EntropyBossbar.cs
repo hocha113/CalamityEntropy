@@ -118,6 +118,8 @@ namespace CalamityEntropy.Common
             bossbarColor[ModContent.NPCType<Content.NPCs.Acropolis.AcropolisMachine>()] = new Color(255, 93, 13);
             bossbarColor[ModContent.NPCType<Content.NPCs.Apsychos.Apsychos>()] = new Color(255, 160, 20);
             bossbarColor[ModContent.NPCType<Content.NPCs.VoidDestroyer.VoidDestroyer>()] = new Color(190, 60, 255);
+            bossbarColor[ModContent.NPCType<Content.NPCs.SunMoonGods.Goddess.SunGoddess>()] = new Color(255, 196, 90);
+            bossbarColor[ModContent.NPCType<Content.NPCs.SunMoonGods.Sage.StarmoonSage>()] = new Color(130, 160, 255);
         }
 
         /// <summary>没命中的 NPC 类型不能写进色表,CEID 在灾厄缺席时会返回 0</summary>

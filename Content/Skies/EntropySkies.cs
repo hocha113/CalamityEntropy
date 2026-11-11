@@ -28,6 +28,9 @@ namespace CalamityEntropy.Content.Skies
             SkyManager.Instance[SunGoddessSky.Key] = new SunGoddessSky();
             Terraria.Graphics.Effects.Filters.Scene[StarmoonSky.Key] = new Filter(new TransScreenShaderData("FilterMiniTower").UseColor(Color.Transparent).UseOpacity(0f), EffectPriority.VeryHigh);
             SkyManager.Instance[StarmoonSky.Key] = new StarmoonSky();
+            //虚空史莱姆的天幕,滤镜对同样是惰性的
+            Terraria.Graphics.Effects.Filters.Scene[VoidSlimeSky.Key] = new Filter(new TransScreenShaderData("FilterMiniTower").UseColor(Color.Transparent).UseOpacity(0f), EffectPriority.VeryHigh);
+            SkyManager.Instance[VoidSlimeSky.Key] = new VoidSlimeSky();
         }
 
         /// <summary>

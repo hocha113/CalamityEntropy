@@ -1,6 +1,70 @@
 ModNameOverride: Call of Void
 
 Items: {
+	StarCrown: {
+		// DisplayName: Star Crown
+		/* Tooltip:
+			'''
+			Summons a viscous presence from deep space
+			Not consumable
+			''' */
+	}
+
+	SupernovaGel: {
+		// DisplayName: Supernova Gel
+		// Tooltip: A spark of a star that has not gone out is set inside
+	}
+
+	GalaxySolidifier: {
+		// DisplayName: Galaxy Solidifier
+		// Tooltip: Counts as a Solidifier
+	}
+
+	VoidSlimeBag: {
+		// DisplayName: Treasure Bag (Void Slime)
+		// Tooltip: ""
+	}
+
+	VoidSlimeTrophy: {
+		// DisplayName: Void Slime Trophy
+		// Tooltip: ""
+	}
+
+	VoidSlimeRelic: {
+		// DisplayName: Void Slime Relic
+		// Tooltip: ""
+	}
+
+	BabyStarGel: {
+		// DisplayName: Baby Star Gel
+		// Tooltip: Summons a Void Star Slime
+	}
+
+	VoidSlimeSaddle: {
+		// DisplayName: Void Slime Saddle
+		// Tooltip: Summons a rideable Void Slime that can hover briefly
+	}
+
+	GelstarBlade: {
+		// DisplayName: Gelstar Blade
+		// Tooltip: Swings fling a bouncing star gel that bursts into homing starlets
+	}
+
+	OrbitBow: {
+		// DisplayName: Orbit Bow
+		// Tooltip: Every arrow is escorted by two homing starlets
+	}
+
+	PulsarStaff: {
+		// DisplayName: Pulsar Staff
+		// Tooltip: Fires a gamma ray that pierces everything
+	}
+
+	SingularityRod: {
+		// DisplayName: Singularity Rod
+		// Tooltip: Places a small black hole sentry at the cursor that burns nearby enemies and spits homing starlets
+	}
+
 	LightDarkDragonDagger: {
 		// DisplayName: Light-Dark Dragon Dagger
 		/* Tooltip:
@@ -158,6 +222,17 @@ Items: {
 			DisplayName: История - Крейсер
 			Tooltip: ""
 			Lore: "{$loreCruiser}"
+		}
+
+		VoidSlimeLore: {
+			// DisplayName: Void Slime
+			// Tooltip: ""
+			/* Lore:
+				'''
+				There was once a universe of countless stars. All of its people worshipped a gentle, loving star god. Whenever someone lost their way in the vast sea of stars, the slimy star would light the road home with its pale, warm glow.
+				Then came the day when angry people seized some strangely dressed outsiders and banished them into deep space. The star god could feel the danger on them. But it believed the universe was vast enough to hold every life and smooth over every divide, and its loving heart could not stand by while anyone was in peril. So it used its light to carry those poor souls back to their planet and, before their tearful faces, taught them to turn to good and mend their ways.
+				But not everyone deserves salvation. The starry road of love and tolerance was ground to ash beneath the heels of the invaders from another world, and the whole universe of stars faded away.
+				''' */
 		}
 
 		NihilityTwinLore: {
@@ -5677,6 +5752,104 @@ Items: {
 		DisplayName: Верстак из зуба змея
 		Tooltip: ""
 	}
+
+	DesertGladiatorNecklace: {
+		// DisplayName: Desert Gladiator's Necklace
+		/* Tooltip:
+			'''
+			Increases armor penetration by 10
+			Increases damage by 8%
+			Grants immunity to suffocation from sand blocks
+			Slightly increases your mobility while standing on sand
+			''' */
+	}
+
+	SandseaDragonEgg: {
+		// DisplayName: Sandsea Dragon Egg
+		/* Tooltip:
+			'''
+			Summons a Sandsea Hatchling
+			"Bury it in sand and it will dig its own way out"
+			''' */
+	}
+
+	SandseaDragonMask: {
+		// DisplayName: Sandsea Netherdragon Mask
+		// Tooltip: ""
+	}
+
+	SandseaDragonRelic: {
+		// DisplayName: Sandsea Netherdragon Relic
+		// Tooltip: ""
+	}
+
+	SandseaDragonTrophy: {
+		// DisplayName: Sandsea Netherdragon Trophy
+		// Tooltip: ""
+	}
+
+	RunicStone: {
+		// DisplayName: Runic Stone
+		// Tooltip: A grey stone lodged inside the Sandsea Netherdragon, its cyan rune still aglow
+	}
+
+	SandseaDragonBag: {
+		// DisplayName: Treasure Bag (Sandsea Netherdragon)
+		// Tooltip: ""
+	}
+
+	SandstormPendant: {
+		// DisplayName: Sandstorm Pendant
+		/* Tooltip:
+			'''
+			Left click in a desert to summon the Sandsea Netherdragon
+			Right click to call a sandstorm
+			Not consumable
+			''' */
+	}
+
+	SandstormBow: {
+		// DisplayName: Sandstorm
+		/* Tooltip:
+			'''
+			Fires 2 arrows at once
+			Converts wooden arrows into giant sandstorm arrows
+			Giant sandstorm arrows create sand twisters on hit
+			''' */
+	}
+
+	SandseaConqueror: {
+		// DisplayName: Sandsea Conqueror
+		/* Tooltip:
+			'''
+			Fires forbidden energy orbs when attacking
+			Summons venomous shark fangs when striking a target at close range
+			''' */
+	}
+
+	AncientSharkbiteStaff: {
+		// DisplayName: Ancient Sharkbite Staff
+		// Tooltip: Launches a hungry flying shark
+	}
+
+	SharkSquadStaff: {
+		// DisplayName: Shark Squad Staff
+		/* Tooltip:
+			'''
+			Summons 4 adorable little sharks to fight by your side
+			Requires 8 minion slots to use
+			"Man-eating sharks not included"
+			''' */
+	}
+
+	SweetRainStaff: {
+		// DisplayName: Staff of Sweet Rain
+		/* Tooltip:
+			'''
+			Releases a thundercloud that rains on your enemies
+			"Perfect for watering the flowers"
+			''' */
+	}
 }
 
 // BaitCommonTooltip1: Charge when held. Usable when fully charged
@@ -5805,6 +5978,21 @@ VDAftermath: {
 }
 
 Projectiles: {
+	// VSlimeGreyGel.DisplayName: Grey Gel Ball
+	// VSlimeShockwave.DisplayName: Shockwave
+	// VSlimeDarkOrb.DisplayName: Dark Matter Orb
+	// VSlimeDarkGel.DisplayName: Dark Matter Gel
+	// VSlimeBigStar.DisplayName: Great Violet Star
+	// VSlimeStarlet.DisplayName: Starlet
+	// VSlimeDebris.DisplayName: Black Hole Debris
+	// VSlimeGammaRay.DisplayName: Gamma Ray
+	// VSlimeCrossStar.DisplayName: Cross Starburst
+	// VSlimeStarLaser.DisplayName: Stellar Laser
+	// VSlimeFriendlyStarlet.DisplayName: Starlet
+	// GelstarBlob.DisplayName: Star Gel
+	// PulsarBeam.DisplayName: Gamma Ray
+	// MiniSingularity.DisplayName: Mini Singularity
+	// VoidStarSlimePet.DisplayName: Void Star Slime
 	SunbirdTotem.DisplayName: Тотем Золотого ворона
 	Sunbird.DisplayName: Солнечная птица
 	StarCrossBurst.DisplayName: Звёздный крестовый взрыв
@@ -6628,12 +6816,60 @@ Projectiles: {
 	// VDEscortShip.DisplayName: V D Escort Ship
 	// VDGateBolt.DisplayName: V D Gate Bolt
 	// VDLatticeField.DisplayName: V D Lattice Field
+	// SandseaHatchling.DisplayName: Sandsea Hatchling
+	// SandstormBowGiantArrow.DisplayName: Giant Sandstorm Arrow
+	// SandstormBowHoldout.DisplayName: Sandstorm
+	// SandstormBowTwister.DisplayName: Sand Twister
+	// SandseaConquerorFang.DisplayName: Venomous Shark Fang
+	// SandseaConquerorOrb.DisplayName: Forbidden Energy Orb
+	// SandseaConquerorStab.DisplayName: Sandsea Conqueror
+	// AncientSharkbiteMissile.DisplayName: Sand Shark Missile
+	// AncientSharkbiteMist.DisplayName: Venom Mist
+	// AncientSharkbiteStaffHeld.DisplayName: Ancient Sharkbite Staff
+	// SharkSquadBrave.DisplayName: Brave Shark
+	// SharkSquadCursedFireball.DisplayName: Cursed Fireball
+	// SharkSquadGrumpy.DisplayName: Grumpy Shark
+	// SharkSquadHappy.DisplayName: Happy Shark
+	// SharkSquadLazy.DisplayName: Lazy Shark
+	// SharkSquadLightSword.DisplayName: Hallowed Light Sword
+	// SharkSquadShard.DisplayName: Forbidden Shard
+	// SweetRainCloud.DisplayName: Thundercloud
+	// SweetRainDrop.DisplayName: Raindrop
+	// SandseaArenaWall.DisplayName: Forbidden Whirlwind
+	// SandseaBeetleBomb.DisplayName: Beetle Bomb
+	// SandseaEscortShark.DisplayName: Sand Shark
+	// SandseaMaelstrom.DisplayName: Sharknado
+	// SandseaRainShark.DisplayName: Sand Shark
+	// SandseaRingShark.DisplayName: Sand Shark
+	// SandseaSandBlast.DisplayName: Sand Blast
+	// SandseaTwister.DisplayName: Forbidden Twister
+	// SandseaVenomNeedle.DisplayName: Venom Needle
 }
 
 LegendTooltip: - Легенда -
 KilledByVoidTouch: был убит пустотой
 
 Buffs: {
+	CosmicSpace: {
+		// DisplayName: Cosmic Space
+		// Description: You can fly forever, but your healing is hindered
+	}
+
+	CosmicDecay: {
+		// DisplayName: Decay
+		// Description: The weight of ages shows on you in full
+	}
+
+	VoidStarSlimeBuff: {
+		// DisplayName: Void Star Slime
+		// Description: A tiny Void Star Slime is following you
+	}
+
+	VoidSlimeMountBuff: {
+		// DisplayName: Void Slime Mount
+		// Description: Sticky, and it glitters
+	}
+
 	VoidStorm: {
 		DisplayName: Пустотный шторм
 		Description: Взгляд из самой глубокой части пустоты
@@ -7307,11 +7543,38 @@ Buffs: {
 		// DisplayName: Laceration
 		// Description: Torn open, losing 200 life per second
 	}
+
+	SandseaHatchlingBuff: {
+		// DisplayName: Sandsea Hatchling
+		// Description: It thinks your shadow is a fine patch of sand
+	}
+
+	SharkSquadBuff: {
+		// DisplayName: Sand Shark Family
+		// Description: Happy sand shark party!
+	}
 }
 
 Uh: ""
 
 NPCs: {
+	VoidSlime: {
+		// DisplayName: Void Slime
+
+		FormNames: {
+			// Pale: Pale Slime
+			// Singularity: Singularity Slime
+			// DeathStar: Death Star
+		}
+
+		BossChecklistIntegration: {
+			// EntryName: Void Slime
+			// SpawnInfo: Summon with [i:CalamityEntropy/StarCrown]
+			// DespawnMessage: ""
+		}
+	}
+
+	// CometSlime.DisplayName: Comet Slime
 	LotteryMachine.DisplayName: Лотерейный автомат
 	CruiserTail.DisplayName: Крейсер
 
@@ -7443,6 +7706,18 @@ NPCs: {
 	}
 
 	ApsychosTail.DisplayName: Грязный хвост.
+	// SandseaDragonBody.DisplayName: Sandsea Netherdragon
+	// SandseaDragonTail.DisplayName: Sandsea Netherdragon
+
+	SandseaDragonHead: {
+		// DisplayName: Sandsea Netherdragon
+
+		BossChecklistIntegration: {
+			// EntryName: Sandsea Netherdragon
+			// SpawnInfo: Use [i:CalamityEntropy/SandstormPendant] in the Desert or the Underground Desert to summon
+			// DespawnMessage: ""
+		}
+	}
 }
 
 WyrmChatNoHome: Куда мы идем теперь?
@@ -7579,6 +7854,21 @@ ProphetBestiary:
 	Связанная древними текстами, она бесконечно повторяет бессмысленные крики и шепоты, отчаянно — но тщетно — пытаясь передать увиденное.
 	'''
 LuminarisBestiary: Гигантское насекомое, скрывающееся в ночном небе. Оно накапливает звёздный свет в своём теле и использует его для атак. Особенно любит сладкую росу со вкусом звёзд.
+// VoidSlimeBestiary: The afterimage of an otherworldly god. It once used the stars to guide its world to prosperity, but that kindness became a deadly poison when it faced savage invaders. As its universe reached the end of its story, this once great being fell into your world under the torment of the void.
+// CometSlimeBestiary: A slime stained by the afterglow of the Void Slime, drifting through the upper sky with a wisp of ice dust in tow. Supernova Gel that has not cooled yet can sometimes be found inside it.
+
+Achievements: {
+	StarPickerAchievement: {
+		// FriendlyName: Star Picker
+		// Description: Defeat the amalgam from the stars
+	}
+}
+
+/* SandseaDragonBestiary:
+	'''
+	An ancient predator steeped in the essence of the desert, roused by the tremors of the great jungle plant-beast's death.
+	It now prowls the sea of sand, tirelessly hunting for its next meal.
+	''' */
 /* SunGoddessBestiary:
 	'''
 	An avatar of the blazing sun that wears the shape of the Empress of Light. A sun wheel hangs behind her, and every feather shed from her wings is a shard of noon.
@@ -7597,6 +7887,7 @@ ApsychosBestiary:
 WorldGen.VoidOreSpawn: Из неба исходит энергия пустоты
 
 Tiles: {
+	// GalaxySolidifierTile.MapEntry: Galaxy Solidifier
 	AuricBoulder.MapEntry: Ауритовый валун
 	AuricBoulderTile.MapEntry: Плитка из золотистого валуна
 	VoidOre.MapEntry: Пустотная руда

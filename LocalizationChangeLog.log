@@ -1651,3 +1651,129 @@
 [Mods.CalamityEntropy.Items.WyrmtoothSofa.DisplayName] - added
 [Mods.CalamityEntropy.Items.WyrmtoothTable.DisplayName] - added
 [Mods.CalamityEntropy.Items.WyrmtoothWorkBench.DisplayName] - added
+[Mods.CalamityEntropy.Items.StarCrown.DisplayName] - added
+[Mods.CalamityEntropy.Items.StarCrown.Tooltip] - added
+[Mods.CalamityEntropy.Items.SupernovaGel.DisplayName] - added
+[Mods.CalamityEntropy.Items.SupernovaGel.Tooltip] - added
+[Mods.CalamityEntropy.Items.GalaxySolidifier.DisplayName] - added
+[Mods.CalamityEntropy.Items.GalaxySolidifier.Tooltip] - added
+[Mods.CalamityEntropy.Items.VoidSlimeBag.DisplayName] - added
+[Mods.CalamityEntropy.Items.VoidSlimeBag.Tooltip] - added
+[Mods.CalamityEntropy.Items.VoidSlimeTrophy.DisplayName] - added
+[Mods.CalamityEntropy.Items.VoidSlimeTrophy.Tooltip] - added
+[Mods.CalamityEntropy.Items.VoidSlimeRelic.DisplayName] - added
+[Mods.CalamityEntropy.Items.VoidSlimeRelic.Tooltip] - added
+[Mods.CalamityEntropy.Items.BabyStarGel.DisplayName] - added
+[Mods.CalamityEntropy.Items.BabyStarGel.Tooltip] - added
+[Mods.CalamityEntropy.Items.VoidSlimeSaddle.DisplayName] - added
+[Mods.CalamityEntropy.Items.VoidSlimeSaddle.Tooltip] - added
+[Mods.CalamityEntropy.Items.GelstarBlade.DisplayName] - added
+[Mods.CalamityEntropy.Items.GelstarBlade.Tooltip] - added
+[Mods.CalamityEntropy.Items.OrbitBow.DisplayName] - added
+[Mods.CalamityEntropy.Items.OrbitBow.Tooltip] - added
+[Mods.CalamityEntropy.Items.PulsarStaff.DisplayName] - added
+[Mods.CalamityEntropy.Items.PulsarStaff.Tooltip] - added
+[Mods.CalamityEntropy.Items.SingularityRod.DisplayName] - added
+[Mods.CalamityEntropy.Items.SingularityRod.Tooltip] - added
+[Mods.CalamityEntropy.Items.Lore.VoidSlimeLore.DisplayName] - added
+[Mods.CalamityEntropy.Items.Lore.VoidSlimeLore.Tooltip] - added
+[Mods.CalamityEntropy.Items.Lore.VoidSlimeLore.Lore] - added
+[Mods.CalamityEntropy.Projectiles.VSlimeGreyGel.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VSlimeShockwave.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VSlimeDarkOrb.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VSlimeDarkGel.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VSlimeBigStar.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VSlimeStarlet.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VSlimeDebris.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VSlimeGammaRay.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VSlimeCrossStar.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VSlimeStarLaser.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VSlimeFriendlyStarlet.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.GelstarBlob.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.PulsarBeam.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.MiniSingularity.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.VoidStarSlimePet.DisplayName] - added
+[Mods.CalamityEntropy.Buffs.CosmicSpace.DisplayName] - added
+[Mods.CalamityEntropy.Buffs.CosmicSpace.Description] - added
+[Mods.CalamityEntropy.Buffs.CosmicDecay.DisplayName] - added
+[Mods.CalamityEntropy.Buffs.CosmicDecay.Description] - added
+[Mods.CalamityEntropy.Buffs.VoidStarSlimeBuff.DisplayName] - added
+[Mods.CalamityEntropy.Buffs.VoidStarSlimeBuff.Description] - added
+[Mods.CalamityEntropy.Buffs.VoidSlimeMountBuff.DisplayName] - added
+[Mods.CalamityEntropy.Buffs.VoidSlimeMountBuff.Description] - added
+[Mods.CalamityEntropy.NPCs.VoidSlime.DisplayName] - added
+[Mods.CalamityEntropy.NPCs.VoidSlime.FormNames.Pale] - added
+[Mods.CalamityEntropy.NPCs.VoidSlime.FormNames.Singularity] - added
+[Mods.CalamityEntropy.NPCs.VoidSlime.FormNames.DeathStar] - added
+[Mods.CalamityEntropy.NPCs.VoidSlime.BossChecklistIntegration.EntryName] - added
+[Mods.CalamityEntropy.NPCs.VoidSlime.BossChecklistIntegration.SpawnInfo] - added
+[Mods.CalamityEntropy.NPCs.VoidSlime.BossChecklistIntegration.DespawnMessage] - added
+[Mods.CalamityEntropy.NPCs.CometSlime.DisplayName] - added
+[Mods.CalamityEntropy.Tiles.GalaxySolidifierTile.MapEntry] - added
+[Mods.CalamityEntropy.VoidSlimeBestiary] - added
+[Mods.CalamityEntropy.CometSlimeBestiary] - added
+[Mods.CalamityEntropy.Achievements.StarPickerAchievement.FriendlyName] - added
+[Mods.CalamityEntropy.Achievements.StarPickerAchievement.Description] - added
+[Mods.CalamityEntropy.NPCs.SandseaDragonHead.DisplayName] - added // 新 Boss 沙海冥龙(石巨人后),沙暴吊坠在沙漠召唤
+[Mods.CalamityEntropy.NPCs.SandseaDragonHead.BossChecklistIntegration.*] - added // EntryName / SpawnInfo / DespawnMessage
+[Mods.CalamityEntropy.NPCs.SandseaDragonBody.DisplayName] - added // 身体节与尾节,名字同头部
+[Mods.CalamityEntropy.NPCs.SandseaDragonTail.DisplayName] - added
+[Mods.CalamityEntropy.SandseaDragonBestiary] - added // 图鉴文案
+[Mods.CalamityEntropy.Items.SandstormPendant.DisplayName] - added // 沙海冥龙的召唤物,不消耗,右键召沙尘暴
+[Mods.CalamityEntropy.Items.SandstormPendant.Tooltip] - added
+[Mods.CalamityEntropy.Items.RunicStone.DisplayName] - added // 沙海冥龙掉落的材料
+[Mods.CalamityEntropy.Items.RunicStone.Tooltip] - added
+[Mods.CalamityEntropy.Items.SandseaDragonBag.DisplayName] - added // 宝藏袋
+[Mods.CalamityEntropy.Items.SandseaDragonBag.Tooltip] - added
+[Mods.CalamityEntropy.Items.DesertGladiatorNecklace.DisplayName] - added // 专家饰品
+[Mods.CalamityEntropy.Items.DesertGladiatorNecklace.Tooltip] - added
+[Mods.CalamityEntropy.Items.SandseaDragonEgg.DisplayName] - added // 专属宠物
+[Mods.CalamityEntropy.Items.SandseaDragonEgg.Tooltip] - added
+[Mods.CalamityEntropy.Items.SandseaDragonMask.DisplayName] - added // 面具、圣物、纪念章,以下共六条
+[Mods.CalamityEntropy.Items.SandseaDragonMask.Tooltip] - added
+[Mods.CalamityEntropy.Items.SandseaDragonRelic.DisplayName] - added
+[Mods.CalamityEntropy.Items.SandseaDragonRelic.Tooltip] - added
+[Mods.CalamityEntropy.Items.SandseaDragonTrophy.DisplayName] - added
+[Mods.CalamityEntropy.Items.SandseaDragonTrophy.Tooltip] - added
+[Mods.CalamityEntropy.Items.SandstormBow.DisplayName] - added // 沙海冥龙的五把武器,以下共十条
+[Mods.CalamityEntropy.Items.SandstormBow.Tooltip] - added
+[Mods.CalamityEntropy.Items.SandseaConqueror.DisplayName] - added
+[Mods.CalamityEntropy.Items.SandseaConqueror.Tooltip] - added
+[Mods.CalamityEntropy.Items.AncientSharkbiteStaff.DisplayName] - added
+[Mods.CalamityEntropy.Items.AncientSharkbiteStaff.Tooltip] - added
+[Mods.CalamityEntropy.Items.SharkSquadStaff.DisplayName] - added
+[Mods.CalamityEntropy.Items.SharkSquadStaff.Tooltip] - added
+[Mods.CalamityEntropy.Items.SweetRainStaff.DisplayName] - added
+[Mods.CalamityEntropy.Items.SweetRainStaff.Tooltip] - added
+[Mods.CalamityEntropy.Projectiles.SandseaHatchling.DisplayName] - added // 宠物与五把武器的弹幕,以下共十九条
+[Mods.CalamityEntropy.Projectiles.SandstormBowGiantArrow.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SandstormBowHoldout.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SandstormBowTwister.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SandseaConquerorFang.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SandseaConquerorOrb.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SandseaConquerorStab.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.AncientSharkbiteMissile.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.AncientSharkbiteMist.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.AncientSharkbiteStaffHeld.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SharkSquadBrave.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SharkSquadCursedFireball.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SharkSquadGrumpy.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SharkSquadHappy.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SharkSquadLazy.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SharkSquadLightSword.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SharkSquadShard.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SweetRainCloud.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SweetRainDrop.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SandseaArenaWall.DisplayName] - added // 沙海冥龙的弹幕,以下共九条
+[Mods.CalamityEntropy.Projectiles.SandseaBeetleBomb.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SandseaEscortShark.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SandseaMaelstrom.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SandseaRainShark.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SandseaRingShark.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SandseaSandBlast.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SandseaTwister.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SandseaVenomNeedle.DisplayName] - added
+[Mods.CalamityEntropy.Buffs.SandseaHatchlingBuff.DisplayName] - added // 宠物增益与鲨鱼小队增益,以下共四条
+[Mods.CalamityEntropy.Buffs.SandseaHatchlingBuff.Description] - added
+[Mods.CalamityEntropy.Buffs.SharkSquadBuff.DisplayName] - added
+[Mods.CalamityEntropy.Buffs.SharkSquadBuff.Description] - added

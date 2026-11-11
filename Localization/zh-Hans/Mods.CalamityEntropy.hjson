@@ -1,6 +1,70 @@
 ModNameOverride: 虚空召唤
 
 Items: {
+	StarCrown: {
+		DisplayName: 星冕
+		Tooltip:
+			'''
+			召唤来自深空的黏腻存在
+			不消耗
+			'''
+	}
+
+	SupernovaGel: {
+		DisplayName: 超新星凝胶
+		Tooltip: 里头凝着一粒还没熄灭的星火
+	}
+
+	GalaxySolidifier: {
+		DisplayName: 银河固化机
+		Tooltip: 可以当作固化机使用
+	}
+
+	VoidSlimeBag: {
+		DisplayName: 宝藏袋（虚空史莱姆）
+		Tooltip: ""
+	}
+
+	VoidSlimeTrophy: {
+		DisplayName: 虚空史莱姆纪念章
+		Tooltip: ""
+	}
+
+	VoidSlimeRelic: {
+		DisplayName: 虚空史莱姆圣物
+		Tooltip: ""
+	}
+
+	BabyStarGel: {
+		DisplayName: 幼星凝胶
+		Tooltip: 召唤一只虚空星辰史莱姆
+	}
+
+	VoidSlimeSaddle: {
+		DisplayName: 虚空史莱姆鞍
+		Tooltip: 召唤可骑乘的虚空史莱姆，它能在空中停留片刻
+	}
+
+	GelstarBlade: {
+		DisplayName: 凝星刃
+		Tooltip: 挥砍时甩出会弹跳的星胶，星胶消散时辸出追踪的辉星
+	}
+
+	OrbitBow: {
+		DisplayName: 环轨弓
+		Tooltip: 每支箭都有两颗辉星伴飞，辉星会追踪敌人
+	}
+
+	PulsarStaff: {
+		DisplayName: 脉冲星杖
+		Tooltip: 射出一道穿透一切的伽马射线
+	}
+
+	SingularityRod: {
+		DisplayName: 奇点杖
+		Tooltip: 在光标处放置一个小黑洞哨兵，它灼烧靠近的敌人并吐出追踪的辉星
+	}
+
 	LightDarkDragonDagger: {
 		DisplayName: 光暗龙匕
 		Tooltip:
@@ -155,6 +219,17 @@ Items: {
 			DisplayName: 巡游者
 			Tooltip: ""
 			Lore: "{$loreCruiser}"
+		}
+
+		VoidSlimeLore: {
+			DisplayName: 虚空史莱姆
+			Tooltip: ""
+			Lore:
+				'''
+				曾经有一个由繁星所代表的宇宙。在这个宇宙中，所有的居民都信奉慈爱平和的星神。每当有人在茫茫星海中迷失方向时，黏滑的星星总会用祂苍白温暖的光芒，为旅行者指引回家的道路。
+				直到那一天，愤怒的人们抓住了一些衣着奇形怪状的人，并把他们放逐到了遥远的深空中。星神能感觉到他们身上存在的危险气息。但是祂相信宇宙很大，大到足够容纳所有生命、抹平一切隔阂，更何况祂慈爱的内心不允许对处于危难之中的人坐视不管。于是祂用自己的光芒将这些可怜人送回了星球上，在这些声泪俱下的人面前，教导他们要一心向善、痛改前非。
+				然而，不是所有人都值得救赎。代表慈爱与包容的星路，最终在异界的侵略者铁蹄下彻底灰飞烟灭，整个繁星宇宙彻底消散。
+				'''
 		}
 
 		NihilityTwinLore: {
@@ -6074,6 +6149,104 @@ Items: {
 		DisplayName: 龙牙工作台
 		Tooltip: ""
 	}
+
+	DesertGladiatorNecklace: {
+		DisplayName: 沙漠角斗士项链
+		Tooltip:
+			'''
+			增加10点护甲穿透
+			增加8%伤害
+			使你免疫沙块的窒息效果
+			站在沙地上时略微增加你的机动性
+			'''
+	}
+
+	SandseaDragonEgg: {
+		DisplayName: 沙海龙卵
+		Tooltip:
+			'''
+			召唤一条沙海幼龙
+			“把它埋进沙里，它会自己拱出来”
+			'''
+	}
+
+	SandseaDragonMask: {
+		DisplayName: 沙海冥龙面具
+		Tooltip: ""
+	}
+
+	SandseaDragonRelic: {
+		DisplayName: 沙海冥龙圣物
+		Tooltip: ""
+	}
+
+	SandseaDragonTrophy: {
+		DisplayName: 沙海冥龙纪念章
+		Tooltip: ""
+	}
+
+	RunicStone: {
+		DisplayName: 符文之石
+		Tooltip: 嵌在沙海冥龙体内的灰石，青色的符文仍在发亮
+	}
+
+	SandseaDragonBag: {
+		DisplayName: 宝藏袋（沙海冥龙）
+		Tooltip: ""
+	}
+
+	SandstormPendant: {
+		DisplayName: 沙暴吊坠
+		Tooltip:
+			'''
+			在沙漠环境左键使用召唤沙海冥龙
+			右键召唤沙尘暴
+			不会被消耗
+			'''
+	}
+
+	SandstormBow: {
+		DisplayName: 沙尘暴
+		Tooltip:
+			'''
+			一次射出2支箭
+			将木箭转化为沙暴巨箭
+			沙暴巨箭命中时产生沙龙卷
+			'''
+	}
+
+	SandseaConqueror: {
+		DisplayName: 沙海征服者
+		Tooltip:
+			'''
+			攻击时发射禁戒能量球
+			近距离击中目标时召唤剧毒鲨牙
+			'''
+	}
+
+	AncientSharkbiteStaff: {
+		DisplayName: 远古鲨噬法杖
+		Tooltip: 发射饥饿的飞行鲨鱼
+	}
+
+	SharkSquadStaff: {
+		DisplayName: 鲨鱼小队召唤杖
+		Tooltip:
+			'''
+			召唤4只可爱的小鲨鱼与你并肩作战
+			需要8个仆从栏位才能使用
+			“不包含食人鲨”
+			'''
+	}
+
+	SweetRainStaff: {
+		DisplayName: 甘霖法杖
+		Tooltip:
+			'''
+			释放雷雨云使敌人淋雨
+			“非常适合拿来浇花”
+			'''
+	}
 }
 
 BaitCommonTooltip1: 手持时充能，只能在充能完成时丢出
@@ -6198,6 +6371,21 @@ VDAftermath: {
 }
 
 Projectiles: {
+	VSlimeGreyGel.DisplayName: 灰色凝胶球
+	VSlimeShockwave.DisplayName: 冲击波
+	VSlimeDarkOrb.DisplayName: 暗物质球
+	VSlimeDarkGel.DisplayName: 暗物质凝胶球
+	VSlimeBigStar.DisplayName: 紫色大辉星
+	VSlimeStarlet.DisplayName: 小辉星
+	VSlimeDebris.DisplayName: 黑洞碎片
+	VSlimeGammaRay.DisplayName: 伽马射线
+	VSlimeCrossStar.DisplayName: 十字星爆
+	VSlimeStarLaser.DisplayName: 恒星激光
+	VSlimeFriendlyStarlet.DisplayName: 小辉星
+	GelstarBlob.DisplayName: 星胶
+	PulsarBeam.DisplayName: 伽马射线
+	MiniSingularity.DisplayName: 小奇点
+	VoidStarSlimePet.DisplayName: 虚空星辰史莱姆
 	SunbirdTotem.DisplayName: 金乌图腾
 	Sunbird.DisplayName: 太阳神鸟
 	StarCrossBurst.DisplayName: 十字星爆
@@ -7021,12 +7209,60 @@ Projectiles: {
 	// VDEscortShip.DisplayName: V D Escort Ship
 	// VDGateBolt.DisplayName: V D Gate Bolt
 	// VDLatticeField.DisplayName: V D Lattice Field
+	SandseaHatchling.DisplayName: 沙海幼龙
+	SandstormBowGiantArrow.DisplayName: 沙暴巨箭
+	SandstormBowHoldout.DisplayName: 沙尘暴
+	SandstormBowTwister.DisplayName: 沙龙卷
+	SandseaConquerorFang.DisplayName: 剧毒鲨牙
+	SandseaConquerorOrb.DisplayName: 禁戒能量球
+	SandseaConquerorStab.DisplayName: 沙海征服者
+	AncientSharkbiteMissile.DisplayName: 沙鲨导弹
+	AncientSharkbiteMist.DisplayName: 毒雾
+	AncientSharkbiteStaffHeld.DisplayName: 远古鲨噬法杖
+	SharkSquadBrave.DisplayName: 勇敢小鲨
+	SharkSquadCursedFireball.DisplayName: 诅咒火球
+	SharkSquadGrumpy.DisplayName: 暴躁小鲨
+	SharkSquadHappy.DisplayName: 快乐小鲨
+	SharkSquadLazy.DisplayName: 懒散小鲨
+	SharkSquadLightSword.DisplayName: 神圣光剑
+	SharkSquadShard.DisplayName: 禁戒碎片
+	SweetRainCloud.DisplayName: 雷雨云
+	SweetRainDrop.DisplayName: 雨滴
+	SandseaArenaWall.DisplayName: 禁戒旋风
+	SandseaBeetleBomb.DisplayName: 甲虫炸弹
+	SandseaEscortShark.DisplayName: 沙鲨
+	SandseaMaelstrom.DisplayName: 鲨卷风
+	SandseaRainShark.DisplayName: 沙鲨
+	SandseaRingShark.DisplayName: 沙鲨
+	SandseaSandBlast.DisplayName: 沙弹
+	SandseaTwister.DisplayName: 禁戒龙卷风
+	SandseaVenomNeedle.DisplayName: 毒针
 }
 
 LegendTooltip: - 传奇物品 -
 KilledByVoidTouch: "{0}消散在了时间与空间的各处"
 
 Buffs: {
+	CosmicSpace: {
+		DisplayName: 宇宙空间
+		Description: 你可以无限飞行，但回血受阻
+	}
+
+	CosmicDecay: {
+		DisplayName: 衰变
+		Description: 历史的沧桑在你身上体现的淋漓尽致
+	}
+
+	VoidStarSlimeBuff: {
+		DisplayName: 虚空星辰史莱姆
+		Description: 一只小小的虚空星辰史莱姆跟着你
+	}
+
+	VoidSlimeMountBuff: {
+		DisplayName: 虚空史莱姆坐骑
+		Description: 黏糊糊的，还带着星光
+	}
+
 	VoidStorm: {
 		DisplayName: 虚空强袭
 		Description: 来自虚空最深处的凝视
@@ -7694,11 +7930,38 @@ Buffs: {
 		DisplayName: 血管爆裂
 		Description: 皮开肉绽，每秒失去 200 点生命
 	}
+
+	SandseaHatchlingBuff: {
+		DisplayName: 沙海幼龙
+		Description: 它觉得你的影子是一片好沙地
+	}
+
+	SharkSquadBuff: {
+		DisplayName: 沙鲨大家族
+		Description: 快乐沙鲨派对！
+	}
 }
 
 Uh: 呃啊~
 
 NPCs: {
+	VoidSlime: {
+		DisplayName: 虚空史莱姆
+
+		FormNames: {
+			Pale: 苍白史莱姆
+			Singularity: 奇点史莱姆
+			DeathStar: 死兆星
+		}
+
+		BossChecklistIntegration: {
+			EntryName: 虚空史莱姆
+			SpawnInfo: 使用[i:CalamityEntropy/StarCrown]召唤
+			DespawnMessage: ""
+		}
+	}
+
+	CometSlime.DisplayName: 彗星史莱姆
 	LotteryMachine.DisplayName: 抽奖机
 	CruiserTail.DisplayName: 巡游者
 
@@ -7830,6 +8093,18 @@ NPCs: {
 	}
 
 	ApsychosTail.DisplayName: 烬甲秽魔之尾
+	SandseaDragonBody.DisplayName: 沙海冥龙
+	SandseaDragonTail.DisplayName: 沙海冥龙
+
+	SandseaDragonHead: {
+		DisplayName: 沙海冥龙
+
+		BossChecklistIntegration: {
+			EntryName: 沙海冥龙
+			SpawnInfo: 在沙漠或地下沙漠使用[i:CalamityEntropy/SandstormPendant]召唤
+			DespawnMessage: ""
+		}
+	}
 }
 
 WyrmChatNoHome: 我们现在要去哪？
@@ -7963,6 +8238,21 @@ ProphetBestiary:
 	被束缚于典籍的它一遍遍重复着无意义的嘶吼与低语，绝望且徒劳的向它人传达着它所见之物。
 	'''
 LuminarisBestiary: 一种隐匿于夜空中的巨型昆虫，将星光储存在身体内用于发起攻击。它格外喜欢星星口味的蜜露。
+VoidSlimeBestiary: 一尊异界神明残像。祂曾用星辰引导它的世界走向繁荣昌盛，但是这份慈爱在面对凶残的入侵者时却成为了致命的毒药。随着祂的宇宙迈入故事的结局，这位曾经伟大过的存在在虚空力量的折磨下坠落到了你的世界。
+CometSlimeBestiary: 沾上了虚空史莱姆残光的史莱姆，拖着一缕冰尘在高空游荡。它体内偶尔能找到还没冷却的超新星凝胶。
+
+Achievements: {
+	StarPickerAchievement: {
+		FriendlyName: 摘星者
+		Description: 击败来自群星的混合体
+	}
+}
+
+SandseaDragonBestiary:
+	'''
+	吸收了沙漠精华的古老掠食者，被丛林大植物怪死亡产生的震动所惊醒。
+	它正在沙海中不知疲倦地寻找下一顿美餐。
+	'''
 SunGoddessBestiary:
 	'''
 	借走光之女皇形貌的烈阳化身，日轮悬在她的身后，羽翼间落下的每一片火羽都是正午的日光。
@@ -7981,6 +8271,7 @@ ApsychosBestiary:
 WorldGen.VoidOreSpawn: 天空中散发出虚空能量
 
 Tiles: {
+	GalaxySolidifierTile.MapEntry: 银河固化机
 	AuricBoulder.MapEntry: 圣金源巨石
 	AuricBoulderTile.MapEntry: 圣金源巨石
 	VoidOre.MapEntry: Void Ore

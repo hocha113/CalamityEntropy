@@ -41,6 +41,8 @@ namespace CalamityEntropy
         SyncCooldowns,
         /// <summary>日光之力与星月之力的使用旗标:whoAmI(byte)、位旗(byte)</summary>
         SyncSunMoonPower,
+        /// <summary>沙暴吊坠右键:客户端请服务器开沙尘暴,无载荷</summary>
+        RequestSandstorm,
         SyncPlayer = 255
     }
 
@@ -380,6 +382,9 @@ namespace CalamityEntropy
             }
             else if (messageType == CEMessageType.SyncSunMoonPower) {
                 Content.Items.SunMoonGods.SunMoonPowerPlayer.Receive(reader, whoAmI);
+            }
+            else if (messageType == CEMessageType.RequestSandstorm) {
+                Content.Items.SandseaDragon.SandstormPendant.ReceiveSandstormRequest();
             }
             else if (messageType == CEMessageType.SyncPlayer) {
                 int wai = reader.ReadInt32();

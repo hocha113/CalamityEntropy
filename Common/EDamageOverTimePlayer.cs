@@ -19,8 +19,8 @@ namespace CalamityEntropy.Common
                     }
                 }
             }
-            // 虚空之火:禁用生命再生,先把正回复归零再扣
-            if (Player.HasBuff<VoidFire>() && Player.lifeRegen > 0) {
+            //虚空之火和衰变禁用生命再生,先把正回复归零再扣
+            if ((Player.HasBuff<VoidFire>() || Player.HasBuff<Content.Buffs.VoidSlime.CosmicDecay>()) && Player.lifeRegen > 0) {
                 Player.lifeRegen = 0;
             }
             if (damageApply > 0) {

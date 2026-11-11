@@ -22,6 +22,10 @@ namespace CalamityEntropy.Common
         //日月双神(驱逐舰后)
         public static bool downedSunGoddess = false;
         public static bool downedStarmoonSage = false;
+        //虚空史莱姆(虚无双子后)
+        public static bool downedVoidSlime = false;
+        //沙海冥龙(石巨人后)
+        public static bool downedSandseaDragon = false;
         public static Point ForbiddenArchiveCenter = new Point(-1, -1);
         public override void ClearWorld() {
             EntropyMode = false;
@@ -36,6 +40,8 @@ namespace CalamityEntropy.Common
             downedVoidDestroyer = false;
             downedSunGoddess = false;
             downedStarmoonSage = false;
+            downedVoidSlime = false;
+            downedSandseaDragon = false;
         }
 
         public override void SaveWorldData(TagCompound tag) {
@@ -75,6 +81,12 @@ namespace CalamityEntropy.Common
             if (downedStarmoonSage) {
                 tag["downedStarmoonSage"] = true;
             }
+            if (downedVoidSlime) {
+                tag["downedVoidSlime"] = true;
+            }
+            if (downedSandseaDragon) {
+                tag["downedSandseaDragon"] = true;
+            }
             tag["DungeonArchiveCenterX"] = ForbiddenArchiveCenter.X;
             tag["DungeonArchiveCenterY"] = ForbiddenArchiveCenter.Y;
         }
@@ -94,6 +106,8 @@ namespace CalamityEntropy.Common
             downedVoidDestroyer = tag.ContainsKey("downedVoidDestroyer");
             downedSunGoddess = tag.ContainsKey("downedSunGoddess");
             downedStarmoonSage = tag.ContainsKey("downedStarmoonSage");
+            downedVoidSlime = tag.ContainsKey("downedVoidSlime");
+            downedSandseaDragon = tag.ContainsKey("downedSandseaDragon");
             TDR = tag.ContainsKey("TDR");
             if (tag.ContainsKey("DungeonArchiveCenterX") && tag.ContainsKey("DungeonArchiveCenterY")) {
                 ForbiddenArchiveCenter = new(tag.GetInt("DungeonArchiveCenterX"), tag.GetInt("DungeonArchiveCenterY"));
@@ -119,6 +133,9 @@ namespace CalamityEntropy.Common
             flags2[2] = downedApsychos;
             flags2[3] = downedSunGoddess;
             flags2[4] = downedStarmoonSage;
+            flags2[5] = downedSandseaDragon;
+            //虚空史莱姆占最高位,flags2[6] 空着
+            flags2[7] = downedVoidSlime;
 
             writer.Write(flags);
             writer.Write(flags2);
@@ -142,6 +159,8 @@ namespace CalamityEntropy.Common
             downedApsychos = flags2[2];
             downedSunGoddess = flags2[3];
             downedStarmoonSage = flags2[4];
+            downedSandseaDragon = flags2[5];
+            downedVoidSlime = flags2[7];
             ForbiddenArchiveCenter = new Point(reader.ReadInt32(), reader.ReadInt32());
         }
     }

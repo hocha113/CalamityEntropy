@@ -179,7 +179,8 @@ namespace CalamityEntropy.Core.Hooks
 
         private static void HealHook(On_Player.orig_Heal orig, Player self, int amount) {
             if (!(CalamityEntropy.EntropyMode && self.Entropy().HitTCounter > 0)) {
-                orig(self, amount);
+                //宇宙空间期间吸血类治疗减半
+                orig(self, Content.Buffs.VoidSlime.CosmicSpace.ScaleHeal(self, amount));
             }
         }
 

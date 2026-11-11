@@ -4,6 +4,8 @@ using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Books;
 using CalamityEntropy.Content.Items.Books.BookMarks;
 using CalamityEntropy.Content.Items.Pets;
+using CalamityEntropy.Content.Items.SandseaDragon;
+using CalamityEntropy.Content.Items.SandseaDragon.Loot;
 using CalamityEntropy.Content.Items.SunMoonGods;
 using CalamityEntropy.Content.Items.Vanity;
 using CalamityEntropy.Content.Items.Weapons;
@@ -119,6 +121,21 @@ namespace CalamityEntropy.Core.Integrations
                     "CalamityEntropy/Assets/BCL/LuminarisBossCheckList", 1f,
                     Actor: LuminarisPortraitActor.Instance),
 
+                //沙海冥龙:石巨人 13 之后,光之女皇 15 之前;没有演员,左页用拼好的立绘
+                new BossEntry("SandseaDragon", "SandseaDragonHead", 13.5f,
+                    () => EDownedBosses.downedSandseaDragon,
+                    new List<int>() {
+                        ModContent.NPCType<Content.NPCs.SandseaDragon.SandseaDragonHead>(),
+                        ModContent.NPCType<Content.NPCs.SandseaDragon.SandseaDragonBody>(),
+                        ModContent.NPCType<Content.NPCs.SandseaDragon.SandseaDragonTail>()
+                    },
+                    ModContent.ItemType<SandstormPendant>(),
+                    new List<int>() {
+                        ModContent.ItemType<SandseaDragonBag>(), ModContent.ItemType<SandseaDragonTrophy>(), ModContent.ItemType<SandseaDragonRelic>(),
+                        ModContent.ItemType<SandseaDragonMask>(), ModContent.ItemType<SandseaDragonEgg>()
+                    },
+                    "CalamityEntropy/Assets/BCL/SandseaDragon", 0.45f),
+
                 //先知:光之女皇 15 与双足翼龙 16 之后,教徒 17 之前
                 new BossEntry("TheProphet", "TheProphet", 16.5f,
                     () => EDownedBosses.downedProphet,
@@ -183,7 +200,19 @@ namespace CalamityEntropy.Core.Integrations
                     ModContent.NPCType<StarmoonSage>(),
                     ModContent.ItemType<SolunarRune>(),
                     new List<int>() { ModContent.ItemType<WraithSoulEssence>(), ModContent.ItemType<PowerOfStarmoon>() },
-                    "CalamityEntropy/Assets/BCL/StarmoonSage", 0.8f)
+                    "CalamityEntropy/Assets/BCL/StarmoonSage", 0.8f),
+
+                //虚空史莱姆:排在虚无双子 19.3 之后、巡游者 22.1 之前
+                new BossEntry("VoidSlime", "VoidSlime", 19.45f,
+                    () => EDownedBosses.downedVoidSlime,
+                    ModContent.NPCType<Content.NPCs.VoidSlime.VoidSlime>(),
+                    ModContent.ItemType<Content.Items.VoidSlime.StarCrown>(),
+                    new List<int>() {
+                        ModContent.ItemType<Content.Items.VoidSlime.VoidSlimeBag>(), ModContent.ItemType<Content.Items.VoidSlime.VoidSlimeTrophy>(),
+                        ModContent.ItemType<Content.Items.VoidSlime.VoidSlimeRelic>(), ModContent.ItemType<Content.Items.VoidSlime.BabyStarGel>(),
+                        ModContent.ItemType<Content.Items.VoidSlime.VoidSlimeSaddle>(), ModContent.ItemType<Content.Items.VoidSlime.GalaxySolidifier>()
+                    },
+                    "CalamityEntropy/Assets/BCL/VoidSlime", 1f)
             };
         }
     }

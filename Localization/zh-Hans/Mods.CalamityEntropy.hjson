@@ -16,8 +16,8 @@ Items: {
 	}
 
 	GalaxySolidifier: {
-		DisplayName: 银河固化机
-		Tooltip: 可以当作固化机使用
+		DisplayName: 星河固化机
+		Tooltip: 用于打造由宇宙凝胶构成的物品
 	}
 
 	VoidSlimeBag: {
@@ -2543,6 +2543,11 @@ Items: {
 			"亡者之歌，冷却成诗"
 			（冷却缩减如哀歌般流淌）
 			'''
+	}
+
+	Requiem: {
+		// DisplayName: Requiem
+		// Tooltip: ""
 	}
 
 	GrudgeCard: {
@@ -6247,6 +6252,314 @@ Items: {
 			“非常适合拿来浇花”
 			'''
 	}
+
+	DefiledExcalibur: {
+		DisplayName: 玷污圣剑
+		Tooltip: 被黑暗力量侵蚀的勇士配剑
+	}
+
+	ElegyOfSouls: {
+		DisplayName: 魂之挽歌
+		Tooltip:
+			'''
+			击中目标时施展灵魂领域
+			灵魂领域会削弱敌怪并加速你的生命再生速度
+			不攻击目标时，灵魂领域会在3秒后消散
+			“对苦难的无声控诉”
+			'''
+	}
+
+	SunAloft: {
+		DisplayName: 日上三竿
+		Tooltip:
+			'''
+			命中敌人积攒能量，能量足够时可以右键发射一道强力刺击
+			根据时间召唤天体辅助攻击
+			白天命中引发日耀爆炸并施加[cebuff:CalamityEntropy/FlareBurn]，夜晚命中从天降下月耀射线
+			'''
+	}
+
+	Constellation: {
+		DisplayName: 星座球
+		Tooltip:
+			'''
+			命中时召唤魔法星和星座
+			“今晚的星星好像很少”
+			'''
+	}
+
+	PrayerlightLance: {
+		DisplayName: 祈光圣矛
+		Tooltip:
+			'''
+			攻击时积攒光之能量，积满后右键释放圣光洗礼
+			“曾经是被人们用来向上天祈祷的圣物，如今依旧散发着属于它的光芒”
+			'''
+	}
+
+	StarmoonShark: {
+		DisplayName: 星月鲨
+		Tooltip: 75%概率不消耗弹药
+	}
+
+	ChurchDefender: {
+		DisplayName: 教庭捍卫者
+		Tooltip:
+			'''
+			发射能延时爆炸的粘性炸弹
+			粘性炸弹会降低目标的防御力
+			粘性炸弹附着期间持续施加[cebuff:CalamityEntropy/FlareBurn]
+			'''
+	}
+
+	FoamPounder: {
+		DisplayName: 泡沫重击枪
+		Tooltip:
+			'''
+			释放泡泡海啸
+			泡泡命中目标时会短暂提高你的生命再生速度
+			'''
+	}
+
+	SorrowMirror: {
+		DisplayName: 哀伤魔镜
+		Tooltip:
+			'''
+			模仿多种魔法武器的攻击
+			“仿佛有人在其中对你招手”
+			'''
+	}
+
+	TwinDragonsPearl: {
+		DisplayName: 双龙戏珠
+		Tooltip:
+			'''
+			释放一颗能吸引神话生物的宝珠
+			飞龙命中使敌人获得2秒[cebuff:CalamityEntropy/FlareBurn]
+			“不能拿来喂鱼”
+			'''
+	}
+
+	NebulaVortexStaff: {
+		DisplayName: 星云漩涡圣杖
+		Tooltip: 发射缓慢跟随目标的星云涡旋
+	}
+
+	NecromancerPrimer: {
+		DisplayName: 死灵法师见习手册
+		Tooltip: 倾泻暴躁的灵魂
+	}
+
+	EmbraceWhip: {
+		DisplayName: 包容
+		Tooltip:
+			'''
+			{$CommonItemTooltip.Whips}
+			增加20%召唤物暴击率
+			'''
+	}
+
+	AncientPaladinWhip: {
+		DisplayName: 远古圣骑士鞭
+		Tooltip:
+			'''
+			{$CommonItemTooltip.Whips}
+			增加8%召唤物暴击率
+			召唤追杀敌人的圣骑士锤
+			'''
+	}
+
+	FishherdUrn: {
+		DisplayName: 牧鱼人之瓮
+		Tooltip:
+			'''
+			召唤幽灵食人鱼为你而战
+			“让人痛彻心扉”
+			'''
+	}
+
+	GoldbowSilvershot: {
+		DisplayName: 金弓银弹
+		Tooltip:
+			'''
+			发射弹丸，右键可以在两种模式下切换
+			穿山碎峦模式下，可以蓄力发射一发金弹，伤害和穿透次数随蓄力时间提升而增加
+			梨花暴雨模式下，会散射大量分布不均的银弹
+			'''
+		ModeGold: 穿山碎峦
+		ModeSilver: 梨花暴雨
+	}
+
+	PlunderBlaze: {
+		DisplayName: 劫掠怒焰
+		Tooltip:
+			'''
+			击败普通敌人有概率掉落双倍战利品
+			使用凝胶作为弹药并忽视敌人30点防御力
+			50%概率不消耗弹药
+			'''
+	}
+
+	SunGoddessBag: {
+		DisplayName: 宝藏袋（太阳女神）
+		Tooltip: ""
+	}
+
+	StarmoonSageBag: {
+		DisplayName: 宝藏袋（星月贤者）
+		Tooltip: ""
+	}
+
+	Dawnlight: {
+		DisplayName: 晨曦
+		Tooltip:
+			'''
+			召唤太阳附魔剑为你而战
+			剑刃命中时引发小范围的日耀爆炸
+			'''
+	}
+
+	StarryNight: {
+		DisplayName: 暗夜繁星
+		Tooltip: 施咒以召唤黑夜中优美的星辰
+	}
+
+	NoontideRapier: {
+		DisplayName: 亭午刺剑
+		Tooltip: 以无与伦比的速度倾泻太阳的怒火
+	}
+
+	ManmadeCalamity: {
+		DisplayName: 人为天灾
+		Tooltip:
+			'''
+			使用时喷出追踪虚空细胞
+			直接命中目标会恢复你的生命值
+			锤头命中施加[cebuff:CalamityEntropy/VoidVirus]
+			'''
+	}
+
+	Moonrise: {
+		DisplayName: 月上梢头
+		Tooltip:
+			'''
+			能够喷射火焰和追踪火球
+			右键能在三种模式间切换，调整发射弹药的类型
+			使用凝胶作为弹药并忽视敌人35点防御力
+			66%的概率不消耗弹药
+			'''
+		ModeNew: 新月
+		ModeHalf: 弦月
+		ModeFull: 满月
+	}
+
+	EventHorizon: {
+		DisplayName: 视界
+		Tooltip:
+			'''
+			左键发射黑剑，命中目标时造成一次引力冲击
+			右键进行黑洞传送并获得15秒的混沌状态
+			处于混沌状态时你无法使用黑洞传送
+			'''
+	}
+
+	MassPoint: {
+		DisplayName: 质点
+		Tooltip: 命中时释放一个质量点
+	}
+
+	DimNova: {
+		DisplayName: 黯淡新星
+		Tooltip:
+			'''
+			掷出的凝胶手雷片刻后会弹向附近的敌人
+			爆炸会留下虚化凝胶团，右键让它们追踪敌人并爆炸
+			“触感冰凉的手雷，剧烈收缩时会释放一瞬的高温”
+			'''
+	}
+
+	SpacetimeRift: {
+		DisplayName: 时空裂隙
+		Tooltip:
+			'''
+			将箭矢转化为裂隙箭
+			裂隙箭会跨越命中目标前的时间
+			“只留下了命中目标的结果”
+			'''
+	}
+
+	PhoenixBreath: {
+		DisplayName: 凤凰吐息
+		Tooltip:
+			'''
+			左键喷射火柱，右键发射烈焰火球
+			手持该武器时你的飞行时间翻倍
+			75%的概率不消耗凝胶
+			所有攻击造成3秒的[cebuff:CalamityEntropy/SunblazeBurn]减益
+			'''
+	}
+
+	Starpiercer: {
+		DisplayName: 穿天星点
+		Tooltip:
+			'''
+			蓄力发射天体弹丸，右键可以切换模式
+			脉冲星模式发射造成冲击波的高能弹丸
+			引力星模式发射能消除敌对射弹的引力弹丸
+			'''
+		ModePulsar: 脉冲星
+		ModeGraviton: 引力星
+	}
+
+	CelestialSlimeStaff: {
+		DisplayName: 星辰史莱姆手杖
+		Tooltip:
+			'''
+			召唤迷你天体史莱姆来保护你
+			重复召唤会让天体史莱姆逐渐成熟并大幅加强威力
+			“破灭梦境中最明亮的灯塔”
+			'''
+	}
+
+	SatelliteStaff: {
+		DisplayName: 卫星召唤杖
+		Tooltip:
+			'''
+			召唤火球史莱姆为你而战
+			火球史莱姆会发射烈日火球与耀斑射线
+			“焦灼时刻！”
+			'''
+	}
+
+	BloodforgedEmber: {
+		DisplayName: 炼血烬焰
+		Tooltip:
+			'''
+			按住左键，身后的血色魔手会握着镰刀连续挥砍
+			连斩每到第三刀会改为横劈，攻击距离更远、伤害更高，但范围更窄
+			“以血饲火，以火炼血”
+			'''
+	}
+
+	AetherRay: {
+		// DisplayName: Aether Ray
+		// Tooltip: ""
+	}
+
+	StarBlessing: {
+		// DisplayName: Star Blessing
+		// Tooltip: ""
+	}
+
+	StarDance: {
+		// DisplayName: Star Dance
+		// Tooltip: ""
+	}
+
+	StellarFury: {
+		// DisplayName: Stellar Fury
+		// Tooltip: ""
+	}
 }
 
 BaitCommonTooltip1: 手持时充能，只能在充能完成时丢出
@@ -7237,6 +7550,115 @@ Projectiles: {
 	SandseaSandBlast.DisplayName: 沙弹
 	SandseaTwister.DisplayName: 禁戒龙卷风
 	SandseaVenomNeedle.DisplayName: 毒针
+	DefiledExcaliburSwing.DisplayName: 玷污圣剑
+	DefiledExcaliburBeam.DisplayName: 玷污剑气
+	DefiledExcaliburOrb.DisplayName: 圣金光球
+	ElegyOfSoulsSlash.DisplayName: 挽歌斩击
+	ElegyOfSoulsDomain.DisplayName: 灵魂领域
+	SunAloftSwing.DisplayName: 日上三竿
+	SunAloftThrust.DisplayName: 日上三竿
+	SunAloftSolarBlast.DisplayName: 日耀爆炸
+	SunAloftLunarRay.DisplayName: 月耀射线
+	SunAloftCelestial.DisplayName: 天体
+	SunAloftSolarLaser.DisplayName: 日耀激光
+	ConstellationYoyo.DisplayName: 星座球
+	ConstellationPentagram.DisplayName: 五芒星
+	ConstellationStar.DisplayName: 星座
+	PrayerlightLanceHeld.DisplayName: 祈光圣矛
+	PrayerlightLanceSpear.DisplayName: 光之长枪
+	PrayerlightLanceLaser.DisplayName: 神圣激光
+	PrayerlightLanceBaptism.DisplayName: 圣光洗礼
+	PrayerlightLanceReady.DisplayName: 光之能量
+	StarmoonSharkStarTrail.DisplayName: 星光拖尾
+	ChurchDefenderHeld.DisplayName: 教庭捍卫者
+	ChurchDefenderBomb.DisplayName: 粘性炸弹
+	FoamPounderBubble.DisplayName: 泡泡
+	SorrowMirrorHeld.DisplayName: 哀伤魔镜
+	SorrowMirrorFlare.DisplayName: 镜中月耀
+	SorrowMirrorTyphoon.DisplayName: 镜中台风
+	SorrowMirrorStar.DisplayName: 镜中星
+	SorrowMirrorWrath.DisplayName: 镜中怒焰
+	SorrowMirrorBoulder.DisplayName: 镜中巨石
+	TwinDragonsPearlOrb.DisplayName: 金珍珠
+	TwinDragonsPearlWyvern.DisplayName: 金色飞龙幻影
+	NebulaVortexStaffVortex.DisplayName: 星云大漩涡
+	NebulaVortexStaffBlaze.DisplayName: 星云烈焰拳
+	NebulaVortexStaffBlazeBlue.DisplayName: 蓝色星云烈焰拳
+	NecromancerPrimerSpirit.DisplayName: 粉红幽魂
+	EmbraceWhipProj.DisplayName: 包容
+	EmbraceWhipFlare.DisplayName: 包容
+	AncientPaladinWhipProj.DisplayName: 远古圣骑士鞭
+	AncientPaladinWhipHammer.DisplayName: 幻影圣骑士锤
+	FishherdUrnPiranha.DisplayName: 幽灵食人鱼
+	GoldbowSilvershotHeld.DisplayName: 金弓银弹
+	GoldbowSilvershotGoldShot.DisplayName: 金弹
+	GoldbowSilvershotSilverShot.DisplayName: 银弹
+	PlunderBlazeHeld.DisplayName: 劫掠怒焰
+	PlunderBlazeFlame.DisplayName: 暗影火焰
+	DawnlightBlade.DisplayName: 太阳附魔剑
+	DawnlightBlast.DisplayName: 日耀爆炸
+	StarryNightCometLarge.DisplayName: 淡蓝大彗星
+	StarryNightCometSmall.DisplayName: 淡橙小彗星
+	NoontideRapierStab.DisplayName: 亭午刺剑
+	NoontideRapierBolt.DisplayName: 金色七彩矢
+	ManmadeCalamityHead.DisplayName: 人为天灾
+	ManmadeCalamityCell.DisplayName: 虚空细胞
+	MoonriseHeld.DisplayName: 月上梢头
+	MoonriseFlame.DisplayName: 月焰
+	MoonriseFireball.DisplayName: 月华火球
+	EventHorizonSlash.DisplayName: 视界
+	EventHorizonBlade.DisplayName: 黑剑
+	EventHorizonPulse.DisplayName: 引力冲击
+	EventHorizonPhantom.DisplayName: 剑形幻影
+	EventHorizonHole.DisplayName: 黑洞
+	MassPointYoyo.DisplayName: 质点
+	MassPointSingularity.DisplayName: 质量点
+	DimNovaGrenade.DisplayName: 凝胶手雷
+	DimNovaShard.DisplayName: 收缩凝胶
+	DimNovaRemnant.DisplayName: 虚化凝胶团
+	DimNovaBlast.DisplayName: 新星爆炸
+	SpacetimeRiftArrow.DisplayName: 裂隙箭
+	SpacetimeRiftBlast.DisplayName: 引力爆炸
+	PhoenixBreathHeld.DisplayName: 凤凰吐息
+	PhoenixBreathColumn.DisplayName: 火柱
+	PhoenixBreathFireball.DisplayName: 烈焰火球
+	PhoenixBreathEmber.DisplayName: 火焰弹
+	StarpiercerHeld.DisplayName: 穿天星点
+	StarpiercerPulsar.DisplayName: 高能弹丸
+	StarpiercerShockwave.DisplayName: 弧形冲击波
+	StarpiercerArc.DisplayName: 电弧
+	StarpiercerGraviton.DisplayName: 引力弹丸
+	CelestialSlimeStaffCounter.DisplayName: 天体史莱姆
+	CelestialSlimeStaffSlime.DisplayName: 天体史莱姆
+	CelestialSlimeStaffEnergy.DisplayName: 宇宙能量
+	CelestialSlimeStaffRay.DisplayName: 伽玛射线
+	CelestialSlimeStaffDarkStar.DisplayName: 黑洞星
+	CelestialSlimeStaffGelHole.DisplayName: 凝胶黑洞
+	SatelliteStaffSlime.DisplayName: 火球史莱姆
+	SatelliteStaffFireball.DisplayName: 烈日火球
+	SatelliteStaffFlare.DisplayName: 耀斑射线
+	SatelliteStaffExplosion.DisplayName: 耀斑爆炸
+	BloodforgedEmberHeld.DisplayName: 炼血烬焰
+	// AetherRayBeam.DisplayName: Aether Ray Beam
+	// AetherRayBolt.DisplayName: Aether Ray Bolt
+	// AetherRayDrone.DisplayName: Aether Ray Drone
+	// AetherRayHeld.DisplayName: Aether Ray Held
+	// RequiemBlackGun.DisplayName: Requiem Black Gun
+	// RequiemCharger.DisplayName: Requiem Charger
+	// RequiemCrossBlast.DisplayName: Requiem Cross Blast
+	// RequiemPiercer.DisplayName: Requiem Piercer
+	// RequiemRound.DisplayName: Requiem Round
+	// RequiemShrapnel.DisplayName: Requiem Shrapnel
+	// StarBlessingCluster.DisplayName: Star Blessing Cluster
+	// StarBlessingConstellation.DisplayName: Star Blessing Constellation
+	// StarBlessingProj.DisplayName: Star Blessing Proj
+	// StarDanceOrbBlue.DisplayName: Star Dance Orb Blue
+	// StarDanceOrbOrange.DisplayName: Star Dance Orb Orange
+	// StarDanceOrbRed.DisplayName: Star Dance Orb Red
+	// StarDanceOrbSilver.DisplayName: Star Dance Orb Silver
+	// StarDanceOrbYellow.DisplayName: Star Dance Orb Yellow
+	// StellarFuryHole.DisplayName: Stellar Fury Hole
+	// StellarFuryMissile.DisplayName: Stellar Fury Missile
 }
 
 LegendTooltip: - 传奇物品 -
@@ -7940,6 +8362,53 @@ Buffs: {
 		DisplayName: 沙鲨大家族
 		Description: 快乐沙鲨派对！
 	}
+
+	FlareBurn: {
+		DisplayName: 耀斑灼烧
+		Description: 每秒失去30点生命
+		ItemTooltip: 敌人每秒受到150点伤害
+	}
+
+	StarcellDevour: {
+		DisplayName: 星细胞之噬
+		Description: 防御力降低25
+		ItemTooltip: 防御力降低25
+	}
+
+	FishherdUrnBuff: {
+		DisplayName: 灵魂捕食者
+		Description: 灵魂屠夫为你而战
+	}
+
+	PlunderBlazeMark: {
+		DisplayName: 劫掠标记
+		Description: 此刻被击败有概率掉落双倍战利品
+	}
+
+	DawnlightBuff: {
+		DisplayName: 太阳棱镜
+		Description: 神圣暴君的剑刃为你而战
+	}
+
+	CelestialSlimeStaffBuff: {
+		DisplayName: 星辰史莱姆
+		Description: 天体史莱姆为你而战
+	}
+
+	SatelliteStaffBuff: {
+		DisplayName: 灼热！
+		Description: 召唤火球史莱姆为你而战
+	}
+
+	RequiemFracture: {
+		// DisplayName: Requiem Fracture
+		// Description: Mods.CalamityEntropy.Buffs.RequiemFracture.Description
+	}
+
+	RequiemShatter: {
+		// DisplayName: Requiem Shatter
+		// Description: Mods.CalamityEntropy.Buffs.RequiemShatter.Description
+	}
 }
 
 Uh: 呃啊~
@@ -8271,7 +8740,7 @@ ApsychosBestiary:
 WorldGen.VoidOreSpawn: 天空中散发出虚空能量
 
 Tiles: {
-	GalaxySolidifierTile.MapEntry: 银河固化机
+	GalaxySolidifierTile.MapEntry: 星河固化机
 	AuricBoulder.MapEntry: 圣金源巨石
 	AuricBoulderTile.MapEntry: 圣金源巨石
 	VoidOre.MapEntry: Void Ore
@@ -8811,6 +9280,11 @@ MoonLordFirstKillMessage: 来自异界的力量蠢蠢欲动……
 AnyFairy: 任意仙灵
 Gems: 任意宝石
 Butterflies: 任意蝴蝶
+ZenithIgnoreDefense: 目标防御力低于 100 时无视其防御力
+AnyGoldBar: 金锭或铂金锭
+AnyPearl: 任意珍珠
+CursedFlameOrIchor: 诅咒焰或灵液
+AnyMythrilAnvil: 秘银砧或山铜砧
 BCBarInfo: 苍郁充能
 HallowedEnemiesDrop: 掉落自神圣之地地下敌怪
 EvilEnemiesDrop: 掉落自邪恶地形地下敌怪

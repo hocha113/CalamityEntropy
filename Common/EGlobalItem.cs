@@ -19,6 +19,7 @@ using CalamityEntropy.Content.Items.PrefixItem;
 using CalamityEntropy.Content.Items.Vanity;
 using CalamityEntropy.Content.Items.Weapons;
 using CalamityEntropy.Content.Items.Weapons.Bait;
+using CalamityEntropy.Content.Items.Weapons.BloodforgedEmberScythe;
 using CalamityEntropy.Content.Items.Weapons.CrystalBalls;
 using CalamityEntropy.Content.Items.Weapons.DustCarverBow;
 using CalamityEntropy.Content.Items.Weapons.Torch;
@@ -828,7 +829,7 @@ DeckEnd:
 
                     return false;
                 }
-                if (item.ModItem != null && item.ModItem is DustCarver) {
+                if (item.ModItem is DustCarver or BloodforgedEmber) {
                     float xa = 0; var font = FontAssets.MouseText.Value;
                     float h = 0;
                     for (int i = 0; i < line.Text.Length; i++) {

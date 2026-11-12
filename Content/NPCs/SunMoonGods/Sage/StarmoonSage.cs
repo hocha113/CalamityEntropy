@@ -2,6 +2,8 @@
 using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Potions;
 using CalamityEntropy.Content.Items.SunMoonGods;
+using CalamityEntropy.Content.Items.Weapons.BossLoot.Moonrise;
+using CalamityEntropy.Content.Items.Weapons.BossLoot.StarryNight;
 using CalamityEntropy.Content.NPCs.SunMoonGods.Sage.Core;
 using CalamityEntropy.Content.NPCs.SunMoonGods.Sage.States;
 using CalamityEntropy.Content.Skies;
@@ -172,6 +174,12 @@ namespace CalamityEntropy.Content.NPCs.SunMoonGods.Sage
             //每人一份,联机掉在各自脚下,单人掉在本体位置
             npcLoot.Add(new DropPerPlayerOnThePlayer(ModContent.ItemType<WraithSoulEssence>(), 1, 35, 45, null));
             npcLoot.Add(new DropPerPlayerOnThePlayer(ModContent.ItemType<PowerOfStarmoon>(), 1, 1, 1, null));
+
+            npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<StarmoonSageBag>()));
+            LeadingConditionRule normalOnly = new LeadingConditionRule(new Conditions.NotExpert());
+            normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<Moonrise>(), 3, 1, 1, 2));
+            normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<StarryNight>(), 3, 1, 1, 2));
+            npcLoot.Add(normalOnly);
         }
 
         public override void OnKill() {

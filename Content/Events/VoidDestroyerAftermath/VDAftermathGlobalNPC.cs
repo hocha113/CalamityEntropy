@@ -1,4 +1,5 @@
 using CalamityEntropy.Content.Items.Potions;
+using CalamityEntropy.Content.Items.Weapons.Aftermath.AncientPaladinWhip;
 using CalamityEntropy.Content.Items.Weapons.Bait;
 using CalamityEntropy.Content.Items.Weapons.Whips;
 using CalamityEntropy.Core.CalamityRef;
@@ -72,6 +73,7 @@ namespace CalamityEntropy.Content.Events.VoidDestroyerAftermath
                 case NPCID.Paladin:
                     ReplaceVanilla(npcLoot, ItemID.PaladinsHammer, 3, 2);
                     ReplaceVanilla(npcLoot, ItemID.PaladinsShield, 3, 2);
+                    npcLoot.Add(PostRule(ModContent.ItemType<AncientPaladinWhip>(), 4, 1, 1));
                     break;
             }
         }

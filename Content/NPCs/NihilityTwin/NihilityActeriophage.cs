@@ -7,6 +7,7 @@ using CalamityEntropy.Content.Items.Books.BookMarks;
 using CalamityEntropy.Content.Items.Lores;
 using CalamityEntropy.Content.Items.Potions;
 using CalamityEntropy.Content.Items.Weapons;
+using CalamityEntropy.Content.Items.Weapons.BossLoot.ManmadeCalamity;
 using CalamityEntropy.Content.NPCs.NihilityTwin.Core;
 using CalamityEntropy.Content.NPCs.NihilityTwin.States;
 using CalamityEntropy.Core.AI;
@@ -482,6 +483,7 @@ namespace CalamityEntropy.Content.NPCs.NihilityTwin
                 normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<StarlessNight>(), 5, 1, 1, 4));
                 normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<NihilityBacteriophageWand>(), 5, 1, 1, 4));
                 normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<VoidPathology>(), 5, 1, 1, 4));
+                normalOnly.OnSuccess(ItemDropRule.Common(ModContent.ItemType<ManmadeCalamity>(), 10));
                 normalOnly.OnSuccess(ItemDropRule.Common(ModContent.ItemType<NihilityFragments>(), 1, 18, 24));
                 normalOnly.OnSuccess(ItemDropRule.Common(ModContent.ItemType<ChaoticPiece>(), 1, 18, 24));
             }

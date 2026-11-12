@@ -1,5 +1,6 @@
 ﻿using CalamityEntropy.Content.Items.Accessories;
 using CalamityEntropy.Content.Items.Weapons;
+using CalamityEntropy.Content.Items.Weapons.BossLoot.ManmadeCalamity;
 using CalamityEntropy.Content.NPCs.NihilityTwin;
 using CalamityEntropy.Content.Rarities;
 using Microsoft.Xna.Framework.Graphics;
@@ -52,6 +53,7 @@ namespace CalamityEntropy.Content.Items
             itemLoot.Add(new CommonDrop(ModContent.ItemType<NihilityBacteriophageWand>(), 5, 1, 1, 3));
             itemLoot.Add(new CommonDrop(ModContent.ItemType<StarlessNight>(), 5, 1, 1, 3));
             itemLoot.Add(new CommonDrop(ModContent.ItemType<VoidPathology>(), 5, 1, 1, 3));
+            itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<ManmadeCalamity>(), 10));
             // 虚无碎片升为月后一阶通货，按 NPC 主力静态审计加量（26,32 → 32,40）
             itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<NihilityFragments>(), 1, 32, 40));
             itemLoot.Add(ItemDropRule.Common(ModContent.ItemType<ChaoticPiece>(), 1, 26, 32));

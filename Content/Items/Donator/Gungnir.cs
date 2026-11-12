@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Assets.Register;
+using CalamityEntropy.Content.Items.VoidSlime;
 using CalamityEntropy.Content.Items.Weapons.Fractal;
 using CalamityEntropy.Content.Particles;
 using CalamityEntropy.Content.Projectiles;
@@ -43,10 +44,10 @@ namespace CalamityEntropy.Content.Items.Donator
                 .Register();
                 return;
             }
-            // 灾厄原料按 material-map.md 替换：CosmiliteBar×12+AscendantSpiritEssence×2→幽渊魂髓（合并为×14）、DivineGeode→虚无碎片
+            // 灾厄原料替换：CosmiliteBar×12+AscendantSpiritEssence×2→超新星凝胶×8、DivineGeode→虚无碎片
             CreateRecipe()
                 .AddIngredient(ItemID.Gungnir)
-                .AddIngredient<WraithSoulEssence>(14)
+                .AddIngredient<SupernovaGel>(8)
                 .AddIngredient<NihilityFragments>(12)
                 .AddIngredient(ItemID.FragmentNebula, 4)
                 .AddIngredient(ItemID.FragmentSolar, 4)

@@ -1777,3 +1777,190 @@
 [Mods.CalamityEntropy.Buffs.SandseaHatchlingBuff.Description] - added
 [Mods.CalamityEntropy.Buffs.SharkSquadBuff.DisplayName] - added
 [Mods.CalamityEntropy.Buffs.SharkSquadBuff.Description] - added
+[Mods.CalamityEntropy.Items.GalaxySolidifier.DisplayName] - changed // 银河固化机改名星河固化机,新配方,等同远古操纵机、秘银砧与固化机
+[Mods.CalamityEntropy.Items.GalaxySolidifier.Tooltip] - changed
+[Mods.CalamityEntropy.Tiles.GalaxySolidifierTile.MapEntry] - changed
+[Mods.CalamityEntropy.Buffs.FlareBurn.DisplayName] - added // 日月与史莱姆系列物品共用的两个减益,以下共六条
+[Mods.CalamityEntropy.Buffs.FlareBurn.Description] - added
+[Mods.CalamityEntropy.Buffs.FlareBurn.ItemTooltip] - added
+[Mods.CalamityEntropy.Buffs.StarcellDevour.DisplayName] - added
+[Mods.CalamityEntropy.Buffs.StarcellDevour.Description] - added
+[Mods.CalamityEntropy.Buffs.StarcellDevour.ItemTooltip] - added
+[Mods.CalamityEntropy.AnyGoldBar] - added // 新配方组名,以下共四条
+[Mods.CalamityEntropy.AnyPearl] - added
+[Mods.CalamityEntropy.CursedFlameOrIchor] - added
+[Mods.CalamityEntropy.AnyMythrilAnvil] - added
+[Mods.CalamityEntropy.Items.DefiledExcalibur.DisplayName] - added // 日月与史莱姆系列,五拍连段近战剑,圣剑 + 虚空轴承合成
+[Mods.CalamityEntropy.Items.DefiledExcalibur.Tooltip] - added
+[Mods.CalamityEntropy.Items.ElegyOfSouls.DisplayName] - added // 日月与史莱姆系列,灵魂领域近战剑,聚星之灵合成
+[Mods.CalamityEntropy.Items.ElegyOfSouls.Tooltip] - added
+[Mods.CalamityEntropy.Projectiles.DefiledExcaliburSwing.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.DefiledExcaliburBeam.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.DefiledExcaliburOrb.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.ElegyOfSoulsSlash.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.ElegyOfSoulsDomain.DisplayName] - added
+[Mods.CalamityEntropy.Items.SunAloft.DisplayName] - added // 新增战士武器
+[Mods.CalamityEntropy.Items.SunAloft.Tooltip] - added
+[Mods.CalamityEntropy.Items.Constellation.DisplayName] - added // 新增战士武器
+[Mods.CalamityEntropy.Items.Constellation.Tooltip] - added
+[Mods.CalamityEntropy.Projectiles.SunAloftSwing.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SunAloftThrust.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SunAloftSolarBlast.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SunAloftLunarRay.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SunAloftCelestial.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SunAloftSolarLaser.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.ConstellationYoyo.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.ConstellationPentagram.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.ConstellationStar.DisplayName] - added
+[Mods.CalamityEntropy.Items.PrayerlightLance.DisplayName] - added // 日月与史莱姆系列 A3:祈光圣矛
+[Mods.CalamityEntropy.Items.PrayerlightLance.Tooltip] - added
+[Mods.CalamityEntropy.Items.StarmoonShark.DisplayName] - added // 日月与史莱姆系列 A3:星月鲨
+[Mods.CalamityEntropy.Items.StarmoonShark.Tooltip] - added
+[Mods.CalamityEntropy.Projectiles.PrayerlightLanceHeld.DisplayName] - added // A3 祈光圣矛与星月鲨的弹幕,以下共六条
+[Mods.CalamityEntropy.Projectiles.PrayerlightLanceSpear.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.PrayerlightLanceLaser.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.PrayerlightLanceBaptism.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.PrayerlightLanceReady.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.StarmoonSharkStarTrail.DisplayName] - added
+[Mods.CalamityEntropy.Items.ChurchDefender.DisplayName] - added // 日月与史莱姆系列,粘性炸弹火箭筒
+[Mods.CalamityEntropy.Items.ChurchDefender.Tooltip] - added
+[Mods.CalamityEntropy.Items.FoamPounder.DisplayName] - added // 日月与史莱姆系列,泡泡海啸魔法枪
+[Mods.CalamityEntropy.Items.FoamPounder.Tooltip] - added
+[Mods.CalamityEntropy.Items.SorrowMirror.DisplayName] - added // 日月与史莱姆系列,轮换模仿五种原版魔法武器
+[Mods.CalamityEntropy.Items.SorrowMirror.Tooltip] - added
+[Mods.CalamityEntropy.Projectiles.ChurchDefenderHeld.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.ChurchDefenderBomb.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.FoamPounderBubble.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SorrowMirrorHeld.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SorrowMirrorFlare.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SorrowMirrorTyphoon.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SorrowMirrorStar.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SorrowMirrorWrath.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SorrowMirrorBoulder.DisplayName] - added
+[Mods.CalamityEntropy.Items.TwinDragonsPearl.DisplayName] - added // 日月与史莱姆系列,召金色飞龙幻影弧线穿过宝珠的法器
+[Mods.CalamityEntropy.Items.TwinDragonsPearl.Tooltip] - added
+[Mods.CalamityEntropy.Items.NebulaVortexStaff.DisplayName] - added // 日月与史莱姆系列,召出追敌星云大漩涡的法杖
+[Mods.CalamityEntropy.Items.NebulaVortexStaff.Tooltip] - added
+[Mods.CalamityEntropy.Items.NecromancerPrimer.DisplayName] - added // 日月与史莱姆系列,从身后召出粉红幽魂的魔法书
+[Mods.CalamityEntropy.Items.NecromancerPrimer.Tooltip] - added
+[Mods.CalamityEntropy.Projectiles.TwinDragonsPearlOrb.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.TwinDragonsPearlWyvern.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.NebulaVortexStaffVortex.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.NebulaVortexStaffBlaze.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.NebulaVortexStaffBlazeBlue.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.NecromancerPrimerSpirit.DisplayName] - added
+[Mods.CalamityEntropy.Items.EmbraceWhip.DisplayName] - added // 日月与史莱姆系列:新增包容、远古圣骑士鞭、牧鱼人之瓮,及其弹幕与增益
+[Mods.CalamityEntropy.Items.EmbraceWhip.Tooltip] - added
+[Mods.CalamityEntropy.Items.AncientPaladinWhip.DisplayName] - added
+[Mods.CalamityEntropy.Items.AncientPaladinWhip.Tooltip] - added
+[Mods.CalamityEntropy.Items.FishherdUrn.DisplayName] - added
+[Mods.CalamityEntropy.Items.FishherdUrn.Tooltip] - added
+[Mods.CalamityEntropy.Projectiles.EmbraceWhipProj.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.EmbraceWhipFlare.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.AncientPaladinWhipProj.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.AncientPaladinWhipHammer.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.FishherdUrnPiranha.DisplayName] - added
+[Mods.CalamityEntropy.Buffs.FishherdUrnBuff.DisplayName] - added
+[Mods.CalamityEntropy.Buffs.FishherdUrnBuff.Description] - added
+[Mods.CalamityEntropy.Items.GoldbowSilvershot.DisplayName] - added // 日月与史莱姆系列 A4:金弓银弹
+[Mods.CalamityEntropy.Items.GoldbowSilvershot.Tooltip] - added
+[Mods.CalamityEntropy.Items.GoldbowSilvershot.ModeGold] - added
+[Mods.CalamityEntropy.Items.GoldbowSilvershot.ModeSilver] - added
+[Mods.CalamityEntropy.Items.PlunderBlaze.DisplayName] - added // 日月与史莱姆系列 A4:劫掠怒焰
+[Mods.CalamityEntropy.Items.PlunderBlaze.Tooltip] - added
+[Mods.CalamityEntropy.Projectiles.GoldbowSilvershotHeld.DisplayName] - added // 日月与史莱姆系列 A4:金弓银弹的持弓、金弹、银弹
+[Mods.CalamityEntropy.Projectiles.GoldbowSilvershotGoldShot.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.GoldbowSilvershotSilverShot.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.PlunderBlazeHeld.DisplayName] - added // 日月与史莱姆系列 A4:劫掠怒焰的持握与暗影火焰
+[Mods.CalamityEntropy.Projectiles.PlunderBlazeFlame.DisplayName] - added
+[Mods.CalamityEntropy.Buffs.PlunderBlazeMark.DisplayName] - added // 日月与史莱姆系列 A4:劫掠怒焰的致死标记
+[Mods.CalamityEntropy.Buffs.PlunderBlazeMark.Description] - added
+[Mods.CalamityEntropy.ZenithIgnoreDefense] - added // 天顶剑对低防御目标无视防御的提示行
+[Mods.CalamityEntropy.Items.SunGoddessBag.DisplayName] - added // 日月与史莱姆系列:新增太阳女神、星月贤者的宝藏袋
+[Mods.CalamityEntropy.Items.SunGoddessBag.Tooltip] - added
+[Mods.CalamityEntropy.Items.StarmoonSageBag.DisplayName] - added
+[Mods.CalamityEntropy.Items.StarmoonSageBag.Tooltip] - added
+[Mods.CalamityEntropy.Items.Dawnlight.DisplayName] - added // 日月与史莱姆系列:新增晨曦,及其弹幕与增益
+[Mods.CalamityEntropy.Items.Dawnlight.Tooltip] - added
+[Mods.CalamityEntropy.Projectiles.DawnlightBlade.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.DawnlightBlast.DisplayName] - added
+[Mods.CalamityEntropy.Buffs.DawnlightBuff.DisplayName] - added
+[Mods.CalamityEntropy.Buffs.DawnlightBuff.Description] - added
+[Mods.CalamityEntropy.Items.StarryNight.DisplayName] - added // 日月与史莱姆系列,星月贤者掉落,从头顶召下蓝橙彗星的魔法书
+[Mods.CalamityEntropy.Items.StarryNight.Tooltip] - added
+[Mods.CalamityEntropy.Projectiles.StarryNightCometLarge.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.StarryNightCometSmall.DisplayName] - added
+[Mods.CalamityEntropy.Items.NoontideRapier.DisplayName] - added // 日月与史莱姆系列:新增亭午刺剑,及其弹幕
+[Mods.CalamityEntropy.Items.NoontideRapier.Tooltip] - added
+[Mods.CalamityEntropy.Projectiles.NoontideRapierStab.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.NoontideRapierBolt.DisplayName] - added
+[Mods.CalamityEntropy.Items.ManmadeCalamity.DisplayName] - added // 日月与史莱姆系列:新增人为天灾(虚无双子掉落的链锤),及其弹幕
+[Mods.CalamityEntropy.Items.ManmadeCalamity.Tooltip] - added
+[Mods.CalamityEntropy.Projectiles.ManmadeCalamityHead.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.ManmadeCalamityCell.DisplayName] - added
+[Mods.CalamityEntropy.Items.ManmadeCalamity.Tooltip] - changed // 日月与史莱姆系列:新增人为天灾(虚无双子掉落的链锤),及其弹幕
+[Mods.CalamityEntropy.Items.Moonrise.DisplayName] - added // 日月与史莱姆系列:新增月上梢头(星月贤者掉落的喷火器),及其弹幕
+[Mods.CalamityEntropy.Items.Moonrise.Tooltip] - added
+[Mods.CalamityEntropy.Items.Moonrise.ModeNew] - added
+[Mods.CalamityEntropy.Items.Moonrise.ModeHalf] - added
+[Mods.CalamityEntropy.Items.Moonrise.ModeFull] - added
+[Mods.CalamityEntropy.Projectiles.MoonriseHeld.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.MoonriseFlame.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.MoonriseFireball.DisplayName] - added
+[Mods.CalamityEntropy.Items.EventHorizon.DisplayName] - added // 日月与史莱姆系列:新增战士武器视界,及其弹幕
+[Mods.CalamityEntropy.Items.EventHorizon.Tooltip] - added
+[Mods.CalamityEntropy.Items.MassPoint.DisplayName] - added // 日月与史莱姆系列:新增战士武器质点,及其弹幕
+[Mods.CalamityEntropy.Items.MassPoint.Tooltip] - added
+[Mods.CalamityEntropy.Projectiles.EventHorizonSlash.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.EventHorizonBlade.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.EventHorizonPulse.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.EventHorizonPhantom.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.EventHorizonHole.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.MassPointYoyo.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.MassPointSingularity.DisplayName] - added
+[Mods.CalamityEntropy.Items.DimNova.DisplayName] - added // 日月与史莱姆系列 C2:黯淡新星
+[Mods.CalamityEntropy.Items.DimNova.Tooltip] - added
+[Mods.CalamityEntropy.Items.SpacetimeRift.DisplayName] - added // 日月与史莱姆系列 C2:时空裂隙
+[Mods.CalamityEntropy.Items.SpacetimeRift.Tooltip] - added
+[Mods.CalamityEntropy.Projectiles.DimNovaGrenade.DisplayName] - added // 日月与史莱姆系列 C2:黯淡新星的手雷、收缩凝胶、虚化凝胶团与爆炸
+[Mods.CalamityEntropy.Projectiles.DimNovaShard.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.DimNovaRemnant.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.DimNovaBlast.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SpacetimeRiftArrow.DisplayName] - added // 日月与史莱姆系列 C2:时空裂隙的裂隙箭与引力爆炸
+[Mods.CalamityEntropy.Projectiles.SpacetimeRiftBlast.DisplayName] - added
+[Mods.CalamityEntropy.Items.PhoenixBreath.DisplayName] - added // 日月与史莱姆系列:新增凤凰吐息(喷火器)与穿天星点(弹弓),两件超新星凝胶合成的射手武器,及其弹幕
+[Mods.CalamityEntropy.Items.PhoenixBreath.Tooltip] - added
+[Mods.CalamityEntropy.Items.Starpiercer.DisplayName] - added
+[Mods.CalamityEntropy.Items.Starpiercer.Tooltip] - added
+[Mods.CalamityEntropy.Items.Starpiercer.ModePulsar] - added
+[Mods.CalamityEntropy.Items.Starpiercer.ModeGraviton] - added
+[Mods.CalamityEntropy.Projectiles.PhoenixBreathHeld.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.PhoenixBreathColumn.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.PhoenixBreathFireball.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.PhoenixBreathEmber.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.StarpiercerHeld.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.StarpiercerPulsar.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.StarpiercerShockwave.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.StarpiercerArc.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.StarpiercerGraviton.DisplayName] - added
+[Mods.CalamityEntropy.Items.CelestialSlimeStaff.DisplayName] - added // 日月与史莱姆系列 C7:星辰史莱姆手杖
+[Mods.CalamityEntropy.Items.CelestialSlimeStaff.Tooltip] - added
+[Mods.CalamityEntropy.Items.SatelliteStaff.DisplayName] - added // 日月与史莱姆系列 C7:卫星召唤杖
+[Mods.CalamityEntropy.Items.SatelliteStaff.Tooltip] - added
+[Mods.CalamityEntropy.Projectiles.CelestialSlimeStaffCounter.DisplayName] - added // 日月与史莱姆系列 C7:星辰史莱姆手杖的计数弹幕、天体史莱姆、宇宙能量、伽玛射线、黑洞星、凝胶黑洞
+[Mods.CalamityEntropy.Projectiles.CelestialSlimeStaffSlime.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.CelestialSlimeStaffEnergy.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.CelestialSlimeStaffRay.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.CelestialSlimeStaffDarkStar.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.CelestialSlimeStaffGelHole.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SatelliteStaffSlime.DisplayName] - added // 日月与史莱姆系列 C7:卫星召唤杖的火球史莱姆、烈日火球、耀斑射线与爆炸
+[Mods.CalamityEntropy.Projectiles.SatelliteStaffFireball.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SatelliteStaffFlare.DisplayName] - added
+[Mods.CalamityEntropy.Projectiles.SatelliteStaffExplosion.DisplayName] - added
+[Mods.CalamityEntropy.Buffs.CelestialSlimeStaffBuff.DisplayName] - added // 日月与史莱姆系列 C7:星辰史莱姆手杖的召唤增益
+[Mods.CalamityEntropy.Buffs.CelestialSlimeStaffBuff.Description] - added
+[Mods.CalamityEntropy.Buffs.SatelliteStaffBuff.DisplayName] - added // 日月与史莱姆系列 C7:卫星召唤杖的召唤增益
+[Mods.CalamityEntropy.Buffs.SatelliteStaffBuff.Description] - added
+[Mods.CalamityEntropy.Items.BloodforgedEmber.DisplayName] - added // 炼血烬焰:血手持镰三段连斩的魔法镰刀
+[Mods.CalamityEntropy.Items.BloodforgedEmber.Tooltip] - added
+[Mods.CalamityEntropy.Projectiles.BloodforgedEmberHeld.DisplayName] - added

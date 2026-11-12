@@ -1,3 +1,4 @@
+using CalamityEntropy.Core.CalamityRef;
 using System;
 using Terraria;
 using Terraria.DataStructures;
@@ -19,17 +20,34 @@ namespace CalamityEntropy.Content.Buffs.VoidSlime
             BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
         }
 
-        public override void Update(Player player, ref int buffIndex) {
-            player.wingTime = player.wingTimeMax;
-            player.rocketTime = player.rocketTimeMax;
-        }
-
         /// <summary>Player.Heal 的钩子和原版吸血弹幕都走这里折半,至少回 1 点</summary>
         public static int ScaleHeal(Player player, int amount) {
             if (amount <= 1 || player == null || !player.HasBuff<CosmicSpace>()) {
                 return amount;
             }
             return Math.Max(1, amount / 2);
+        }
+    }
+
+    /// <summary>宇宙空间的飞行补给。增益的 Update 早于装备结算,那时翼力上限还是 0,回满只能放到飞行结算之前</summary>
+    public class CosmicSpacePlayer : ModPlayer
+    {
+        public override void PostUpdateRunSpeeds() {
+            if (!Player.HasBuff<CosmicSpace>()) {
+                return;
+            }
+            //火箭靴折进来的超额翼力留着,只补不削
+            if (Player.wingTime < Player.wingTimeMax) {
+                Player.wingTime = Player.wingTimeMax;
+            }
+            Player.rocketTime = Player.rocketTimeMax;
+            if (Player.mount.Active) {
+                Player.mount.ResetFlightTime(Player.velocity.X);
+            }
+            //灾厄的飞行条只画本地玩家
+            if (Player.whoAmI == Main.myPlayer) {
+                CECal.GrantInfiniteFlight(Player);
+            }
         }
     }
 

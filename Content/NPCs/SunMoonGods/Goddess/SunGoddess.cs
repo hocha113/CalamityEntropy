@@ -3,6 +3,8 @@ using CalamityEntropy.Content.Items;
 using CalamityEntropy.Content.Items.Armor.Sunblaze;
 using CalamityEntropy.Content.Items.Potions;
 using CalamityEntropy.Content.Items.SunMoonGods;
+using CalamityEntropy.Content.Items.Weapons.BossLoot.Dawnlight;
+using CalamityEntropy.Content.Items.Weapons.BossLoot.NoontideRapier;
 using CalamityEntropy.Content.NPCs.SunMoonGods.Goddess.Core;
 using CalamityEntropy.Content.NPCs.SunMoonGods.Goddess.States;
 using CalamityEntropy.Content.Skies;
@@ -172,6 +174,12 @@ namespace CalamityEntropy.Content.NPCs.SunMoonGods.Goddess
             //每人一份,联机掉在各自脚下,单人掉在本体位置
             npcLoot.Add(new DropPerPlayerOnThePlayer(ModContent.ItemType<BlazingSunlight>(), 1, 35, 45, null));
             npcLoot.Add(new DropPerPlayerOnThePlayer(ModContent.ItemType<PowerOfSunlight>(), 1, 1, 1, null));
+
+            npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<SunGoddessBag>()));
+            LeadingConditionRule normalOnly = new LeadingConditionRule(new Conditions.NotExpert());
+            normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<NoontideRapier>(), 3, 1, 1, 2));
+            normalOnly.OnSuccess(new CommonDrop(ModContent.ItemType<Dawnlight>(), 3, 1, 1, 2));
+            npcLoot.Add(normalOnly);
         }
 
         public override void OnKill() {

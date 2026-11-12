@@ -1,11 +1,13 @@
 using CalamityEntropy.Content.Items;
+using CalamityEntropy.Content.Items.VoidSlime;
+using CalamityEntropy.Content.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityEntropy.Common.VanillaTweaks
 {
-    /// <summary>给原版物品追加的配方:药水、生命果、幸运马掌、闪亮红气球、云朵瓶</summary>
+    /// <summary>给原版物品追加的配方:药水、生命果、幸运马掌、闪亮红气球、云朵瓶、天界星盘;改写天顶剑的配方</summary>
     public class VanillaExtraRecipes : ModSystem
     {
         public const string GoldBarGroup = "CalamityEntropy:AnyGoldBar";
@@ -90,6 +92,25 @@ namespace CalamityEntropy.Common.VanillaTweaks
                 .AddIngredient(ItemID.RainCloud, 30)
                 .AddTile(TileID.Solidifier)
                 .Register();
+
+            Recipe.Create(ItemID.LongRainbowTrailWings)
+                .AddIngredient<SupernovaGel>(5)
+                .AddTile<GalaxySolidifierTile>()
+                .Register();
+        }
+
+        public override void PostAddRecipes() {
+            int gel = ModContent.ItemType<SupernovaGel>();
+            int station = ModContent.TileType<GalaxySolidifierTile>();
+            for (int i = 0; i < Recipe.numRecipes; i++) {
+                Recipe recipe = Main.recipe[i];
+                if (recipe.createItem.type != ItemID.Zenith) {
+                    continue;
+                }
+                recipe.AddIngredient(gel, 8);
+                recipe.requiredTile.Clear();
+                recipe.AddTile(station);
+            }
         }
 
         private static void AddPotionRecipes() {

@@ -17,7 +17,7 @@ Items: {
 
 	GalaxySolidifier: {
 		DisplayName: Galaxy Solidifier
-		Tooltip: Counts as a Solidifier
+		Tooltip: Used to craft items made of cosmic gel
 	}
 
 	VoidSlimeBag: {
@@ -2444,6 +2444,11 @@ Items: {
 			Reduces most cooldown times by [T]%
 			'Gradual is the death of one's word...'
 			'''
+	}
+
+	Requiem: {
+		DisplayName: Requiem
+		Tooltip: ""
 	}
 
 	GrudgeCard: {
@@ -6197,6 +6202,315 @@ Items: {
 			"Perfect for watering the flowers"
 			'''
 	}
+
+	DefiledExcalibur: {
+		DisplayName: Defiled Excalibur
+		Tooltip: A hero's blade, corroded by the power of darkness
+	}
+
+	ElegyOfSouls: {
+		DisplayName: Elegy of Souls
+		Tooltip:
+			'''
+			Striking enemies conjures a soul domain
+			The soul domain weakens enemies and speeds up your life regeneration
+			The soul domain dissipates 3 seconds after you stop hitting enemies
+			'A silent indictment of suffering'
+			'''
+	}
+
+	SunAloft: {
+		DisplayName: Sun Aloft
+		Tooltip:
+			'''
+			Hitting enemies builds up energy, and once there is enough, right click to unleash a powerful thrust
+			Summons a celestial body to assist you depending on the time of day
+			Daytime hits cause solar blasts that inflict [cebuff:CalamityEntropy/FlareBurn]
+			Nighttime hits call down lunar rays from the sky
+			'''
+	}
+
+	Constellation: {
+		DisplayName: Constellation
+		Tooltip:
+			'''
+			Hits summon magic stars and a constellation
+			"There seem to be few stars tonight"
+			'''
+	}
+
+	PrayerlightLance: {
+		DisplayName: Prayerlight Lance
+		Tooltip:
+			'''
+			Attacking builds up Light Energy. Once it is full, right-click to unleash Holy Baptism
+			'Once a relic that people prayed to the heavens with, it still shines with a light of its own'
+			'''
+	}
+
+	StarmoonShark: {
+		DisplayName: Starmoon Shark
+		Tooltip: 75% chance to not consume ammo
+	}
+
+	ChurchDefender: {
+		DisplayName: Church Defender
+		Tooltip:
+			'''
+			Fires sticky bombs that detonate after a delay
+			Sticky bombs lower the defense of their target
+			Attached bombs inflict [cebuff:CalamityEntropy/FlareBurn]
+			'''
+	}
+
+	FoamPounder: {
+		DisplayName: Foam Pounder
+		Tooltip:
+			'''
+			Unleashes a bubble tsunami
+			Bubbles that hit a target briefly increase your life regeneration
+			'''
+	}
+
+	SorrowMirror: {
+		DisplayName: Sorrow Mirror
+		Tooltip:
+			'''
+			Mimics the attacks of several magic weapons
+			'It feels like someone inside is beckoning to you'
+			'''
+	}
+
+	TwinDragonsPearl: {
+		DisplayName: Twin Dragons' Pearl
+		Tooltip:
+			'''
+			Releases a pearl that lures mythical creatures
+			Wyverns inflict [cebuff:CalamityEntropy/FlareBurn] for 2 seconds on hit
+			"Not for feeding fish"
+			'''
+	}
+
+	NebulaVortexStaff: {
+		DisplayName: Nebula Vortex Staff
+		Tooltip: Casts a nebula vortex that slowly follows its target
+	}
+
+	NecromancerPrimer: {
+		DisplayName: Necromancer's Primer
+		Tooltip: Unleashes a torrent of furious souls
+	}
+
+	EmbraceWhip: {
+		DisplayName: Embrace
+		Tooltip:
+			'''
+			{$CommonItemTooltip.Whips}
+			20% summon tag critical strike chance
+			'''
+	}
+
+	AncientPaladinWhip: {
+		DisplayName: Ancient Paladin Whip
+		Tooltip:
+			'''
+			{$CommonItemTooltip.Whips}
+			8% summon tag critical strike chance
+			Summons paladin's hammers that hunt down enemies
+			'''
+	}
+
+	FishherdUrn: {
+		DisplayName: Fishherd Urn
+		Tooltip:
+			'''
+			Summons a ghost piranha to fight for you
+			'A pain that cuts to the heart'
+			'''
+	}
+
+	GoldbowSilvershot: {
+		DisplayName: Golden Bow, Silver Shot
+		Tooltip:
+			'''
+			Fires pellets, right click to switch between two modes
+			In Mountain Breaker mode, charge up to fire a golden shot whose damage and pierce grow with charge time
+			In Pear Blossom Storm mode, scatters a burst of unevenly spread silver shots
+			'''
+		ModeGold: Mountain Breaker
+		ModeSilver: Pear Blossom Storm
+	}
+
+	PlunderBlaze: {
+		DisplayName: Plunder Blaze
+		Tooltip:
+			'''
+			Defeated ordinary enemies have a chance to drop double loot
+			Uses gel as ammo and ignores 30 enemy defense
+			50% chance to not consume ammo
+			'''
+	}
+
+	SunGoddessBag: {
+		DisplayName: Treasure Bag (Sun Goddess)
+		Tooltip: ""
+	}
+
+	StarmoonSageBag: {
+		DisplayName: Treasure Bag (Starmoon Sage)
+		Tooltip: ""
+	}
+
+	Dawnlight: {
+		DisplayName: Dawnlight
+		Tooltip:
+			'''
+			Summons a sun-enchanted sword to fight for you
+			Blade hits trigger a small solar explosion
+			'''
+	}
+
+	StarryNight: {
+		DisplayName: Starry Night
+		Tooltip: Cast to summon the graceful stars of the night
+	}
+
+	NoontideRapier: {
+		DisplayName: Noontide Rapier
+		Tooltip: Pours out the sun's fury at unrivaled speed
+	}
+
+	ManmadeCalamity: {
+		DisplayName: Manmade Calamity
+		Tooltip:
+			'''
+			Sprays homing void cells when used
+			Direct hits restore your life
+			Head hits inflict [cebuff:CalamityEntropy/VoidVirus]
+			'''
+	}
+
+	Moonrise: {
+		DisplayName: Moonrise
+		Tooltip:
+			'''
+			Sprays flames and homing fireballs
+			Right Click to switch between three modes, changing what it fires
+			Uses gel as ammo and ignores 35 enemy defense
+			66% chance to not consume ammo
+			'''
+		ModeNew: New Moon
+		ModeHalf: Half Moon
+		ModeFull: Full Moon
+	}
+
+	EventHorizon: {
+		DisplayName: Event Horizon
+		Tooltip:
+			'''
+			Left click to fire a black blade that causes a gravitational shock on hit
+			Right click to perform a black hole teleport and gain 15 seconds of Chaos State
+			You cannot use black hole teleportation while in Chaos State
+			'''
+	}
+
+	MassPoint: {
+		DisplayName: Mass Point
+		Tooltip: Releases a mass point on hit
+	}
+
+	DimNova: {
+		DisplayName: Dim Nova
+		Tooltip:
+			'''
+			Thrown gel grenades launch themselves at nearby enemies after a moment
+			Explosions leave phantom gel clumps behind, right click to make them home in on enemies and explode
+			"A grenade cold to the touch, it releases a fleeting burst of searing heat as it violently contracts"
+			'''
+	}
+
+	SpacetimeRift: {
+		DisplayName: Spacetime Rift
+		Tooltip:
+			'''
+			Converts arrows into rift arrows
+			Rift arrows leap across the time before they hit their target
+			"Only the result of the hit was left behind"
+			'''
+	}
+
+	PhoenixBreath: {
+		DisplayName: Phoenix Breath
+		Tooltip:
+			'''
+			Left click to spray a fire pillar, right click to launch blazing fireballs
+			Your flight time is doubled while holding this weapon
+			75% chance to not consume gel
+			All attacks inflict [cebuff:CalamityEntropy/SunblazeBurn] for 3 seconds
+			'''
+	}
+
+	Starpiercer: {
+		DisplayName: Starpiercer
+		Tooltip:
+			'''
+			Charge to fire celestial pellets, right click to switch modes
+			Pulsar mode fires high-energy pellets that create shockwaves
+			Graviton mode fires gravity pellets that can erase hostile projectiles
+			'''
+		ModePulsar: Pulsar
+		ModeGraviton: Graviton
+	}
+
+	CelestialSlimeStaff: {
+		DisplayName: Celestial Slime Staff
+		Tooltip:
+			'''
+			Summons a mini celestial slime to protect you
+			Repeated summons let the celestial slime gradually mature and greatly increase its power
+			'The brightest lighthouse in a shattered dream'
+			'''
+	}
+
+	SatelliteStaff: {
+		DisplayName: Satellite Staff
+		Tooltip:
+			'''
+			Summons a fireball slime to fight for you
+			Fireball slimes shoot sunblaze fireballs and flare rays
+			'Scorching moment!'
+			'''
+	}
+
+	BloodforgedEmber: {
+		DisplayName: Bloodforged Ember
+		Tooltip:
+			'''
+			Hold left click and a blood-red hand behind you swings the scythe in a continuous combo
+			Every third swing is a horizontal cleave with longer reach and higher damage, but a narrower arc
+			'Blood feeds the flame, and flame refines the blood'
+			'''
+	}
+
+	AetherRay: {
+		DisplayName: Aether Ray
+		Tooltip: ""
+	}
+
+	StarBlessing: {
+		DisplayName: Star Blessing
+		Tooltip: ""
+	}
+
+	StarDance: {
+		DisplayName: Star Dance
+		Tooltip: ""
+	}
+
+	StellarFury: {
+		DisplayName: Stellar Fury
+		Tooltip: ""
+	}
 }
 
 BaitCommonTooltip1: Charge when held. Usable when fully charged
@@ -7195,6 +7509,115 @@ Projectiles: {
 	SandseaSandBlast.DisplayName: Sand Blast
 	SandseaTwister.DisplayName: Forbidden Twister
 	SandseaVenomNeedle.DisplayName: Venom Needle
+	DefiledExcaliburSwing.DisplayName: Defiled Excalibur
+	DefiledExcaliburBeam.DisplayName: Defiled Sword Beam
+	DefiledExcaliburOrb.DisplayName: Hallowed Gold Orb
+	ElegyOfSoulsSlash.DisplayName: Elegy Slash
+	ElegyOfSoulsDomain.DisplayName: Soul Domain
+	SunAloftSwing.DisplayName: Sun Aloft
+	SunAloftThrust.DisplayName: Sun Aloft
+	SunAloftSolarBlast.DisplayName: Solar Blast
+	SunAloftLunarRay.DisplayName: Lunar Ray
+	SunAloftCelestial.DisplayName: Celestial Body
+	SunAloftSolarLaser.DisplayName: Solar Laser
+	ConstellationYoyo.DisplayName: Constellation
+	ConstellationPentagram.DisplayName: Pentagram
+	ConstellationStar.DisplayName: Constellation Star
+	PrayerlightLanceHeld.DisplayName: Prayerlight Lance
+	PrayerlightLanceSpear.DisplayName: Light Lance
+	PrayerlightLanceLaser.DisplayName: Holy Laser
+	PrayerlightLanceBaptism.DisplayName: Holy Baptism
+	PrayerlightLanceReady.DisplayName: Light Energy
+	StarmoonSharkStarTrail.DisplayName: Starlight Trail
+	ChurchDefenderHeld.DisplayName: Church Defender
+	ChurchDefenderBomb.DisplayName: Sticky Bomb
+	FoamPounderBubble.DisplayName: Bubble
+	SorrowMirrorHeld.DisplayName: Sorrow Mirror
+	SorrowMirrorFlare.DisplayName: Mirrored Lunar Flare
+	SorrowMirrorTyphoon.DisplayName: Mirrored Typhoon
+	SorrowMirrorStar.DisplayName: Mirrored Star
+	SorrowMirrorWrath.DisplayName: Mirrored Wrath
+	SorrowMirrorBoulder.DisplayName: Mirrored Boulder
+	TwinDragonsPearlOrb.DisplayName: Golden Pearl
+	TwinDragonsPearlWyvern.DisplayName: Golden Wyvern Phantom
+	NebulaVortexStaffVortex.DisplayName: Great Nebula Vortex
+	NebulaVortexStaffBlaze.DisplayName: Nebula Blaze
+	NebulaVortexStaffBlazeBlue.DisplayName: Blue Nebula Blaze
+	NecromancerPrimerSpirit.DisplayName: Pink Spirit
+	EmbraceWhipProj.DisplayName: Embrace
+	EmbraceWhipFlare.DisplayName: Embrace
+	AncientPaladinWhipProj.DisplayName: Ancient Paladin Whip
+	AncientPaladinWhipHammer.DisplayName: Phantom Paladin's Hammer
+	FishherdUrnPiranha.DisplayName: Ghost Piranha
+	GoldbowSilvershotHeld.DisplayName: Golden Bow, Silver Shot
+	GoldbowSilvershotGoldShot.DisplayName: Golden Shot
+	GoldbowSilvershotSilverShot.DisplayName: Silver Shot
+	PlunderBlazeHeld.DisplayName: Plunder Blaze
+	PlunderBlazeFlame.DisplayName: Shadow Flame
+	DawnlightBlade.DisplayName: Sun-Enchanted Sword
+	DawnlightBlast.DisplayName: Solar Blast
+	StarryNightCometLarge.DisplayName: Large Pale Blue Comet
+	StarryNightCometSmall.DisplayName: Small Pale Orange Comet
+	NoontideRapierStab.DisplayName: Noontide Rapier
+	NoontideRapierBolt.DisplayName: Golden Prismatic Bolt
+	ManmadeCalamityHead.DisplayName: Manmade Calamity
+	ManmadeCalamityCell.DisplayName: Void Cell
+	MoonriseHeld.DisplayName: Moonrise
+	MoonriseFlame.DisplayName: Moonfire
+	MoonriseFireball.DisplayName: Moonlit Fireball
+	EventHorizonSlash.DisplayName: Event Horizon
+	EventHorizonBlade.DisplayName: Black Blade
+	EventHorizonPulse.DisplayName: Gravitational Shock
+	EventHorizonPhantom.DisplayName: Phantom Blade
+	EventHorizonHole.DisplayName: Black Hole
+	MassPointYoyo.DisplayName: Mass Point
+	MassPointSingularity.DisplayName: Mass Point
+	DimNovaGrenade.DisplayName: Gel Grenade
+	DimNovaShard.DisplayName: Contracting Gel
+	DimNovaRemnant.DisplayName: Phantom Gel Clump
+	DimNovaBlast.DisplayName: Nova Blast
+	SpacetimeRiftArrow.DisplayName: Rift Arrow
+	SpacetimeRiftBlast.DisplayName: Gravity Blast
+	PhoenixBreathHeld.DisplayName: Phoenix Breath
+	PhoenixBreathColumn.DisplayName: Fire Pillar
+	PhoenixBreathFireball.DisplayName: Blazing Fireball
+	PhoenixBreathEmber.DisplayName: Fire Bolt
+	StarpiercerHeld.DisplayName: Starpiercer
+	StarpiercerPulsar.DisplayName: High-Energy Pellet
+	StarpiercerShockwave.DisplayName: Arc Shockwave
+	StarpiercerArc.DisplayName: Electric Arc
+	StarpiercerGraviton.DisplayName: Gravity Pellet
+	CelestialSlimeStaffCounter.DisplayName: Celestial Slime
+	CelestialSlimeStaffSlime.DisplayName: Celestial Slime
+	CelestialSlimeStaffEnergy.DisplayName: Cosmic Energy
+	CelestialSlimeStaffRay.DisplayName: Gamma Ray
+	CelestialSlimeStaffDarkStar.DisplayName: Black Hole Star
+	CelestialSlimeStaffGelHole.DisplayName: Gel Black Hole
+	SatelliteStaffSlime.DisplayName: Fireball Slime
+	SatelliteStaffFireball.DisplayName: Sunblaze Fireball
+	SatelliteStaffFlare.DisplayName: Flare Ray
+	SatelliteStaffExplosion.DisplayName: Flare Blast
+	BloodforgedEmberHeld.DisplayName: Bloodforged Ember
+	AetherRayBeam.DisplayName: Aether Ray Beam
+	AetherRayBolt.DisplayName: Aether Ray Bolt
+	AetherRayDrone.DisplayName: Aether Ray Drone
+	AetherRayHeld.DisplayName: Aether Ray Held
+	RequiemBlackGun.DisplayName: Requiem Black Gun
+	RequiemCharger.DisplayName: Requiem Charger
+	RequiemCrossBlast.DisplayName: Requiem Cross Blast
+	RequiemPiercer.DisplayName: Requiem Piercer
+	RequiemRound.DisplayName: Requiem Round
+	RequiemShrapnel.DisplayName: Requiem Shrapnel
+	StarBlessingCluster.DisplayName: Star Blessing Cluster
+	StarBlessingConstellation.DisplayName: Star Blessing Constellation
+	StarBlessingProj.DisplayName: Star Blessing Proj
+	StarDanceOrbBlue.DisplayName: Star Dance Orb Blue
+	StarDanceOrbOrange.DisplayName: Star Dance Orb Orange
+	StarDanceOrbRed.DisplayName: Star Dance Orb Red
+	StarDanceOrbSilver.DisplayName: Star Dance Orb Silver
+	StarDanceOrbYellow.DisplayName: Star Dance Orb Yellow
+	StellarFuryHole.DisplayName: Stellar Fury Hole
+	StellarFuryMissile.DisplayName: Stellar Fury Missile
 }
 
 LegendTooltip: - Legend -
@@ -7903,6 +8326,53 @@ Buffs: {
 	SharkSquadBuff: {
 		DisplayName: Sand Shark Family
 		Description: Happy sand shark party!
+	}
+
+	FlareBurn: {
+		DisplayName: Flare Burn
+		Description: Losing 30 life per second
+		ItemTooltip: Enemies take 150 damage per second
+	}
+
+	StarcellDevour: {
+		DisplayName: Starcell Devour
+		Description: Defense reduced by 25
+		ItemTooltip: Defense reduced by 25
+	}
+
+	FishherdUrnBuff: {
+		DisplayName: Soul Predator
+		Description: The soul butcher fights for you
+	}
+
+	PlunderBlazeMark: {
+		DisplayName: Plunder Mark
+		Description: May drop double loot if defeated now
+	}
+
+	DawnlightBuff: {
+		DisplayName: Solar Prism
+		Description: The holy tyrant's blades fight for you
+	}
+
+	CelestialSlimeStaffBuff: {
+		DisplayName: Celestial Slime
+		Description: The celestial slime fights for you
+	}
+
+	SatelliteStaffBuff: {
+		DisplayName: Scorching!
+		Description: A fireball slime fights for you
+	}
+
+	RequiemFracture: {
+		DisplayName: Requiem Fracture
+		Description: Mods.CalamityEntropy.Buffs.RequiemFracture.Description
+	}
+
+	RequiemShatter: {
+		DisplayName: Requiem Shatter
+		Description: Mods.CalamityEntropy.Buffs.RequiemShatter.Description
 	}
 }
 
@@ -8739,6 +9209,11 @@ MoonLordFirstKillMessage: The power from another world stirs...
 AnyFairy: Any Fairy
 Gems: Gems
 Butterflies: Butterflies
+ZenithIgnoreDefense: Ignores the defense of targets with less than 100 defense
+AnyGoldBar: Any Gold Bar
+AnyPearl: Any Pearl
+CursedFlameOrIchor: Cursed Flame or Ichor
+AnyMythrilAnvil: Any Mythril Anvil
 BCBarInfo: Bramble Bar (Hold [mouse middle] to drag)
 HallowedEnemiesDrop: Drops from underground hallowed enemies
 EvilEnemiesDrop: Drops from undergronud evil biomes' enemies

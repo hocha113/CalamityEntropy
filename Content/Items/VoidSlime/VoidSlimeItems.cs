@@ -18,8 +18,8 @@ namespace CalamityEntropy.Content.Items.VoidSlime
         }
 
         public override void SetDefaults() {
-            Item.width = 40;
-            Item.height = 34;
+            Item.width = 42;
+            Item.height = 24;
             Item.useAnimation = 30;
             Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.HoldUp;
@@ -69,8 +69,8 @@ namespace CalamityEntropy.Content.Items.VoidSlime
         }
 
         public override void SetDefaults() {
-            Item.width = 24;
-            Item.height = 24;
+            Item.width = 20;
+            Item.height = 16;
             Item.maxStack = 9999;
             Item.value = Item.sellPrice(gold: 2);
             Item.rare = ModContent.RarityType<VoidPurple>();
@@ -83,7 +83,7 @@ namespace CalamityEntropy.Content.Items.VoidSlime
         }
     }
 
-    /// <summary>银河固化机,摆下后当固化机用</summary>
+    /// <summary>星河固化机,超新星凝胶系物品的制作站,同时等同远古操纵机、秘银砧与固化机</summary>
     public class GalaxySolidifier : ModItem
     {
         public override void SetDefaults() {
@@ -91,8 +91,17 @@ namespace CalamityEntropy.Content.Items.VoidSlime
             Item.width = 32;
             Item.height = 32;
             Item.maxStack = 9999;
-            Item.value = Item.sellPrice(gold: 10);
-            Item.rare = ModContent.RarityType<VoidPurple>();
+            Item.value = Item.sellPrice(gold: 24);
+            Item.rare = ItemRarityID.Red;
+        }
+
+        public override void AddRecipes() {
+            CreateRecipe()
+                .AddIngredient(ItemID.LunarCraftingStation)
+                .AddRecipeGroup(CERecipeGroups.AnyMythrilAnvil)
+                .AddIngredient(ItemID.Solidifier)
+                .AddIngredient<SupernovaGel>(10)
+                .Register();
         }
     }
 

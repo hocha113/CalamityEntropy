@@ -16,6 +16,7 @@ namespace CalamityEntropy.Content.NPCs.VoidSlime
     public partial class VoidSlime
     {
         private const string PaleTexturePath = "CalamityEntropy/Content/NPCs/VoidSlime/VoidSlime_Pale";
+        private const string SingularityTexturePath = "CalamityEntropy/Content/NPCs/VoidSlime/VoidSlime_Singularity";
         private const string BigStarTexturePath = "CalamityEntropy/Content/Projectiles/VoidSlime/VSlimeBigStar";
         /// <summary>视界占着色器方块半边长的比例,黑盘边缘就是判定边缘</summary>
         private const float HoleCoreFraction = 0.5f;
@@ -24,6 +25,7 @@ namespace CalamityEntropy.Content.NPCs.VoidSlime
         private const float ShapeBlendStep = 0.12f;
 
         private static Asset<Texture2D> paleTexture;
+        private static Asset<Texture2D> singularityTexture;
         private static Asset<Texture2D> bigStarTexture;
 
         #region 本地视觉字段(由声明逐帧推导,不过线)
@@ -50,6 +52,8 @@ namespace CalamityEntropy.Content.NPCs.VoidSlime
         #endregion
 
         private static Texture2D PaleTex => (paleTexture ??= ModContent.Request<Texture2D>(PaleTexturePath, AssetRequestMode.ImmediateLoad)).Value;
+
+        private static Texture2D SingularityTex => (singularityTexture ??= ModContent.Request<Texture2D>(SingularityTexturePath, AssetRequestMode.ImmediateLoad)).Value;
 
         private static Texture2D BigStarTex => (bigStarTexture ??= ModContent.Request<Texture2D>(BigStarTexturePath, AssetRequestMode.ImmediateLoad)).Value;
 
@@ -133,7 +137,7 @@ namespace CalamityEntropy.Content.NPCs.VoidSlime
         private void DrawBody(SpriteBatch sb, VSlimeStateContext c, Vector2 shake, Color light, float opacity, float depthScale) {
             bool pale = c.Phase <= VSlimeForm.Pale;
             bool dark = c.Phase >= VSlimeForm.Singularity;
-            Texture2D tex = pale ? PaleTex : TextureAssets.Npc[Type].Value;
+            Texture2D tex = pale ? PaleTex : dark ? SingularityTex : TextureAssets.Npc[Type].Value;
             float orb = wOrb / Math.Max(0.001f, wSlime + wOrb);
             float size = VSlimeDirector.BodyDrawScale * (1f + visSwell) * depthScale;
             Vector2 slimeScale = new Vector2(1f + visSquash * 0.55f, 1f - visSquash) * size;
@@ -156,7 +160,7 @@ namespace CalamityEntropy.Content.NPCs.VoidSlime
                 GodDraw.End();
             }
 
-            Color bodyColor = dark ? new Color(30, 20, 46) : Color.Lerp(light, Color.White, pale ? 0.3f : 0.65f);
+            Color bodyColor = Color.Lerp(light, Color.White, pale ? 0.3f : 0.65f);
             sb.Draw(tex, world - Main.screenPosition, null, bodyColor * solid, rotation, origin, scale, SpriteEffects.None, 0f);
             if (c.Splatter > 0.01f) {
                 DrawSplatter(sb, mid, c.Splatter, opacity, size);
@@ -172,23 +176,10 @@ namespace CalamityEntropy.Content.NPCs.VoidSlime
                 sb.Draw(tex, world - Main.screenPosition, null, hot, rotation, origin, scale, SpriteEffects.None, 0f);
                 GodDraw.Centered(glow, mid, GodDraw.Add(pale ? VSlimeVfx.PaleLight : VSlimeVfx.Lavender, 0.8f * visGlow * opacity), 0f, extent * 1.5f / glow.Size());
             }
-            if (dark) {
-                DrawAccretionCore(mid, size, solid);
-            }
             if (c.Cracks > 0.01f) {
                 DrawCracks(mid, extent, c.Cracks, opacity);
             }
             GodDraw.End();
-        }
-
-        /// <summary>奇点形态身体中央的吸积亮芯和一道横向透镜光,调用前须在加法批次里</summary>
-        private void DrawAccretionCore(Vector2 mid, float size, float opacity) {
-            float beat = 0.85f + 0.15f * MathF.Sin(drawClock * 0.09f);
-            Texture2D glow = GodDraw.Glow;
-            GodDraw.Centered(glow, mid, GodDraw.Add(VSlimeVfx.VoidBright, 0.9f * opacity * beat), 0f, 110f * size / glow.Width);
-            GodDraw.Centered(glow, mid, GodDraw.Add(VSlimeVfx.StarCore, opacity * beat), 0f, 46f * size / glow.Width);
-            GodDraw.Line(mid - new Vector2(150f * size, 0f), mid + new Vector2(150f * size, 0f), 7f * size * beat, GodDraw.Add(VSlimeVfx.Lavender, 0.9f * opacity), 0.4f);
-            GodDraw.Line(mid - new Vector2(0f, 46f * size), mid + new Vector2(0f, 46f * size), 4f * size, GodDraw.Add(VSlimeVfx.Lavender, 0.6f * opacity), 0.4f);
         }
 
         /// <summary>壳体裂纹,从身体中心向外长,调用前须在加法批次里</summary>

@@ -28,7 +28,7 @@ namespace CalamityEntropy.Content.Tiles
         }
     }
 
-    /// <summary>银河固化机,3x3 落地制作站,配方里等同固化机</summary>
+    /// <summary>星河固化机,3x3 落地制作站,配方里等同远古操纵机、秘银砧(并当作砧)与固化机</summary>
     public class GalaxySolidifierTile : ModTile
     {
         public override void SetStaticDefaults() {
@@ -38,7 +38,7 @@ namespace CalamityEntropy.Content.Tiles
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
             TileObjectData.addTile(Type);
             TileID.Sets.DisableSmartCursor[Type] = true;
-            AdjTiles = new int[] { TileID.Solidifier };
+            AdjTiles = new int[] { TileID.Solidifier, TileID.LunarCraftingStation, TileID.MythrilAnvil, TileID.Anvils };
             AddMapEntry(new Color(116, 81, 178), CreateMapEntryName());
             DustType = DustID.PurpleTorch;
         }

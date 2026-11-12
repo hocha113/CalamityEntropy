@@ -1,4 +1,5 @@
 ﻿using CalamityEntropy.Content.Buffs.PortsDoT;
+using CalamityEntropy.Content.Items.VoidSlime;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
 using CalamityEntropy.Core.CalamityRef;
@@ -143,8 +144,8 @@ namespace CalamityEntropy.Content.Items.Accessories
                 AddIngredient(ItemID.AnkhShield, 1).
                 AddIngredient(ItemID.HeroShield, 1).
                 AddIngredient(ModContent.ItemType<HolyMantle>(), 1).
-                AddIngredient(ModContent.ItemType<ChaoticPiece>(), 15).
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient(ModContent.ItemType<SupernovaGel>(), 5).
+                AddTile(ModContent.TileType<GalaxySolidifierTile>()).
                 Register();
         }
     }

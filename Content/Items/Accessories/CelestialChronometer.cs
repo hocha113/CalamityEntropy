@@ -1,6 +1,7 @@
 ﻿using CalamityEntropy.Content.Buffs;
 using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Items.Donator;
+using CalamityEntropy.Content.Items.VoidSlime;
 using CalamityEntropy.Content.Rarities;
 using CalamityEntropy.Content.Tiles;
 using CalamityEntropy.Core.CalamityRef;
@@ -194,8 +195,8 @@ namespace CalamityEntropy.Content.Items.Accessories
                     AddIngredient(ModContent.ItemType<SilvasCrown>()).
                     AddIngredient(ItemID.CharmofMyths).
                     AddIngredient(ItemID.AcornAxe).
-                    AddIngredient(ModContent.ItemType<ChaoticPiece>(), 10).
-                    AddTile(TileID.LunarCraftingStation).
+                    AddIngredient(ModContent.ItemType<SupernovaGel>(), 5).
+                    AddTile<GalaxySolidifierTile>().
                     Register();
         }
 

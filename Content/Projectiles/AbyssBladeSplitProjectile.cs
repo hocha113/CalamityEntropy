@@ -63,8 +63,6 @@ namespace CalamityEntropy.Content.Projectiles
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
-            target.AddBuff(ModContent.BuffType<CrushDepth>(), 120);
-
             SoundEngine.PlaySound(SoundID.ShimmerWeak1 with { Pitch = 0.35f }, Projectile.Center);
         }
     }

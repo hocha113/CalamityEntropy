@@ -119,10 +119,8 @@ namespace CalamityEntropy.Common
 
             if (npc.HasBuff<Koishi>())
                 mult -= 0.2f;
-            if (npc.HasBuff<SoulDisorder>())
-                mult -= 0.12f;
             if (npc.HasBuff<VoidVirus>())
-                mult -= 0.12f;
+                mult -= 0.1f;
             if (npc.Entropy().Decrease20DR > 0)
                 mult -= 0.2f;
 
@@ -131,7 +129,7 @@ namespace CalamityEntropy.Common
 
             // 原灾厄 DR 越高衰减越弱的补偿项已随灾厄 DR 体系移除，倍率直接生效
             if (npc.HasBuff<LifeOppress>())
-                mult -= 0.25f;
+                mult -= 0.15f;
 
             if (mult < 0)
                 mult = 0;

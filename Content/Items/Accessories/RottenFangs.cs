@@ -35,7 +35,7 @@ namespace CalamityEntropy.Content.Items.Accessories
                             if (target != null) {
                                 int dmg = ((int)(projectile.GetOwner().GetTotalDamage(DamageClass.Summon).ApplyTo(10))).ApplyAccArmorDamageBonus(projectile.GetOwner());
                                 for (int i = 0; i < 3; i++) {
-                                    Projectile.NewProjectile(projectile.GetSource_FromAI(), projectile.Center, (target.Center - projectile.Center).normalize().RotatedByRandom(0.2f) * Main.rand.NextFloat(5, 8), ModContent.ProjectileType<RottenFangsBloodBullet>(), dmg, 5, projectile.owner);
+                                    Projectile.NewProjectile(projectile.GetSource_FromAI(), projectile.Center, (target.Center - projectile.Center).normalize().RotatedByRandom(0.2f) * Main.rand.NextFloat(5, 8), ModContent.ProjectileType<RottenFangsBloodBullet>(), dmg, 2, projectile.owner);
                                 }
                                 CEUtils.PlaySound("ksLand", Main.rand.NextFloat(0.6f, 0.8f), projectile.Center, 60, 0.32f);
                             }

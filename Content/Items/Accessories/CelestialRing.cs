@@ -11,16 +11,17 @@ namespace CalamityEntropy.Content.Items.Accessories
             Item.width = 26;
             Item.defense = 6;
             Item.height = 26;
-            Item.value = Item.buyPrice(platinum: 1, gold: 50);
+            Item.value = Item.buyPrice(gold: 36);
             Item.rare = ModContent.RarityType<NihilityBlue>();
             Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual) {
+            player.noKnockback = true;
             player.GetDamage(DamageClass.Generic) += 0.12f;
-            player.GetCritChance(DamageClass.Generic) += 4;
+            player.GetCritChance(DamageClass.Generic) += 5;
             player.GetAttackSpeed(DamageClass.Melee) += 0.12f;
-            player.lifeRegen += 2;  //半点/秒,2=1hp/s
+            player.lifeRegen += 3; 
             player.maxMinions += 1;
             player.Entropy().moveSpeed += 0.10f;
             player.Entropy().WingTimeAddTicks += 60;

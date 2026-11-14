@@ -46,7 +46,7 @@ namespace CalamityEntropy.Content.Items.Donator.LightDarkDagger
         public override void SetDefaults() {
             Item.width = 52;
             Item.height = 48;
-            Item.damage = 130;
+            Item.damage = 50;
             Item.crit = 8;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 22;

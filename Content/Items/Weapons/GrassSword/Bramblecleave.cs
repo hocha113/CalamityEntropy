@@ -170,7 +170,7 @@ namespace CalamityEntropy.Content.Items.Weapons.GrassSword
                     Item.damage = dmg;
                 }
                 else {
-                    Item.damage = 375;
+                    Item.damage = 340;
                 }
                 Item.useTime = Item.useAnimation = int.Max(15, 21 - level / 4);
                 LastLevel = level;

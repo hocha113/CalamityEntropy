@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Assets.Register;
-using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.Particles.CalamityPorts;
 using CalamityEntropy.Content.Projectiles;
 using CalamityEntropy.Core.CalamityRef;
@@ -20,11 +19,11 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
     public class StarlitFractal : ModItem
     {
         public override void SetDefaults() {
-            Item.damage = 90;
+            Item.damage = 94;
             Item.DamageType = DamageClass.Melee;
             Item.width = 48;
             Item.height = 60;
-            Item.useTime = Item.useAnimation = 23;
+            Item.useTime = Item.useAnimation = 26;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 6;
             Item.value = Item.buyPrice(gold: 20);
@@ -156,7 +155,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
 
         public bool playHitSound = true;
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
-            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 460);
             for (int i = 0; i < 2; i++) {
                 Vector2 pos = target.Center + new Vector2(0, -900) + CEUtils.randomPointInCircle(400);
                 int star = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, (target.Center - pos).normalize() * 42, ModContent.ProjectileType<AstralStarMelee>(), Projectile.damage / 4, Projectile.owner);
@@ -289,10 +287,6 @@ namespace CalamityEntropy.Content.Items.Weapons.Fractal
 
             CEUtils.HomeInOnNPC(Projectile, base.Projectile.tileCollide, 500f, 15f, 20f);
 
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
-            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
         }
 
         public override Color? GetAlpha(Color lightColor) {

@@ -16,7 +16,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         }
 
         public override void SetDefaults() {
-            Item.damage = 170;
+            Item.damage = 160;
             Item.crit = 0;
             Item.knockBack = 2;
             Item.DamageType = DamageClass.Summon;

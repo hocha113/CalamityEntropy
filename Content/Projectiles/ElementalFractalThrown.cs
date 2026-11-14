@@ -1,4 +1,3 @@
-﻿using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Content.DamageClasses;
 using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
@@ -49,7 +48,7 @@ namespace CalamityEntropy.Content.Projectiles
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             hit.DamageType = NoDRMelee.Instance;
             CEUtils.PlaySound("sf_hit", 1, Projectile.Center, volume: 0.6f);
-            target.AddBuff(ModContent.BuffType<ElementalMix>(), 400);
+            target.AddBuff(BuffID.Daybreak, 300);
             ParticleOrchestrator.RequestParticleSpawn(clientOnly: true, ParticleOrchestraType.Keybrand, new ParticleOrchestraSettings {
                 PositionInWorld = target.Center,
                 MovementVector = Vector2.Zero

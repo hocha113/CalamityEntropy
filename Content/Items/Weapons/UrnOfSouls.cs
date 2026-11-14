@@ -10,7 +10,7 @@ namespace CalamityEntropy.Content.Items.Weapons
         public override void SetDefaults() {
             Item.width = 44;
             Item.height = 44;
-            Item.damage = 84;
+            Item.damage = 104;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 20;
@@ -24,7 +24,7 @@ namespace CalamityEntropy.Content.Items.Weapons
             Item.shoot = ModContent.ProjectileType<UrnOfSoulsHoldout>();
             Item.shootSpeed = 6f;
             Item.mana = 8;
-            Item.ArmorPenetration = 32;
+            Item.ArmorPenetration = 20;
             Item.DamageType = DamageClass.Magic;
         }
         public override bool MagicPrefix() {

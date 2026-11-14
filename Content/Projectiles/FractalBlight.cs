@@ -1,5 +1,4 @@
 ﻿using CalamityEntropy.Assets.Register;
-using CalamityEntropy.Content.Buffs.PortsDoT;
 using CalamityEntropy.Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -58,7 +57,7 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
             if (Projectile.ai[1] == 1) {
-                target.AddBuff(ModContent.BuffType<ElementalMix>(), 400);
+                target.AddBuff(BuffID.Daybreak, 300);
             }
         }
         public override bool PreDraw(ref Color lightColor) {

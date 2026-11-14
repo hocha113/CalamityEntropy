@@ -42,7 +42,7 @@ namespace CalamityEntropy.Content.Items.Donator
         public override void SetDefaults() {
             Item.width = 86;
             Item.height = 148;
-            Item.damage = 310;
+            Item.damage = 180;
             Item.crit = 6;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 14;
